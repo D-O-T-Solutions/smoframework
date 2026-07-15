@@ -1,9 +1,10 @@
 add_library(smo_runtime STATIC
     runtime.h
+    runtime.hpp
 )
 target_include_directories(smo_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(smo_runtime PUBLIC
-    smo_core smo_compiler smo_transport smo_storage smo_trust smo_acl
+    smo_core smo_compiler smo_transport smo_storage smo_trust smo_acl smo_contract
 )
 smo_set_warnings(smo_runtime)
 smo_set_optimisation(smo_runtime)

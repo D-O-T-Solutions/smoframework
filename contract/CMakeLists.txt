@@ -8,3 +8,4 @@ target_link_libraries(smo_contract PUBLIC
 
 add_subdirectory(registry)
 add_subdirectory(factory)
+add_subdirectory(kernel)

@@ -1,2 +1,7 @@
-add_library(smo_compiler_optimizer INTERFACE)
-target_include_directories(smo_compiler_optimizer INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_sources(smo_compiler PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/optimizer.cpp
+)
+
+target_sources(smo_compiler INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/optimizer.hpp
+)

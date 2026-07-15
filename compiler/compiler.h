@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <system_error>
 #include "core/intent/intent.h"
 #include "compiler/graph/graph.h"
@@ -8,10 +9,7 @@ namespace smo {
 
 // §XII.2 — Compiler Pipeline
 //
-// INTENT → Parse → Capability Resolution → Node Planning
-//        → DAG Generation → Optimization → Execution DAG
-//
-// Output DAG is immutable (Invariant I-03).
+// JSON/AST → SMIR → Semantic Validator → Planner → Builder → Optimizer → Final Validator → DAG
 
 class Compiler {
 public:
@@ -23,6 +21,8 @@ public:
     };
 
     virtual Result compile(const Intent& intent, std::error_code& ec) = 0;
+
+    static std::unique_ptr<Compiler> create();
 };
 
 } // namespace smo

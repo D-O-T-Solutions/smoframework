@@ -9,6 +9,7 @@
   <a href="https://github.com/D-O-T-Solutions/smoframework"><img src="https://img.shields.io/badge/repo-D--O--T--Solutions%2Fsmoframework-6366f1?style=flat-square&logo=github" alt="GitHub"></a>
   <img src="https://img.shields.io/badge/c++-20-00599C?style=flat-square&logo=c%2B%2B" alt="C++20">
   <img src="https://img.shields.io/badge/tests-31%2F31-brightgreen?style=flat-square" alt="Tests">
+  <img src="https://img.shields.io/badge/status-sprint%203-blue?style=flat-square" alt="Sprint 3">
   <img src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" alt="Build">
 </p>
 
@@ -29,6 +30,10 @@
 | Protocol v1 — packet, signing, encryption, replay | done |
 | Identity & Certificate — Ed25519, enrollment | done |
 | Transport — abstract layer, TCP, framing | done |
+| Contract Runtime — Compiler, Executor, Runtime::execute() | done |
+| Contract ABI — ABI Hash, Semantic Hash, AbiRegistry | done |
+| Kernel Contracts — 7 kernel contracts, polymorphic dispatch | done |
+| Discovery — Ping/pong response, gossip engine | done |
 | Platform — Linux Tier 1 (Windows Tier 2 in progress) | WIP |
 | Tests — 31/31 (PQC=ON), 27/27 (PQC=OFF) | done |
 

@@ -1,2 +1,7 @@
-add_library(smo_runtime_executor INTERFACE)
-target_include_directories(smo_runtime_executor INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_sources(smo_runtime PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/executor.cpp
+)
+
+target_sources(smo_runtime INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/executor.hpp
+)
