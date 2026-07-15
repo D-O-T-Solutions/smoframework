@@ -18,6 +18,8 @@
 #include <core/crypto/impl.hpp>
 #include <core/identity/identity.hpp>
 #include <core/discovery/discovery.hpp>
+#include <core/select/selector.hpp>
+#include <core/storage/peer_store.hpp>
 #include <core/transport/transport.hpp>
 #include <core/transport/tcp_transport.hpp>
 
@@ -360,6 +362,110 @@ static int cmd_exec(const std::vector<std::string>& args) {
         else if (a == "--top")          { if (i + 1 < args.size()) top_n = std::stoi(args[++i]); }
         else if (a == "--dry-run")      { dry_run = true; }
     }
+
+    // ── Selector Integration ──────────────────────────────────────
+    // If selection criteria provided, resolve target nodes via Selector
+    bool has_selection = !name.empty() || !node_id.empty() || !role.empty() ||
+                         !tags.empty() || !where.empty() || !os.empty() ||
+                         !arch.empty() || !version.empty() || !trust_range.empty() ||
+                         !mesh.empty() || !cap.empty() || nearest || random_n > 0 || top_n > 0;
+
+    smo::select::NodeSet selected_nodes;
+    if (has_selection) {
+        // Load local membership from PeerStore
+        auto data_dir = get_data_dir();
+        smo::MembershipTable local_table;
+        smo::PeerStore peer_store;
+        if (auto r = peer_store.open(data_dir); r) {
+            auto sync_r = peer_store.sync_to_membership(local_table);
+            if (!sync_r) {
+                std::fprintf(stderr, "Warning: failed to load peer store: %s\n",
+                             sync_r.error().message.c_str());
+            }
+        }
+
+        // Also add local node
+        auto id_path = data_dir + "/identity.json";
+        if (fs::exists(id_path)) {
+            std::ifstream f(id_path);
+            std::string content((std::istreambuf_iterator<char>(f)),
+                                 std::istreambuf_iterator<char>());
+            auto pos = content.find("\"node_id\"");
+            if (pos == std::string::npos) pos = content.find("\"id\"");
+            if (pos != std::string::npos) {
+                auto start = content.find('"', pos + 8);
+                auto end = content.find('"', start + 1);
+                if (start != std::string::npos && end != std::string::npos) {
+                    std::string id_hex = content.substr(start + 1, end - start - 1);
+                    if (id_hex.size() == 64) {
+                        smo::NodeID local_id;
+                        for (size_t i = 0; i < 32; ++i) {
+                            local_id.value[i] = static_cast<uint8_t>(
+                                std::stoi(id_hex.substr(i * 2, 2), nullptr, 16));
+                        }
+                        smo::PeerRecord local_rec;
+                        local_rec.node_id = local_id;
+                        local_rec.display_name = name.empty() ? "local" : name;
+                        local_rec.state = smo::PeerState::Online;
+                        local_table.upsert(std::move(local_rec));
+                    }
+                }
+            }
+        }
+
+        // Build selection query
+        smo::select::SelectQuery query;
+        if (!name.empty()) query.name = name;
+        if (!node_id.empty()) {
+            // Parse node_id hex
+            smo::NodeID id;
+            if (node_id.size() == 64) {
+                for (size_t i = 0; i < 32; ++i) {
+                    id.value[i] = static_cast<uint8_t>(
+                        std::stoi(node_id.substr(i * 2, 2), nullptr, 16));
+                }
+                query.node_id = id;
+            }
+        }
+        if (!role.empty()) query.role = smo::Role::Reader; // parse role string
+        query.tags = tags;
+        query.where_expr = where;
+        query.os = os;
+        query.arch = arch;
+        query.version_constraint = version;
+        query.mesh_name = mesh;
+        query.cap_mask = cap;
+        if (nearest) query.mode = smo::select::SelectMode::NEAREST;
+        else if (random_n > 0) { query.mode = smo::select::SelectMode::RANDOM; query.limit = random_n; }
+        else if (top_n > 0) { query.mode = smo::select::SelectMode::TOP_N; query.limit = top_n; }
+        else if (!scope.empty()) {
+            if (scope == "single") query.mode = smo::select::SelectMode::SINGLE;
+            else if (scope == "mesh") query.mode = smo::select::SelectMode::MESH;
+        }
+
+        // Execute selection
+        smo::select::Selector selector(local_table);
+        auto select_result = selector.select(query);
+        if (select_result) {
+            selected_nodes = std::move(select_result.value());
+            if (selected_nodes.empty()) {
+                std::fprintf(stderr, "No nodes match selection criteria\n");
+                return 1;
+            }
+            std::printf("Selected %zu node(s):\n", selected_nodes.size());
+            for (auto& e : selected_nodes.entries) {
+                std::printf("  %s (%s) rtt=%.2fms\n",
+                            e.display_name.c_str(),
+                            e.id.value.data(),
+                            e.rtt_ms);
+            }
+        } else {
+            std::fprintf(stderr, "Selection failed: %s\n",
+                         select_result.error().message.c_str());
+            return 1;
+        }
+    }
+    // ───────────────────────────────────────────────────────────────
 
     // Support positional opcode (first non-flag arg)
     if (opcode.empty() && !args.empty() && args[0] != "exec") {
