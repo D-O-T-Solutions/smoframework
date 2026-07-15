@@ -3575,7 +3575,7 @@ SPDX-License-Identifier: Apache-2.0
 
 - **Founder / Lead Architect**: Nguyen Duc Canh
 - **Organization**: Distributed Offensive Technology Solutions Co., Ltd.
-- **Repository**: https://github.com/dotlinux26/smoframework
+- **Repository**: https://github.com/D-O-T-Solutions/smoframework
 
 ---
 
