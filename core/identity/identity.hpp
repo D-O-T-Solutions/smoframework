@@ -6,6 +6,8 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
+#include <vector>
 
 namespace smo {
 
@@ -19,6 +21,22 @@ struct NodeID {
 
     bool operator==(const NodeID& other) const noexcept = default;
     bool operator!=(const NodeID& other) const noexcept = default;
+};
+
+// ---------------------------------------------------------------------------
+// NodeIdentity — the three-layer identity model
+//
+// 1. NodeID:   immutable, derived from public key. Never changes.
+// 2. DisplayName: human-friendly name, proposed by node, certified by Authority.
+// 3. Aliases:  secondary names for convenience, managed by admin.
+//
+// DisplayName is UNIQUE within a Mesh. Aliases are optional extras.
+// Only NodeID is used for authentication. Name is metadata only.
+// ---------------------------------------------------------------------------
+struct NodeIdentity {
+    NodeID                  id;
+    std::string             display_name;
+    std::vector<std::string> aliases;
 };
 
 // Derive NodeID from a public key using a hash implementation.

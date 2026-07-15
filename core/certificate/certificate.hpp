@@ -23,6 +23,21 @@ enum class Role : uint8_t {
 const char* to_string(Role r) noexcept;
 
 // ---------------------------------------------------------------------------
+// Certificate error codes (codes 220-229: name/identity validation)
+// ---------------------------------------------------------------------------
+namespace CertErrc {
+    inline constexpr ErrorCode
+    DisplayNameAlreadyExists(ErrorCategory::Certificate, 220, Severity::Warn,
+                             RetryClass::RetrySafe, Recovery::None);
+    inline constexpr ErrorCode
+    InvalidDisplayName(ErrorCategory::Certificate, 221, Severity::Warn,
+                       RetryClass::NoRetry, Recovery::None);
+    inline constexpr ErrorCode
+    DisplayNameTooLong(ErrorCategory::Certificate, 222, Severity::Warn,
+                       RetryClass::NoRetry, Recovery::None);
+} // namespace CertErrc
+
+// ---------------------------------------------------------------------------
 // CertStatus — certificate lifecycle status
 // ---------------------------------------------------------------------------
 enum class CertStatus : int8_t {
@@ -97,6 +112,9 @@ public:
     Bytes     new_public_key;   // The new node public key to certify
     Bytes     mesh_id;          // Target mesh
     Bytes     old_cert_hash;    // Hash of current certificate (for rotation)
+    std::string display_name;  // Proposed display name (unique within mesh)
+    std::string platform;       // OS platform, e.g. "linux", "windows"
+    std::string version;        // SMO runtime version, e.g. "3.2.1"
     int64_t   timestamp     = 0;
     Bytes     signature;        // Signed by old private key (or new for initial)
 

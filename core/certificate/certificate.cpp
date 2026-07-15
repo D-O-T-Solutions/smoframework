@@ -221,6 +221,9 @@ Bytes CertificateSigningRequest::serialize() const {
     append_bytes(out, new_public_key);
     append_bytes(out, mesh_id);
     append_bytes(out, old_cert_hash);
+    append_bytes(out, Bytes(display_name.begin(), display_name.end()));
+    append_bytes(out, Bytes(platform.begin(), platform.end()));
+    append_bytes(out, Bytes(version.begin(), version.end()));
     append_u64(out, static_cast<uint64_t>(timestamp));
     return out;
 }
@@ -239,6 +242,24 @@ Result<CertificateSigningRequest> CertificateSigningRequest::deserialize(
     if (!read_bytes(data, offset, csr.old_cert_hash))
         return SMO_ERR_CERT(209, Alert, NoRetry, None,
                             "failed to parse CSR old_cert_hash");
+
+    Bytes dn;
+    if (!read_bytes(data, offset, dn))
+        return SMO_ERR_CERT(209, Alert, NoRetry, None,
+                            "failed to parse CSR display_name");
+    csr.display_name = std::string(dn.begin(), dn.end());
+
+    Bytes plat;
+    if (!read_bytes(data, offset, plat))
+        return SMO_ERR_CERT(209, Alert, NoRetry, None,
+                            "failed to parse CSR platform");
+    csr.platform = std::string(plat.begin(), plat.end());
+
+    Bytes ver;
+    if (!read_bytes(data, offset, ver))
+        return SMO_ERR_CERT(209, Alert, NoRetry, None,
+                            "failed to parse CSR version");
+    csr.version = std::string(ver.begin(), ver.end());
 
     uint64_t ts;
     if (!read_u64(data, offset, ts))

@@ -957,26 +957,32 @@ receive(packet):
 
 ## VII. MESH IDENTITY & TRUST INFRASTRUCTURE (MITI)
 
-### 7.1 Three Distinct Concepts
+### 7.1 Four-Layer Identity Model
+
+SMO defines four distinct layers. Each has its own lifecycle, scope, and trust model.
 
 ```
-┌──────────────────────────────────────────────────┐
-│ IDENTITY                                          │
-│ "Tôi là node X."                                  │
-│ NodeID = HashProvider::hash_hex(NodePublicKey)    │
-│ (default: BLAKE3-256 → 64 hex chars)              │
-│ Immutable for the lifetime of the node.           │
-├──────────────────────────────────────────────────┤
-│ MEMBERSHIP                                        │
-│ "Tôi thuộc Mesh Y với vai trò Z."                │
-│ MembershipCertificate, signed by Authority.       │
-│ Per-mesh. One node can hold multiple memberships. │
-├──────────────────────────────────────────────────┤
-│ CAPABILITY                                        │
-│ "Trong Mesh Y, tôi được phép làm gì."            │
-│ CapabilitySet derived from Role in certificate.   │
-│ Validated at runtime per session.                 │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ IDENTITY                                             │
+│ NodeID — immutable, Blake3(NodePublicKey)            │
+│ Never changes for the lifetime of the node.           │
+│ Used for all cryptographic operations.               │
+├──────────────────────────────────────────────────────┤
+│ DISPLAY NAME                                         │
+│ "soc-hn-01" — human-friendly, unique within mesh      │
+│ Proposed by node at init, certified by Authority.     │
+│ Metadata only — NOT used for authentication.          │
+├──────────────────────────────────────────────────────┤
+│ MEMBERSHIP                                           │
+│ "Tôi thuộc Mesh Y với vai trò Z."                   │
+│ MembershipCertificate, signed by Authority.          │
+│ Per-mesh. One node can hold multiple memberships.    │
+├──────────────────────────────────────────────────────┤
+│ CAPABILITY                                           │
+│ "Trong Mesh Y, tôi được phép làm gì."               │
+│ CapabilitySet derived from Role in certificate.      │
+│ Validated at runtime per session.                    │
+└──────────────────────────────────────────────────────┘
 ```
 
 ### 7.2 Mesh Genesis
@@ -1548,9 +1554,9 @@ Enrollment is the process of delivering a node's Public Key to an Authority and 
 {
   "version": 1,
   "mesh_id": "SOC-Production",
-  "node_name": "server-01",
-  "os": "Linux 6.8.0-amd64",
-  "smo_version": "3.0.0",
+  "display_name": "soc-hn-01",
+  "platform": "Linux 6.8.0-amd64",
+  "version": "3.0.0",
   "public_key": "MCowBQYDK2VwAyEA...",
   "fingerprint": "A3F9...",
   "requested_role": "CONTRIBUTOR",
@@ -1560,6 +1566,31 @@ Enrollment is the process of delivering a node's Public Key to an Authority and 
   "signature": "base64..."    // signed by node's private key
 }
 ```
+
+**Enrollment Request fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | uint | Protocol version (current = 1) |
+| `mesh_id` | string | Target mesh name or ID |
+| `display_name` | string | **Human-friendly name** proposed by node. Must be unique within the mesh. Regex: `^[a-zA-Z0-9][a-zA-Z0-9._-]{1,63}$` |
+| `platform` | string | OS platform identifier, e.g. `"linux"`, `"windows"` |
+| `version` | string | SMO runtime version, e.g. `"3.2.1"` |
+| `public_key` | base64 | Node's Ed25519 public key (32 bytes) |
+| `fingerprint` | hex | First 8 bytes of the public key hash for quick ID |
+| `requested_role` | string | Desired role (Authority decides final role) |
+| `requested_capabilities` | string[] | Desired capabilities (Authority may filter) |
+| `nonce` | hex | 8-byte random nonce for replay protection |
+| `timestamp` | ISO 8601 | Time of request |
+| `signature` | base64 | Signed by node's private key |
+
+**Authority validation rules:**
+
+1. `display_name` MUST be non-empty and match the regex.
+2. `display_name` MUST be unique within the target mesh. If already taken, return error `DisplayNameAlreadyExists` (code 220).
+3. `display_name` MUST NOT exceed 64 characters. If exceeded, return `DisplayNameTooLong` (code 222).
+4. Characters MUST be alphanumeric, dot, underscore, or hyphen. Otherwise return `InvalidDisplayName` (code 221).
+5. Authority MAY override the proposed name (e.g., rename to avoid conflict with admin's permission).
 
 ### 9.3 Node Certificate (.smoc)
 
@@ -1674,6 +1705,73 @@ smo export --format binary   # Raw CBOR (.smor.cbor)
 ```
 
 Export changes only the presentation. The underlying EnrollRequest is identical.
+
+### 9.8 Name Management
+
+#### 9.8.1 NodeIdentity Structure
+
+```cpp
+struct NodeIdentity {
+    NodeID                  id;             // immutable
+    std::string             display_name;   // unique within mesh
+    std::vector<std::string> aliases;       // optional secondary names
+};
+```
+
+- **NodeID** — never changes. Derived from public key. Used for crypto/auth.
+- **Display Name** — proposed by node at init, certified by Authority.
+- **Aliases** — secondary names for convenience (admin-managed).
+
+#### 9.8.2 Uniqueness Rule
+
+Display names MUST be unique within a mesh:
+
+| Scenario | Result |
+|----------|--------|
+| `backup-01` in Mesh A, `backup-01` in Mesh B | ✅ Allowed |
+| `backup-01` already exists in Mesh A, new node requests same name | ❌ Rejected with `DisplayNameAlreadyExists` (code 220) |
+| Node re-enrolls with same name after leaving | ✅ Allowed (name freed on departure) |
+
+#### 9.8.3 Rename Flow
+
+Nodes CANNOT change their display name locally — must go through Authority:
+
+```bash
+smo node rename --name backup-storage
+```
+
+Flow:
+1. Node proposes new name to Authority via signed CSR (or governance proposal).
+2. Authority checks uniqueness in the mesh.
+3. If available, Authority issues a **new certificate** with the updated display_name.
+4. Old certificate is invalidated (epoch increment or supersede list).
+5. Discovery Engine receives the updated PeerRecord via gossip.
+
+```text
+Node                                      Authority
+  │                                          │
+  │── RENAME_REQUEST ──────────────────────►│
+  │   { node_id, new_name, signature }      │
+  │                                          │── check uniqueness
+  │                                          │── sign new certificate
+  │◄── NEW_CERTIFICATE ─────────────────────│
+  │   { display_name: "backup-storage", ... }
+  │                                          │
+  │── GOSSIP_NODE_INFO ──────────────────►   │
+  │   (peers update display_name)            │
+```
+
+**Security:** The rename does NOT change NodeID, Certificate public key, or any cryptographic material. Only the human-friendly label changes.
+
+#### 9.8.4 Impact on Security Model
+
+| Aspect | NodeID | Display Name |
+|--------|--------|-------------|
+| Authentication | ✅ Used | ❌ Never used |
+| Certificate subject | ✅ Primary | ✅ Metadata field |
+| Uniqueness | ✅ Global (cryptographic) | ✅ Per-mesh (enforced) |
+| Changeable | ❌ Never | ✅ Via Authority |
+| Used in audit trail | ✅ | ✅ (for human readability) |
 
 ---
 

@@ -64,18 +64,33 @@ int main(int argc, char* argv[]) {
     // Parse subcommand
     auto cmd = args[0];
 
-    if (cmd == "node" && args.size() >= 2 && args[1] == "init") {
-        std::string name;
-        for (size_t i = 2; i + 1 < args.size(); ++i) {
-            if (args[i] == "--name") name = args[i + 1];
+    if (cmd == "node" && args.size() >= 2) {
+        if (args[1] == "init") {
+            std::string name;
+            for (size_t i = 2; i + 1 < args.size(); ++i) {
+                if (args[i] == "--name") name = args[i + 1];
+            }
+            if (name.empty()) {
+                std::fprintf(stderr, "Usage: smo node init --name <display-name>\n");
+                return 1;
+            }
+            std::printf("Node initialized with display name: %s\n", name.c_str());
+            std::printf("(Placeholder — keypair generation not yet implemented)\n");
+            return 0;
         }
-        if (name.empty()) {
-            std::fprintf(stderr, "Usage: smo node init --name <display-name>\n");
-            return 1;
+        if (args[1] == "rename") {
+            std::string new_name;
+            for (size_t i = 2; i + 1 < args.size(); ++i) {
+                if (args[i] == "--name") new_name = args[i + 1];
+            }
+            if (new_name.empty()) {
+                std::fprintf(stderr, "Usage: smo node rename --name <new-name>\n");
+                return 1;
+            }
+            std::printf("Rename requested: -> %s\n", new_name.c_str());
+            std::printf("(Sends RENAME_REQUEST to Authority — placeholder)\n");
+            return 0;
         }
-        std::printf("Node initialized with display name: %s\n", name.c_str());
-        std::printf("(Placeholder — keypair generation not yet implemented)\n");
-        return 0;
     }
 
     if (cmd == "exec") {

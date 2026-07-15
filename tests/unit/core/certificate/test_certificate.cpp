@@ -397,6 +397,9 @@ static bool test_csr_serialize_roundtrip() {
     csr.new_public_key = Bytes(32, 0x01);
     csr.mesh_id = Bytes(32, 0x02);
     csr.old_cert_hash = Bytes(32, 0x03);
+    csr.display_name = "soc-hn-01";
+    csr.platform = "linux";
+    csr.version = "3.2.1";
     csr.timestamp = 1234567890;
 
     auto body = csr.serialize();
@@ -406,6 +409,9 @@ static bool test_csr_serialize_roundtrip() {
     ASSERT(restored);
     ASSERT_EQ(restored.value().timestamp, 1234567890);
     ASSERT(restored.value().new_public_key.size() == 32);
+    ASSERT(restored.value().display_name == "soc-hn-01");
+    ASSERT(restored.value().platform == "linux");
+    ASSERT(restored.value().version == "3.2.1");
     return true;
 }
 
@@ -416,6 +422,9 @@ static bool test_csr_sign_and_verify() {
     CertificateSigningRequest csr;
     csr.new_public_key = pk;
     csr.mesh_id = Bytes(32, 0xAA);
+    csr.display_name = "test-node";
+    csr.platform = "linux";
+    csr.version = "3.2.1";
     csr.timestamp = 1000;
 
     RngRef rng(nullptr, mock_fill);
@@ -436,6 +445,9 @@ static bool test_csr_verify_bad_signature() {
     CertificateSigningRequest csr;
     csr.new_public_key = pk;
     csr.mesh_id = Bytes(32, 0xBB);
+    csr.display_name = "test-node";
+    csr.platform = "linux";
+    csr.version = "3.2.1";
     csr.timestamp = 1000;
     csr.signature = Bytes{0, 1, 2, 3};  // garbage
 
