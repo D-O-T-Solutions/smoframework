@@ -93,14 +93,6 @@ int main(int argc, char* argv[]) {
     listen_ep.host = "0.0.0.0";
     listen_ep.port = static_cast<uint16_t>(port);
 
-    auto listener = smo::TransportRegistry::instance().connect(listen_ep);
-    if (!listener) {
-        std::fprintf(stderr, "[smo-node] Failed to create listener: %s\n",
-                     listener.error().message.c_str());
-        return 1;
-    }
-
-    // Wait using listener
     auto listen_result = smo::TransportRegistry::instance().get("tcp")->listen(listen_ep);
     if (!listen_result) {
         std::fprintf(stderr, "[smo-node] Failed to listen: %s\n",
