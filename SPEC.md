@@ -163,8 +163,8 @@ System time (`system_clock`) is used ONLY for security windows (anti-replay) and
 ### I-19: Every FSM State Has Timeout and Failure Transition
 No FSM state may block indefinitely. Every state MUST define a maximum dwell time and a transition to a safe fallback state when the timer expires. The default fallback is REJECTED or OFFLINE.
 
-### I-20: Governance Requires Multi-Signature
-No single Authority may unilaterally modify mesh-level policy, create new Authorities, or increment the Epoch without multi-signature approval as defined by the mesh manifest. MVP exception: single Root Authority.
+### I-20: Governance Is Tiered by Impact
+Governance decisions are classified into 5 levels (Local/Authority/Policy/Critical/Genesis). Each level has a configurable signature threshold defined in the Mesh Manifest. Level 0 requires no signature (node sovereignty). Level 1 requires 1 Authority. Levels 2-3 require M-of-N. Level 4 (Genesis) uses the Root Key once, then offline.
 
 ### I-21: Resource Constraints Are Declared, Not Inferred
 Every execution MUST declare its resource requirements (CPU, RAM, timeout, priority) at contract submission time. The Responder uses these declarations for scheduling and enforcement. Undeclared resource use is bounded by the node's default quota.
@@ -1055,6 +1055,7 @@ Every mesh has a "birth certificate" — a manifest file that encodes all mesh-l
 
 ```yaml
 # Mesh Manifest — distributed out-of-band (file, URL, QR)
+# Co-signed by M-of-N Authorities at creation time
 mesh:
   uuid: "550e8400-e29b-41d4-a716-446655440000"
   name: "SOC-Production"
@@ -1066,19 +1067,29 @@ root:
   public_key: "MCowBQYDK2VwAyEA..."   # Mesh Root Public Key
 
 governance:
-  authority_threshold: 3    # M-of-N for Authority actions
-  authority_count: 5        # total Authorities in mesh
+  authority:
+    issue_cert: 1
+    revoke_cert: 1
+    grant_capability: 1
+    revoke_capability: 1
+  policy:
+    threshold: 2                        # Level 2: M-of-N
+    authority_count: 3                  # total Authorities
+  critical:
+    threshold: 3                        # Level 3: M-of-N
+    authority_count: 5                  # total Authorities
+    emergency_lockdown: 3
 
 bootstrap:
   nodes:
     - address: "node-a.company.com:7777"
     - address: "node-b.company.com:7777"
     - address: "node-c.company.com:7777"
-  discovery: "seed"         # "seed" | "dns" | "mDNS" | "manual"
+  discovery: "seed"                     # "seed" | "dns" | "mDNS" | "manual"
 
 heartbeat:
   interval_sec: 15
-  timeout_sec: 45           # 3 missed heartbeats = OFFLINE
+  timeout_sec: 45                       # 3 missed heartbeats = OFFLINE
 
 trust:
   decay_window_sec: 300
@@ -1089,24 +1100,70 @@ trust:
     witness: 0.2
     consistency: 0.1
 
-capability_presets: {}      # custom presets override defaults
+crypto:
+  allowed_suites: [1, 2]                # Crypto Suite IDs permitted
+  min_suite: 1                          # minimum suite for new joins
 
-policies:                   # mesh-level policy (post-MVP)
+transport:
+  allowed: [tcp, udp]                   # permitted transport protocols
+  default_port: 7777
+
+plugins:
+  allowed: ["*"]                        # allowed plugin IDs ("*" = any)
+
+capability_presets: {}                  # custom presets override defaults
+
+policies:                               # mesh-level policy (post-MVP)
   default_allow: [CAP_HEARTBEAT, CAP_VERIFY]
   default_deny: []
+
+# Co-signatures from initial Authorities
+signatures:                             # manifest is co-signed at creation
+  - authority_id: "Authority-A"
+    signature: "base64..."
+  - authority_id: "Authority-B"
+    signature: "base64..."
+  - authority_id: "Authority-C"
+    signature: "base64..."
 ```
+
+**Manifest verification:** A new node imports the manifest and verifies:
+1. The Root Public Key matches the expected fingerprint
+2. The manifest has M-of-N Authority signatures (per governance.policy.threshold)
+3. All signatures chain up to the Root Public Key
 
 **Node join flow with manifest:**
 
 ```
 1. Operator provides mesh.yaml to new node (scp, URL, QR)
 2. Node imports manifest: smo node import-manifest mesh.yaml
-3. Node knows: Root Public Key, bootstrap addresses, protocol version
-4. Node generates keypair
-5. Node enrolls with Authority (per Enrollment Protocol)
-6. Node receives Membership Certificate
-7. Node is now a full member — all mesh parameters are locally cached
+3. Node verifies: Root key fingerprint + M-of-N Authority signatures
+4. Node knows: governance thresholds, crypto, transport, bootstrap, trust defaults
+5. Node generates keypair
+6. Node enrolls with Authority (per Enrollment Protocol — §IX)
+7. Node receives Membership Certificate
+8. Node is now a full member — all mesh parameters are locally cached
 ```
+
+**Multi-tenant behavior:** A single SMO runtime can hold multiple manifests + certificates:
+
+```
+~/.smo/meshes/
+├── SOC-Production/
+│   ├── manifest.yaml        (verified, co-signed)
+│   ├── node.smoc            (membership certificate)
+│   └── node.key             (encrypted private key)
+├── IR-Prod/
+│   ├── manifest.yaml
+│   ├── node.smoc
+│   └── node.key
+└── Research/
+    ├── manifest.yaml
+    ├── node.smoc
+    └── node.key
+```
+
+Each mesh is fully isolated: separate governance, separate trust, separate capabilities.
 
 ---
 
@@ -2250,8 +2307,8 @@ System time (`system_clock`) is used ONLY for security windows (anti-replay) and
 ### Rule 9: Every FSM State Has a Timeout and a Failure Transition
 No FSM state may block indefinitely. Every state MUST define a maximum dwell time and a transition to a safe fallback state when the timer expires. The default fallback is REJECTED or OFFLINE.
 
-### Rule 10: Governance Changes Require Multi-Signature
-No single Authority may unilaterally modify mesh-level policy, create new Authorities, or increment the Epoch. All governance operations require M-of-N signatures as defined by the mesh manifest.
+### Rule 10: Governance Signature Threshold Is Defined by the Mesh Manifest
+Governance decisions are classified into 5 levels (Local/Authority/Policy/Critical/Genesis). Each level's signature threshold is defined in the Mesh Manifest, not hardcoded. Level 0 requires no signature. Level 1 requires 1 Authority. Levels 2-3 require M-of-N. Level 4 (Genesis) uses the Root Key once.
 
 ### Rule 11: Resource Constraints Are Declared, Not Inferred
 Every execution MUST declare its resource requirements (CPU, RAM, timeout, priority) at contract submission time. The Responder uses these declarations for scheduling and enforcement. Undeclared resource use is bounded by the node's default quota.
@@ -2675,33 +2732,121 @@ The Policy Engine is explicitly post-MVP. MVP uses hardcoded policy rules:
 
 ## XXXIII. MESH GOVERNANCE
 
-The most critical architectural gap. Governance defines **how the mesh governs itself** — who can make decisions, how many signatures are required, and how conflicts are resolved.
+SMO is a **distributed incident response runtime**, not a DAO. Governance exists only to manage changes to the mesh itself — it does NOT govern contract execution. Contract execution is governed by capability + policy + trust (§VIII, §XII, §XXXII).
 
-### 33.1 Governance vs Authority
+### 33.1 Governance Principle
 
-| Concept | Authority | Governance |
-|---|---|---|
-| Scope | Per-node role | Mesh-wide decision process |
-| Action | Sign certificates, grant capabilities | Create Authority, change policy, split mesh |
-| Signers | Single Authority | M-of-N Authorities |
-| Protocol | CSR, CAP_GRANT, REVOKE_CERT | GOVERNANCE_PROPOSAL |
-| Verification | Single signature chain | Multi-signature threshold |
+> **Governance manages mesh-level changes. Contract execution is governed by capability + policy + trust. These are separate layers.**
 
-**Governance is NOT a feature of the Authority role. It is a separate protocol layer.**
+A node's sovereignty over its own execution decisions is absolute (§I-02). Governance never overrides it.
 
-### 33.2 Governance Operations
+### 33.2 Five Levels of Governance
 
-| Operation | Required Signers | Current MVP |
-|---|---|---|
-| Create new Authority | M-of-N Root Authorities | Root only (single sig) |
-| Revoke Authority certificate | M-of-N Root Authorities | Root only |
-| Change mesh-level policy | M-of-N Authorities | Not defined |
-| Increment Epoch | M-of-N Authorities | Root only |
-| Override governance decision | M-of-N + 1 (supermajority) | Not defined |
-| Split mesh into two | M-of-N + governance contract | Not defined |
-| Merge two meshes | Both meshes agree (M-of-N each) | Not defined |
+Not every decision needs multi-signature. SMO defines five levels:
 
-### 33.3 Governance Protocol Message
+| Level | Scope | Examples | Required Signers | Configurable |
+|---|---|---|---|---|
+| **0 — Local** | Node-internal | Node policy, CPU quota, RAM, plugin enable, worker count | **None** (node sovereignty) | Per-node |
+| **1 — Authority** | Single-Authority actions | Issue cert, Revoke cert, Grant capability, Revoke capability | **1 Authority** | Mesh manifest |
+| **2 — Mesh Policy** | Mesh-wide configuration | Default trust threshold, heartbeat interval, protocol config, capability presets | **M-of-N Authorities** (default: 2-of-3) | Mesh manifest |
+| **3 — Critical** | Mesh-level danger | Rotate Mesh Root, Emergency lockdown, Epoch increment, Destroy mesh | **M-of-N Authorities** (default: 3-of-5) | Mesh manifest |
+| **4 — Genesis** | Mesh creation | `smo mesh create` | **Root Key only** (single event) | N/A — once only |
+
+**Key rule:** The Root Key is used exactly once — at Genesis (§7.2). After signing the first Authority certificate and exporting the Recovery Package, it is deleted from runtime. All subsequent governance uses Authority-level keys.
+
+### 33.3 Configurable Thresholds
+
+Governance thresholds are defined in the Mesh Manifest (§7.11), NEVER hardcoded:
+
+```yaml
+# mesh.yaml — governance section
+governance:
+  authority:
+    issue_cert: 1           # Level 1: single Authority
+    revoke_cert: 1          # Level 1: single Authority
+    grant_capability: 1     # Level 1: single Authority
+  policy:
+    threshold: 2            # Level 2: M-of-N
+    authority_count: 3      # total Authorities in mesh
+  critical:
+    threshold: 3            # Level 3: M-of-N
+    authority_count: 5      # total Authorities in mesh
+    emergency_lockdown: 3   # Level 3: same threshold
+```
+
+**Small mesh (1 Authority):**
+```yaml
+governance:
+  authority:
+    issue_cert: 1
+  policy:
+    threshold: 1            # 1-of-1
+    authority_count: 1
+  critical:
+    threshold: 1            # 1-of-1
+    authority_count: 1
+```
+
+**Large mesh (7 Authorities):**
+```yaml
+governance:
+  authority:
+    issue_cert: 1
+  policy:
+    threshold: 4            # 4-of-7
+    authority_count: 7
+  critical:
+    threshold: 5            # 5-of-7
+    authority_count: 7
+```
+
+When the mesh grows, the manifest is updated via a Level 2 governance proposal — no code change needed.
+
+### 33.4 Authority Conflict Resolution
+
+If two Authorities issue conflicting decisions for the same scope:
+
+| Scenario | Resolution |
+|---|---|
+| Authority A grants CAP_EXEC to node X; Authority B revokes CAP_EXEC from node X | **POLICY_CONFLICT** state. The conflicting capabilities are marked CONFLICTED. The runtime rejects ALL contracts using conflicted capabilities until resolution. |
+| Two Authorities issue different certificates for the same NodeID | The certificate with the higher epoch wins. If epochs equal, the one with the earlier `issued_at` wins. |
+| Authority A signs a governance proposal; Authority B signs a conflicting proposal | Both proposals are valid independently. The first to reach threshold is committed. The other is REJECTED with reason "superseded." |
+
+**POLICY_CONFLICT behavior:**
+
+```
+FSM: CONTRACT_VALIDATING
+  → VALIDATE_CAPABILITY
+    → if capability.state == CONFLICTED
+      → REJECT with reason "capability in conflict: CAP_PROC_EXEC (ALLOW vs DENY)"
+      → audit log records both conflicting decisions
+      → NO auto-resolution
+      → operator must submit new governance proposal
+```
+
+**Fail-closed:** When in doubt, REJECT. No guessing, no majority vote, no random selection. The conflicting Authorities must resolve via a new governance proposal.
+
+### 33.5 Compromised Authority Recovery
+
+If an Authority node is compromised:
+
+```
+1. Mesh has Authorities A, B, C (threshold 2-of-3)
+2. Authority A is compromised
+3. Authorities B and C sign REVOKE_AUTHORITY proposal
+4. Threshold (2) met → A's certificate is revoked
+5. Epoch is incremented to invalidate all certs signed by A
+6. Affected nodes re-enroll with remaining Authorities
+```
+
+The Root Key is never needed. The compromised Authority is removed by its peers.
+
+**If M-of-N Authorities are compromised (e.g., 3 of 5 are compromised):**
+- Mesh is considered compromised
+- Recovery requires Root Key (M-of-N among original Recovery share holders)
+- See §7.8 (Recovery Authorities)
+
+### 33.6 Governance Protocol Message
 
 ```
 Namespace: CONTROL
@@ -2710,62 +2855,93 @@ Message:   GOVERNANCE_PROPOSAL (0x02 0x70)
 Payload:
 {
   "governance_id": "gov-001",
-  "action": "AUTHORITY_CREATE" | "POLICY_CHANGE" |
-            "EPOCH_INCREMENT"  | "MESH_SPLIT"   |
-            "MESH_MERGE"       | "RECOVERY",
+  "level": 2,                                 // 0-4 (Local not wire-visible)
+  "action": "POLICY_CHANGE" | "AUTHORITY_CREATE" |
+            "AUTHORITY_REVOKE" | "EPOCH_INCREMENT" |
+            "EMERGENCY_LOCKDOWN" | "MESH_DESTROY",
   "mesh_id": "SOC-Production",
-  "payload": { ... },                         // action-specific data
-  "threshold": 3,                             // required signatures
-  "signers": ["Authority-A", "Authority-B"],  // who has signed so far
+  "payload": { ... },                          // action-specific data
+  "threshold": 2,                              // required signatures (from manifest)
+  "authority_count": 3,                        // total Authorities (from manifest)
+  "signers": ["Authority-A", "Authority-B"],
   "signatures": ["sig_a...", "sig_b..."],
   "created_at": "...",
-  "expires_at": "..."                         // governance decisions expire
+  "expires_at": "..."
 }
 ```
 
-### 33.4 Governance Flow
+### 33.7 Governance Flow
 
 ```
-1. Proposer creates GOVERNANCE_PROPOSAL with action and payload
-2. Proposal is gossiped to all Authorities
-3. Each Authority independently evaluates and MAY sign
-4. When signature count >= threshold → proposal is ACCEPTED
-5. ACCEPTED proposal is committed to all nodes via gossip
-6. All nodes apply the governance decision locally
-7. If proposal expires before threshold is met → REJECTED
+1. Authority (or node with CAP_GOVERNANCE_PROPOSE) creates GOVERNANCE_PROPOSAL
+2. Proposal is gossiped to all Authorities in the mesh
+3. Each Authority independently evaluates the proposal:
+   a. Is the signer authorized for this Level?
+   b. Is the proposal within the signer's scope?
+   c. Is the proposal format valid?
+4. Each Authority MAY sign (or reject)
+5. When signature count >= threshold → proposal is ACCEPTED
+6. ACCEPTED proposal is committed to all nodes via gossip
+7. All nodes apply the governance decision locally
+8. If proposal expires before threshold is met → REJECTED
 ```
 
-### 33.5 Split-Brain Prevention
+### 33.8 Mesh Split (Partition)
 
-When a mesh splits into two partitions:
+SMO does NOT auto-merge split meshes. Governance history divergence requires human intervention.
 
-1. Each partition continues operating independently.
-2. Each partition MAY elect its own Authorities (if it has M-of-N).
-3. When partitions reconnect, governance records are compared.
-4. Divergent governance histories are resolved by:
-   a. The partition with the higher epoch wins.
-   b. If epochs equal, the partition with more Authority signatures wins.
-   c. If still tied, manual intervention required — operators choose which governance history to keep.
-5. The losing partition's governance decisions are rolled back where possible.
+```
+1. Network partition splits the mesh
+2. Both sides continue independently
+3. Each side MAY increment its local Epoch
+   → Side A: Epoch 13A
+   → Side B: Epoch 13B
+4. Partition heals — nodes detect governance fork
+5. Runtime logs: "GOVERNANCE_FORK: Epoch 13A vs 13B"
+6. No automatic merge
+7. Operator decides which governance history to keep
+8. Operator submits governance proposal to adopt the chosen history
+9. The losing side's decisions are reversed where possible (audit-logged)
+```
 
-### 33.6 Governance Invariants
+**Why no auto-merge?**
+- Policy merge is undecidable in general: Side A granted CAP_EXEC, Side B revoked it. No algorithm can know which is correct.
+- SMO controls real machines. A wrong merge could grant unauthorized execution.
+- Human judgment is required for all governance conflicts.
 
-1. **No single point of governance failure**: M-of-N threshold ensures no single Authority can make unilateral governance decisions.
-2. **Governance decisions are idempotent**: Applying the same governance decision twice produces the same result.
-3. **Governance history is append-only**: Once a governance decision is committed, it is never removed. Corrections are new governance decisions.
-4. **Governance expires**: All governance proposals have a time-to-live. Expired proposals are garbage-collected.
+### 33.9 Root Key Usage
 
-### 33.7 MVP Governance
+| Event | Root Key Used? |
+|---|---|
+| Mesh creation (Genesis) | YES — used to sign first Authority certificate, then deleted |
+| New Authority creation | NO — handled by existing Authorities (Level 2) |
+| Authority revocation | NO — handled by peer Authorities (Level 2) |
+| Compromised Authority | NO — M-of-N peer revocation |
+| Emergency lockdown | NO — Level 3 by Authorities |
+| Mesh destroy | NO — Level 3 by Authorities |
+| Recovery after all Authorities lost | YES — M-of-N Recovery shares (§7.8) |
+
+**The Root Key is used exactly once.** After Genesis, it is stored in an encrypted Recovery Package (AES-256-GCM, password-protected) and never touches a network.
+
+### 33.10 Governance Invariants
+
+1. **Governance does NOT govern execution.** Contract execution is governed by capability + policy + trust — always local, always node-sovereign.
+2. **Thresholds are configurable per mesh.** Defined in Mesh Manifest, never hardcoded.
+3. **Conflict = fail-closed.** When Authorities disagree, the runtime rejects affected operations until resolution.
+4. **Compromised Authority = peer revocation.** M-of-N Authorities can revoke a compromised peer without Root Key.
+5. **No auto-merge on split.** Governance fork requires human judgment.
+6. **Governance history is append-only.** Corrections are new proposals referencing the ones they supersede.
+
+### 33.11 MVP Governance
 
 MVP uses simplified governance:
-- Single Root Authority (no M-of-N).
-- Root can create new Authorities.
-- Root can increment Epoch.
-- Root can revoke certificates.
+- Single Authority (1-of-1 for all levels).
+- Root used at Genesis only.
 - No policy change protocol.
 - No mesh split/merge.
+- Emergency recovery via Recovery Package (offline).
 
-Full M-of-N governance is post-MVP (Stage 7).
+Full multi-Authority governance is post-MVP (Stage 7).
 
 ---
 
