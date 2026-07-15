@@ -349,24 +349,27 @@ static int cmd_discover(const std::vector<std::string>& args) {
             std::printf("%s\n", line.c_str());
         }
     } else {
-        // Show local node
-        auto id_path = data_dir + "/identity.json";
-        if (fs::exists(id_path)) {
-            std::ifstream f(id_path);
+        // Read name from node.json (simpler format)
+        auto node_path = data_dir + "/node.json";
+        std::string name = "unknown";
+        if (fs::exists(node_path)) {
+            std::ifstream f(node_path);
             std::string content((std::istreambuf_iterator<char>(f)),
                                  std::istreambuf_iterator<char>());
-            // Extract name from JSON (naive)
-            auto pos = content.find("display_name");
-            std::string name = "unknown";
+            // Parse {"name":"...",...}
+            auto pos = content.find("\"name\"");
             if (pos != std::string::npos) {
-                auto start = content.find('"', pos + 14);
-                auto end = content.find('"', start + 1);
-                if (start != std::string::npos && end != std::string::npos)
-                    name = content.substr(start + 1, end - start - 1);
+                auto val_start = content.find('"', pos + 7); // past "name":
+                if (val_start != std::string::npos) {
+                    auto val_end = content.find('"', val_start + 1);
+                    if (val_end != std::string::npos)
+                        name = content.substr(val_start + 1,
+                                              val_end - val_start - 1);
+                }
             }
-            std::printf("%-8s %-14s %-12s %-20s %s\n",
-                        "local", name.c_str(), "Member", "-", "Online");
         }
+        std::printf("%-8s %-14s %-12s %-20s %s\n",
+                    "local", name.c_str(), "Member", "-", "Online");
         if (full) {
             std::printf("(No peer table yet — run 'smo node connect' to join mesh)\n");
         }

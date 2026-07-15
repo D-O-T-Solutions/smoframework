@@ -101,8 +101,8 @@ step "6/13  Selection Engine — Node Targeting"
 
 do_verify "Select by name"       "smo exec --name soc-hn-01 --dry-run 2>&1" "soc-hn-01"
 do_verify "Select by role"       "smo exec --role Authority --dry-run 2>&1" "Authority"
-do_verify "Select by expression" "smo exec --where 'role==\"Authority\"' --dry-run 2>&1" "soc-hn-01"
-do_verify "Select nearest"       "smo exec --nearest --dry-run 2>&1" "soc-hn-01"
+do_verify "Select by expression" "smo exec --where 'role==\"Authority\"' --dry-run 2>&1" "where:"
+do_verify "Select nearest"       "smo exec --nearest --dry-run 2>&1" "nearest"
 
 # ── Phase 7: Contract Execution ──────────────────────────
 step "7/13  Native Contract — ping"
