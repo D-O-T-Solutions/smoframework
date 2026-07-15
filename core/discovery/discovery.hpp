@@ -1,11 +1,13 @@
 #pragma once
 
+#include "../certificate/certificate.hpp"
 #include "../errors/error.hpp"
 #include "../identity/identity.hpp"
 #include "../transport/transport.hpp"
 #include "../types.hpp"
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -46,12 +48,21 @@ const char* to_string(PeerState s) noexcept;
 // ===========================================================================
 struct PeerRecord {
     NodeID    node_id;
-    std::string name;           // human-readable name (e.g. "node-a", "server-01")
-    std::vector<std::string> aliases; // alternative names (e.g. "web-01", "10.0.0.1")
+    std::string display_name;       // human-friendly name (from cert)
+    std::string hostname;           // OS hostname
+    std::string mesh_name;          // mesh this record belongs to
+    Role      role = Role::Reader;  // from Membership Certificate
+    std::vector<std::string> tags;  // user-defined tags
+    std::string platform;           // "linux", "windows", ...
+    std::string arch;               // "x86_64", "arm64", ...
+    std::string version;            // SMO runtime version
+    std::string location;           // optional physical/logical location
+    std::vector<std::string> aliases; // alternative names
     Endpoint  endpoint;
     PeerState state = PeerState::Unknown;
     int64_t   last_seen = 0;
     int       ping_misses = 0;
+    double    rtt_ms = 0.0;        // moving average RTT
 
     Bytes serialize() const;
     static Result<PeerRecord> deserialize(BytesView data);
@@ -70,6 +81,14 @@ public:
     Result<PeerRecord> lookup_by_name(const std::string& name) const;
     std::vector<PeerRecord> peers() const;
     std::vector<PeerRecord> peers_with_state(PeerState state) const;
+
+    // Filter methods for Selection Engine
+    std::vector<PeerRecord> peers_by_role(Role role) const;
+    std::vector<PeerRecord> peers_by_tag(const std::string& tag) const;
+    std::vector<PeerRecord> peers_by_os(const std::string& os) const;
+    std::vector<PeerRecord> peers_by_arch(const std::string& arch) const;
+    std::vector<PeerRecord> peers_by_mesh(const std::string& mesh_name) const;
+
     Result<void> remove(const NodeID& id);
     size_t count() const noexcept { return records_.size(); }
     size_t capacity() const noexcept { return capacity_; }

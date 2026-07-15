@@ -98,7 +98,37 @@ Bytes PeerRecord::serialize() const {
     out.push_back(static_cast<uint8_t>(state));
     write_u64(out, static_cast<uint64_t>(last_seen));
     out.push_back(static_cast<uint8_t>(ping_misses));
+
+    // Write new fields
+    write_u16(out, static_cast<uint16_t>(display_name.size()));
+    out.insert(out.end(), display_name.begin(), display_name.end());
+    write_u16(out, static_cast<uint16_t>(hostname.size()));
+    out.insert(out.end(), hostname.begin(), hostname.end());
+    write_u16(out, static_cast<uint16_t>(mesh_name.size()));
+    out.insert(out.end(), mesh_name.begin(), mesh_name.end());
+    out.push_back(static_cast<uint8_t>(role));
+    write_u16(out, static_cast<uint16_t>(tags.size()));
+    for (auto& t : tags) {
+        write_u16(out, static_cast<uint16_t>(t.size()));
+        out.insert(out.end(), t.begin(), t.end());
+    }
+    write_u16(out, static_cast<uint16_t>(platform.size()));
+    out.insert(out.end(), platform.begin(), platform.end());
+    write_u16(out, static_cast<uint16_t>(arch.size()));
+    out.insert(out.end(), arch.begin(), arch.end());
+    write_u16(out, static_cast<uint16_t>(version.size()));
+    out.insert(out.end(), version.begin(), version.end());
+    write_u16(out, static_cast<uint16_t>(location.size()));
+    out.insert(out.end(), location.begin(), location.end());
+    write_u16(out, static_cast<uint16_t>(aliases.size()));
+    for (auto& a : aliases) {
+        write_u16(out, static_cast<uint16_t>(a.size()));
+        out.insert(out.end(), a.begin(), a.end());
+    }
+
     write_endpoint(out, endpoint);
+    // rtt_ms after endpoint for backward compat
+    write_u64(out, static_cast<uint64_t>(rtt_ms * 1000.0)); // store as microseconds
     return out;
 }
 
@@ -120,7 +150,47 @@ Result<PeerRecord> PeerRecord::deserialize(BytesView data) {
     rec.state = static_cast<PeerState>(data[off++]);
     rec.last_seen = static_cast<int64_t>(read_u64(data, off));
     rec.ping_misses = (off < data.size()) ? static_cast<int>(data[off++]) : 0;
+
+    // Read new fields (optional — default to empty if truncated)
+    auto read_str = [&]() -> std::string {
+        if (off + 2 > data.size()) return {};
+        uint16_t len = read_u16(data, off);
+        if (off + len > data.size()) return {};
+        std::string s(data.begin() + static_cast<ptrdiff_t>(off),
+                       data.begin() + static_cast<ptrdiff_t>(off + len));
+        off += len;
+        return s;
+    };
+    auto read_str_vec = [&]() -> std::vector<std::string> {
+        if (off + 2 > data.size()) return {};
+        uint16_t count = read_u16(data, off);
+        std::vector<std::string> vec;
+        for (uint16_t i = 0; i < count; ++i) {
+            auto s = read_str();
+            if (s.empty() && off >= data.size()) break;
+            vec.push_back(std::move(s));
+        }
+        return vec;
+    };
+
+    rec.display_name = read_str();
+    rec.hostname = read_str();
+    rec.mesh_name = read_str();
+    if (off < data.size()) {
+        rec.role = static_cast<Role>(data[off++]);
+    }
+    rec.tags = read_str_vec();
+    rec.platform = read_str();
+    rec.arch = read_str();
+    rec.version = read_str();
+    rec.location = read_str();
+    rec.aliases = read_str_vec();
+
     rec.endpoint = read_endpoint(data, off);
+
+    if (off + 8 <= data.size()) {
+        rec.rtt_ms = static_cast<double>(read_u64(data, off)) / 1000.0;
+    }
 
     return rec;
 }
@@ -161,7 +231,7 @@ Result<PeerRecord> MembershipTable::lookup(const NodeID& id) const {
 
 Result<PeerRecord> MembershipTable::lookup_by_name(const std::string& name) const {
     for (const auto& [key, rec] : records_) {
-        if (rec.name == name) return rec;
+        if (rec.display_name == name) return rec;
         for (auto& alias : rec.aliases) {
             if (alias == name) return rec;
         }
@@ -183,6 +253,55 @@ std::vector<PeerRecord> MembershipTable::peers_with_state(PeerState state) const
     std::vector<PeerRecord> result;
     for (const auto& [key, rec] : records_) {
         if (rec.state == state)
+            result.push_back(rec);
+    }
+    return result;
+}
+
+std::vector<PeerRecord> MembershipTable::peers_by_role(Role role) const {
+    std::vector<PeerRecord> result;
+    for (const auto& [key, rec] : records_) {
+        if (rec.role == role)
+            result.push_back(rec);
+    }
+    return result;
+}
+
+std::vector<PeerRecord> MembershipTable::peers_by_tag(const std::string& tag) const {
+    std::vector<PeerRecord> result;
+    for (const auto& [key, rec] : records_) {
+        for (const auto& t : rec.tags) {
+            if (t == tag) {
+                result.push_back(rec);
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+std::vector<PeerRecord> MembershipTable::peers_by_os(const std::string& os) const {
+    std::vector<PeerRecord> result;
+    for (const auto& [key, rec] : records_) {
+        if (rec.platform == os)
+            result.push_back(rec);
+    }
+    return result;
+}
+
+std::vector<PeerRecord> MembershipTable::peers_by_arch(const std::string& arch) const {
+    std::vector<PeerRecord> result;
+    for (const auto& [key, rec] : records_) {
+        if (rec.arch == arch)
+            result.push_back(rec);
+    }
+    return result;
+}
+
+std::vector<PeerRecord> MembershipTable::peers_by_mesh(const std::string& mesh_name) const {
+    std::vector<PeerRecord> result;
+    for (const auto& [key, rec] : records_) {
+        if (rec.mesh_name == mesh_name)
             result.push_back(rec);
     }
     return result;

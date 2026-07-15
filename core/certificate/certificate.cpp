@@ -80,6 +80,7 @@ Bytes Certificate::serialize() const {
     append_bytes(out, subject_pubkey);
     append_bytes(out, issuer_pubkey);
     out.push_back(static_cast<uint8_t>(role));
+    append_bytes(out, Bytes(display_name.begin(), display_name.end()));
     append_bytes(out, capabilities);
     append_u64(out, epoch);
     append_u64(out, static_cast<uint64_t>(not_before));
@@ -106,6 +107,12 @@ Result<Certificate> Certificate::deserialize(BytesView data) {
                             "truncated: missing role");
     cert.role = static_cast<Role>(data[offset]);
     offset += 1;
+
+    Bytes dn;
+    if (!read_bytes(data, offset, dn))
+        return SMO_ERR_CERT(203, Error, NoRetry, Reenroll,
+                            "failed to parse display_name");
+    cert.display_name = std::string(dn.begin(), dn.end());
 
     if (!read_bytes(data, offset, cert.capabilities))
         return SMO_ERR_CERT(203, Error, NoRetry, Reenroll,

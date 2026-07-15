@@ -122,6 +122,7 @@ static Result<bool> mock_verify(BytesView msg, BytesView sig, BytesView pk) {
 static const CryptoProvider kMockSuite1{
     1, "Classical", nullptr, mock_fill,
     { mock_hash, mock_hmac },
+    { nullptr, nullptr },  // perf_hash — not used
     { mock_encrypt, mock_decrypt },
     { mock_encaps, mock_decaps },
     { mock_keygen, mock_sign, mock_verify }

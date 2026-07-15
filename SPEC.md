@@ -566,20 +566,23 @@ The Discovery Engine is the **Address Book** of the mesh. It maintains a human-r
 ```
 smo discover
 
-ID              Name       Role         Status    RTT
-────────────────────────────────────────────────────
-A1F23..         node-a     Authority    Online    2ms
-B92DD..         node-b     Contributor  Online    5ms
-CC22A..         node-c     Member       Offline   —
-D9912..         node-d     Witness      Online    8ms
+ID        NAME          ROLE         TAGS                 STATUS   RTT   PLATFORM
+────────  ────────────  ───────────  ───────────────────  ───────  ────  ────────
+8f7c..    soc-hn-01     Authority    SOC, HN              Online   2ms   linux/amd64
+1aa3..    backup-02     Member       Storage, Backup      Online   5ms   linux/amd64
+5cd0..    vpn-gateway   Contributor  VPN, Gateway         Online   9ms   linux/arm64
+d991..    db-primary    Member       Database             Offline   —     linux/amd64
 ```
 
-Users refer to nodes by **name**, not by NodeID:
+Users refer to nodes by **display name**, not NodeID:
 
 ```
-smo exec ls --target node-b --path /var/log    # by name
-smo exec ls --target B92DD...                  # by NodeID
-smo exec quarantine --target node-x --scope mesh  # meshcast by name
+smo exec ls --name backup-02 --path /var/log   # by display name
+smo exec ls --id 1aa34d5...                    # by NodeID
+smo exec ls --role Member                      # all Members
+smo exec backup --tag Storage                  # by tag
+smo exec audit --where 'role=="Member" && arch=="arm64"'  # expression
+smo exec sync --nearest                         # lowest RTT
 ```
 
 The Discovery Engine handles peer discovery, health monitoring, membership propagation, route learning, and name resolution.
@@ -674,8 +677,16 @@ Every known peer has a structured record:
 ```
 PeerRecord:
   node_id: NodeID
-  name: "node-a"                    # human-readable name
-  aliases: ["web-01", "10.0.0.1"]  # alternative names
+  display_name: "soc-hn-01"          # human-friendly name (from cert/manifest)
+  hostname: "server01"               # OS hostname
+  mesh_name: "SOC-Production"        # name of the mesh this record belongs to
+  role: "Authority"                  # from Membership Certificate
+  tags: ["SOC", "HN", "Storage"]     # arbitrary user-defined tags
+  platform: "linux"
+  arch: "x86_64"
+  version: "3.2.1"                   # SMO runtime version
+  location: "Hanoi DC-01"            # optional physical/logical location
+  aliases: ["web-01", "10.0.0.1"]   # alternative names
   mesh_id: MeshID
   addresses:
     - transport: TCP | UDP | QUIC
@@ -724,11 +735,140 @@ MVP uses a simplified routing model:
 - No path scoring
 - Connection failure = unreachable
 
-### 6.10 Version Negotiation
+### 6.10 Selection Engine
+
+Node selection is a separate concern from dispatch. The **Selection Engine** (`core/select/`)
+is the intermediate layer that translates a user's targeting intent into a concrete
+`NodeSet` before handing off to the Runtime for dispatch.
+
+```
+Discovery MembershipTable
+        │
+        ▼
+Selection Engine
+  (filter by role, tag, trust,
+   os, arch, expression, ...)
+        │
+        ▼
+     NodeSet
+        │
+        ▼
+Runtime Dispatch
+  (scope=single  → pick 1)
+  (scope=mesh    → all)
+  (scope=quorum  → M-of-N  [future])
+```
+
+#### 6.10.1 Selection Query
+
+The user expresses targeting intent through a `SelectQuery`:
+
+| Field | Type | Example | Description |
+|-------|------|---------|-------------|
+| `node_id` | optional\<NodeID\> | `7f2a1b...` | Match exact NodeID |
+| `name` | optional\<string\> | `"backup-01"` | Match display name or alias |
+| `role` | optional\<Role\> | `"Member"` | All nodes with this role |
+| `tags` | string[] | `["Storage","NAS"]` | Nodes matching ALL specified tags |
+| `cap_mask` | optional\<string\> | `"00000001"` | Hex capability mask filter |
+| `trust_min` | optional\<float\> | `0.8` | Minimum trust score |
+| `trust_max` | optional\<float\> | `0.95` | Maximum trust score |
+| `os` | optional\<string\> | `"linux"` | Platform OS match |
+| `arch` | optional\<string\> | `"arm64"` | Architecture match |
+| `version_constraint` | optional\<semver\> | `"<3.2"` | Semver constraint against runtime version |
+| `mesh_name` | optional\<string\> | `"NAS"` | Filter by mesh name |
+| `state` | optional\<PeerState\> | `"Online"` | Filter by peer state |
+| `mode` | `ALL \| NEAREST \| TOP_N \| RANDOM` | `NEAREST` | Selection mode |
+| `limit` | int | `10` | For TOP_N / RANDOM |
+| `where_expr` | optional\<string\> | `'role=="Member" && trust>0.8'` | Arbitrary expression |
+
+#### 6.10.2 Expression Language (`--where`)
+
+The `where_expr` field accepts a simple algebraic expression language:
+
+```
+expr       → or_expr
+or_expr    → and_expr ( "||" and_expr )*
+and_expr   → primary ( "&&" primary )*
+primary    → field OP value
+           | "(" expr ")"
+           | "!" primary
+field      → "role" | "trust" | "arch" | "os" | "version" | "tags"
+           | "mesh" | "state" | "location"
+OP         → "==" | "!=" | ">" | "<" | ">=" | "<="
+value      → string_literal | number | bool
+```
+
+Examples:
+
+```
+'role=="Member" && arch=="arm64"'
+'trust>0.8 && tag=="SOC"'
+'os=="linux" && version<"3.2.0"'
+'role=="Authority" || role=="Contributor"'
+'state=="Online" && mesh=="SOC"'
+```
+
+#### 6.10.3 Selector API
+
+```cpp
+namespace smo::select {
+
+Result<NodeSet> select(const MembershipTable& table,
+                       const SelectQuery& query);
+
+} // namespace smo::select
+```
+
+The Selector is a stateless function that reads from `MembershipTable` and returns
+a `NodeSet`. It does NOT mutate the table.
+
+### 6.11 NodeSet
+
+`NodeSet` is the result of a selection query — always a **set** of nodes, never a single node.
+The Runtime decides how to dispatch based on `scope`.
+
+```cpp
+namespace smo::select {
+
+struct NodeSet {
+    struct Entry {
+        NodeID    id;
+        std::string display_name;
+        Role      role;
+        std::vector<std::string> tags;
+        double    trust_score = 0.0;
+        double    rtt_ms      = 0.0;
+        std::string os;
+        std::string arch;
+        std::string version;
+    };
+
+    std::vector<Entry> entries;
+
+    bool empty() const noexcept { return entries.empty(); }
+    size_t size() const noexcept { return entries.size(); }
+
+    // For scope=single: pick the best candidate (highest trust, lowest RTT).
+    // Returns a copy; empty NodeSet returns empty NodeID.
+    NodeID pick_one() const noexcept;
+};
+
+} // namespace smo::select
+```
+
+**Dispatch rules:**
+
+| Scope | Action on NodeSet |
+|-------|------------------|
+| `"single"` | `NodeSet::pick_one()` — pick the best candidate |
+| `"mesh"` | Send to every node in the NodeSet |
+| `"quorum"` (future) | Send to N nodes, await M confirmations |
+
+### 6.12 Version Negotiation
 
 Different nodes may run different SMO versions. The first bytes of every connection negotiate the protocol version.
 
-#### 6.10.1 Handshake
+#### 6.12.1 Handshake
 
 ```
 Node A connects to Node B:
@@ -752,7 +892,7 @@ Node A connects to Node B:
 
 If no common version exists → connection REJECTED.
 
-#### 6.10.2 Version-Dependent Behavior
+#### 6.12.2 Version-Dependent Behavior
 
 | Version | Frame Format | Opcode Set | Crypto Suites |
 |---|---|---|---|
@@ -760,13 +900,13 @@ If no common version exists → connection REJECTED.
 | 3.1 | Extended binary | Full set | Suite 1, 2 |
 | 3.2+ | TBD | TBD | Suite 1, 2, 3 |
 
-#### 6.10.3 Compatibility Policy
+#### 6.12.3 Compatibility Policy
 
 - Nodes MUST support their own version and N-2 previous versions.
 - A node running 3.2 can connect to nodes running 3.0, 3.1, or 3.2.
 - Obsolete versions are announced via governance (EPOCH_INCREMENT-like mechanism for protocol versions).
 
-### 6.11 Time Model
+### 6.13 Time Model
 
 This is one of the most critical architectural decisions. Wall clock (`system_clock`) is NOT safe for distributed ordering. SMO divides time into three domains.
 
@@ -1761,35 +1901,65 @@ User: smo exec ls --path /tmp
 1. CLI produces Intent:
    {
      "opcode": "ls",
-     "targets": ["node-abc"],
      "parameters": {"path": "/tmp"},
      "scope": "single",
-     "trust_min": 0.5
+     "trust_min": 0.5,
+     "selection": {
+       "name": "backup-02",
+       "role": "",
+       "tags": [],
+       "where": ""
+     }
    }
 
-2. Contract Factory:
+2. **Selection Engine** resolves the `selection` field against the
+   local `MembershipTable` and returns a `NodeSet`.
+
+3. Contract Factory:
    a. Look up ContractID for opcode "ls":
       - Check user-specified contract_hint (optional)
       - Query registry for latest active "ls" contract
       - Fall back to native contract if no user-defined match
    b. Return ContractDefinition
 
-3. Compiler:
+4. Compiler:
    a. Check local dag_cache for (ContractID, env_fingerprint)
    b. Cache miss → compile Contract + Parameters → DAG
    c. Store DAG in dag_cache
 
-4. Executor runs DAG (see §XIII)
+5. **Dispatch by scope:**
+   - `"single"` → `NodeSet::pick_one()`, then send to that responder
+   - `"mesh"` → send to all nodes in `NodeSet`
+
+6. Executor runs DAG on each responder (see §XIII)
 ```
 
 ### 10.7.1 Dispatch Scope
 
-Every Intent carries a `scope` field with exactly two values:
+Every Intent carries a `scope` field. The Runtime resolves targets through
+the **Selection Engine** (§6.10) before dispatching:
+
+```
+CLI flags (--name, --role, --tag, --where, ...)
+        │
+        ▼
+  SelectQuery
+        │
+        ▼
+  Selection Engine  ── reads ──► MembershipTable
+        │
+        ▼
+     NodeSet
+        │
+        ▼
+  Dispatch by scope
+```
 
 | Scope | Alias | Meaning |
 |-------|-------|---------|
-| `"single"` | **Unicast** | Contract is executed by exactly **one** responder. The responder is specified in `Intent.targets` (first target). Capability check is **peer-specific**: the requester must hold a capability grant from that specific responder node. |
-| `"mesh"` | **Meshcast** | Contract is **broadcast** to all nodes in the mesh (or a subset via `Intent.targets`). Each receiving node independently evaluates the contract. Capability check is **mesh-wide**: the requester must hold a capability granted by the mesh Authority (encoded in the Membership Certificate or governance log). |
+| `"single"` | **Unicast** | Contract is executed by exactly **one** responder. `NodeSet::pick_one()` selects the best candidate. Capability check is **peer-specific**. |
+| `"mesh"` | **Meshcast** | Contract is **broadcast** to every node in the `NodeSet`. Each receiving node independently evaluates. Capability check is **mesh-wide**. |
+| `"quorum"` | (future) | Sent to N nodes, await M confirmations before reporting success. |
 
 **Capability scope vs. dispatch scope:**
 
@@ -2896,7 +3066,19 @@ smo admin retire --node node-x               # permanent removal
 smo admin emergency-rotate --node node-x     # forced rotation (compromise)
 
 # Execution
-smo exec --mesh SOC --target node-a --opcode LS --path /var/log
+smo exec --opcode ls --name backup-02 --path /var/log          # by name
+smo exec --opcode ls --id 7f2a1b... --path /etc                # by NodeID
+smo exec --opcode backup --tag Storage                         # by tag
+smo exec --opcode update --role Member                         # all Members
+smo exec --opcode audit --where 'role=="Member" && arch=="arm64"'  # expression
+smo exec --opcode sync --nearest                                # lowest RTT
+smo exec --opcode benchmark --random 10                         # 10 random
+smo exec --opcode compile --arch arm64                          # by arch
+smo exec --opcode upgrade --version '<3.2'                      # version constraint
+smo exec --opcode exec --trust '>0.8'                           # trust filter
+smo exec --opcode deploy --cap EXEC                             # by capability
+smo exec --opcode discover --mesh SOC                           # by mesh name
+smo exec --opcode ls --target all                               # all known nodes (mesh)
 smo exec --file contract.json
 
 # Administration

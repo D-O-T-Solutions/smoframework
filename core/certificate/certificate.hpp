@@ -40,6 +40,7 @@ public:
     Bytes    issuer_pubkey;     // The issuer's public key (empty if Root self-signed)
     Bytes    mesh_id;           // 32-byte mesh identifier
     Role     role           = Role::Reader;
+    std::string display_name;  // human-friendly node name (signed metadata)
     Bytes    capabilities;      // Opaque capability blob
     uint64_t epoch          = 0;
     int64_t  not_before     = 0; // Unix timestamp
