@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/bin/smo-* /usr/local/bin/
+RUN ln -s /usr/local/bin/smo-cli /usr/local/bin/smo
 
 RUN mkdir -p /etc/smo /var/lib/smo
 
