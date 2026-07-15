@@ -157,39 +157,65 @@ No protocol layer (Discovery, Control, Execution, Data) may assume anything abou
 ### I-17: Carrier Independence
 The Enrollment Protocol defines the format of enrollment requests and responses. It does not specify how they are transported. QR, USB, clipboard, REST API, and file are all valid carriers.
 
+### I-18: Wall Clock Never Trusted for Ordering
+System time (`system_clock`) is used ONLY for security windows (anti-replay) and human-readable timestamps. All ordering decisions rely on sequence numbers or logical clocks. All timeouts use monotonic clock (`CLOCK_MONOTONIC`).
+
+### I-19: Every FSM State Has Timeout and Failure Transition
+No FSM state may block indefinitely. Every state MUST define a maximum dwell time and a transition to a safe fallback state when the timer expires. The default fallback is REJECTED or OFFLINE.
+
+### I-20: Governance Requires Multi-Signature
+No single Authority may unilaterally modify mesh-level policy, create new Authorities, or increment the Epoch without multi-signature approval as defined by the mesh manifest. MVP exception: single Root Authority.
+
+### I-21: Resource Constraints Are Declared, Not Inferred
+Every execution MUST declare its resource requirements (CPU, RAM, timeout, priority) at contract submission time. The Responder uses these declarations for scheduling and enforcement. Undeclared resource use is bounded by the node's default quota.
+
+### I-22: Governance History Is Append-Only
+Governance decisions, once committed, are never removed or altered. Corrections to prior governance decisions are themselves new governance decisions that reference the decisions they supersede.
+
+### I-23: Discovery Engine Is Separate from Transport
+The Discovery Engine handles peer discovery, health monitoring, and membership propagation. Transport only provides `send()` and `recv()` abstractions. These components MUST NOT be coupled.
+
 ---
 
 ## IV. SYSTEM LAYERS
 
-The architecture is decomposed into eleven layers. No layer may bypass the layer below it.
+The architecture is decomposed into fifteen layers. No layer may bypass the layer below it.
 
 ```
 ┌──────────────────────────────────────────────┐
-│  1. CLI / SDK LAYER                           │  User-facing entry points
+│  1. CLI / SDK / POLICY ENGINE                 │  Entry points + OPA-like rules (post-MVP)
 ├──────────────────────────────────────────────┤
 │  2. INTENT LANGUAGE LAYER                     │  Contract source (JSON/YAML; later .seme DSL)
 ├──────────────────────────────────────────────┤
 │  3. EXECUTION COMPILER                        │  Intent → DAG compilation pipeline
 ├──────────────────────────────────────────────┤
-│  4. DAG SCHEDULER                             │  DAG-aware execution scheduling
+│  4. DAG SCHEDULER + RUNTIME POLICIES          │  DAG + priority, retry, preemption, quota
 ├──────────────────────────────────────────────┤
 │  5. NODE EXECUTION FSM                        │  Per-node state machine
 ├──────────────────────────────────────────────┤
-│  6. CONSENSUS + TRUST ENGINE                  │  Multi-node attestation, scoring, weighting
+│  6. GOVERNANCE PROTOCOL                       │  Multi-sig decisions, policy change, split/merge
 ├──────────────────────────────────────────────┤
-│  7. PROTOCOL LAYER                            │
-│   ├── Discovery Protocol                      │  UDP — HELLO, PING, DISCOVER, HEARTBEAT
-│   ├── Control Protocol                        │  TCP — CONTRACT, SESSION, WITNESS, CSR
-│   ├── Execution Protocol                      │  TCP — EXEC_START, PROGRESS, RESULT
-│   └── Data Protocol                           │  TCP — CHANNEL_OPEN, CHUNK, ACK, FIN
+│  7. TRUST ENGINE                              │  Attestation, scoring, weighting
 ├──────────────────────────────────────────────┤
-│  8. SESSION LAYER                             │  Keys, identity, capability negotiation
+│  8. PROTOCOL LAYER                            │
+│   ├── Discovery Protocol (UDP)                │  HELLO, PING, DISCOVER, HEARTBEAT
+│   ├── Control Protocol (TCP)                  │  CONTRACT, SESSION, WITNESS, CSR, GOVERNANCE
+│   ├── Execution Protocol (TCP)                │  EXEC_START, PROGRESS, RESULT, CANCEL
+│   └── Data Protocol (TCP)                     │  CHANNEL_OPEN, CHUNK, ACK, FIN
 ├──────────────────────────────────────────────┤
-│  9. CONNECTIVITY LAYER                        │  STUN, ICE, NAT traversal, hole punch, relay
+│  9. DISCOVERY ENGINE + ROUTING                │  SWIM gossip, bootstrap, Peer Record, path selection
 ├──────────────────────────────────────────────┤
-│ 10. TRANSPORT ABSTRACTION                     │  Interchangeable network layer (TCP, UDP, ...)
+│ 10. SESSION LAYER                              │  Keys, certificate binding, signed nonce, version negotiation
 ├──────────────────────────────────────────────┤
-│ 11. IDENTITY + MEMBERSHIP LAYER               │  Keypairs, certificates, chain verification
+│ 11. CONNECTIVITY LAYER                        │  STUN, ICE, NAT traversal, hole punch, TURN relay
+├──────────────────────────────────────────────┤
+│ 12. TRANSPORT ABSTRACTION                     │  Interchangeable (TCP, UDP, future: QUIC, Unix socket)
+├──────────────────────────────────────────────┤
+│ 13. RESOURCE MODEL                            │  CPU/RAM/IO limits, cgroup, namespace, seccomp
+├──────────────────────────────────────────────┤
+│ 14. PLUGIN ABI + WASM (future)                │  C ABI plugin interface
+├──────────────────────────────────────────────┤
+│ 15. IDENTITY + MEMBERSHIP LAYER               │  Keypairs, lifecycle, certificates, multi-tenant, manifest
 └──────────────────────────────────────────────┘
 ```
 
@@ -445,6 +471,237 @@ Every wire message uses the following packet structure:
 4. Payload MAY be encrypted at the session level. Header fields are never encrypted.
 5. Every session MUST negotiate a Crypto Suite during establishment.
 
+### 6.8 Discovery Engine
+
+The Discovery Engine is a dedicated component **separate from Transport**. Transport only knows `send()` and `recv()`. The Discovery Engine handles peer discovery, health monitoring, membership propagation, and route learning.
+
+#### 6.8.1 Architecture
+
+```
+┌──────────────────────────────┐
+│       DISCOVERY ENGINE        │
+│  ┌────────────────────────┐  │
+│  │  Membership Table      │  │  Local view of mesh members
+│  │  NodeID | State | ...  │  │
+│  └───────────┬────────────┘  │
+│  ┌───────────▼────────────┐  │
+│  │  Gossip Protocol       │  │  SWIM-inspired epidemic broadcast
+│  │  (suspicion, indirect) │  │
+│  └───────────┬────────────┘  │
+│  ┌───────────▼────────────┐  │
+│  │  Bootstrap             │  │  Seed nodes, DNS, mDNS, manual
+│  └───────────┬────────────┘  │
+│  ┌───────────▼────────────┐  │
+│  │  Health Monitor        │  │  PING-based liveness, suspicion
+│  └───────────┬────────────┘  │
+└───────────────┼──────────────┘
+                │ uses
+                ▼
+┌──────────────────────────────┐
+│        TRANSPORT (UDP)       │
+│    send() / recv()           │
+└──────────────────────────────┘
+```
+
+#### 6.8.2 Bootstrap Mechanisms
+
+| Method | Mechanism | Use Case |
+|---|---|---|
+| Seed list | Static list of bootstrap nodes from Mesh Manifest | Production, controlled deployments |
+| DNS SRV | `_smo._tcp.mesh-name.example.com` | Enterprise, auto-discovery |
+| mDNS | Multicast DNS on local network | LAN, demo, development |
+| Manual | `smo node connect --address 10.0.0.1:7777` | Debug, air-gap |
+
+Default: seed list from Mesh Manifest. Nodes in the seed list provide initial peer table upon connection.
+
+#### 6.8.3 Gossip Protocol (SWIM-Inspired)
+
+Based on the SWIM (Scalable Weakly-consistent Infection-style Membership) protocol:
+
+- **Gossip interval**: 1 second (configurable)
+- **Target**: 1 random peer per round (configurable fanout)
+- **Suspicion timeout**: 5 seconds before declaring a node SUSPECT
+- **Indirect ping**: If direct PING fails, ask k random peers to indirect-ping the target
+- **Membership update**: Gossip includes membership changes (join, leave, suspect, confirm)
+
+**Gossip payload:**
+
+```
+gossip_message:
+  sender_id: NodeID
+  sequence: uint64                    # monotonic per sender
+  entries:
+    - node_id: NodeID
+      state: ALIVE | SUSPECT | CONFIRMED | DEPARTED
+      incarnation: uint64             # bump on state change
+      address: optional<SocketAddr>
+      trust_digest: optional<bytes>   # compressed trust score
+```
+
+#### 6.8.4 Passive Discovery
+
+Nodes learn about peers from:
+1. Gossip messages forwarded by other nodes
+2. Heartbeat responses containing additional peer references
+3. Offline announcement messages (gives advance notice of peer departure)
+
+#### 6.8.5 Leave Detection
+
+| Signal | Action |
+|---|---|
+| Graceful OFFLINE message | Immediate removal from membership table |
+| 3 consecutive PING timeouts | Mark SUSPECT, begin indirect ping |
+| Indirect ping confirms failure | Mark CONFIRMED, gossip departure |
+| SWIM suspicion timeout expires | Mark CONFIRMED, remove from active set |
+
+### 6.9 Routing Layer
+
+SMO is not a VPN, but nodes must know how to reach each other. The Routing Layer maintains peer connectivity metadata and selects the best path.
+
+#### 6.9.1 Peer Record
+
+Every known peer has a structured record:
+
+```
+PeerRecord:
+  node_id: NodeID
+  mesh_id: MeshID
+  addresses:
+    - transport: TCP | UDP | QUIC
+      addr: "1.2.3.4:7777"
+      type: DIRECT | RELAY | LOCAL
+      cost: uint8                    # lower = preferred
+      last_seen: Timestamp
+    - transport: TCP
+      addr: "relay-alpha:7777"
+      type: RELAY
+      cost: 10
+      via: relay-node-id
+  latency_ms: optional<uint16>
+  nat_type: NONE | FULL_CONE | RESTRICTED | SYMMETRIC
+  trust_score: float (0.0–1.0)
+  last_heartbeat: Timestamp
+```
+
+#### 6.9.2 Path Selection Algorithm
+
+```
+For each contract requiring delivery:
+  1. Lookup PeerRecord for target NodeID
+  2. Filter addresses by:
+     a. Currently reachable (last_heartbeat within timeout)
+     b. Transport matches protocol requirement
+     c. Cost <= configured maximum
+  3. Sort candidates by (cost + latency_weight * latency_ms)
+  4. Select lowest-cost candidate
+  5. If connection fails, try next candidate
+  6. If all candidates fail, return "unreachable"
+```
+
+#### 6.9.3 Dynamic Re-Routing
+
+If the active path degrades (latency spikes, packet loss > threshold):
+1. Scheduler MAY request a path re-evaluation
+2. Routing Layer selects the next-best candidate
+3. Session is transparently migrated if the transport supports connection migration (QUIC) or re-established (TCP)
+
+#### 6.9.4 MVP Routing
+
+MVP uses a simplified routing model:
+- Direct TCP connections only (no relay, no NAT traversal)
+- Single address per node (no multi-address)
+- No path scoring
+- Connection failure = unreachable
+
+### 6.10 Version Negotiation
+
+Different nodes may run different SMO versions. The first bytes of every connection negotiate the protocol version.
+
+#### 6.10.1 Handshake
+
+```
+Node A connects to Node B:
+
+1. Node A sends: [PROTOCOL_VERSION_REQUEST]
+   - supported_versions: [3.2, 3.1, 3.0]
+   - node_id: NodeID_A
+   - nonce: 32 random bytes
+
+2. Node B responds: [PROTOCOL_VERSION_RESPONSE]
+   - selected_version: 3.1         // highest common version
+   - supported_versions: [3.1, 3.0]
+   - node_id: NodeID_B
+   - nonce: 32 random bytes
+   - signature: signed(Node A nonce || B nonce || selected_version)
+
+3. Node A verifies signature, responds:
+   - [VERSION_CONFIRMED]
+   - signature: signed(B nonce || A nonce || selected_version)
+```
+
+If no common version exists → connection REJECTED.
+
+#### 6.10.2 Version-Dependent Behavior
+
+| Version | Frame Format | Opcode Set | Crypto Suites |
+|---|---|---|---|
+| 3.0 | MVP binary (§6.6) | MVP subset | Suite 1 only |
+| 3.1 | Extended binary | Full set | Suite 1, 2 |
+| 3.2+ | TBD | TBD | Suite 1, 2, 3 |
+
+#### 6.10.3 Compatibility Policy
+
+- Nodes MUST support their own version and N-2 previous versions.
+- A node running 3.2 can connect to nodes running 3.0, 3.1, or 3.2.
+- Obsolete versions are announced via governance (EPOCH_INCREMENT-like mechanism for protocol versions).
+
+### 6.11 Time Model
+
+This is one of the most critical architectural decisions. Wall clock (`system_clock`) is NOT safe for distributed ordering. SMO divides time into three domains.
+
+#### 6.11.1 Three Time Domains
+
+| Domain | Clock Source | Purpose | Rules |
+|---|---|---|---|
+| Security Time | Wall clock / NTP | Certificate validity, contract timestamps, anti-replay window | ±300s tolerance on receiver. Used only for bounding, never for ordering. |
+| Execution Time | Monotonic clock (`CLOCK_MONOTONIC`) | Timeouts, deadlines, execution duration | Immune to NTP jumps. Never decreases. Basis for all FSM timers. |
+| Ordering | Sequence number / logical clock | Event ordering, DAG execution order, audit log replay | Never depends on wall clock. Sequence numbers are per-sender, monotonically increasing. |
+
+#### 6.11.2 Rules
+
+1. **No FSM transition or ordering decision may depend on wall clock.** All timeouts use monotonic clock. All ordering uses sequence numbers.
+2. **Wall clock is used ONLY for:**
+   - Certificate `notBefore` / `notAfter` validation
+   - Contract `created_at` / `timestamp` for human auditing
+   - Anti-replay window (±300s from receiver's clock)
+3. **Timestamp tolerance:** Receivers MUST accept timestamps within ±300s of their local clock. Packets outside this window are rejected as potential replay or clock drift.
+4. **Sequence numbers are per-sender**, monotonically increasing. Gaps indicate lost packets (UDP) or out-of-order delivery (handled by TCP). Duplicate sequence numbers are silently dropped.
+5. **Monotonic clock is used for:**
+   - FSM state timeouts (maximum dwell time per state)
+   - Execution deadlines
+   - Heartbeat intervals
+   - Gossip round timing
+
+#### 6.11.3 Anti-Replay Without Wall Clock
+
+Sequence numbers provide ordering; timestamps provide a bounded security window:
+
+```
+receive(packet):
+  # Step 1: Sequence number check (primary anti-replay)
+  if packet.seq <= last_seen_seq[sender]:
+    DROP  # duplicate or replayed
+
+  # Step 2: Timestamp check (bounded window)
+  drift = abs(packet.timestamp - now())
+  if drift > MAX_TIMESTAMP_DRIFT (300s):
+    DROP  # possible replay or clock attack
+
+  # Step 3: Accept
+  last_seen_seq[sender] = packet.seq
+  PROCESS(packet)
+```
+
 ---
 
 ## VII. MESH IDENTITY & TRUST INFRASTRUCTURE (MITI)
@@ -619,27 +876,237 @@ Root Private Key
   → old certificates revoked via Epoch increment
 ```
 
-### 7.9 Mesh Context Switching
+### 7.9 Mesh Identity & Multi-Tenant
 
-A single node may hold Membership Certificates for multiple meshes. The runtime maintains an "active mesh context."
+SMO's multi-mesh capability is a first-class architectural feature, NOT a configuration option. A single node is a multi-tenant runtime:
 
 ```
-Node
-├── Identity (Ed25519 keypair, immutable)
-├── Membership: Mesh A (certificate, epoch, capabilities)
-├── Membership: Mesh B (certificate, epoch, capabilities)
-└── Membership: Mesh C (certificate, epoch, capabilities)
+Node Identity (Ed25519 keypair, immutable for lifetime)
+├── Mesh A: SOC-Production (cert, epoch 3, role=CONTRIBUTOR)
+│   ├── route table     ── peers in Mesh A only
+│   ├── trust store     ── trust scores for Mesh A members
+│   ├── capability set  ── CAP_FS_READ, CAP_FS_WRITE, CAP_EXEC_BASIC
+│   ├── contract history ── contracts executed in Mesh A
+│   └── policy cache    ── locally cached Mesh A policy
+├── Mesh B: IR-Prod (cert, epoch 1, role=AUTHORITY)
+│   ├── route table     ── peers in Mesh B only
+│   ├── trust store     ── trust scores for Mesh B members
+│   ├── capability set  ── CAP_GRANT, CAP_REVOKE, CAP_NODE_QUARANTINE
+│   ├── contract history ── contracts executed in Mesh B
+│   └── policy cache    ── locally cached Mesh B policy
+└── Mesh C: Research (cert, epoch 5, role=READER)
+    ├── route table     ── peers in Mesh C only
+    ├── trust store     ── trust scores for Mesh C members
+    ├── capability set  ── CAP_HEARTBEAT, CAP_VERIFY, CAP_FS_READ
+    ├── contract history ── contracts executed in Mesh C
+    └── policy cache    ── locally cached Mesh C policy
 ```
 
-**Switching:**
+**Multi-tenant rules:**
+1. Each mesh context is fully isolated — no cross-mesh capability, trust, or policy leakage.
+2. The node Identity keypair is SHARED across meshes. The same private key signs contracts in all meshes.
+3. Membership is per-mesh. A certificate in Mesh A does not grant any access to Mesh B.
+4. Context switching is explicit (`smo ctx use <mesh>`). Contracts are always executed in the active context unless overridden (`--mesh` flag).
+5. A contract in Mesh A cannot reference resources in Mesh B. Cross-mesh operations require explicit governance (future).
+
+**Benefits:**
+- One daemon, multiple operational domains
+- SOC and IR teams share the same infrastructure but operate in isolated trust domains
+- Research mesh with experimental policies does not affect production
+- DevOps mesh for fleet management alongside security mesh
+
+### 7.10 Node Identity Lifecycle
+
+Node identity is not a single event (generate → join). It is a full lifecycle with multiple states and transitions:
+
 ```
-smo ctx use SOC-Production        ← CLI context switch
-smo exec --mesh SOC-Production    ← per-command mesh selection
-smo node join --mesh Research     ← join new mesh
-smo node leave --mesh SOC         ← leave mesh
+                  ┌─────────────────────┐
+                  │     NEW              │  No keypair, no config
+                  └──────────┬──────────┘
+                             │ smo-node init
+                             ▼
+                  ┌─────────────────────┐
+                  │  KEY_GENERATED       │  Ed25519 keypair exists
+                  └──────────┬──────────┘
+                             │ enrollment
+                             ▼
+                  ┌─────────────────────┐
+                  │     JOINED           │  Membership Certificate received
+                  └──────────┬──────────┘
+                             │ verify + session
+                             ▼
+                  ┌─────────────────────┐
+                  │     ACTIVE           │  Full mesh participation
+                  └──────────┬──────────┘
+                    ┌────────┼────────┐
+                    ▼        ▼        ▼
+              ┌────────┐┌────────┐┌────────┐
+              │SUSPEND ││DEGRADED││OFFLINE │
+              └────┬───┘└────┬───┘└────┬───┘
+                   │         │         │  reactivate
+                   └─────────┼─────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │     ACTIVE           │  (return to active)
+                  └──────────┬──────────┘
+                             │ key compromise / lifecycle event
+                             ▼
+                  ┌─────────────────────┐
+                  │  KEY_ROTATING        │  New keypair generated, old still valid
+                  └──────────┬──────────┘
+                             │ new cert issued, old enters grace period
+                             ▼
+                  ┌─────────────────────┐
+                  │  KEY_ROTATED         │  New cert active, old in grace
+                  └──────────┬──────────┘
+                             │ grace period expires
+                             ▼
+                  ┌─────────────────────┐
+                  │  ACTIVE (new key)    │  Old key/cert fully replaced
+                  └──────────┬──────────┘
+                             │ permanent departure
+                             ▼
+                  ┌─────────────────────┐
+                  │     RETIRED          │  Node removed from mesh
+                  └─────────────────────┘
 ```
 
-Each mesh context has its own route table, trust store, capability set, and contract history. The node's Identity is shared across all meshes.
+#### 7.10.1 Lifecycle Transitions
+
+| From | Event | To | Description |
+|---|---|---|---|
+| NEW | `smo-node init` | KEY_GENERATED | Ed25519 keypair created |
+| KEY_GENERATED | Enrollment success | JOINED | Membership Certificate received |
+| KEY_GENERATED | Enrollment failure | KEY_GENERATED | Retry with backoff |
+| JOINED | Session established | ACTIVE | Certificate verified, capabilities negotiated |
+| ACTIVE | Trust < threshold | DEGRADED | Limited operation, no new contracts |
+| ACTIVE | Manual admin | SUSPENDED | Temporary deactivation |
+| ACTIVE | Network loss | OFFLINE | Heartbeat timeout |
+| ACTIVE | Key compromise detected | KEY_ROTATING | Emergency key rotation initiated |
+| DEGRADED | Trust restored | ACTIVE | Trust recovers above threshold |
+| SUSPENDED | Admin unsuspend | ACTIVE | Full reactivation |
+| OFFLINE | Reconnect | ACTIVE | Session re-established |
+| KEY_ROTATING | New cert issued | KEY_ROTATED | Both old + new certs valid |
+| KEY_ROTATED | Grace period expires | ACTIVE | Old cert invalidated, only new cert active |
+| ACTIVE | Admin retire | RETIRED | Node permanently removed |
+| KEY_ROTATING | Rotation fails | ACTIVE (old key) | Fallback — keep old key, alert admin |
+
+#### 7.10.2 Key Rotation (Zero Downtime)
+
+Key rotation ensures continuity of operations:
+
+```
+1. Admin or node initiates key rotation
+   smo node rotate-key
+
+2. Node generates new Ed25519 keypair
+   → node.key.new, node.pub.new
+
+3. Node signs CSR with OLD private key
+   → proves ownership of current identity
+
+4. Authority validates CSR, issues new certificate for node.pub.new
+   → new cert: epoch = current, supersedes = [old_cert_id]
+
+5. Node imports new cert, sets grace period (default 7 days)
+   → Both old and new certs are accepted during grace period
+
+6. Node announces key rotation via gossip
+   → TRUST_DIGEST includes new public key fingerprint
+
+7. Grace period expires
+   → Old certificate is invalidated
+   → Only new certificate is accepted
+```
+
+**If old key is compromised:**
+- Grace period = 0 (immediate cutover)
+- Admin forces epoch increment to invalidate all old certificates
+- All nodes must re-enroll
+
+#### 7.10.3 Certificate Renewal vs Rotation
+
+| Operation | Key Change | New CSR | Grace Period | Use Case |
+|---|---|---|---|---|
+| Renewal | No | No (same key) | N/A | Cert expiry refresh |
+| Rotation | Yes | Yes (signed by old key) | Configurable | Periodic key refresh |
+| Emergency rotation | Yes | Yes (out-of-band auth) | 0 | Key compromise |
+
+#### 7.10.4 Suspension
+
+Suspension is reversible deactivation:
+
+```
+smo admin suspend --node node-x --reason "maintenance"
+  → node's certificate is marked SUSPENDED in mesh state
+  → existing sessions are drained (no new contracts)
+  → node can still receive heartbeat (for monitoring)
+  → admin can unsuspend: smo admin unsuspend --node node-x
+```
+
+Suspension does NOT increment epoch. The certificate remains valid but is temporarily disabled.
+
+### 7.11 Mesh Manifest
+
+Every mesh has a "birth certificate" — a manifest file that encodes all mesh-level parameters. The manifest is a deployment artifact, NOT a protocol message.
+
+**Format (mesh.yaml):**
+
+```yaml
+# Mesh Manifest — distributed out-of-band (file, URL, QR)
+mesh:
+  uuid: "550e8400-e29b-41d4-a716-446655440000"
+  name: "SOC-Production"
+  genesis_time: "2026-07-15T00:00:00Z"
+  protocol_version: 3.0
+  description: "Production SOC mesh for incident response"
+
+root:
+  public_key: "MCowBQYDK2VwAyEA..."   # Mesh Root Public Key
+
+governance:
+  authority_threshold: 3    # M-of-N for Authority actions
+  authority_count: 5        # total Authorities in mesh
+
+bootstrap:
+  nodes:
+    - address: "node-a.company.com:7777"
+    - address: "node-b.company.com:7777"
+    - address: "node-c.company.com:7777"
+  discovery: "seed"         # "seed" | "dns" | "mDNS" | "manual"
+
+heartbeat:
+  interval_sec: 15
+  timeout_sec: 45           # 3 missed heartbeats = OFFLINE
+
+trust:
+  decay_window_sec: 300
+  default_threshold: 0.5
+  weights:
+    citizen: 0.2
+    execution: 0.5
+    witness: 0.2
+    consistency: 0.1
+
+capability_presets: {}      # custom presets override defaults
+
+policies:                   # mesh-level policy (post-MVP)
+  default_allow: [CAP_HEARTBEAT, CAP_VERIFY]
+  default_deny: []
+```
+
+**Node join flow with manifest:**
+
+```
+1. Operator provides mesh.yaml to new node (scp, URL, QR)
+2. Node imports manifest: smo node import-manifest mesh.yaml
+3. Node knows: Root Public Key, bootstrap addresses, protocol version
+4. Node generates keypair
+5. Node enrolls with Authority (per Enrollment Protocol)
+6. Node receives Membership Certificate
+7. Node is now a full member — all mesh parameters are locally cached
+```
 
 ---
 
@@ -1134,6 +1601,71 @@ EXECUTION DAG          →  immutable output
 
 Once the DAG is produced, it MUST NOT be modified. All nodes involved in execution operate on the same DAG. If a DAG must change, a new DAG is compiled from the original intent.
 
+### 13.4 Scheduler Runtime Policies
+
+The scheduler is DAG-aware but also implements runtime scheduling policies:
+
+#### Priority Queues
+
+Each task in the DAG carries a `priority` value (0–255, default 100). The scheduler maintains multiple queues:
+- **Critical (200–255)**: Incident response, quarantine, emergency stop
+- **High (150–199)**: Time-sensitive operations
+- **Normal (50–149)**: Default execution
+- **Low (0–49)**: Batch jobs, log rotation, maintenance
+
+Tasks from higher-priority queues are dispatched before lower-priority ones, regardless of DAG order (respecting dependency constraints).
+
+#### Retry Policy
+
+Each task MAY declare a retry policy:
+
+```json
+{
+  "task_id": "t1",
+  "retry": {
+    "max_attempts": 3,
+    "backoff": "exponential",     // "exponential" | "linear" | "constant"
+    "initial_delay_ms": 1000,
+    "max_delay_ms": 30000,
+    "jitter": true                // add random jitter to avoid thundering herd
+  }
+}
+```
+
+Default: no retries. Tasks that fail are marked FAILED.
+
+#### Cancellation
+
+A contract with `EXEC_CANCEL` stops the associated execution:
+1. Scheduler marks the task as CANCELLING.
+2. Runtime sends SIGTERM to the process (or equivalent).
+3. After `grace_sec` (default 10s), sends SIGKILL.
+4. Task transitions to CANCELLED.
+5. Downstream DAG tasks that depend on the cancelled task are marked CANCELLED (cascade).
+
+#### Deadline Propagation
+
+Each DAG node carries a `deadline_ms` (relative to DAG start). If a task misses its deadline:
+1. The task is marked FAILED (deadline exceeded).
+2. The failure propagates to all downstream dependent tasks.
+3. The scheduler MAY attempt to execute remaining independent tasks.
+
+#### Preemption (Post-MVP)
+
+Only implemented when Resource Model is active:
+- A higher-priority task MAY preempt a lower-priority running task.
+- The preempted task is suspended (SIGSTOP on Linux) and resumed when resources are available.
+- If the preempted task cannot be suspended (non-preemptible opcode), the higher-priority task waits.
+
+#### Quota Enforcement
+
+Per-mesh and per-node execution quotas limit concurrency:
+```
+mesh "SOC-Production": max_concurrent = 10, cpu_quota = 4 cores
+node "server-01":      max_concurrent = 4,  cpu_quota = 2 cores
+```
+When a quota is exceeded, new contracts are queued or REJECTED based on priority.
+
 ---
 
 ## XIV. NODE EXECUTION FSM
@@ -1213,13 +1745,15 @@ FINALIZED
 ### 15.1 Storage Types
 
 | Store | Content | Scope |
-|---|---|---|
+|---|---|---|---|
 | session_store | Active session state (capabilities, keys, expiration) | Per-node |
 | trust_store | Trust scores, score history, decay parameters | Per-node |
 | audit_store | Execution audit log (all state transitions) | Per-node |
 | dag_store | Compiled execution DAGs | Per-node |
 | node_store | Node identity keypair, configuration, route table | Per-node |
 | mesh_store | Mesh memberships, certificates, epoch, root public key | Per-node |
+| peer_store | Peer Records: addresses, latency, NAT type, trust | Per-node |
+| governance_store | Governance history: proposals, signatures, decisions | Per-node |
 
 ### 15.2 Storage Invariant
 
@@ -1306,22 +1840,35 @@ Two independent security layers are required: both the certificate (membership) 
 
 ## XVIII. NODE LIFECYCLE
 
+The full node identity lifecycle is defined in §VII.10 (Node Identity Lifecycle). This section provides a summary reference.
+
+**States:**
+
 ```
-UNINITIALIZED               No keypair, no config
-    ↓
-KEY_GENERATION              smo-node init → Ed25519 keypair generated
-    ↓
-ENROLLMENT                  smo-node import → Membership Certificate received
-    ↓
-DOMAIN_JOIN                 Connect to bootstrap node, verify certificate chain
-    ↓
-CAPABILITY_NEGOTIATION      Session established, capabilities active
-    ↓
-ACTIVE                      Heartbeat, contracts, witness, execution
-   /    \    \
-  ↓      ↓    ↓
-DEGRADED  QUARANTINED  OFFLINE
+NEW → KEY_GENERATED → JOINED → ACTIVE ↔ SUSPENDED
+                                  ↓
+                            KEY_ROTATING → KEY_ROTATED → ACTIVE
+                                  ↓
+                            RETIRED (permanent)
 ```
+
+**Transitions:**
+
+| From | Event | To | Reference |
+|---|---|---|---|
+| NEW | `smo-node init` | KEY_GENERATED | §IX Enrollment |
+| KEY_GENERATED | Enrollment success | JOINED | §IX Enrollment |
+| JOINED | Session established | ACTIVE | §XVI.5 Session Binding |
+| ACTIVE | Trust < threshold | DEGRADED | §XII Trust |
+| ACTIVE | Admin suspension | SUSPENDED | §VII.10.4 |
+| ACTIVE | Network loss | OFFLINE | §VI.8 Discovery |
+| ACTIVE | Key compromise | KEY_ROTATING | §VII.10.2 |
+| KEY_ROTATING | New cert issued | ACTIVE | §VII.10.2 |
+| ACTIVE | Admin retire | RETIRED | §VII.10 |
+| SUSPENDED | Admin unsuspend | ACTIVE | §VII.10.4 |
+| OFFLINE | Reconnect | ACTIVE | §VI.8.5 Leave Detection |
+
+See §VII.10 for complete lifecycle FSM with all transitions and failure cases.
 
 ---
 
@@ -1428,6 +1975,7 @@ smo mesh create --name "SOC-Production" --recovery-group 5 --threshold 3
 smo mesh discover
 smo node join --mesh SOC --token abc123
 smo node leave --mesh SOC
+smo node import-manifest mesh.yaml
 
 # Context switching
 smo ctx use SOC-Production
@@ -1438,6 +1986,14 @@ smo-node init
 smo export --format text > join_request.smor
 smo-admin sign join_request.smor
 smo-node import node.smoc
+
+# Key lifecycle
+smo node rotate-key                          # initiate key rotation
+smo node renew-cert                          # renew cert without key change
+smo admin suspend --node node-x              # temporary deactivation
+smo admin unsuspend --node node-x            # reactivate
+smo admin retire --node node-x               # permanent removal
+smo admin emergency-rotate --node node-x     # forced rotation (compromise)
 
 # Execution
 smo exec --mesh SOC --target node-a --opcode LS --path /var/log
@@ -1450,6 +2006,11 @@ smo admin grant-cap --node node-b --cap CAP_FS_WRITE
 smo admin revoke-cap --node node-x --cap CAP_PROC_EXEC
 smo admin epoch increment
 smo admin recover --shares 3-of-5
+
+# Governance
+smo gov propose --action policy-change --file new-policy.yaml
+smo gov sign --governance-id gov-001
+smo gov status --governance-id gov-001
 
 # Trust
 smo trust inspect node-a
@@ -1498,6 +2059,19 @@ The chaos test suite MUST simulate:
 - State divergence between nodes
 - Authority failure and recovery
 - Root key loss and M-of-N recovery
+- Requester crash during contract proposal
+- Responder crash mid-execution (orphan contract)
+- Witness timeout and fallback
+- Network partition with conflicting governance decisions
+- Half-execution with process orphan
+- Clock drift beyond ±300s window
+- Duplicate packet delivery (sequence number replay)
+- Epoch mismatch after partition heal
+- Certificate expiry during active session
+- Key rotation during active contract execution
+- Resource exhaustion (OOM, disk full) during EXEC
+- Plugin crash (segfault in C ABI plugin)
+- Governance proposal expiry before threshold met
 
 ---
 
@@ -1522,10 +2096,14 @@ The chaos test suite MUST simulate:
 6. Witness protocol (basic, single-witness, no fallback required for MVP)
 7. Identity system: node init, keypair generation, enrollment (.smor/.smoc)
 8. Single mesh with single Authority
+9. **Time Model**: monotonic clock for execution timeouts, sequence numbers for ordering, wall clock for security windows only
+10. **Version Negotiation**: TLS-style version handshake on first connection
+11. **Mesh Manifest**: mesh.yaml import at join time
+12. **Node Identity Lifecycle**: JOINED → ACTIVE → OFFLINE (minimal subset)
 
 ### 23.2 Out of MVP Scope
 
-- Full DAG scheduler
+- Full DAG scheduler with runtime policies (priority, preemption, quota)
 - Trust engine with all four components
 - Consensus weighting
 - DAG optimizer
@@ -1539,6 +2117,13 @@ The chaos test suite MUST simulate:
 - STUN/ICE/NAT connectivity (direct TCP only)
 - Mesh context switching (single mesh per node)
 - REVOKE_CERT and EPOCH_INCREMENT (manual revocation only)
+- **Mesh Governance** (multi-signature decisions)
+- **Mesh Discovery Engine** (SWIM gossip deferred; basic UDP HELLO/PING only)
+- **Routing Layer** (direct TCP only; no relay selection or path scoring)
+- **Failure Model** (basic timeout handling only; no systematic failure scenarios)
+- **Resource Model** (no cgroup/namespace enforcement; best-effort only)
+- **Plugin ABI** (MVP plugins are compile-time linked; no C ABI hot-loading)
+- **Policy Engine** (policy is hardcoded capability checks; no rule language)
 
 ---
 
@@ -1546,42 +2131,51 @@ The chaos test suite MUST simulate:
 
 DO NOT start with trust AI, fancy consensus, or complex DAG optimization.
 
+**Cross-cutting (applied from Stage 1 onward):** Failure Model, Time Model, Version Negotiation — these are designed upfront and refined in each stage.
+
 ### Stage 1 — Foundation
 
 ```
-identity + transport + session + signature
+identity + transport + session + signature + time + version
 ```
 - Ed25519 keypair generation
-- TCP transport
+- TCP transport + version handshake
 - Session establishment (signed nonce)
 - Discovery protocol (basic UDP HELLO/PING)
+- Time Model: monotonic clock for timeouts, sequence numbers for ordering
+- Version Negotiation: TLS-style version list in first handshake packet
 
 ### Stage 2 — Node Core
 
 ```
-enrollment + single-node FSM
+enrollment + single-node FSM + mesh manifest
 ```
 - .smor/.smoc enrollment flow
+- Mesh Manifest (mesh.yaml import)
 - Contract proposal/accept/reject
 - Single-node execution FSM
+- Node Identity Lifecycle: JOINED → ACTIVE
 
 ### Stage 3 — Multi-Node
 
 ```
-multi-node propagation + witness
+multi-node propagation + witness + discovery engine
 ```
 - Multi-node contract flow
 - Basic witness protocol
 - Control protocol over TCP
+- Discovery Engine: SWIM gossip, bootstrap, passive discovery, leave detection
+- Routing Layer: Peer Record, multi-address, basic path selection
 
 ### Stage 4 — DAG
 
 ```
-compiler + DAG scheduler
+compiler + DAG scheduler + runtime policies
 ```
 - Intent → DAG compiler
 - DAG-aware scheduler
 - Execution protocol
+- Scheduler policies: priority queues, retry, backoff, cancellation, deadline
 
 ### Stage 5 — Trust
 
@@ -1595,23 +2189,35 @@ trust engine + membership protocol
 ### Stage 6 — Full Networking
 
 ```
-connectivity + data protocol
+connectivity + data protocol + routing
 ```
 - STUN client (RFC 8489)
 - ICE candidate gathering (RFC 8445)
 - UDP hole punch
 - TURN relay (RFC 8656)
 - Data protocol (chunked transfer)
+- Routing: dynamic re-routing, relay selection, path scoring
 
 ### Stage 7 — Governance
 
 ```
-multiple authorities + epoch + recovery
+multiple authorities + epoch + recovery + governance protocol
 ```
 - Multiple Authority support
 - Capability Epoch
 - Recovery Authorities (Shamir threshold)
 - REVOKE_CERT and EPOCH_INCREMENT
+- Governance Protocol: multi-signature decisions, policy change, M-of-N
+- Plugin ABI: C ABI, extern "C" entry points
+
+### Stage 8 — Policy Engine (Post-MVP)
+
+```
+policy language + runtime evaluation
+```
+- Policy rule language (OPA-like)
+- Runtime policy evaluation per contract
+- Custom presets and organization policies
 
 ---
 
@@ -1638,77 +2244,528 @@ No private key ever leaves the node on which it was generated. All identity proo
 ### Rule 7: Certificate Chain Verifiable by All
 Every Membership Certificate must be verifiable up to the Root Public Key by any node in the mesh.
 
+### Rule 8: Wall Clock Is Never Trusted for Ordering
+System time (`system_clock`) is used ONLY for security windows (anti-replay) and human-readable timestamps. Ordering decisions rely on sequence numbers or logical clocks. Monotonic clock is used for timeouts and deadlines.
+
+### Rule 9: Every FSM State Has a Timeout and a Failure Transition
+No FSM state may block indefinitely. Every state MUST define a maximum dwell time and a transition to a safe fallback state when the timer expires. The default fallback is REJECTED or OFFLINE.
+
+### Rule 10: Governance Changes Require Multi-Signature
+No single Authority may unilaterally modify mesh-level policy, create new Authorities, or increment the Epoch. All governance operations require M-of-N signatures as defined by the mesh manifest.
+
+### Rule 11: Resource Constraints Are Declared, Not Inferred
+Every execution MUST declare its resource requirements (CPU, RAM, timeout, priority) at contract submission time. The Responder uses these declarations for scheduling and enforcement. Undeclared resource use is bounded by the node's default quota.
+
 ---
 
 ## XXVI. FINAL ARCHITECTURE VIEW
 
 ```
-                      ┌──────────────────────────────────────┐
-                      │           APPLICATION                 │
-                      │  (incident response, fleet ops, ...) │
-                      └──────────────┬───────────────────────┘
+                      ┌──────────────────────────────────────────────┐
+                      │              APPLICATION                     │
+                      │  (incident response, fleet ops, ...)        │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │   CLI / SDK · smo-cli · smo-admin · smo-node │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │          INTENT LANGUAGE                     │
+                      │          JSON/YAML                           │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │    POLICY ENGINE (post-MVP)                  │
+                      │    OPA-like rule evaluation                  │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │   COMPILER · SCHEDULER · FSM                 │
+                      │   Parse → Resolve → Plan → DAG              │
+                      │   DAG-aware · Priority · Retry · Cancel     │
+                      │   Node FSM · Mesh FSM · Resource Model      │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │   GOVERNANCE PROTOCOL (multi-sig)            │
+                      │   Authority · Epoch · Policy Change         │
+                      │   Mesh Split/Merge · M-of-N                 │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │   CONTROL PROTOCOL (TCP)                     │
+                      │   Contract · Session · Witness               │
+                      │   CSR · Certificate · Revoke · Cap Grant    │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+                      ┌──────────────────▼───────────────────────────┐
+                      │   EXECUTION PROTOCOL (TCP)                   │
+                      │   Start · Progress · Event · Result         │
+                      └──────────────────┬───────────────────────────┘
+                                         │
+              ┌──────────────────────────┼──────────────────────────┐
+              │                          │                          │
+   ┌──────────▼────────────┐ ┌───────────▼───────────┐ ┌───────────▼───────────┐
+   │  DISCOVERY ENGINE     │ │  DATA PROTOCOL (TCP)  │ │  WITNESS              │
+   │  SWIM gossip          │ │  CHUNK · ACK · FIN    │ │  Attest · Verify      │
+   │  Bootstrap · Health   │ │                       │ │                       │
+   │  Routing Layer        │ │                       │ │                       │
+   └──────────┬────────────┘ └───────────┬───────────┘ └───────────┬───────────┘
+              │                          │                          │
+   ┌──────────▼──────────────────────────▼──────────────────────────▼───────────┐
+   │                          SESSION LAYER                                      │
+   │  Keys · Certificate binding · Capability negotiation · Signed nonce       │
+   │  Version Negotiation · Time Model (3 domains)                              │
+   └─────────────────────────────────┬──────────────────────────────────────────┘
                                      │
-                      ┌──────────────▼───────────────────────┐
-                      │   CLI / SDK                           │
-                      │   smo-cli · smo-admin · smo-node     │
-                      └──────────────┬───────────────────────┘
+   ┌─────────────────────────────────▼──────────────────────────────────────────┐
+   │                      CONNECTIVITY LAYER                                     │
+   │  STUN (RFC 8489) · ICE (RFC 8445) · NAT hole punch                        │
+   │  TURN relay (RFC 8656)                                                      │
+   └─────────────────────────────────┬──────────────────────────────────────────┘
                                      │
-                      ┌──────────────▼───────────────────────┐
-                      │   INTENT LANGUAGE                     │
-                      │   JSON/YAML · (.seme future)          │
-                      └──────────────┬───────────────────────┘
+   ┌─────────────────────────────────▼──────────────────────────────────────────┐
+   │                       TRANSPORT LAYER                                      │
+   │  TCP · UDP · (future: QUIC, Unix socket)                                   │
+   └─────────────────────────────────┬──────────────────────────────────────────┘
                                      │
-                      ┌──────────────▼───────────────────────┐
-                      │   COMPILER                            │
-                      │   Parse → Resolve → Plan → DAG       │
-                      └──────────────┬───────────────────────┘
-                                     │
-                      ┌──────────────▼───────────────────────┐
-                      │   SCHEDULER + FSM                     │
-                      │   DAG-aware · Node FSM · Mesh FSM   │
-                      └──────────────┬───────────────────────┘
-                                     │
-                      ┌──────────────▼───────────────────────┐
-                      │   CONTROL PROTOCOL  (TCP)             │
-                      │   Contract · Session · Witness       │
-                      │   CSR · Certificate · Revoke         │
-                      └──────────────┬───────────────────────┘
-                                     │
-                      ┌──────────────▼───────────────────────┐
-                      │   EXECUTION PROTOCOL  (TCP)           │
-                      │   Start · Progress · Event · Result  │
-                      └──────────────┬───────────────────────┘
-                                     │
-              ┌──────────────────────┼──────────────────────┐
-              │                      │                      │
-   ┌──────────▼──────────┐ ┌─────────▼─────────┐ ┌─────────▼─────────┐
-   │  DISCOVERY (UDP)    │ │ DATA PROTOCOL(TCP)│ │  WITNESS          │
-   │  HELLO · PING       │ │ CHUNK · ACK · FIN │ │  Attest           │
-   │  HEARTBEAT · GOSSIP │ │                   │ │  Verify           │
-   └──────────┬──────────┘ └─────────┬─────────┘ └─────────┬─────────┘
-              │                      │                      │
-   ┌──────────▼──────────────────────▼──────────────────────▼──────────┐
-   │                    SESSION LAYER                                  │
-   │   Keys · Identity · Capability negotiation · Signed nonce        │
-   └──────────────────────────────┬───────────────────────────────────┘
-                                  │
-   ┌──────────────────────────────▼───────────────────────────────────┐
-   │                    CONNECTIVITY LAYER                             │
-   │   STUN (RFC 8489) · ICE (RFC 8445) · NAT hole punch             │
-   │   TURN relay (RFC 8656)                                          │
-   └──────────────────────────────┬───────────────────────────────────┘
-                                  │
-   ┌──────────────────────────────▼───────────────────────────────────┐
-   │                    TRANSPORT LAYER                               │
-   │   TCP · UDP · (future: QUIC, Unix socket)                       │
-   └──────────────────────────────┬───────────────────────────────────┘
-                                  │
-   ┌──────────────────────────────▼───────────────────────────────────┐
-   │                    IDENTITY + MEMBERSHIP LAYER                    │
-   │   Ed25519 keypairs · Membership Certificates · Chain verification│
-   │   Mesh Root · Authority · Epoch · Recovery                       │
-   └──────────────────────────────────────────────────────────────────┘
+   ┌─────────────────────────────────▼──────────────────────────────────────────┐
+   │                  IDENTITY + MEMBERSHIP LAYER                                │
+   │  Ed25519 keypairs · Node Identity Lifecycle                                │
+   │  Membership Certificates · Chain verification · Multi-tenant               │
+   │  Mesh Root · Authority · Epoch · M-of-N Recovery · Mesh Manifest          │
+   └────────────────────────────────────────────────────────────────────────────┘
 ```
+
+**Component References:**
+
+| Layer | SPEC Section |
+|---|---|
+| Application | §I |
+| CLI / SDK | §XX |
+| Intent Language | §X |
+| Policy Engine | §XXXII (post-MVP) |
+| Compiler / Scheduler / FSM | §XIII, §XIV, §XXX |
+| Governance Protocol | §XXXIII |
+| Control Protocol | §VI.1, §XIX.3 |
+| Execution Protocol | §VI.1, §XIX.4 |
+| Discovery Engine | §VI.8 |
+| Data Protocol | §VI.1, §XIX.5 |
+| Witness | §XI |
+| Session Layer | §XVI.5 |
+| Connectivity Layer | §VI.3 |
+| Transport Layer | §VI.2 |
+| Identity + Membership | §VII, §VII.10, §VII.11 |
+
+---
+
+## XXIX. FAILURE MODEL
+
+Every distributed system is defined by how it fails. This section enumerates every failure scenario that SMO's FSM must handle and defines the required transition for each.
+
+### 29.1 Failure Classification
+
+| Class | Examples | Handling Principle |
+|---|---|---|
+| Node failure | Requester crash, Responder crash, Witness crash | Timeout → fallback → log |
+| Network failure | Partition, packet loss, delay, duplicate | Idempotency + retry + bounded wait |
+| Security failure | Key compromise, cert expiry, epoch mismatch | Immediate REJECT + alert |
+| Resource failure | OOM, disk full, CPU starvation | Graceful degradation → REJECT |
+| Governance failure | Authority death, threshold not met, split brain | M-of-N recovery → manual intervention |
+
+### 29.2 Requester Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Requester sends CONTRACT_PROPOSAL then disconnects | Responder waits for `proposal_timeout` (configurable, default 30s). If no CONTRACT_ACCEPT received, transitions to ORPHANED. Orphaned contracts are garbage-collected after `gc_ttl` (default 5min). |
+| Requester crashes after receiving CONTRACT_ACCEPT | Responder proceeds with execution normally. Result is stored; delivery to Requester is retried with exponential backoff (max 3 retries). After all retries exhausted, result is available for pull via contract_id. |
+| Requester sends duplicate CONTRACT_PROPOSAL (same contract_id) | Responder checks contract_id idempotency store. If already processed, returns cached result. If already pending, returns PENDING status. Never executes twice. |
+
+### 29.3 Responder Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Responder crashes mid-execution (after EXEC_START, before EXEC_RESULT) | On restart, Responder reads persisted FSM state. If EXECUTING state found, checks execution outcome via OS (process table, exit code). If process still running, resumes monitoring. If process dead without result, transitions to FAILED with reason "crash during execution." |
+| Responder crashes before persisting CONTRACT_ACCEPT | Requester's CONTRACT_PROPOSAL remains unanswered. Requester times out and may retry on another node. |
+| Responder runs out of resources during execution | Execution is preempted (if scheduler supports preemption) or killed with EXEC_ERROR "resource exhausted." Contract result: FAILED. |
+
+### 29.4 Witness Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Primary witness unreachable | Responder falls back to secondary witness (if configured). If no secondary, proceeds with local decision only. Contract is still executed; witness attestation field is marked as "unavailable." |
+| Witness responds after local decision already made | Witness attestation is stored but not used for the current decision. It is available for audit and trust scoring. |
+| Witness provides conflicting attestation | Responder trusts its own local observation over witness attestation. Conflict is recorded in audit log. Trust score of witness is penalized. |
+
+### 29.5 Network Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Transport disconnects mid-session | Session enters RECONNECTING state. Node attempts reconnection with exponential backoff (1s, 2s, 4s, 8s, max 30s). If reconnected within `session_timeout` (default 60s), session resumes. If not, session is CLOSED. In-flight contracts are handled per Requester/Responder failure rules. |
+| Network partition separates mesh into two groups | Each group continues operating independently. No split-brain prevention at this level — governance protocol (multi-signature) prevents conflicting Authority decisions. When partition heals, DAG reconciliation merges contract histories. |
+| Duplicate packet arrives | Sequence number tracking per session. Duplicates are silently dropped. |
+| Packet delayed beyond timeout | Sender retransmits (Control/Execution/Data protocols over TCP handle this natively). Discovery (UDP) uses sequence numbers and ignore out-of-window packets. |
+
+### 29.6 Security Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Certificate expired | Session is REJECTED at connection time. Node must re-enroll. |
+| Certificate epoch < mesh current_epoch | Session is REJECTED. Node must request new certificate. |
+| Signature verification fails | Packet is dropped. Event is logged as security alert. Repeated failures from same source trigger trust score penalty and potential quarantine. |
+| Nonce replay detected | Packet is dropped. Source node's trust score is penalized. |
+| Key compromise detected (out-of-band) | Authority issues REVOKE_CERT. Epoch MAY be incremented. Node must re-enroll with new keypair. |
+
+### 29.7 Half-Execution (Orphan Contract)
+
+| Scenario | FSM Transition |
+|---|---|
+| EXEC_START sent but Responder crashes before execution begins | On restart, Responder loads persisted FSM state. If state is PENDING or VALIDATING, contract is REJECTED with reason "node restart before execution." Requester receives EXEC_ERROR. |
+| Execution begins (process spawned) but Responder crashes during execution | On restart, Responder checks if the spawned process still exists. If yes, resumes monitoring. If no, transitions to FAILED. The process may become orphaned — the runtime MUST use OS process groups or cgroup tracking to clean up orphaned children on restart. |
+| Requester crashes after receiving EXEC_RESULT but before acknowledging | Responder stores result. Retries delivery with exponential backoff (max 3). After exhaustion, result is available for pull by contract_id. |
+
+### 29.8 Governance Failure
+
+| Scenario | FSM Transition |
+|---|---|
+| Authority node dies | Other Authorities continue operating. New certificates cannot be issued until the dead Authority is replaced via M-of-N governance. Existing certificates signed by the dead Authority remain valid until their natural expiry or epoch increment. |
+| Threshold not met for governance decision | Decision is DEFERRED. Requesters are notified with status "insufficient signatures." A retry with additional signers MAY be attempted. |
+| Two Authorities issue conflicting certificates for the same node | The certificate with the higher epoch wins. If epochs are equal, the one signed by the higher-authority issuer wins (Root > Authority). If still tied, the one with the earlier `issued_at` timestamp wins. |
+
+### 29.9 Failure Model Invariants
+
+1. **Safety over liveness**: When in doubt, REJECT. A failed-safe system is better than a failed-unsafe system.
+2. **Every state has a timeout**: No FSM state may block indefinitely. See Rule 9.
+3. **Idempotency is assumed**: All contract operations are idempotent unless explicitly declared non-idempotent.
+4. **Orphans are collected**: Any contract in PENDING or VALIDATING state for longer than `gc_ttl` (default 5min) is garbage-collected.
+5. **Trust is adjusted**: Every failure event updates the relevant trust score components.
+
+---
+
+## XXX. RESOURCE MODEL
+
+Resource constraints ensure that one execution cannot starve the node or other executions. Constraints are **declared** in the contract and **enforced** by the runtime.
+
+### 30.1 Resource Declaration
+
+Every contract MAY include a resource declaration:
+
+```json
+{
+  "contract_id": "...",
+  "opcode": "EXEC",
+  "parameters": { "command": "..." },
+  "resources": {
+    "cpu_max": "2",            // CPU cores (fractional: 0.5)
+    "cpu_quota_us": 100000,    // CFS quota (Linux cgroup v2)
+    "ram_max": "512MB",        // memory limit
+    "ram_swap_max": "1GB",     // memory + swap limit
+    "io_max": "100MB/s",       // I/O bandwidth limit
+    "timeout_sec": 300,        // maximum wall-clock execution time
+    "grace_sec": 10,           // time allowed for cleanup after timeout
+    "priority": 100,           // 0 (lowest) to 255 (highest)
+    "nice": 10,                // Linux nice value
+    "pid_max": 64,             // max number of child processes
+    "network": true            // allow network access
+  }
+}
+```
+
+All fields are optional. Omitted fields inherit the node's default quota.
+
+### 30.2 Default Quota (Per Node)
+
+| Resource | Default (MVP) | Production |
+|---|---|---|
+| cpu_max | 1 core | Configurable |
+| ram_max | 256MB | Configurable |
+| timeout_sec | 60 | Configurable |
+| priority | 100 | 0–255 |
+| max_concurrent_executions | 4 | Configurable |
+
+### 30.3 Enforcement (Linux Reference)
+
+| Resource | Linux Primitive | MVP Support |
+|---|---|---|
+| CPU | cgroup v2 `cpu.max` | Post-MVP |
+| RAM | cgroup v2 `memory.max` | Post-MVP |
+| I/O | cgroup v2 `io.max` | Post-MVP |
+| Timeout | `alarm()` / `timer_create()` | MVP |
+| Priority | `setpriority()` / cgroup v2 `cpu.weight` | Post-MVP |
+| Process limit | `setrlimit(RLIMIT_NPROC)` | Post-MVP |
+| Network isolation | network namespace | Post-MVP |
+| Syscall filter | seccomp | Post-MVP |
+
+**MVP behavior:** Resource declarations are parsed and validated but NOT enforced at the OS level. The runtime logs a warning if limits are exceeded. Hard enforcement begins in Stage 4.
+
+### 30.4 Resource Accounting
+
+Each node tracks resource usage per execution and cumulatively:
+
+```
+Node Resource State:
+  cpu_used: 2.5 / 8 cores
+  ram_used: 1.2 / 4 GB
+  active_executions: 3 / 10 max
+  quota_by_mesh: { "SOC": { cpu_max: 4, ram_max: "2GB" } }
+```
+
+Before accepting a contract, the Responder checks:
+1. Does the contract's declared resource fit within available resources?
+2. Does the contract's declared resource fit within the mesh's quota?
+3. Does the contract's priority justify preempting a lower-priority execution?
+
+If any check fails, the contract is REJECTED with reason "resource exhaustion" or "quota exceeded."
+
+### 30.5 Resource Model Invariants
+
+1. **Declared resources are ceiling, not allocation**: The runtime guarantees the declared maximum, not a reserved minimum.
+2. **No overcommit in MVP**: Post-MVP, the runtime MAY overcommit resources based on statistical multiplexing.
+3. **Priority is advisory in MVP**: Preemption is not implemented in MVP. Lower-priority executions run to completion before higher-priority ones.
+
+---
+
+## XXXI. PLUGIN ABI
+
+Plugins extend SMO with custom opcodes. The ABI is C, not C++, to ensure cross-language compatibility and stable linking.
+
+### 31.1 Plugin Interface (C ABI)
+
+```c
+/* ABI version — incremented on breaking changes */
+#define SMO_PLUGIN_ABI_VERSION 1
+
+/* Opaque handle to runtime context */
+typedef struct smo_ctx smo_ctx;
+
+/* Error codes */
+typedef enum {
+  SMO_OK = 0,
+  SMO_ERR_UNKNOWN = -1,
+  SMO_ERR_INVALID_PARAM = -2,
+  SMO_ERR_NOT_FOUND = -3,
+  SMO_ERR_PERMISSION = -4,
+  SMO_ERR_TIMEOUT = -5,
+  SMO_ERR_RESOURCE = -6,
+  SMO_ERR_INTERNAL = -7,
+} smo_error_t;
+
+/* Plugin descriptor — one per shared object */
+typedef struct {
+  uint32_t    abi_version;       /* MUST be SMO_PLUGIN_ABI_VERSION */
+  const char* name;              /* human-readable plugin name */
+  const char* version;           /* plugin version string */
+  uint32_t    api_version;       /* plugin's own API version */
+
+  /* Lifecycle */
+  smo_error_t (*init)(const smo_plugin_config* config);
+  smo_error_t (*shutdown)(void);
+
+  /* Opcode handler — called by runtime for each contract */
+  smo_error_t (*execute)(const smo_contract* contract, smo_ctx* ctx);
+
+  /* Health check — called by runtime periodically */
+  smo_error_t (*health)(char* status_out, size_t status_max);
+} smo_plugin_v1;
+```
+
+### 31.2 Plugin Lifecycle
+
+```
+LOAD      → dlopen() / LoadLibrary()
+  ↓
+INIT      → plugin->init(config)
+  ↓
+ACTIVE    → plugin->execute(contract, ctx)  // called per contract
+  ↓            plugin->health(status)       // called every heartbeat interval
+SHUTDOWN  → plugin->shutdown()
+  ↓
+UNLOAD    → dlclose()
+```
+
+### 31.3 Language Bindings
+
+| Language | Binding Mechanism | Status |
+|---|---|---|
+| C/C++ | Direct `.so` / `.dll` via `dlopen` | Native |
+| Rust | `extern "C"` export with `#[no_mangle]` | Wrapper needed |
+| Go | `cgo` with `//export` directives | Wrapper needed |
+| Zig | `export fn` with C calling convention | Native |
+| Python | `ctypes.CDLL` loading `.so` | Wrapper needed |
+
+### 31.4 Sandboxing (Future)
+
+- **MVP**: Plugins are loaded in-process. No sandboxing. Only trusted plugins.
+- **Stage 8**: WASM sandbox via the same C ABI. The WASM runtime exports `smo_plugin_v1`; SMO loads it as a standard plugin.
+- **Stage 8+**: seccomp + Landlock for filesystem and syscall filtering.
+
+### 31.5 Plugin ABI Invariants
+
+1. **The C ABI is the ONLY stable interface.** C++ plugins must use `extern "C"`.
+2. **Plugins never block the runtime.** Long-running operations must use async callbacks.
+3. **Plugins must be reentrant.** A single plugin instance may handle multiple contracts concurrently.
+4. **ABI version must match.** Runtime rejects plugins with mismatched `abi_version`.
+
+---
+
+## XXXII. POLICY ENGINE (Post-MVP Design)
+
+The Policy Engine is SMO's programmable decision layer. It allows operators to define fine-grained rules for contract acceptance beyond capability checks.
+
+### 32.1 Design Goals
+
+- **Local evaluation**: Policy is evaluated on the Responder node, not shipped to a central server.
+- **Composable**: Policies can be combined (AND, OR, NOT) and reference each other.
+- **Context-aware**: Policies have access to trust scores, resource state, time, mesh identity, and previous contract outcomes.
+- **Fail-closed**: If the policy engine cannot evaluate a rule, the default is REJECT.
+
+### 32.2 Policy Rule Syntax (Design Sketch)
+
+```
+// Examples — not final syntax
+
+allow "EXEC on production nodes"
+  when opcode == "EXEC"
+    and mesh == "SOC-Production"
+    and requester.trust > 0.8
+    and node.cpu < 80
+    and time.between("08:00", "17:00")
+    and hostname matches "web-*"
+
+deny "QUARANTINE outside business hours"
+  when opcode == "QUARANTINE"
+    and not time.between("06:00", "22:00")
+
+allow "FS_READ for SOC analysts"
+  when opcode in ["LS", "GET"]
+    and requester.role == "CONTRIBUTOR"
+    and node.filesystem == "/shared"
+```
+
+### 32.3 Policy Evaluation Order
+
+```
+1. Capability check (hardcoded — always evaluated first)
+2. Certificate check (always evaluated)
+3. Policy Engine rules (if configured)
+4. Trust threshold check
+5. Resource availability check
+6. Local decision → ACCEPT or REJECT
+```
+
+Policy rules are evaluated at step 3. If no policy engine is configured, evaluation skips to step 4.
+
+### 32.4 Deployment
+
+- Policy is defined in the **Mesh Manifest** (`mesh.yaml`) or in a separate local file.
+- Policy is NOT a protocol message. It is local configuration.
+- Each node MAY define its own local policy that extends or overrides mesh-level policy.
+- Mesh-level policy is signed by M-of-N Authorities and distributed via gossip (GOVERNANCE_PROPOSAL).
+
+### 32.5 Out of MVP Scope
+
+The Policy Engine is explicitly post-MVP. MVP uses hardcoded policy rules:
+- Capabilities must match opcode requirements.
+- Certificate must be valid.
+- Session must be valid.
+- Trust must be above local threshold.
+
+---
+
+## XXXIII. MESH GOVERNANCE
+
+The most critical architectural gap. Governance defines **how the mesh governs itself** — who can make decisions, how many signatures are required, and how conflicts are resolved.
+
+### 33.1 Governance vs Authority
+
+| Concept | Authority | Governance |
+|---|---|---|
+| Scope | Per-node role | Mesh-wide decision process |
+| Action | Sign certificates, grant capabilities | Create Authority, change policy, split mesh |
+| Signers | Single Authority | M-of-N Authorities |
+| Protocol | CSR, CAP_GRANT, REVOKE_CERT | GOVERNANCE_PROPOSAL |
+| Verification | Single signature chain | Multi-signature threshold |
+
+**Governance is NOT a feature of the Authority role. It is a separate protocol layer.**
+
+### 33.2 Governance Operations
+
+| Operation | Required Signers | Current MVP |
+|---|---|---|
+| Create new Authority | M-of-N Root Authorities | Root only (single sig) |
+| Revoke Authority certificate | M-of-N Root Authorities | Root only |
+| Change mesh-level policy | M-of-N Authorities | Not defined |
+| Increment Epoch | M-of-N Authorities | Root only |
+| Override governance decision | M-of-N + 1 (supermajority) | Not defined |
+| Split mesh into two | M-of-N + governance contract | Not defined |
+| Merge two meshes | Both meshes agree (M-of-N each) | Not defined |
+
+### 33.3 Governance Protocol Message
+
+```
+Namespace: CONTROL
+Message:   GOVERNANCE_PROPOSAL (0x02 0x70)
+
+Payload:
+{
+  "governance_id": "gov-001",
+  "action": "AUTHORITY_CREATE" | "POLICY_CHANGE" |
+            "EPOCH_INCREMENT"  | "MESH_SPLIT"   |
+            "MESH_MERGE"       | "RECOVERY",
+  "mesh_id": "SOC-Production",
+  "payload": { ... },                         // action-specific data
+  "threshold": 3,                             // required signatures
+  "signers": ["Authority-A", "Authority-B"],  // who has signed so far
+  "signatures": ["sig_a...", "sig_b..."],
+  "created_at": "...",
+  "expires_at": "..."                         // governance decisions expire
+}
+```
+
+### 33.4 Governance Flow
+
+```
+1. Proposer creates GOVERNANCE_PROPOSAL with action and payload
+2. Proposal is gossiped to all Authorities
+3. Each Authority independently evaluates and MAY sign
+4. When signature count >= threshold → proposal is ACCEPTED
+5. ACCEPTED proposal is committed to all nodes via gossip
+6. All nodes apply the governance decision locally
+7. If proposal expires before threshold is met → REJECTED
+```
+
+### 33.5 Split-Brain Prevention
+
+When a mesh splits into two partitions:
+
+1. Each partition continues operating independently.
+2. Each partition MAY elect its own Authorities (if it has M-of-N).
+3. When partitions reconnect, governance records are compared.
+4. Divergent governance histories are resolved by:
+   a. The partition with the higher epoch wins.
+   b. If epochs equal, the partition with more Authority signatures wins.
+   c. If still tied, manual intervention required — operators choose which governance history to keep.
+5. The losing partition's governance decisions are rolled back where possible.
+
+### 33.6 Governance Invariants
+
+1. **No single point of governance failure**: M-of-N threshold ensures no single Authority can make unilateral governance decisions.
+2. **Governance decisions are idempotent**: Applying the same governance decision twice produces the same result.
+3. **Governance history is append-only**: Once a governance decision is committed, it is never removed. Corrections are new governance decisions.
+4. **Governance expires**: All governance proposals have a time-to-live. Expired proposals are garbage-collected.
+
+### 33.7 MVP Governance
+
+MVP uses simplified governance:
+- Single Root Authority (no M-of-N).
+- Root can create new Authorities.
+- Root can increment Epoch.
+- Root can revoke certificates.
+- No policy change protocol.
+- No mesh split/merge.
+
+Full M-of-N governance is post-MVP (Stage 7).
 
 ---
 
