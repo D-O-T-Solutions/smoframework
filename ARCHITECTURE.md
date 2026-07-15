@@ -124,39 +124,112 @@ force a fleet-wide compromise.
 
 ---
 
-## Why These Seven Layers?
+## Why Identity + Membership (not Just Keys)?
+
+A keypair proves you can sign. It does not prove you belong to the mesh.
+
+SMO separates **identity** (I am node X) from **membership** (node X belongs to Mesh Y with capabilities Z). Identity is a static Ed25519 keypair generated once. Membership is a signed certificate (.smoc) issued by a mesh Authority, carrying a role, capability set, epoch, and expiry.
+
+This separation means:
+- One node can belong to multiple meshes with different certificates.
+- Compromising a mesh Authority does not compromise the node's base identity.
+- Membership can be revoked by epoch increment without changing the node's keypair.
+- Any node can verify any other node's membership by walking the certificate chain to the Root Public Key.
+
+The Root Key never touches a network. It is generated during mesh creation, signs the first Authority certificate, exported as an encrypted Recovery Package, and deleted from runtime. Recovery requires M-of-N threshold shares via Shamir Secret Sharing.
+
+---
+
+## Why Four Protocol Layers (not One)?
+
+Most systems use a single protocol for everything. SMO splits the wire into four independent protocol namespaces, each with its own transport characteristics:
+
+- **Discovery Protocol (UDP):** HELLO, PING, heartbeat, gossip. Stateless, lossy, no ordering guarantees. Designed for fast failure detection and membership propagation.
+- **Control Protocol (TCP):** Contracts, sessions, certificates, witness attestations, capability grants. Stateful, ordered, reliable. The "control plane" of the mesh.
+- **Execution Protocol (TCP):** Execution start, progress, events, results, cancel. Separated from control so that long-running executions do not block certificate or contract operations.
+- **Data Protocol (TCP):** Large data transfers via chunked streaming (CHANNEL_OPEN, CHUNK, ACK, NACK, FIN). Separated so that data transfer does not interfere with execution signaling.
+
+This separation guarantees that a bulk data transfer does not delay a witness attestation, and a slow execution does not block certificate renewal. Each protocol gets the transport it needs — unreliable UDP for discovery, reliable TCP for everything else.
+
+---
+
+## Why Connectivity Layer?
+
+Nodes behind NAT cannot accept inbound TCP connections. SMO bakes NAT traversal into the architecture instead of assuming direct connectivity.
+
+The Connectivity Layer implements:
+- **STUN (RFC 8489):** Discover the node's own mapped address and port.
+- **ICE (RFC 8445):** Gather candidate pairs (host, server-reflexive, relayed), test connectivity, select the best working pair.
+- **UDP hole punch:** Establish direct peer-to-peer UDP channels through NAT.
+- **TURN relay (RFC 8656):** Fallback when direct paths fail.
+
+This layer is optional for LAN deployments and mandatory for WAN/Internet meshes. It sits below the Session Layer, so higher protocols (Discovery, Control, Execution, Data) are unaware of NAT — they just see a connected session.
+
+No third-party networking libraries. All STUN/ICE/TURN are implemented from RFCs. The Connectivity Layer is the only component that touches NAT; everything above it assumes a working session.
+
+---
+
+## Why Session Binding (Two-Factor)?
+
+A certificate proves membership. A signed nonce proves key possession. SMO requires both.
+
+Session establishment:
+1. Node A connects to Node B.
+2. Node B sends a random 32-byte nonce.
+3. Node A signs the nonce with its Ed25519 private key.
+4. Node B verifies: signature matches A's PublicKey, PublicKey matches A's certificate, certificate chain verifies up to Root, epoch is current, certificate is not expired.
+
+Two independent security layers must be valid. Certificate alone is not enough (the node could be using a stolen cert). Signed nonce alone is not enough (it proves possession but not membership). Both together prevent replay, impersonation, and key-only attacks.
+
+---
+
+## Why These Twelve Layers?
 
 ```
+APPLICATION
 CLI / SDK
-Intent Language
-Execution Compiler
-DAG Scheduler
-Node Execution FSM
-Consensus + Trust Engine
-Transport Abstraction
+INTENT LANGUAGE
+COMPILER + SCHEDULER + FSM
+  ┌──────────────────────────────┐
+  │  CONTROL PROTOCOL  (TCP)     │
+  │  EXECUTION PROTOCOL (TCP)   │
+  │  DISCOVERY PROTOCOL (UDP)   │
+  │  DATA PROTOCOL     (TCP)    │
+  ├──────────────────────────────┤
+  │  SESSION + CERTIFICATE       │
+  ├──────────────────────────────┤
+  │  CONNECTIVITY (STUN/ICE)     │
+  ├──────────────────────────────┤
+  │  TRANSPORT (TCP/UDP)         │
+  ├──────────────────────────────┤
+  │  IDENTITY + MEMBERSHIP       │
+  └──────────────────────────────┘
 ```
 
 Each layer has exactly one responsibility. No layer bypasses the layer below it.
 
-- **CLI/SDK** is the user's entry point. It speaks in intents.
-- **Intent Language** is the contract format (JSON/YAML today, .seme tomorrow).
-- **Compiler** turns intent into a DAG.
-- **Scheduler** walks the DAG and dispatches tasks.
-- **FSM** governs the lifecycle of each execution on each node.
-- **Trust engine** provides decision support (not decision authority).
-- **Transport** is a pluggable abstraction (TCP today, QUIC tomorrow).
+- **Application** — incident response, fleet ops, etc. Uses SMO, is not part of SMO.
+- **CLI/SDK** — user entry point. Speaks in intents via contract JSON/YAML.
+- **Intent Language** — contract format that describes *what*, not *how*.
+- **Compiler → Scheduler → FSM** — turns intent into an immutable DAG, walks it, governs per-node lifecycle.
+- **Four protocol layers** — Discovery (UDP, stateless), Control (TCP, stateful), Execution (TCP, streaming), Data (TCP, chunked). Separated so slow ops never block critical ops.
+- **Session + Certificate** — two-factor binding: valid cert chain + signed nonce. Both required.
+- **Connectivity** — STUN/ICE/TURN for NAT traversal. Optional on LAN, mandatory on WAN. No third-party networking libs.
+- **Transport** — raw TCP/UDP sockets. Pluggable for future QUIC, Unix sockets.
+- **Identity + Membership** — Ed25519 keypairs, certificate chain (Root → Authority → Node), Capability Epoch, M-of-N recovery.
 
 The layering guarantees that you can replace any layer without affecting the others.
 Swap TCP for QUIC? The FSM does not change.
 Swap JSON for FlatBuffers? The scheduler does not change.
 Swap the trust formula? The contract format does not change.
+Add a new protocol? The transport layer does not change.
 
 ---
 
 ## Key Architectural Properties
 
 | Property | How SMO Achieves It |
-|---|---|
+|---|---|---|
 | Non-repudiation | Three-party contract records (Requester, Responder, Witness) |
 | No single point of failure | No global state; witness fallback to local decision |
 | Graceful degradation | Fewer witnesses → local decision. No quorum required |
@@ -164,6 +237,12 @@ Swap the trust formula? The contract format does not change.
 | Composable permissions | Capability bitsets; opcodes declare requirements |
 | Pluggable transport | Transport interface abstracted from runtime |
 | Local autonomy | Responder always has final execution authority |
+| Private key sovereignty | Key never leaves the generating node |
+| Offline root | Root Key generated, used once, exported, deleted from runtime |
+| Epoch-based revocation | Increment epoch to invalidate all old certificates at once |
+| M-of-N recovery | Shamir Secret Sharing for Root Key reconstruction |
+| NAT-independent protocols | Connectivity layer handles STUN/ICE/TURN; upper layers unaware |
+| Two-factor session binding | Certificate (membership) + signed nonce (key possession) |
 
 ---
 
