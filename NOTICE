@@ -1,0 +1,14 @@
+Secure Mesh Operation (SMO)
+
+Copyright (c) 2026 Nguyen Duc Canh
+Copyright (c) 2026 Distributed Offensive Technology Solutions Co., Ltd.
+
+This product includes software developed by:
+- Nguyen Duc Canh (https://github.com/dotlinux26)
+- The simdjson project (https://github.com/simdjson/simdjson)
+- The Open Quantum Safe project (https://github.com/open-quantum-safe/liboqs)
+- The spdlog project (https://github.com/gabime/spdlog)
+- The fmtlib project (https://github.com/fmtlib/fmt)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.

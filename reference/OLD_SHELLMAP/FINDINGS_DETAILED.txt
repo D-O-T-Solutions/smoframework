@@ -1,0 +1,333 @@
+================================================================================
+SHELLMAP CODEBASE - CHI TIẾT CÁC VỊ TRÍ CẦN SỬA CHỮA
+================================================================================
+
+1. PROMPT PRINTING LOCATIONS
+================================================================================
+
+1.1 Definition: CommandHandler::print_prompt()
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/CommandHandler.cpp
+Lines: 135-145
+Function: void CommandHandler::print_prompt()
+
+Code:
+    135: void CommandHandler::print_prompt() {
+    136:     std::cout << COLOR_BRIGHT_CYAN;
+    137:     if (current_target_.empty()) {
+    138:         std::cout << "[ShellMap] ❯ " << COLOR_RESET;
+    139:     } else {
+    140:         // Shorten the target ID to first 8 chars
+    141:         std::string short_id = current_target_.substr(0, 8);
+    142:         std::cout << "[ShellMap] @ " << short_id << " ❯ " << COLOR_RESET;
+    143:     }
+    144:     std::fflush(stdout);
+    145: }
+
+Outputs:
+  - "[ShellMap] ❯ " (when no target)
+  - "[ShellMap] @ <node_id> ❯ " (when connected)
+
+---
+
+1.2 Calls in main.cpp
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/main.cpp
+
+Call #1 - Line 59
+Function: main()
+Context: Initial prompt
+    57:     // Print initial prompt
+    58:     while (true) {
+    59:         cmd_handler->print_prompt();
+
+Call #2 - Line 68
+Function: main()
+Context: After successful command execution
+    67:     } else {
+    68:         cmd_handler->print_prompt();
+
+Call #3 - Line 124
+Function: main()
+Context: After connection failed
+    122:         }
+    123:     } else {
+    124:         cmd_handler->print_prompt();
+
+Call #4 - Line 150
+Function: main()
+Context: Error handling in command processing
+    148:         } catch (const std::exception& e) {
+    149:             std::cerr << "ERROR: " << e.what() << std::endl;
+    150:             cmd_handler->print_prompt();
+
+Call #5 - Line 164
+Function: main()
+Context: Resume after interrupt
+    162:         } // catch
+    163:     } // while
+    164:     cmd_handler->print_prompt();
+
+---
+
+1.3 Definition in main2.cpp (DUPLICATE!)
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/main2.cpp
+Line: 70
+Function: void print_prompt() // STANDALONE FUNCTION (NOT CLASS METHOD)
+
+Code:
+    70: void print_prompt() {
+    71:     std::cout << "[ShellMap] ❯ ";
+    72:     std::fflush(stdout);
+    73: }
+
+WARNING: This is a SEPARATE function, not CommandHandler::print_prompt()!
+
+Calls in main2.cpp:
+    Line 690: print_prompt(); // in some function
+    Line 995: print_prompt();
+    Line 1310: print_prompt();
+    Line 1407: print_prompt();
+    Line 1434: print_prompt();
+
+================================================================================
+
+2. [HANDSHAKE-FINAL] LOG REMAINING
+================================================================================
+
+2.1 ACTIVE LOG - MUST BE REMOVED/COMMENTED
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+Line: 482
+Function: void ProtocolManager::handle_auth()
+
+Code Block:
+    480: void ProtocolManager::handle_auth(PacketHeader& hdr, std::vector<uint8_t>& payload, const sockaddr_in& sender) {
+    481:     std::string peer_id_str = sender_id_to_string(hdr.sender_id);
+    482:     std::cout << "\n[HANDSHAKE-FINAL] Received AUTH from " << peer_id_str.substr(0, 8) << "..." << std::endl;
+    483:     
+    484:     auto session = session_mgr_->get_session(peer_id_str);
+    485:     if (!session) {
+    486:         std::cerr << "[PROTOCOL] No session found for AUTH" << std::endl;
+    487:         return;
+    488:     }
+
+Status: LIVE (std::cout is ACTIVE)
+Action Required: Comment this line to match other handshake logs
+
+---
+
+2.2 COMMENTED LOGS (for reference)
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+
+Line 497 (inside handle_auth):
+    // std::cout << "[HANDSHAKE-FINAL] Extracted initiator Kyber SS from AUTH: " 
+    //           << bytes_to_hex_short(initiator_kyber_ss) << "..." << std::endl;
+
+Line 516 (inside handle_auth):
+    // std::cout << "[HANDSHAKE-FINAL] Keys established successfully" << std::endl;
+
+Line 522 (inside handle_auth):
+    // std::cout << "[HANDSHAKE-FINAL] === SESSION ESTABLISHED ===" << std::endl;
+
+================================================================================
+
+3. FILE OPERATION REQUEST/RESPONSE FLOW
+================================================================================
+
+3.1 handle_fs_list_req() - Server Side
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+Lines: 724-823
+Function: void ProtocolManager::handle_fs_list_req()
+
+What it does:
+    - Receives FS_LIST_REQ from client
+    - Decrypts payload (uses AES-256-GCM)
+    - Parses path: [path_len (2B)][path]
+    - Validates path (security check)
+    - Lists actual directory: "shellmap/shared/" + path
+    - Builds FS_LIST_RES packet with real file data
+    - Sends encrypted response
+
+Key Code:
+    724: void ProtocolManager::handle_fs_list_req(PacketHeader& hdr, std::vector<uint8_t>& payload, const sockaddr_in& sender) {
+    725:     // Decode sender ID
+    726:     std::string sender_id_str = sender_id_to_string(hdr.sender_id);
+    ...
+    768:     // Build actual file path
+    769:     std::string full_path = "shellmap/shared/" + (path.empty() ? "" : path);
+    ...
+    773:     try {
+    774:         fs::path dir_path(full_path);
+    775:         if (!fs::exists(dir_path) || !fs::is_directory(dir_path)) {
+    776:             // Directory doesn't exist, return empty list
+    777:             response.push_back(0);
+    778:             response.push_back(0);  // count = 0
+    779:         } else {
+    780:             // Build file list as: "name1|size1|type1;name2|size2|type2;..."
+    781:             std::string file_list;
+    782:             int file_count = 0;
+    783:             
+    784:             for (const auto& entry : fs::directory_iterator(dir_path)) {
+    785:                 if (file_count > 0) file_list += ";";
+    786:                 
+    787:                 file_list += entry.path().filename().string() + "|";
+    788:                 file_list += std::to_string(fs::is_directory(entry) ? 0 : fs::file_size(entry)) + "|";
+    789:                 file_list += fs::is_directory(entry) ? "dir" : "file";
+    790:                 
+    791:                 file_count++;
+    792:             }
+
+Status: ✅ WORKING - Performs REAL directory listing
+
+---
+
+3.2 cmd_ls() - Client Side
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/CommandHandler.cpp
+Lines: 512-561
+Function: bool CommandHandler::cmd_ls()
+
+Current behavior:
+    512: bool CommandHandler::cmd_ls(const std::vector<std::string>& args) {
+    513:     // Use helper to resolve IP:Port to node_id
+    514:     if (!get_active_session()) {
+    515:         return false;
+    516:     }
+    ...
+    525:     // Send FS_LIST_REQ packet
+    526:     std::string path = args.size() > 1 ? args[1] : session->current_remote_dir;
+    527:     
+    528:     // Build payload: [path_len (2 bytes)][path]
+    529:     std::vector<uint8_t> payload;
+    530:     uint16_t path_len = path.length();
+    531:     payload.push_back((path_len >> 8) & 0xFF);
+    532:     payload.push_back(path_len & 0xFF);
+    533:     payload.insert(payload.end(), path.begin(), path.end());
+    ...
+    552:     // Send encrypted packet
+    553:     try {
+    554:         std::vector<uint8_t> encrypted = session_mgr_->encrypt_message(current_target_, payload);
+    555:         net_engine_.send_packet(hdr, encrypted, session->peer_ip, session->peer_port);
+    556:         
+    557:         std::cout << COLOR_YELLOW << "[LS] Listing directory..." << COLOR_RESET << std::endl;
+    558:         // In a real implementation, we would wait for FS_LIST_RES and parse the response
+    559:         std::cout << COLOR_CYAN << "." << COLOR_RESET << std::endl;
+    560:         std::cout << COLOR_CYAN << ".." << COLOR_RESET << std::endl;
+    561:         return true;
+
+ISSUES:
+1. Line 559-560: HARDCODED "." and ".." output
+2. Line 558: Comment admits no response handling
+3. Missing: Wait for FS_LIST_RES packet from peer
+
+Status: ⚠️ INCOMPLETE - Sends request but ignores response
+
+What should happen:
+    - Send FS_LIST_REQ
+    - Wait for FS_LIST_RES from peer
+    - Parse response
+    - Display actual files
+
+================================================================================
+
+4. ROUTING TABLE UPDATE FLOW
+================================================================================
+
+4.1 handle_welcome() - Updates routing table
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+Lines: 351-476
+Function: void ProtocolManager::handle_welcome()
+
+When routing table gets updated:
+    472:     session->state = SessionManager::SessionState::ESTABLISHED;
+    473:     // HOTFIX: Register peer in routing table when session becomes ESTABLISHED
+    474:     route_table_.update_route(peer_id_str, session->peer_ip, session->peer_port);
+    475:     // std::cout << "[HANDSHAKE-3] === SESSION ESTABLISHED ===" << std::endl;
+
+Status: ✅ YES - route_table_.update_route() called at line 474
+
+---
+
+4.2 handle_auth() - Updates routing table
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+Lines: 480-523
+Function: void ProtocolManager::handle_auth()
+
+When routing table gets updated:
+    519:     session->state = SessionManager::SessionState::ESTABLISHED;
+    520:     // HOTFIX: Register peer in routing table when session becomes ESTABLISHED
+    521:     route_table_.update_route(peer_id_str, session->peer_ip, session->peer_port);
+    522:     // std::cout << "[HANDSHAKE-FINAL] === SESSION ESTABLISHED ===" << std::endl;
+
+Status: ✅ YES - route_table_.update_route() called at line 521
+
+---
+
+4.3 cmd_list_nodes() - DOES NOT USE ROUTING TABLE!
+Location: /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/CommandHandler.cpp
+Lines: 334-360
+Function: bool CommandHandler::cmd_list_nodes()
+
+Current implementation:
+    334: bool CommandHandler::cmd_list_nodes(const std::vector<std::string>& args) {
+    335:     std::cout << "\n" << COLOR_BRIGHT_CYAN << "Known Nodes in Routing Table" << COLOR_RESET << "\n\n";
+    336:     
+    337:     // Get all nodes from routing table
+    338:     // Note: We need to add a get_all_nodes() method to RoutingTable if it doesn't exist
+    339:     // For now, we'll display a placeholder with proper formatting
+    340:     
+    341:     // Draw table header with proper column widths
+    342:     std::vector<int> widths = {20, 25, 15, 20};
+    343:     std::cout << std::left;
+    344:     std::cout << "| " << std::setw(20) << "NODE ID" 
+    345:               << "| " << std::setw(25) << "ADDRESS"
+    346:               << "| " << std::setw(15) << "TYPE"
+    347:               << "| " << std::setw(20) << "LAST SEEN" << "|\n";
+    348:     
+    349:     // Separator line
+    350:     std::cout << "|" << std::string(22, '-') << "|" << std::string(27, '-') 
+    351:               << "|" << std::string(17, '-') << "|" << std::string(22, '-') << "|\n";
+    352:     
+    353:     // TODO: Iterate through route_table to get real nodes
+    354:     // For now showing placeholder
+    355:     
+    356:     std::cout << "|" << std::string(22, '-') << "|" << std::string(27, '-') 
+    357:               << "|" << std::string(17, '-') << "|" << std::string(22, '-') << "|\n";
+    358:     std::cout << COLOR_YELLOW << "(To see nodes, connect to a peer network or bootstrap from SuperNode)" << COLOR_RESET << "\n\n";
+    359:     return true;
+    360: }
+
+CRITICAL ISSUE:
+1. Line 353: TODO comment - "Iterate through route_table to get real nodes"
+2. Line 354: "For now showing placeholder"
+3. No actual iteration over route_table_
+4. No actual iteration over session_mgr_->get_all_sessions()
+5. Only prints table header and footer
+
+Comparison with cmd_peers() (correct implementation):
+    168: auto all_sessions = session_mgr_->get_all_sessions();
+    169: for (const auto& [node_id, sess] : all_sessions) {
+         // Iterate over SessionManager (CORRECT)
+
+Status: ❌ BROKEN - Should iterate over route_table_ but shows placeholder
+
+Fix needed:
+    - Access route_table_ member variable
+    - Call route_table_ methods to get all nodes
+    - OR iterate over all_sessions from SessionManager
+
+================================================================================
+
+SUMMARY TABLE
+================================================================================
+
+Issue                          | Line | File              | Status | Action
+-------------------------------|------|-------------------|--------|--------
+print_prompt() definition      | 135  | CommandHandler.cpp| LIVE   | OK
+print_prompt() calls (main.cpp)| 59,68,124,150,164 | main.cpp | LIVE | OK
+Duplicate print_prompt()       | 70   | main2.cpp         | LIVE   | Remove
+[HANDSHAKE-FINAL] active log   | 482  | ProtocolManager.cpp | LIVE | Comment
+handle_fs_list_req()           | 724  | ProtocolManager.cpp | OK | OK
+cmd_ls() placeholders          | 559-560 | CommandHandler.cpp | BROKEN | Fix
+handle_welcome() routing       | 474  | ProtocolManager.cpp | OK | OK
+handle_auth() routing          | 521  | ProtocolManager.cpp | OK | OK
+cmd_list_nodes() empty         | 353-354 | CommandHandler.cpp | BROKEN | Implement
+
+================================================================================

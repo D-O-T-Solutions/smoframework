@@ -1,0 +1,9 @@
+peers
+connect 127.0.0.1:5556
+ls
+sleep 1
+ls
+get welcome.txt
+sleep 2
+mydownload
+exit

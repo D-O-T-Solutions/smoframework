@@ -1,0 +1,5 @@
+add_executable(smo-cli main.cpp)
+target_link_libraries(smo-cli PRIVATE smo_sdk smo_tooling)
+smo_set_warnings(smo-cli)
+smo_set_optimisation(smo-cli)
+smo_link_dependencies(smo-cli)

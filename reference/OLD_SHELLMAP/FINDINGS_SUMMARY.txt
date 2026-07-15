@@ -1,0 +1,219 @@
+================================================================================
+SHELLMAP CODEBASE ANALYSIS - EXECUTIVE SUMMARY
+================================================================================
+
+PROJECT LOCATION: /home/nguyenduccanh/shellmap_project/hello/ShellMap
+
+================================================================================
+1. LOG SOURCES TO SUPPRESS
+================================================================================
+
+[CRITICAL ISSUES]
+
+A. ORPHANED HEARTBEAT LOGS (ProtocolManager.cpp)
+   - Lines 1512-1513: Partial output without prefix
+   - Line 1519: Partial output without prefix
+   - Issue: Parent log lines (1511, 1518) are commented, leaving incomplete messages
+   - Fix: Either remove orphaned lines OR uncomment parent lines
+
+B. [DISPATCH] NAT UPDATE LOG (ProtocolManager.cpp)
+   - Line 57: std::cout << "[DISPATCH] Peer address updated (possibly Symmetric NAT)"
+   - Frequency: Very high (fires on every address change)
+   - Fix: Comment out or implement rate limiting
+
+C. VERBOSE PING LOGS (Already commented - Status OK)
+   - Lines 535, 558, 581, 1309, 1348, 1552, 1624 are already suppressed
+   - These are debug logs for detailed PING protocol tracing
+
+D. ERROR LOGS TO KEEP (Important for debugging)
+   - Line 539: Invalid PING payload size
+   - Line 583: No session for PING sender
+   - Line 1344: Failed to send PING packet
+   - Line 1555: Failed to send PING (heartbeat)
+   - Line 1600: Cannot send PING_ACK
+   - Line 1620: Failed to send PING_ACK
+   These are legitimate error conditions
+
+E. NONCE/REPLAY DETECTION (Intentionally suppressed)
+   - Line 64: Replay detection log is commented
+   - Reason: PING packets legitimately trigger false positives due to timestamp-based nonces
+
+================================================================================
+2. FILE OPERATIONS IMPLEMENTATION STATUS
+================================================================================
+
+COMMAND: cmd_ls()
+Location: CommandHandler.cpp line 506
+Status: REQUEST FULLY IMPLEMENTED ✓ | RESPONSE STUB ✗
+- Client sends FS_LIST_REQ encrypted packets correctly
+- Server handler (handle_fs_list_req) is fully implemented
+- Response handler (handle_fs_list_res) at line 825 is empty stub - NEEDS IMPLEMENTATION
+
+COMMAND: cmd_get()
+Location: CommandHandler.cpp line 562
+Status: REQUEST FULLY IMPLEMENTED ✓ | RESPONSE STUB ✗
+- Client sends FS_DATA_REQ encrypted packets correctly
+- Server handler (handle_fs_data_req) is fully implemented
+- Response handler (handle_fs_data_res) at line 997 is empty stub - NEEDS IMPLEMENTATION
+
+COMMAND: cmd_put()
+Location: CommandHandler.cpp line 620
+Status: REQUEST FULLY IMPLEMENTED ✓ | DATA UPLOAD NOT IMPLEMENTED ✗
+- Client sends FS_PUT_META_REQ correctly
+- Server handlers both fully implemented
+- MISSING: Actual file chunk upload logic (FS_PUT_DATA sending)
+- Response handler (handle_fs_put_meta_res) at line 1073 is empty stub
+
+COMMAND: cmd_cd()
+Location: CommandHandler.cpp line 711
+Status: REQUEST FULLY IMPLEMENTED ✓ | RESPONSE STUB ✗
+- Client sends FS_META_REQ correctly
+- Server handler (handle_fs_meta_req) is fully implemented
+- Response handler (handle_fs_meta_res) at line 902 is empty stub - NEEDS IMPLEMENTATION
+- Note: Directory is updated optimistically without waiting for response
+
+================================================================================
+3. FILE OPERATIONS RESPONSE HANDLERS
+================================================================================
+
+All 4 response handlers are EMPTY STUBS:
+
+handle_fs_list_res() - Line 825
+  Expected: Parse file list and display to user
+  Current: Empty stub (only commented debug log)
+
+handle_fs_data_res() - Line 997
+  Expected: Receive file chunks and save to disk
+  Current: Empty stub (only commented debug log)
+
+handle_fs_meta_res() - Line 902
+  Expected: Validate directory check response
+  Current: Empty stub (only commented debug log)
+
+handle_fs_put_meta_res() - Line 1073
+  Expected: Handle server acceptance/rejection of file upload
+  Current: Empty stub (only commented debug log)
+
+IMPACT: File operations send requests but client ignores responses, making them non-functional
+
+================================================================================
+4. PEERS TABLE STRUCTURE
+================================================================================
+
+CURRENT IMPLEMENTATION: cmd_list_peers() line 263
+
+Current columns (4 total):
+  1. NODE ID (width 22)
+  2. ADDRESS (width 22)
+  3. STATUS (width 17)
+  4. ENCRYPTION (width 22)
+
+MISSING: Index column (#)
+
+TO ADD INDEX COLUMN:
+  1. Line 274: Update widths vector to {4, 22, 22, 17, 22}
+  2. Lines 276-279: Add header "| " + std::setw(4) << "#"
+  3. Lines 282-283: Add separator "|" + std::string(4, '-')
+  4. Line 286: Add index counter in loop
+  5. Output row: Add "| " + std::setw(4) << index before short_id
+
+This enables "switch to session N" or "return N" functionality for session switching
+
+================================================================================
+5. SESSION SWITCHING MECHANISM
+================================================================================
+
+CURRENT TARGET STATE: current_target_ (CommandHandler.hpp line 111)
+  - Stores either: IP:Port string or full node_id hex string
+  - Used by all file operations for identifying active session
+
+WHERE CURRENT_TARGET IS SET:
+  1. cmd_connect() -> set_current_target() at line 85
+  2. get_active_session() at line 177 (maps IP:Port to real node_id)
+
+WHERE CURRENT_TARGET IS USED:
+  - cmd_ls() lines 513, 543, 547
+  - cmd_get() lines 574, 603, 607
+  - cmd_put() lines 632, 675, 679
+  - cmd_cd() lines 723, 752, 756
+  - cmd_pwd() line 699
+  - cmd_ping() lines 383-402
+
+GETTING ALL ACTIVE SESSIONS:
+  Method: SessionManager::get_all_sessions() (SessionManager.hpp line 162)
+  Returns: std::map<std::string, std::shared_ptr<Session>>
+  Used by:
+    - cmd_list_peers() line 266 (displays table)
+    - send_heartbeat_pings() line 1488 (sends PINGs)
+
+SESSION STATE MACHINE:
+  NONE -> INITIATED -> WELCOME_RECEIVED -> ESTABLISHED -> CLOSED
+  (Responder path: NONE -> HELLO_SENT -> WELCOME_SENT -> ESTABLISHED)
+
+MISSING FEATURE: "return N" command not implemented
+  - Would require: Create new command parser for "return" keyword
+  - Use index from peers table to select session number N
+  - Set current_target_ to that session's node_id
+
+================================================================================
+6. NAT-RELATED LOGS
+================================================================================
+
+A. UPDATE_PEER_ADDRESS() - Line 1453
+   Purpose: Track dynamic peer address/port changes due to Symmetric NAT
+   
+   Logs (both SUPPRESSED):
+   - Line 1464: "[NAT-UPDATE] Peer IP changed"
+   - Line 1472: "[NAT-UPDATE] Peer port changed"
+   - Line 1473: "(Symmetric NAT detected!)"
+   
+   Behavior:
+   - Updates session->peer_ip and session->peer_port
+   - Returns true if address changed
+   - Called from dispatch_packet() line 54
+
+B. [DISPATCH] OUTPUT - Line 57
+   - Triggered when update_peer_address() returns true
+   - Outputs: "[DISPATCH] Peer address updated (possibly Symmetric NAT)"
+   - This is the VISIBLE log from NAT updates
+   - Recommendation: Comment out or rate-limit
+
+C. NONCE/REPLAY DETECTION - Lines 60-66
+   Logs (SUPPRESSED):
+   - Line 64: "[PROTOCOL] Replay attack detected"
+   
+   Implementation (Line 192):
+   - verify_nonce() checks if nonce <= previously seen nonce
+   - Maintains nonce_map_[sender_id] = last_nonce_seen
+   
+   Reason for suppression:
+   - Timestamp-based nonce generation causes false positives
+   - PING packets can have old timestamps triggering detection
+   - Not an actual security issue in this context
+
+================================================================================
+SUMMARY OF RECOMMENDED FIXES
+================================================================================
+
+PRIORITY 1 - CRITICAL BUGS:
+  [ ] Fix orphaned heartbeat logs (lines 1512-1513, 1519)
+  [ ] Implement empty response handlers (lines 825, 902, 997, 1073)
+  [ ] Implement file chunk upload logic for cmd_put()
+
+PRIORITY 2 - FUNCTIONALITY:
+  [ ] Add index column to peers table (for session switching)
+  [ ] Implement "return N" command for session switching
+  [ ] Parse and display file lists from FS_LIST_RES
+
+PRIORITY 3 - CLEANUP:
+  [ ] Comment out line 57 [DISPATCH] log
+  [ ] Review if verbose PING logs should ever be re-enabled (lines 558)
+  [ ] Clean up test/debug code in main.cpp
+
+FILES MODIFIED:
+  - /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+  - /home/nguyenduccanh/shellmap_project/hello/ShellMap/src/CommandHandler.cpp
+
+================================================================================
+END OF ANALYSIS
+================================================================================

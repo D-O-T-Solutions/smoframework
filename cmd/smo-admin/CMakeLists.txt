@@ -1,0 +1,5 @@
+add_executable(smo-admin main.cpp)
+target_link_libraries(smo-admin PRIVATE smo_sdk smo_tooling)
+smo_set_warnings(smo-admin)
+smo_set_optimisation(smo-admin)
+smo_link_dependencies(smo-admin)

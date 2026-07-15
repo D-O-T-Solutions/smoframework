@@ -1,0 +1,6 @@
+{
+    "is_relay": false,
+    "node_name": "Anonymous_Node",
+    "port": 5555,
+    "storage_limit_mb": 1024
+}

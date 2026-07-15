@@ -1,0 +1,131 @@
+================================================================================
+SHELLMAP - QUICK REFERENCE - ALL ISSUES AT A GLANCE
+================================================================================
+
+TOTAL ISSUES FOUND: 4
+TOTAL CODE LOCATIONS: 7 + 3 routing table locations = 10
+
+================================================================================
+1. PROMPT PRINTING [✅ FOUND 7 LOCATIONS]
+================================================================================
+
+PRIMARY:
+  File: src/CommandHandler.cpp
+  Line: 135-145
+  Function: void CommandHandler::print_prompt()
+  Output: "[ShellMap] ❯ " or "[ShellMap] @ <id> ❯ "
+
+CALLS IN main.cpp:
+  Line 59   - Initial prompt
+  Line 68   - After command success
+  Line 124  - Connection failed
+  Line 150  - Error handling
+  Line 164  - Resume after exception
+
+DUPLICATE IN main2.cpp:
+  Line 70   - Separate print_prompt() definition ⚠️ DUPLICATE
+  Line 690, 995, 1310, 1407, 1434 - Calls to this function
+
+================================================================================
+2. [HANDSHAKE-FINAL] LOG [⚠️ FOUND 1 ACTIVE LOG]
+================================================================================
+
+FILE: src/ProtocolManager.cpp
+LINE: 482 🔴 ACTIVE (NEEDS COMMENTING)
+FUNCTION: void ProtocolManager::handle_auth()
+
+CODE:
+  std::cout << "\n[HANDSHAKE-FINAL] Received AUTH from " << peer_id_str.substr(0, 8) << "..." << std::endl;
+
+ACTION: Comment this single line
+
+OTHER LOGS (already commented):
+  Line 497: Extracted initiator Kyber SS
+  Line 516: Keys established successfully
+  Line 522: SESSION ESTABLISHED
+
+================================================================================
+3. FILE OPERATIONS - cmd_ls() [❌ BROKEN - SHOWS FAKE FILES]
+================================================================================
+
+CLIENT SIDE (sends request but ignores response):
+FILE: src/CommandHandler.cpp
+LINES: 512-561
+FUNCTION: bool CommandHandler::cmd_ls()
+
+ISSUE:
+  - Line 556-560: Prints "[LS] Listing directory..."
+  - Line 559: Hardcoded std::cout << COLOR_CYAN << "." << COLOR_RESET << std::endl;
+  - Line 560: Hardcoded std::cout << COLOR_CYAN << ".." << COLOR_RESET << std::endl;
+  - MISSING: Response handling from server
+
+SERVER SIDE (working correctly):
+FILE: src/ProtocolManager.cpp
+LINES: 724-823
+FUNCTION: void ProtocolManager::handle_fs_list_req()
+STATUS: ✅ WORKS - Performs real directory listing
+
+FIX: Implement async response handler to replace placeholder "." and ".."
+
+================================================================================
+4. ROUTING TABLE - cmd_list_nodes() [❌ INCOMPLETE - TODO]
+================================================================================
+
+FILE: src/CommandHandler.cpp
+LINES: 334-360
+FUNCTION: bool CommandHandler::cmd_list_nodes()
+
+ISSUE:
+  - Title: "Known Nodes in Routing Table"
+  - Content: EMPTY (no rows shown)
+  - Line 353: TODO - "Iterate through route_table to get real nodes"
+  - Line 354: "For now showing placeholder"
+  - Shows table header/footer but NO DATA
+
+ROUTING TABLE UPDATES (WORKING):
+  ✅ Line 474 (handle_welcome): route_table_.update_route()
+  ✅ Line 521 (handle_auth): route_table_.update_route()
+
+FIX: Implement iteration over route_table_ to display actual nodes
+
+================================================================================
+PRIORITY FIX LIST
+================================================================================
+
+HIGH PRIORITY:
+  [ ] Line 482 (ProtocolManager.cpp) - Comment [HANDSHAKE-FINAL] log
+  [ ] Lines 559-560 (CommandHandler.cpp) - Implement cmd_ls() response handler
+  [ ] Lines 353-354 (CommandHandler.cpp) - Implement cmd_list_nodes() iteration
+
+MEDIUM PRIORITY:
+  [ ] Line 70 (main2.cpp) - Remove duplicate print_prompt() definition
+
+LOW PRIORITY:
+  [✓] No changes needed for core prompt functionality
+  [✓] Routing table updates working in handle_welcome/handle_auth
+
+================================================================================
+ABSOLUTE FILE PATHS
+================================================================================
+
+/home/nguyenduccanh/shellmap_project/hello/ShellMap/src/CommandHandler.cpp
+  - Print prompt: 135-145
+  - List nodes (TODO): 334-360
+  - cmd_ls (incomplete): 512-561
+
+/home/nguyenduccanh/shellmap_project/hello/ShellMap/src/ProtocolManager.cpp
+  - [HANDSHAKE-FINAL] log: 482
+  - handle_welcome routing: 474
+  - handle_auth routing: 521
+  - handle_fs_list_req: 724-823
+
+/home/nguyenduccanh/shellmap_project/hello/ShellMap/main.cpp
+  - print_prompt calls: 59, 68, 124, 150, 164
+
+/home/nguyenduccanh/shellmap_project/hello/ShellMap/main2.cpp
+  - Duplicate definition: 70
+  - Calls: 690, 995, 1310, 1407, 1434
+
+================================================================================
+ANALYSIS COMPLETE - Generated: April 16, 2026
+================================================================================

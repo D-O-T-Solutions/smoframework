@@ -1,0 +1,102 @@
+═══════════════════════════════════════════════════════════════════════════════
+SHELLMAP ANALYSIS - QUICK FINDINGS CARD
+═══════════════════════════════════════════════════════════════════════════════
+
+1. LOGS TO SUPPRESS
+───────────────────────────────────────────────────────────────────────────────
+Line 57:       "[DISPATCH] Peer address updated..." → Comment out (too frequent)
+Lines 1512-13: Orphaned heartbeat partial output → Remove or uncomment parent
+Line 1519:     Orphaned heartbeat timeout message → Remove or uncomment parent
+Line 64:       Replay detection log → Already suppressed (intentional)
+
+Status: Lines 535,558,581,1309,1348,1552,1624 already commented ✓
+
+2. FILE OPERATIONS STATUS
+───────────────────────────────────────────────────────────────────────────────
+cmd_ls()    → Request sent ✓  | Response handler STUB ✗ (Line 825)
+cmd_get()   → Request sent ✓  | Response handler STUB ✗ (Line 997)
+cmd_put()   → Request sent ✓  | Upload logic MISSING ✗ | Handler STUB ✗ (Line 1073)
+cmd_cd()    → Request sent ✓  | Response handler STUB ✗ (Line 902)
+
+All 4 response handlers empty (lines 825, 902, 997, 1073)
+
+3. PEERS TABLE
+───────────────────────────────────────────────────────────────────────────────
+Current:  NODE ID | ADDRESS | STATUS | ENCRYPTION (4 columns)
+Missing:  # index column for session switching
+Fix:      Modify lines 274, 276-279, 282-283, 286 to add index column
+
+4. SESSION SWITCHING
+───────────────────────────────────────────────────────────────────────────────
+Variable: current_target_ (CommandHandler.hpp:111)
+Set at:   Line 85 (cmd_connect), Line 177 (get_active_session)
+Used by:  All file operations (ls, get, put, cd, pwd, ping)
+
+All active sessions via: SessionManager::get_all_sessions()
+Used in: cmd_list_peers() (line 266), send_heartbeat_pings() (line 1488)
+
+Missing: "return N" command to switch sessions
+
+5. NAT & REPLAY LOGS
+───────────────────────────────────────────────────────────────────────────────
+update_peer_address() (Line 1453):
+  - Returns true if address changed
+  - Triggers Line 57 [DISPATCH] log
+  - Logs at 1464, 1472-73 already suppressed
+
+verify_nonce() (Line 192):
+  - Checks nonce <= last_nonce_seen
+  - Rejects replays
+  - Suppressed (line 64) due to false positives on PING packets
+
+═══════════════════════════════════════════════════════════════════════════════
+PRIORITY FIXES
+═══════════════════════════════════════════════════════════════════════════════
+
+CRITICAL (P1):
+  □ Fix orphaned heartbeat logs (1512-1519)
+  □ Comment line 57 [DISPATCH] log
+  □ Implement response handlers (825, 902, 997, 1073)
+
+IMPORTANT (P2):
+  □ Add peers table index column
+  □ Implement "return N" command
+  □ Complete put file upload logic
+
+NICE-TO-HAVE (P3):
+  □ Review verbose PING logging (line 558)
+  □ Clean up debug code
+
+═══════════════════════════════════════════════════════════════════════════════
+DOCUMENTATION FILES
+═══════════════════════════════════════════════════════════════════════════════
+
+FINDINGS_SUMMARY.txt          → Executive summary (read first)
+LOG_ANALYSIS_DETAILED.md      → Tables with exact line numbers & context
+CODEBASE_ANALYSIS_DETAILED.md → Full report with code snippets
+ANALYSIS_INDEX.md             → Navigation guide (use for finding stuff)
+QUICK_FINDINGS.txt            → This file (one-page reference)
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY NUMBERS
+═══════════════════════════════════════════════════════════════════════════════
+
+ProtocolManager.cpp:  1625 lines
+  - Logs: 57, 1512-13, 1519
+  - Handlers: 825, 902, 997, 1073
+  - NAT code: 1453-1480
+  - Nonce: 60-66, 192-205
+
+CommandHandler.cpp: 1009 lines
+  - Peers table: 263-326
+  - File ops: 506-769
+  - Session mgmt: 85, 177
+
+SessionManager.hpp: 192 lines
+  - States: 24-31
+  - get_all_sessions: 162
+
+CommandHandler.hpp: 166 lines
+  - current_target_: 111
+
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,5 @@
+add_executable(smo-debug main.cpp)
+target_link_libraries(smo-debug PRIVATE smo_tooling)
+smo_set_warnings(smo-debug)
+smo_set_optimisation(smo-debug)
+smo_link_dependencies(smo-debug)

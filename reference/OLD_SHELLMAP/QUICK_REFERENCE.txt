@@ -1,0 +1,120 @@
+SHELLMAP ANALYSIS - QUICK REFERENCE
+=====================================
+
+1. CURRENT_TARGET_ FORMAT
+   Location: CommandHandler.hpp:111
+   Current: IP:Port string (e.g., "192.168.1.100:5555")
+   Problem: get_session() expects 64-char hex node_id
+   Set at: CommandHandler.cpp:185
+
+2. GET_SESSION() USAGE
+   Called with IP:Port at:
+   - CommandHandler.cpp:454 (ls)
+   - CommandHandler.cpp:508 (get)
+   - CommandHandler.cpp:560 (put)
+   - CommandHandler.cpp:621 (pwd)
+   - CommandHandler.cpp:640 (cd)
+   All will FAIL because IP:Port != node_id
+
+3. GET_ALL_SESSIONS()
+   Location: SessionManager.cpp:247
+   Status: WORKS - returns map with node_id keys
+   Usage: cmd_list_peers (line 212), cmd_me (line 436)
+
+4. ROUTING_TABLE METHODS
+   get_route(id, ip, port) - takes NODE_ID, returns IP:PORT
+   update_route(id, ip, port) - adds/updates route
+   No reverse lookup (IP:PORT -> NODE_ID)
+
+5. NODES COMMAND
+   Location: CommandHandler.cpp:274-300
+   Status: Shows header/footer only - NO DATA
+   Problem: No method to iterate routing table
+
+6. SESSION ESTABLISHMENT
+   handle_welcome() line 470: Sets ESTABLISHED
+   handle_auth() line 515: Sets ESTABLISHED
+
+7. AES KEY PRINTING (SECURITY ISSUE)
+   SessionManager.cpp:146-147 - stdout
+   SessionManager.cpp:219 - stdout
+   Plus intermediate keys at:
+   - Line 111-112 (ECDH keys)
+   - Line 139-141 (Kyber+ECDH)
+   - Line 169-170 (encryption)
+   - Line 217-220 (decryption)
+
+8. HANDSHAKE DEBUG OUTPUT
+   ProtocolManager.cpp:240 - "[HANDSHAKE-2]" (active)
+   ProtocolManager.cpp:351 - "[HANDSHAKE-3]" (active)
+   ProtocolManager.cpp:478 - "[HANDSHAKE-FINAL]" (active)
+
+9. DISCONNECT/BYE/QUIT COMMANDS
+   Status: DO NOT EXIST
+   Only: exit (exits program)
+
+10. CMD_CONNECT() FLOW
+    - Line 185: Sets current_target_ = IP:Port
+    - Does NOT capture peer node_id from handshake
+    - Initiates handshake but doesn't wait for completion
+
+KEY FUNCTION SIGNATURES
+=======================
+
+SessionManager::get_session(node_id) -> shared_ptr<Session>
+SessionManager::get_all_sessions() -> map<string, shared_ptr<Session>>
+SessionManager::establish_session(node_id) -> bool
+SessionManager::migrate_session(placeholder_id, real_id) -> bool
+SessionManager::find_placeholder_session() -> pair<string, shared_ptr<Session>>
+
+ProtocolManager::initiate_handshake(target_ip, target_port) -> bool
+ProtocolManager::send_ping(target_ip, target_port) -> bool
+ProtocolManager::send_message(node_id, message) -> bool
+ProtocolManager::send_heartbeat_pings() -> int
+
+RoutingTable::update_route(id, ip, port, is_relayed) -> void
+RoutingTable::get_route(id, out_ip, out_port) -> bool
+RoutingTable::get_all_supernodes() -> vector<SuperNodeInfo>
+
+CRITICAL MISMATCHES
+===================
+
+1. current_target_ is IP:Port
+   but get_session() expects node_id (64-char hex)
+   Result: All file commands FAIL
+
+2. cmd_connect() doesn't track peer node_id
+   It only stores IP:Port
+   Result: No way to find peer session after handshake
+
+3. No method to find node_id by IP:Port
+   RoutingTable only supports ID -> IP:Port lookup
+   Result: Cannot map IP:Port back to node_id
+
+4. Nodes command incomplete
+   No method to iterate all nodes from RoutingTable
+   Result: Shows empty table
+
+5. No disconnect command
+   Only exit (which terminates entire app)
+   Result: Users cannot switch targets gracefully
+
+EXACT LINE NUMBERS TO FIX
+=========================
+
+SessionManager.cpp:
+  146-147 - Remove AES key printing
+  111-112 - Remove ECDH key printing
+  139-141 - Remove Kyber SS printing
+  169-170 - Remove encryption debug
+  217-220 - Remove decryption debug
+
+ProtocolManager.cpp:
+  240 - Comment out [HANDSHAKE-2]
+  351 - Comment out [HANDSHAKE-3]
+  478 - Comment out [HANDSHAKE-FINAL]
+
+CommandHandler.cpp:
+  149-191 - Update cmd_connect to track node_id
+  274-300 - Implement nodes command
+  Add cmd_disconnect or cmd_bye
