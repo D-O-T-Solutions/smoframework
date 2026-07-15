@@ -122,3 +122,5 @@ backward compatibility or provide a documented deprecation window.
 | 0019 | Packet Layout | ✅ Frozen |
 | 0023 | Contract Architecture | ✅ Frozen |
 | 0024 | Crypto Suite Freeze | ✅ Frozen |
+| 0025 | Contract Runtime Architecture | ✅ Accepted |
+| 0026 | Contract ABI Specification | ✅ Accepted |

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Draft |
+| Status | Accepted |
 | Author | SMO Architecture |
 | Date | 2026-07-16 |
 | Supersedes | RFC 0023 (Contract Architecture) |

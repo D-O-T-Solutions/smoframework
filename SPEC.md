@@ -557,9 +557,32 @@ Every wire message uses the following packet structure:
 4. Payload MAY be encrypted at the session level. Header fields are never encrypted.
 5. Every session MUST negotiate a Crypto Suite during establishment.
 
-### 6.8 Discovery Engine
+### 6.8 Discovery Engine (Address Book)
 
-The Discovery Engine is a dedicated component **separate from Transport**. Transport only knows `send()` and `recv()`. The Discovery Engine handles peer discovery, health monitoring, membership propagation, and route learning.
+The Discovery Engine is the **Address Book** of the mesh. It maintains a human-readable registry of all known peers, mapping names, aliases, and NodeIDs to reachable endpoints. Transport only knows `send()` and `recv()`.
+
+**User-facing view:**
+
+```
+smo discover
+
+ID              Name       Role         Status    RTT
+────────────────────────────────────────────────────
+A1F23..         node-a     Authority    Online    2ms
+B92DD..         node-b     Contributor  Online    5ms
+CC22A..         node-c     Member       Offline   —
+D9912..         node-d     Witness      Online    8ms
+```
+
+Users refer to nodes by **name**, not by NodeID:
+
+```
+smo exec ls --target node-b --path /var/log    # by name
+smo exec ls --target B92DD...                  # by NodeID
+smo exec quarantine --target node-x --scope mesh  # meshcast by name
+```
+
+The Discovery Engine handles peer discovery, health monitoring, membership propagation, route learning, and name resolution.
 
 #### 6.8.1 Architecture
 
@@ -651,6 +674,8 @@ Every known peer has a structured record:
 ```
 PeerRecord:
   node_id: NodeID
+  name: "node-a"                    # human-readable name
+  aliases: ["web-01", "10.0.0.1"]  # alternative names
   mesh_id: MeshID
   addresses:
     - transport: TCP | UDP | QUIC
@@ -1904,6 +1929,93 @@ and on registry sync (from remote peers).
 if (runtime_version < abi.min_runtime_version) reject;
 if (runtime_version > abi.max_runtime_version) reject;
 ```
+
+### 10.12 User-Facing Contract Workflow
+
+Users interact with contracts in **three ways**, each mapping to a different tier.
+
+#### Way 1 — Built-in (Kernel + Native)
+
+No file, no JSON, no publish. Contracts are compiled into the runtime.
+
+```bash
+# Kernel — inline, no sandbox
+smo exec ping                          # → {"status":"pong","timestamp":...}
+smo exec whoami                        # → {"node_id":"..."}
+smo exec session_open --session-id s1  # → {"session_id":"s1"}
+smo exec discover                      # → {"peers":[...]}
+
+# Native — capability-gated
+smo exec ls --target node-b --path /etc      # list files on node-b
+smo exec get --target node-a --path /config   # read file from node-a
+smo exec put --target node-c --source ./x --target /dest
+smo exec quarantine --target node-x --scope mesh  # mesh-wide quarantine
+```
+
+The user specifies `--target` by **name** (from Discovery Address Book) or
+by NodeID. No ContractID needed — the Factory resolves opcode → contract.
+
+#### Way 2 — Import JSON (Mesh contracts)
+
+Users publish a contract definition as canonical JSON.
+
+```bash
+# 1. Write contract
+cat > workflow.json << 'EOF'
+{
+  "contract_version": "1.0",
+  "category": "mesh",
+  "opcode": "CUSTOM",
+  "name": "Security Audit",
+  "parameters": [{"name":"target","type":"string"}],
+  "capabilities_required": {"filesystem_read": 1},
+  "abi": { "abi_version": 1, ... }
+}
+EOF
+
+# 2. Publish → Registry returns ContractID
+smo contract publish workflow.json
+# → Published: a1b2c3d4e5f6...
+
+# 3. Execute by ContractID
+smo exec a1b2c3d4e5f6... --target node-b
+
+# Or by alias (if registered)
+smo exec security-audit --target node-b
+```
+
+The ABI Hash lets the runtime verify compatibility without re-parsing JSON.
+
+#### Way 3 — DSL (future)
+
+A `.smo` DSL compiles down to SMIR, then to a DAG:
+
+```smir
+workflow AuditServer {
+    scan(target="/var/log")
+    collect_logs()
+    compress()
+    upload(nas="192.168.1.100")
+    notify(admin="ops@corp.com")
+}
+```
+
+```
+smo compile audit.smo --publish
+# → ContractID published to Registry
+```
+
+Any format that emits SMIR can use the same compiler pipeline.
+
+#### Summary
+
+| Way | Tier | File needed? | Publish? | Use case |
+|-----|------|-------------|----------|----------|
+| Built-in | Kernel / Native | No | No | Built-in ops: ls, get, ping, whoami |
+| JSON import | Mesh | workflow.json | Yes | Custom workflows, audit playbooks |
+| DSL compile | Mesh (future) | workflow.smo | Yes | Complex multi-step automation |
+
+All three ways produce a `ContractID` → `Runtime::execute(ContractID, ExecutionContext)`.
 
 ---
 

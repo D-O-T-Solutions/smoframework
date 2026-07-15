@@ -133,6 +133,25 @@ Result<ContractDefinition> ContractRegistry::resolve(
     return ContractDefinition::from_canonical_json(stmt.column_text(0));
 }
 
+Result<ContractDefinition> ContractRegistry::resolve_by_name(
+    std::string_view name) {
+    auto& db = store_->database();
+    auto stmt_res = db.prepare(
+        "SELECT canonical_json FROM contract_registry "
+        "WHERE (name = ? OR opcode = ?) AND status = 'active' "
+        "ORDER BY published_at DESC LIMIT 1"
+    );
+    if (!stmt_res)
+        return SMO_ERR_INTERNAL(1, Error, NoRetry, None, "query prepare failed");
+    auto stmt = std::move(stmt_res.value());
+    stmt.bind_text(1, std::string(name));
+    stmt.bind_text(2, std::string(name));
+    auto step_res = stmt.step();
+    if (!step_res || step_res.value() != SQLITE_ROW)
+        return SMO_ERR_INTERNAL(2, Error, NoRetry, None, "no active contract for name");
+    return ContractDefinition::from_canonical_json(stmt.column_text(0));
+}
+
 Result<ContractDefinition> ContractRegistry::get(const ContractID& id) {
     return get(id.hex);
 }

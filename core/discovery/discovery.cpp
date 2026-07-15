@@ -159,6 +159,17 @@ Result<PeerRecord> MembershipTable::lookup(const NodeID& id) const {
     return it->second;
 }
 
+Result<PeerRecord> MembershipTable::lookup_by_name(const std::string& name) const {
+    for (const auto& [key, rec] : records_) {
+        if (rec.name == name) return rec;
+        for (auto& alias : rec.aliases) {
+            if (alias == name) return rec;
+        }
+    }
+    return SMO_ERR_DISCOVERY(400, Info, RetrySafe, None,
+                             "no peer with that name");
+}
+
 std::vector<PeerRecord> MembershipTable::peers() const {
     std::vector<PeerRecord> result;
     result.reserve(records_.size());

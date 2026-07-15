@@ -46,6 +46,8 @@ const char* to_string(PeerState s) noexcept;
 // ===========================================================================
 struct PeerRecord {
     NodeID    node_id;
+    std::string name;           // human-readable name (e.g. "node-a", "server-01")
+    std::vector<std::string> aliases; // alternative names (e.g. "web-01", "10.0.0.1")
     Endpoint  endpoint;
     PeerState state = PeerState::Unknown;
     int64_t   last_seen = 0;
@@ -65,6 +67,7 @@ public:
 
     Result<void> upsert(PeerRecord record);
     Result<PeerRecord> lookup(const NodeID& id) const;
+    Result<PeerRecord> lookup_by_name(const std::string& name) const;
     std::vector<PeerRecord> peers() const;
     std::vector<PeerRecord> peers_with_state(PeerState state) const;
     Result<void> remove(const NodeID& id);

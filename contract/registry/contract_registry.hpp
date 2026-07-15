@@ -24,7 +24,8 @@ public:
     ContractID register_native(std::string_view canonical_json);
 
     Result<ContractDefinition> resolve(std::string_view opcode,
-                                       std::string_view version_constraint = "");
+                                        std::string_view version_constraint = "");
+    Result<ContractDefinition> resolve_by_name(std::string_view name);
 
     Result<ContractDefinition> get(const ContractID& id);
     Result<ContractDefinition> get(std::string_view contract_id_hex);
