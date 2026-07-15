@@ -1968,3 +1968,434 @@ Node is ACTIVE. Begin Discovery → Control → Execution.
 - [ ] RFC 0006: Mesh Identity and Certificate Model
 - [ ] RFC 0007: Enrollment Protocol and Carriers
 - [ ] RFC 0008: Networking Architecture (4 protocol layers, Connectivity vs Transport)
+
+---
+
+## 15. Architectural Gap Analysis — Critical Missing Pillars (15 July 2026)
+
+This section records a comprehensive review of SMO's architecture as of 15 July 2026.
+The consensus is that SMO has ~70-80% of its architecture defined. The remaining 20% are
+the hardest distributed-system pillars that most frameworks never get right.
+
+### 15.1 Node Identity Lifecycle ⭐⭐⭐⭐⭐
+
+**Current state:** SPEC.md §VII defines key generation, enrollment, and joining.
+Missing: full lifecycle beyond JOINED.
+
+**Required lifecycle states:**
+
+```
+NEW → BOOTSTRAP → JOINED → ACTIVE ↔ SUSPENDED → REVOKED → ROTATED → RECOVERED → RETIRED
+```
+
+**Missing operations:**
+- **Key rotation** — node generates new keypair, Authority signs new cert, old cert kept for overlap period (e.g., 7 days), then expired
+- **Cert renewal** — refresh expiry without changing key
+- **Cert expiry** — automatic transition to re-enrollment
+- **Suspension** — temporary deactivation without revocation
+- **Revocation** — permanent removal via epoch increment or REVOKE_CERT
+- **Recovery** — restore node identity after key loss (M-of-N approval)
+- **Ownership transfer** — transfer node membership from one admin to another
+
+**Decision:** Node Identity Lifecycle will be specified as a full-state FSM in a new SPEC.md chapter. The FSM must define every valid transition, including error cases.
+
+### 15.2 Mesh Discovery Engine ⭐⭐⭐⭐⭐
+
+**Current state:** SPEC.md §IV mentions Discovery Protocol (UDP, HELLO/PING/DISCOVER/NODE_INFO/OFFLINE). SPEC.md §XXIV.5 mentions SWIM-inspired membership gossip. This is insufficient for a production mesh.
+
+**Missing:**
+- **Discovery Engine** — a dedicated component separate from Transport. Transport only knows `send()` and `recv()`. Discovery Engine handles peer discovery, health monitoring, and route learning.
+- **Bootstrap mechanism** — how does a fresh node find its first peer? Static seed list? DNS? mDNS? DHT?
+- **Gossip protocol** — SWIM-style (scalable, suspicion-based) or Plumtree (epidemic broadcast)?
+- **Passive discovery** — learn about peers from overheard traffic
+- **Leave detection** — distinguish graceful departure from crash (SWIM suspicion mechanism)
+
+**Decision:** Discovery will be extracted into a `core/discovery/` module with a `DiscoveryEngine` interface. SWIM is the recommended starting point (proven at scale, suspicion mechanism handles crash detection). Transport stays ignorant of discovery.
+
+### 15.3 Routing Layer
+
+**Current state:** No routing concept exists. SPEC assumes direct TCP connections.
+
+**Missing:**
+- **Peer Record** — structured metadata per peer:
+
+```
+NodeID | MeshID | Addresses[] | Transport[] | Latency | Relay | NAT Type | Trust | LastSeen
+```
+
+- **Multi-address routing** — each node may be reachable via multiple paths (TCP direct, UDP hole-punch, relay)
+- **Relay selection** — how to choose the best relay when direct path is unavailable
+- **Path scoring** — combine latency, trust, hop count to select optimal route
+- **Dynamic re-routing** — switch path mid-session if the active path degrades
+
+**Decision:** Add a `Routing` section to SPEC.md. Peer Record becomes the unit of routing information. The routing layer selects the best path from available addresses; upper layers use the session regardless of which path it traverses.
+
+### 15.4 Resource Model ⭐⭐⭐⭐
+
+**Current state:** SPEC.md §XIX defines opcodes (EXEC, PUT, GET, etc.) but does not constrain resource usage during execution.
+
+**Missing:**
+- **CPU limit** — max CPU time per execution
+- **RAM limit** — max memory per execution
+- **I/O limit** — max disk/network throughput
+- **Priority** — execution priority (higher priority preempts lower)
+- **Timeout** — maximum wall-clock execution time
+- **Grace period** — time allowed for cleanup after timeout
+- **Namespace** — Linux namespace isolation (PID, mount, network, user)
+- **cgroup v2** — resource control via cgroup
+- **seccomp** — syscall filtering
+- **rlimit** — resource limits via setrlimit
+
+**Decision:** SPEC.md will add a new **Resource Model** chapter defining the resource constraint schema. Linux cgroup v2 is the reference implementation. Other OSes provide best-effort equivalents. Constraints are optional at the protocol level but enforced when the runtime supports them.
+
+### 15.5 Scheduler Enhancements
+
+**Current state:** SPEC.md §XIII defines DAG format and compiler pipeline. SPEC.md §XXIV.4 mentions DAG scheduler. Missing: runtime scheduling policies.
+
+**Missing:**
+- **Priority queues** — not all executions are equal; incident response takes priority over log rotation
+- **Retry policy** — max retries, backoff strategy (exponential, linear, jitter)
+- **Deadline propagation** — if a DAG node misses its deadline, downstream nodes are notified
+- **Cancellation** — cancel in-flight execution (EXEC_CANCEL exists in opcodes but no scheduler integration)
+- **Preemption** — suspend a lower-priority execution to run a higher-priority one
+- **Quota enforcement** — per-node, per-mesh, per-user execution quotas
+- **Concurrency control** — max parallel executions per node, per capability
+
+**Decision:** SPEC.md §XIII (Execution DAG) will be expanded with a **Scheduler** subsection covering these policies. The scheduler remains DAG-first but adds runtime scheduling constraints.
+
+### 15.6 Failure Model ⭐⭐⭐⭐⭐
+
+**Current state:** SPEC.md §XIV (FSM) defines state transitions but does not cover failure scenarios systematically.
+
+**This is the most dangerous gap.** A distributed system is defined by how it fails.
+
+**Missing failure scenarios (each must have defined FSM transitions):**
+
+| Scenario | Question |
+|---|---|
+| Requester crashes after proposal | Does Responder wait indefinitely? Timeout? How long? |
+| Responder crashes mid-execution | Does Requester detect? Retry on another node? |
+| Witness crashes during attestation | Fallback to secondary witness? Local decision? |
+| Transport disconnects mid-session | Auto-reconnect? Session resume? New session? |
+| Half-execution (responder dies after EXEC_START but before EXEC_RESULT) | Orphan contract state? Cleanup protocol? |
+| Network partition | Two nodes both think they are Authority? Split-brain handling? |
+| Duplicate contract delivery | Idempotency check on contract_id? |
+| Timeout at any FSM state | Default transition for every state with a timer? |
+| Authority death mid-enrollment | CSR never signed? Node retries with timeout? |
+| Clock drift between nodes | Timestamp-based checks rejected? Sequence number to the rescue? |
+
+**Decision:** A new **Failure Model** chapter will be added to SPEC.md. Every FSM transition must have a timeout and a failure transition. The failure model follows the principle: *"when in doubt, reject"* — safety over liveness.
+
+### 15.7 Time Model (Critical) ⭐⭐⭐
+
+**Current state:** SPEC.md uses timestamps but does not define how time is used architecturally.
+
+**Problem:** Wall clock (`Date.now()`, `std::chrono::system_clock`) is not safe for distributed ordering. Clock drift, NTP failures, and leap seconds produce non-monotonic time.
+
+**Three time domains:**
+
+| Domain | Clock Source | Purpose |
+|---|---|---|
+| Security Time | Wall clock / NTP | Timestamp in contracts and certificates. Bounded security window (e.g., ±300s tolerance). Anti-replay only. |
+| Execution Time | Monotonic clock (`CLOCK_MONOTONIC`) | Timeouts, deadlines, execution duration. Immune to NTP jumps. |
+| Ordering | Sequence number / logical clock | Event ordering, replay, audit log. Never depends on wall clock. |
+
+**Rule:** No FSM transition or ordering decision may depend on wall clock. Wall clock is used only for:
+1. Certificate validity windows (notBefore / notAfter)
+2. Contract timestamp for human auditing
+3. Anti-replay window (±300s from receiver's clock)
+
+**Decision:** SPEC.md will add a **Time Model** section codifying these three domains and the rule above.
+
+### 15.8 Version Negotiation ⭐⭐⭐⭐
+
+**Current state:** No version negotiation exists.
+
+**Problem:** Different nodes running different SMO versions will speak incompatible wire formats.
+
+**Solution (TLS-style):**
+```
+Node A: Hello { supported_versions: [3.2, 3.1, 3.0] }
+Node B: Hello { supported_versions: [3.1, 3.0] }
+→ Agreed: 3.1
+```
+
+**Design:**
+- First 4 bytes of every connection: protocol version handshake
+- Each node sends its supported version list
+- Both pick the highest common version
+- Version determines: frame format, opcode set, crypto suite
+- Backward compatibility: older versions must be supported for N-2 releases
+
+**Decision:** Add a **Version Negotiation** subsection to SPEC.md §IV (Protocol Layers). The handshake happens before any other protocol message.
+
+### 15.9 Plugin ABI ⭐⭐⭐⭐
+
+**Current state:** SPEC.md mentions plugins but does not define ABI.
+
+**Decision:** Plugins expose a **C ABI**, not C++. C++ ABI is compiler-specific and breaks across compiler versions. A C ABI is stable across Rust, Go, Zig, Python (via ctypes), and C++.
+
+**Plugin interface (minimal):**
+
+```c
+typedef struct smo_plugin_v1 {
+    uint32_t abi_version;
+    const char* name;
+    smo_error_t (*init)(const smo_plugin_config* config);
+    smo_error_t (*execute)(const smo_contract* contract, smo_context* ctx);
+    smo_error_t (*shutdown)(void);
+} smo_plugin_v1;
+```
+
+**Sandboxing (future):** WASM plugin sandbox. C ABI makes WASM interop straightforward — the WASM module implements the same `smo_plugin_v1` interface.
+
+**Decision:** SPEC.md will add a **Plugin ABI** section specifying the C ABI as the only stable interface. C++ plugins must extern "C" their entry points.
+
+### 15.10 Policy Engine ⭐⭐⭐⭐⭐
+
+**Current state:** No policy language exists. SPEC.md mentions policy checking in the FSM (VALIDATE_POLICY) but does not define the policy format.
+
+**This is SMO's "secret weapon."** A proper policy engine makes SMO programmable at the governance level.
+
+**Policy example (future):**
+
+```
+allow EXEC
+  if Trust > 0.8
+     AND CPU < 80%
+     AND Mesh == "SOC-Production"
+     AND Time between 08:00-17:00
+     AND Hostname =~ "web-*"
+```
+
+**Design principles:**
+- Policy is evaluated locally on the Responder node — not shipped to a central policy server
+- Policy is a contract parameter, not a separate protocol — the contract declares what capabilities it needs, the Responder checks its local policy
+- Policy language is **not** part of MVP. MVP uses hardcoded rules (capability set must match). The Policy Engine is a post-MVP layer.
+- Policy should be composable: `allow EXEC if trust_policy() AND resource_policy() AND time_policy()`
+
+**Reference:** Similar to OPA (Open Policy Agent) but purpose-built for SMO's execution model.
+
+**Decision:** Add a **Policy Engine** concept to SPEC.md §XXIII (MVP Scope) as "post-MVP." Document the design intent but do not implement in Phase 1.
+
+### 15.11 Mesh Identity (Multi-Mesh / Multi-Tenant)
+
+**Current state:** SPEC.md §VII.9 defines mesh context switching but treats mesh membership as a list of certificates on a single node.
+
+**Clarification:** The user identified that SMO's multi-mesh capability is a **defining architectural differentiator**, not a peripheral feature. A single SMO node can belong to multiple meshes simultaneously:
+
+```
+Node Identity (Ed25519 keypair, immutable)
+├── Mesh A Certificate (SOC-HN, epoch 3, role=CONTRIBUTOR)
+├── Mesh B Certificate (IR-Prod, epoch 1, role=AUTHORITY)
+├── Mesh C Certificate (Research, epoch 5, role=READER)
+└── Mesh D Certificate (DevOps, epoch 2, role=CONTRIBUTOR)
+```
+
+Each mesh has its own:
+- Policy
+- Capability set
+- Trust store
+- Authority hierarchy
+- Epoch
+- Route table
+- Contract history
+
+**Decision:** SPEC.md §VII.9 (Mesh Context Switching) will be elevated to its own chapter: **Mesh Identity Model**. The multi-mesh architecture is a first-class design constraint, not a configuration option.
+
+### 15.12 Mesh Manifest (Proposal)
+
+**Proposed concept:** Every mesh should have a "birth certificate" — a manifest file that encodes all mesh-level parameters.
+
+```yaml
+# mesh.yaml
+mesh_uuid: "550e8400-e29b-41d4-a716-446655440000"
+mesh_name: "SOC-Production"
+genesis_time: "2026-07-15T00:00:00Z"
+protocol_version: 3.0
+root_public_key: "base64..."
+authority_threshold: 3-of-5
+default_policy:
+  allow: [CAP_HEARTBEAT, CAP_VERIFY]
+bootstrap_nodes: ["node-a.company.com:7777", "node-b.company.com:7777"]
+heartbeat_interval_sec: 15
+trust_parameters:
+  decay_window: 300   # seconds
+  default_threshold: 0.5
+capability_presets: {}  # custom presets
+```
+
+**Node join flow:**
+1. Import manifest → knows all mesh parameters
+2. Generate keypair → identity established
+3. Enrollment → certificate received
+4. Join → full member
+
+**Decision:** Add Mesh Manifest to SPEC.md as a deployment artifact (not a protocol message). Manifests are distributed out-of-band (file, URL, QR).
+
+### 15.13 Certificate Chain (Simplified, Not X.509)
+
+**Current state:** SPEC.md §VII.4 defines certificate chain (Root → Authority → Contributor → Reader). Format is JSON.
+
+**Reinforcement:** The user strongly agrees with the simplified certificate format. SMO will NOT use X.509 / ASN.1 / OpenSSL-style certificates. SMO's certificate format is plain JSON with Blake3 hashes and Ed25519 signatures.
+
+```
+-----BEGIN SMO CERTIFICATE-----
+SMOC1:
+eyJtZXNoX2lkIjoiU09DLVZOIiw...
+-----END SMO CERTIFICATE-----
+```
+
+Each certificate contains:
+- MeshID, NodePublicKey, Role, Capabilities, Epoch
+- IssuedBy, IssuedAt, ExpiresAt
+- Signature (by issuer's private key)
+
+**Decision:** This is already in SPEC.md. Confirmed as correct direction. No change needed.
+
+### 15.14 Authority Recovery (M-of-N Threshold)
+
+**Current state:** SPEC.md §VII.8 defines Recovery Authorities with Shamir Secret Sharing (M-of-N).
+
+**Clarification:** The user emphasizes this as the most critical governance mechanism. A single Authority is a single point of failure. M-of-N threshold signing is the solution.
+
+**Model:**
+- Mesh has N Root Authorities (e.g., 5)
+- Any M (e.g., 3) can sign a new Authority certificate
+- No single private key can compromise the mesh
+- Loss of up to N-M authorities does not affect operations
+- Recovery shares are stored separately (different devices, different people)
+
+**Decision:** This is already in SPEC.md. Confirmed as correct. The implementation priority should be raised from Stage 7 (SPEC.md §XXIV) to Stage 2-3 for production deployments.
+
+### 15.15 Mesh Governance ⭐⭐⭐⭐⭐
+
+**This is the biggest architectural gap that no existing SPEC.md chapter addresses.**
+
+**Current state:** Authority is defined purely as a node role with more capabilities. There is no concept of:
+- Multi-signature decisions
+- Policy change protocol
+- Split governance resolution
+- Mesh constitution
+
+**Governance operations that need protocol support:**
+| Operation | Current | Required |
+|---|---|---|
+| Create new Authority | Root signs | Multi-signature (M-of-N) |
+| Change mesh policy | Not defined | Governance contract signed by M-of-N Authorities |
+| Revoke Authority cert | Epoch increment | Multi-signature REVOKE_AUTHORITY |
+| Split mesh into two | Not defined | Governance contract + chain split |
+| Merge two meshes | Not defined | Both meshes agree via governance contract |
+| Override epoch increment | Single Authority can increment | Require M-of-N for epoch change |
+
+**Design principle:** Governance is NOT a feature of the Authority role. It is a separate protocol layer with its own messages, signing requirements, and verification rules.
+
+**Proposed protocol message:**
+
+```
+Namespace: CONTROL
+Message:   GOVERNANCE_PROPOSAL (0x02 0x70)
+Content:   { action: "AUTHORITY_CREATE" | "POLICY_CHANGE" | "MESH_SPLIT" | "MESH_MERGE",
+             payload: ...,
+             signers: [NodeID, NodeID, ...],         // required signers
+             signatures: [sig1, sig2, ...] }          // threshold must be met
+```
+
+**Decision:** Governance will be added as a new chapter to SPEC.md, separate from the Authority role definition. MVP scope: single-Authority governance (no multi-sig required). Post-MVP: full M-of-N governance.
+
+---
+
+### 15.16 Summary: Missing Architecture Pillars
+
+| # | Pillar | Priority | SPEC Coverage | RFC Needed |
+|---|---|---|---|---|
+| 1 | Node Identity Lifecycle | P0 | Missing | RFC-0009 |
+| 2 | Mesh Discovery Engine | P0 | Partial (§IV) | RFC-0010 |
+| 3 | Routing Layer | P1 | Missing | RFC-0011 |
+| 4 | Resource Model | P1 | Missing | RFC-0012 |
+| 5 | Scheduler (runtime policies) | P1 | Partial (§XIII) | RFC-0013 |
+| 6 | Failure Model | P0 | Missing | RFC-0014 |
+| 7 | Time Model | P1 | Missing | RFC-0015 |
+| 8 | Version Negotiation | P1 | Missing | RFC-0016 |
+| 9 | Plugin ABI | P1 | Missing | RFC-0017 |
+| 10 | Policy Engine | P2 | Missing (post-MVP) | RFC-0018 |
+| 11 | Mesh Identity (multi-tenant) | P0 | Partial (§VII.9) | RFC-0019 |
+| 12 | Mesh Manifest | P1 | Missing | RFC-0020 |
+| 13 | Certificate Chain (simplified) | Done | §VII.4 | RFC-0006 |
+| 14 | Authority Recovery (M-of-N) | Done | §VII.8 | RFC-0006 |
+| 15 | Mesh Governance | P0 | Missing | RFC-0021 |
+
+### 15.17 Proposed Document: "SMO RFC — Core Protocol Decisions"
+
+The user proposed a new document type outside the code RFC process: a **living document recording why every major architectural decision was made** and what alternatives were rejected.
+
+**Scope:**
+- Why contract instead of RPC
+- Why trust is local, not global
+- Why witness is attestation, not consensus
+- Why capability instead of role
+- Why data is separate from contract
+- Why transport abstraction
+- Why enrollment uses certificates
+- Why Linux-first
+- Why C++20 (not Rust, not Go)
+- Why Ed25519 first, PQ later
+- Why simplified certificate (not X.509)
+- Why TCP+UDP, not QUIC-only
+- Why no global state / no blockchain
+
+**Format:** A single markdown file: `docs/DECISIONS.md`
+
+Each entry:
+
+```markdown
+## Decision: Contract over RPC
+
+**Date:** 2026-07-15
+**Context:** Need a communication model that supports non-repudiation, policy evaluation, and async execution.
+**Alternatives considered:**
+1. RPC/gRPC — rejected because: no built-in non-repudiation, requires service definition, sync by nature
+2. Message queue — rejected because: no execution semantics, fire-and-forget
+3. Custom binary protocol — rejected because: too much work for MVP, no human readability
+
+**Chosen:** Contract (JSON metadata document, three-party signature)
+**Rationale:** Non-repudiation without blockchain, async by nature, policy evaluated at execution time.
+```
+
+**Decision:** Create `docs/DECISIONS.md` and populate it with the top 10-15 decisions immediately. This document is immutable once written; amendments add new entries rather than editing old ones.
+
+---
+
+### 15.18 Updated Action Items
+
+#### SPEC.md new chapters (priority order):
+- [ ] **Node Identity Lifecycle** — full FSM for key rotation, renewal, expiry, suspension, revocation, recovery, transfer
+- [ ] **Mesh Governance** — multi-signature decisions, policy change protocol, split/merge, separate from Authority role
+- [ ] **Mesh Discovery** — Discovery Engine design, SWIM gossip specification, bootstrap, passive discovery, leave detection
+- [ ] **Failure Model** — comprehensive scenarios with FSM transitions for every failure case
+- [ ] **Time Model** — three time domains (security/monotonic/ordering), wall clock prohibition rule
+- [ ] **Routing Layer** — Peer Record, multi-address, relay selection, path scoring, dynamic re-routing
+- [ ] **Resource Model** — CPU/RAM/IO limits, cgroup v2, namespace, seccomp, priority, timeout
+- [ ] **Scheduler** — priority queues, retry, backoff, deadline, preemption, quota, concurrency
+- [ ] **Version Negotiation** — TLS-style version handshake, supported versions, compatibility policy
+- [ ] **Plugin ABI** — C ABI interface definition, WASM future path
+- [ ] **Mesh Manifest** — mesh.yaml format, genesis parameters, bootstrap discovery
+- [ ] **Policy Engine** — design intent, post-MVP scope, OPA-like rule syntax (deferred)
+
+#### New documents:
+- [ ] `docs/DECISIONS.md` — Core Protocol Decisions (immutable, top 10-15 decisions)
+
+#### RFC:
+- [ ] RFC 0009: Node Identity Lifecycle
+- [ ] RFC 0010: Mesh Discovery Engine
+- [ ] RFC 0011: Routing Layer
+- [ ] RFC 0012: Resource Model
+- [ ] RFC 0013: Scheduler (Runtime Policies)
+- [ ] RFC 0014: Failure Model
+- [ ] RFC 0015: Time Model
+- [ ] RFC 0016: Version Negotiation
+- [ ] RFC 0017: Plugin ABI
+- [ ] RFC 0018: Policy Engine (post-MVP)
+- [ ] RFC 0019: Mesh Identity (Multi-Tenant)
+- [ ] RFC 0020: Mesh Manifest
+- [ ] RFC 0021: Mesh Governance
