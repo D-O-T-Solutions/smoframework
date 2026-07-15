@@ -5,6 +5,16 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 COMPOSE_FILE="${ROOT}/deployments/demo/docker-compose.yml"
 
+# Detect Docker Compose variant
+if command -v docker-compose &>/dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &>/dev/null 2>&1; then
+    DOCKER_COMPOSE="docker compose"
+else
+    echo "ERROR: Neither docker-compose nor 'docker compose' found"
+    exit 1
+fi
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
@@ -35,7 +45,7 @@ case "$ACTION" in
     build)
         banner
         step "Building Docker images..."
-        cmd docker compose -f "$COMPOSE_FILE" build
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" build
         echo ""
         echo -e "${GREEN}Build complete.${NC}"
         ;;
@@ -43,26 +53,26 @@ case "$ACTION" in
     up)
         banner
         step "Starting 3-node SMO mesh..."
-        cmd docker compose -f "$COMPOSE_FILE" up -d
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" up -d
         echo ""
         echo -e "${GREEN}Containers started.${NC}"
         echo ""
-        cmd docker compose -f "$COMPOSE_FILE" ps
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" ps
         ;;
 
     down)
         step "Stopping demo..."
-        cmd docker compose -f "$COMPOSE_FILE" down -v
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" down -v
         echo -e "${GREEN}Done.${NC}"
         ;;
 
     status)
-        cmd docker compose -f "$COMPOSE_FILE" ps
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" ps
         ;;
 
     logs)
         shift || true
-        cmd docker compose -f "$COMPOSE_FILE" logs "${@:-}"
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" logs "${@:-}"
         ;;
 
     exec)
@@ -73,37 +83,37 @@ case "$ACTION" in
             exit 1
         fi
         NODE="$1"; shift
-        cmd docker compose -f "$COMPOSE_FILE" exec "$NODE" "${@:-bash}"
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec "$NODE" "${@:-bash}"
         ;;
 
     test)
         shift || true
         NODE="${1:-node-a}"
         step "Running E2E tests on $NODE..."
-        cmd docker compose -f "$COMPOSE_FILE" exec "$NODE" /usr/local/lib/smo-demo/test-e2e.sh
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec "$NODE" /usr/local/lib/smo-demo/test-e2e.sh
         ;;
 
     shell)
         NODE="${2:-node-a}"
         step "Opening shell on $NODE..."
-        cmd docker compose -f "$COMPOSE_FILE" exec "$NODE" bash
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec "$NODE" bash
         ;;
 
     discover)
         step "Discovery table on node-a..."
-        cmd docker compose -f "$COMPOSE_FILE" exec node-a smo discover --full 2>/dev/null || \
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec node-a smo discover --full 2>/dev/null || \
             echo "(Discovery table — waiting for daemon)"
         ;;
 
     exec)
         shift
         step "Executing command via node-a..."
-        cmd docker compose -f "$COMPOSE_FILE" exec node-a smo exec "$@"
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec node-a smo exec "$@"
         ;;
 
     clean)
         step "Full cleanup..."
-        cmd docker compose -f "$COMPOSE_FILE" down -v --rmi all
+        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" down -v --rmi all
         echo -e "${GREEN}Cleaned.${NC}"
         ;;
 
