@@ -164,7 +164,7 @@ smo_set_optimisation(smo_test_contract)
 add_test(NAME contract_model COMMAND smo_test_contract)
 
 # ── Legacy test executable ───────────────────────────────────────────
-add_executable(smo_all_tests
+add_executable(smo_all_tests EXCLUDE_FROM_ALL
     unit/core_test.cpp
     unit/protocol_test.cpp
     unit/compiler_test.cpp

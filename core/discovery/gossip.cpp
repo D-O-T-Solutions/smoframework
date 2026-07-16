@@ -12,9 +12,6 @@ GossipEngine::Config GossipEngine::default_config() {
 GossipEngine::GossipEngine(MembershipTable& table, const Config& cfg)
     : table_(table), config_(cfg), rng_(std::random_device{}()) {}
 
-GossipEngine::GossipEngine(MembershipTable& table)
-    : table_(table), rng_(std::random_device{}()) {}
-
 GossipEngine::~GossipEngine() = default;
 
 void GossipEngine::tick(int64_t now_ns) {

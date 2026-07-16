@@ -115,7 +115,7 @@ Result<ContractABI> ContractABI::from_canonical_json(std::string_view json) {
 }
 
 void AbiRegistry::register_abi(const ContractABI& abi) {
-    ContractID cid = ContractID::compute(abi.to_canonical_json());
+    auto cid = ContractID::compute(abi.to_canonical_json());
     registry_[cid] = abi;
 }
 

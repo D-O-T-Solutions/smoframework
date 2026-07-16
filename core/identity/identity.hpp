@@ -21,6 +21,15 @@ struct NodeID {
 
     bool operator==(const NodeID& other) const noexcept = default;
     bool operator!=(const NodeID& other) const noexcept = default;
+    auto operator<=>(const NodeID& other) const noexcept = default;
+
+    std::string to_string() const {
+        char buf[65];
+        for (size_t i = 0; i < 32; ++i) {
+            std::snprintf(&buf[i*2], 3, "%02x", value[i]);
+        }
+        return std::string(buf, 64);
+    }
 };
 
 // ---------------------------------------------------------------------------

@@ -61,7 +61,7 @@ ContractID ContractRegistry::publish(const std::string& canonical_json,
     );
     if (!stmt_res) return {};
     auto stmt = std::move(stmt_res.value());
-    stmt.bind_text(1, cid.hex);
+    stmt.bind_text(1, cid.to_hex());
     stmt.bind_text(2, canonical_json);
     stmt.bind_text(3, def.category);
     stmt.bind_text(4, def.opcode);
@@ -99,7 +99,7 @@ ContractID ContractRegistry::register_native(
     );
     if (!stmt_res) return {};
     auto stmt = std::move(stmt_res.value());
-    stmt.bind_text(1, cid.hex);
+    stmt.bind_text(1, cid.to_hex());
     stmt.bind_text(2, std::string(canonical_json));
     stmt.bind_text(3, def.category);
     stmt.bind_text(4, def.opcode);
@@ -153,7 +153,7 @@ Result<ContractDefinition> ContractRegistry::resolve_by_name(
 }
 
 Result<ContractDefinition> ContractRegistry::get(const ContractID& id) {
-    return get(id.hex);
+    return get(id.to_hex());
 }
 
 Result<ContractDefinition> ContractRegistry::get(
@@ -184,7 +184,7 @@ Result<void> ContractRegistry::deprecate(const ContractID& id,
         return SMO_ERR_INTERNAL(5, Error, NoRetry, None, "update prepare failed");
     auto stmt = std::move(stmt_res.value());
     stmt.bind_text(1, std::string(reason));
-    stmt.bind_text(2, id.hex);
+    stmt.bind_text(2, id.to_hex());
     auto step_res = stmt.step();
     if (!step_res)
         return SMO_ERR_INTERNAL(6, Error, NoRetry, None, "deprecate failed");

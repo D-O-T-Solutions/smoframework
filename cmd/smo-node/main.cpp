@@ -14,12 +14,13 @@
 #include <core/identity/identity.hpp>
 #include <core/transport/transport.hpp>
 #include <core/transport/tcp_transport.hpp>
-#include <core/transport/udp_transport.hpp>
+#include <core/network/udp/udp_transport.hpp>
 #include <core/select/selector.hpp>
 #include <core/network/udp/heartbeat_service.hpp>
 #include <core/discovery/gossip.hpp>
 #include <core/network/sync/membership_sync.hpp>
 #include <core/network/transport/address_resolver.hpp>
+#include <core/discovery/peer_store.hpp>
 
 #include <chrono>
 #include <csignal>
@@ -143,8 +144,11 @@ int main(int argc, char* argv[]) {
     // Initialize core components
     smo::MembershipTable membership;
     smo::HealthMonitor health_monitor;
-    smo::DiscoveryEngine discovery_engine(membership, health_monitor);
-    smo::GossipEngine gossip_engine(membership);
+    auto* tcp_transport_ptr = smo::TransportRegistry::instance().get("tcp");
+    smo::Transport& transport_ref = *tcp_transport_ptr;
+    smo::DiscoveryEngine discovery_engine(membership, health_monitor, transport_ref);
+    auto gossip_cfg = smo::GossipEngine::default_config();
+    smo::GossipEngine gossip_engine(membership, gossip_cfg);
     smo::network::sync::MembershipSync membership_sync(membership, health_monitor);
 
     // Register transports
@@ -230,7 +234,7 @@ int main(int argc, char* argv[]) {
 
             auto rec_result = smo::Bootstrap::find_seed(
                 {seed_ep},
-                smo::TransportRegistry::instance(),
+                transport_ref,
                 local_id,
                 static_cast<int64_t>(now) * 1000000000LL);
 
@@ -273,8 +277,8 @@ int main(int argc, char* argv[]) {
     membership_sync.subscribe([&](const smo::network::sync::MembershipEvent& ev) {
         // Forward to GossipEngine for propagation
         // For now just log
-        std::printf("[smo-node] Membership event: type=%d node=%s\n",
-                    static_cast<int>(ev.type), ev.node_id.to_string().c_str());
+        std::printf("[smo-node] Membership event: type=%d\n",
+                    static_cast<int>(ev.type));
     });
 
     // ── Main loop ──────────────────────────────────────────────

@@ -6,7 +6,7 @@ namespace smo {
 
 Result<ContractAst> Parser::parse(const ContractDefinition& def) {
     ContractAst ast;
-    ast.contract_id = def.contract_id.hex;
+    ast.contract_id = def.contract_id.to_hex();
     ast.category    = def.category;
     ast.opcode      = def.opcode;
     ast.name        = def.name;

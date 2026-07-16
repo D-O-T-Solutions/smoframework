@@ -85,6 +85,7 @@ enum class ErrorCategory : uint8_t {
     Internal    = 11,  // Unexpected invariant violation, resource exhaustion, bug
     Compiler    = 12,  // compiler/* — parse, plan, validate, DAG build
     Trust       = 13,  // trust/* + consensus/* — scoring, witness
+    Contract    = 14,  // contract/* — registry, ABI, factory, deployment
 };
 
 // ---------------------------------------------------------------------------

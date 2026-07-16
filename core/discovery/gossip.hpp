@@ -27,10 +27,9 @@ public:
         uint32_t max_payload = 4096;
     };
 
-    explicit GossipEngine(MembershipTable& table, const Config& cfg = default_config());
+    explicit GossipEngine(MembershipTable& table, const Config& cfg);
 
     static Config default_config();
-    GossipEngine(MembershipTable& table);
 
     ~GossipEngine();
 

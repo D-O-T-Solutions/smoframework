@@ -1,738 +1,571 @@
-// §XIX — CLI Design
-// smo-cli: user-facing execution tool.
-//
-// smo exec --opcode ls --name backup-02 --path /var/log
-// smo exec --opcode backup --tag Storage
-// smo exec --opcode update --role Member
-// smo exec --opcode sync --nearest
-// smo mesh create --name "SOC-Production"
-// smo mesh discover
-// smo node init --name soc-hn-01
-// smo node info
-// smo node rename --name backup-storage
-// smo node connect --address node-a:7777
-// smo node import /path/to/cert.smoc
-// smo export --format json > request.smor
-// smo session open --name node-b
+#include "cli_context.hpp"
+#include "intent_parser.hpp"
 
-#include <core/crypto/impl.hpp>
-#include <core/identity/identity.hpp>
-#include <core/discovery/discovery.hpp>
-#include <core/select/selector.hpp>
-#include <core/storage/peer_store.hpp>
-#include <core/transport/transport.hpp>
-#include <core/transport/tcp_transport.hpp>
-
-#include <algorithm>
-#include <chrono>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <filesystem>
-#include <fstream>
-#include <iomanip>
+#include <iostream>
 #include <sstream>
-#include <string>
-#include <vector>
+#include <iomanip>
+#include <algorithm>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <signal.h>
+#include <unistd.h>
+#include <termios.h>
+#include <fcntl.h>
+#include <filesystem>
 
-namespace fs = std::filesystem;
+namespace smo {
 
-static void print_usage(const char* prog) {
-    std::fprintf(stderr, R"(SMO CLI — Secure Mesh Operation
+class CLIApplication {
+public:
+    CLIApplication();
+    ~CLIApplication();
 
-Usage:
-  %s node init --name <display-name>
-  %s node info
-  %s node rename --name <new-name>
-  %s node join --mesh <mesh> --token <token>
-  %s node leave --mesh <mesh>
-  %s node connect --address <host:port>
-  %s node import <cert-file>
+    Result<int> run(int argc, char* argv[]);
+    Result<void> initialize(const std::string& data_dir = "~/.smo");
 
-  %s exec --opcode <op> [--name <name>] [--id <nodeid>]
-          [--role <role>] [--tag <tag>]... [--where <expr>]
-          [--os <os>] [--arch <arch>] [--version <ver>]
-          [--trust <range>] [--mesh <mesh>]
-          [--nearest | --random <n> | --top <n>]
-          [--scope single|mesh] [--param <key>=<val>]...
-          [--dry-run]
+private:
+    class Impl;
+    std::unique_ptr<Impl> impl_;
+};
 
-  %s mesh create --name <mesh-name>
-  %s mesh discover
+class CLIApplication::Impl {
+public:
+    CLIContextManager context_;
+    std::unique_ptr<IntentParser> parser_;
+    bool running_ = true;
+    bool interactive_ = false;
+    struct termios orig_termios_;
 
-  %s export --format json
+    static constexpr const char* kCommands_[] = {
+        "ls", "cd", "pwd", "info", "exec", "ping", "ps", "kill", "top",
+        "deploy", "undeploy", "status", "history", "trace",
+        "select", "use", "policy", "control",
+        "mesh", "connect", "disconnect", "context",
+        "help", "exit", "quit", "clear",
+        "get", "put", "sync", "cat", "echo", "touch",
+        "mkdir", "rm", "cp", "mv",
+        nullptr
+    };
 
-  %s session open --name <name>
-
-  %s discover
-  %s --help
-)",
-        prog, prog, prog, prog, prog, prog, prog, prog, prog, prog, prog, prog, prog);
-}
-
-static std::string get_data_dir() {
-    const char* env = std::getenv("SMO_DATA_DIR");
-    if (env) return env;
-    return "/var/lib/smo";
-}
-
-static std::string get_etc_dir() {
-    const char* env = std::getenv("SMO_ETC_DIR");
-    if (env) return env;
-    return "/etc/smo";
-}
-
-// ── node init ────────────────────────────────────────────────────
-static int cmd_node_init(const std::vector<std::string>& args) {
-    std::string name;
-    bool force = false;
-
-    for (size_t i = 2; i < args.size(); ++i) {
-        if (args[i] == "--name") { if (i + 1 < args.size()) name = args[++i]; }
-        if (args[i] == "--force") force = true;
+    Impl() {
+        parser_ = std::make_unique<IntentParser>();
     }
 
-    if (name.empty()) {
-        std::fprintf(stderr, "Error: --name <display-name> is required\n");
-        return 1;
+    Result<void> init(const std::string& data_dir) {
+        return context_.initialize(data_dir);
     }
 
-    auto data_dir = get_data_dir();
-    fs::create_directories(data_dir);
-
-    auto id_path = data_dir + "/identity.json";
-    if (!force && fs::exists(id_path)) {
-        std::fprintf(stderr, "Error: identity already exists at %s (use --force to overwrite)\n",
-                     id_path.c_str());
-        return 1;
-    }
-
-    // Generate Ed25519 keypair + derive NodeID
-    smo::CryptoProvider crypto;
-    if (!crypto.signer.sign) {
-        std::fprintf(stderr, "Error: crypto provider not initialized\n");
-        return 1;
-    }
-    smo::RngRef rng{crypto.rng};
-    smo::Bytes public_key(32), secret_key(64);
-    if (auto r = crypto.signer.keypair(public_key, secret_key, rng); !r) {
-        std::fprintf(stderr, "Error: failed to generate keypair\n");
-        return 1;
-    }
-
-    // Derive NodeID = Blake3(public_key)
-    smo::Bytes node_id_bytes(32);
-    if (auto r = crypto.hash.hash(public_key); !r) {
-        std::fprintf(stderr, "Error: failed to hash public key\n");
-        return 1;
-    } else {
-        if (r.value().size() >= 32) {
-            std::memcpy(node_id_bytes.data(), r.value().data(), 32);
-        }
-    }
-
-    // Convert NodeID to hex
-    std::ostringstream node_id_oss;
-    for (uint8_t b : node_id_bytes) node_id_oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
-    std::string node_id_hex = node_id_oss.str();
-
-    // Convert keys to hex
-    std::ostringstream pk_oss, sk_oss;
-    for (uint8_t b : public_key) pk_oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
-    for (uint8_t b : secret_key) sk_oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
-
-    // Create identity JSON
-    std::string json =
-        "{\n"
-        "  \"display_name\": \"" + name + "\",\n"
-        "  \"node_id\": \"" + node_id_hex + "\",\n"
-        "  \"public_key\": \"" + pk_oss.str() + "\",\n"
-        "  \"secret_key\": \"" + sk_oss.str() + "\",\n"
-        "  \"created_at\": \"" + std::to_string(std::time(nullptr)) + "\",\n"
-        "  \"state\": \"KEY_GENERATED\"\n"
-        "}\n";
-
-    std::ofstream of(id_path);
-    if (!of) {
-        std::fprintf(stderr, "Error: cannot write %s\n", id_path.c_str());
-        return 1;
-    }
-    of << json;
-    of.close();
-
-    // Also write node.json
-    auto node_path = data_dir + "/node.json";
-    std::ofstream nf(node_path);
-    nf << "{\"name\":\"" << name << "\",\"role\":\"Member\",\"port\":7777}\n";
-    nf.close();
-
-    std::printf("Node initialized.\n");
-    std::printf("  Display name: %s\n", name.c_str());
-    std::printf("  Node ID:      %s\n", node_id_hex.c_str());
-    std::printf("  Identity:     %s\n", id_path.c_str());
-    std::printf("  State:        KEY_GENERATED\n");
-    return 0;
-}
-
-// ── node info ────────────────────────────────────────────────────
-static int cmd_node_info() {
-    auto data_dir = get_data_dir();
-    auto id_path = data_dir + "/identity.json";
-
-    if (!fs::exists(id_path)) {
-        std::fprintf(stderr, "Error: node not initialized (run 'smo node init' first)\n");
-        return 1;
-    }
-
-    std::ifstream f(id_path);
-    std::string content((std::istreambuf_iterator<char>(f)),
-                         std::istreambuf_iterator<char>());
-    std::printf("%s", content.c_str());
-    return 0;
-}
-
-// ── node import ──────────────────────────────────────────────────
-static int cmd_node_import(const std::vector<std::string>& args) {
-    if (args.size() < 3) {
-        std::fprintf(stderr, "Usage: smo node import <cert-file>\n");
-        return 1;
-    }
-    auto cert_path = args[2];
-    auto data_dir = get_data_dir();
-
-    if (!fs::exists(cert_path)) {
-        std::fprintf(stderr, "Error: file not found: %s\n", cert_path.c_str());
-        return 1;
-    }
-
-    // Copy certificate to data dir
-    auto dest = data_dir + "/certificate.json";
-    fs::copy_file(cert_path, dest, fs::copy_options::overwrite_existing);
-
-    std::printf("Certificate imported: %s → %s\n", cert_path.c_str(), dest.c_str());
-
-    // Update identity state
-    auto id_path = data_dir + "/identity.json";
-    if (fs::exists(id_path)) {
-        std::ofstream f(id_path);
-        f << "{\"state\":\"JOINED\",\"imported_at\":" << std::time(nullptr) << "}\n";
-    }
-    return 0;
-}
-
-// ── node connect ─────────────────────────────────────────────────
-static int cmd_node_connect(const std::vector<std::string>& args) {
-    std::string address;
-    for (size_t i = 2; i < args.size(); ++i) {
-        if (args[i] == "--address") { if (i + 1 < args.size()) address = args[++i]; }
-    }
-    if (address.empty()) {
-        std::fprintf(stderr, "Usage: smo node connect --address <host:port>\n");
-        return 1;
-    }
-
-    auto data_dir = get_data_dir();
-    auto id_path = data_dir + "/identity.json";
-    if (!fs::exists(id_path)) {
-        std::fprintf(stderr, "Error: node not initialized (run 'smo node init' first)\n");
-        return 1;
-    }
-
-    // Load local NodeID from identity.json
-    std::ifstream f(id_path);
-    std::string content((std::istreambuf_iterator<char>(f)),
-                         std::istreambuf_iterator<char>());
-    f.close();
-
-    // Parse NodeID from identity.json (naive: look for "node_id")
-    auto pos = content.find("\"node_id\"");
-    if (pos == std::string::npos) pos = content.find("\"id\"");
-    smo::NodeID local_id;
-    if (pos != std::string::npos) {
-        auto start = content.find('"', pos + 8);
-        auto end = content.find('"', start + 1);
-        if (start != std::string::npos && end != std::string::npos) {
-            std::string id_hex = content.substr(start + 1, end - start - 1);
-            // Expect 64 hex chars = 32 bytes
-            if (id_hex.size() == 64) {
-                for (size_t i = 0; i < 32; ++i) {
-                    local_id.value[i] = static_cast<uint8_t>(
-                        std::stoi(id_hex.substr(i * 2, 2), nullptr, 16));
-                }
+    // ---- Auto-complete ----
+    static char* command_generator(const char* text, int state) {
+        static int idx;
+        if (state == 0) idx = 0;
+        while (kCommands_[idx]) {
+            const char* cmd = kCommands_[idx++];
+            size_t len = strlen(text);
+            if (strncmp(cmd, text, len) == 0) {
+                return strdup(cmd);
             }
         }
+        return nullptr;
     }
 
-    // Register TCP transport
-    smo::TransportRegistry::instance().register_transport(
-        std::make_unique<smo::TcpTransport>(), "tcp");
-
-    // Parse seed address
-    smo::Endpoint seed_ep;
-    auto ep_result = smo::Endpoint::from_string(address);
-    if (!ep_result) {
-        std::fprintf(stderr, "Error: invalid address format (use host:port)\n");
-        return 1;
-    }
-    seed_ep = ep_result.value();
-
-    // Create MembershipTable and HealthMonitor for bootstrap
-    smo::MembershipTable table;
-    smo::HealthMonitor monitor;
-
-    std::printf("Connecting to seed: %s\n", address.c_str());
-    auto now = std::chrono::system_clock::to_time_t(
-        std::chrono::system_clock::now());
-    auto rec_result = smo::Bootstrap::find_seed(
-        {seed_ep},
-        smo::TransportRegistry::instance(),
-        local_id,
-        static_cast<int64_t>(now) * 1000000000LL);
-
-    if (!rec_result) {
-        std::fprintf(stderr, "Failed to connect to seed: %s\n",
-                     rec_result.error().message.c_str());
-        return 1;
+    static char** completer(const char* text, int, int) {
+        rl_attempted_completion_over = 1;
+        return rl_completion_matches(text, command_generator);
     }
 
-    // Bootstrap succeeded - seed returned its PeerRecord
-    auto& rec = rec_result.value();
-    std::printf("Seed responded: %s (%s)\n",
-                rec.display_name.c_str(),
-                rec.endpoint.to_string().c_str());
+    // ---- REPL ----
+    Result<int> run_repl() {
+        rl_attempted_completion_function = completer;
+        rl_bind_key('\t', rl_complete);
 
-    // Upsert seed into local membership
-    table.upsert(rec);
-    std::printf("Added seed to membership. Peers: %zu\n", table.count());
+        std::string hist_file = std::string(getenv("HOME")) + "/.smo_history";
+        read_history(hist_file.c_str());
 
-    // TODO: Request full peer table from seed via DiscoverMsg
-    // For now just save seed record
-    return 0;
-}
+        signal(SIGINT, handle_sigint);
+        signal(SIGTERM, handle_sigterm);
+        signal(SIGTSTP, SIG_IGN);
 
-// ── node rename ──────────────────────────────────────────────────
-static int cmd_node_rename(const std::vector<std::string>& args) {
-    std::string new_name;
-    bool dry_run = false;
-    for (size_t i = 2; i < args.size(); ++i) {
-        if (args[i] == "--name") { if (i + 1 < args.size()) new_name = args[++i]; }
-        if (args[i] == "--dry-run") dry_run = true;
-    }
-    if (new_name.empty()) {
-        std::fprintf(stderr, "Usage: smo node rename --name <new-name>\n");
-        return 1;
-    }
-    std::printf("Rename requested: %s\n", new_name.c_str());
-    if (dry_run) std::printf("  (dry-run — no changes made)\n");
-    return 0;
-}
+        std::cout << "\n"
+                  << "  ╔══════════════════════════════════════╗\n"
+                  << "  ║    SMO Interactive Shell v0.1        ║\n"
+                  << "  ║    Type 'help' for commands          ║\n"
+                  << "  ║    Type 'exit'  or Ctrl-D to quit    ║\n"
+                  << "  ╚══════════════════════════════════════╝\n"
+                  << std::endl;
 
-// ── exec ─────────────────────────────────────────────────────────
-static int cmd_exec(const std::vector<std::string>& args) {
-    std::string opcode, name, node_id, role, where, os, arch, version, trust_range, mesh, cap, scope;
-    std::vector<std::string> tags, params;
-    bool nearest = false, dry_run = false;
-    int random_n = 0, top_n = 0;
+        interactive_ = true;
+        tcgetattr(STDIN_FILENO, &orig_termios_);
 
-    for (size_t i = 1; i < args.size(); ++i) {
-        auto& a = args[i];
-        // Positional opcode (first non-flag argument)
-        if (a[0] != '-' && opcode.empty() && a != "exec") {
-            opcode = a;
-            continue;
-        }
-        if (a == "--opcode" || a == "--op") {
-            if (i + 1 < args.size()) opcode = args[++i];
-        } else if (a == "--name")       { if (i + 1 < args.size()) name = args[++i]; }
-        else if (a == "--id")           { if (i + 1 < args.size()) node_id = args[++i]; }
-        else if (a == "--role")         { if (i + 1 < args.size()) role = args[++i]; }
-        else if (a == "--tag")          { if (i + 1 < args.size()) tags.push_back(args[++i]); }
-        else if (a == "--where")        { if (i + 1 < args.size()) where = args[++i]; }
-        else if (a == "--os" || a == "--platform") { if (i + 1 < args.size()) os = args[++i]; }
-        else if (a == "--arch")         { if (i + 1 < args.size()) arch = args[++i]; }
-        else if (a == "--version")      { if (i + 1 < args.size()) version = args[++i]; }
-        else if (a == "--trust")        { if (i + 1 < args.size()) trust_range = args[++i]; }
-        else if (a == "--mesh")         { if (i + 1 < args.size()) mesh = args[++i]; }
-        else if (a == "--cap")          { if (i + 1 < args.size()) cap = args[++i]; }
-        else if (a == "--scope")        { if (i + 1 < args.size()) scope = args[++i]; }
-        else if (a == "--param")        { if (i + 1 < args.size()) params.push_back(args[++i]); }
-        else if (a == "--nearest")      { nearest = true; }
-        else if (a == "--random")       { if (i + 1 < args.size()) random_n = std::stoi(args[++i]); }
-        else if (a == "--top")          { if (i + 1 < args.size()) top_n = std::stoi(args[++i]); }
-        else if (a == "--dry-run")      { dry_run = true; }
-    }
+        while (running_) {
+            std::string prompt = context_.get_prompt();
+            char* line = readline(prompt.c_str());
+            if (!line) break;
 
-    // ── Selector Integration ──────────────────────────────────────
-    // If selection criteria provided, resolve target nodes via Selector
-    bool has_selection = !name.empty() || !node_id.empty() || !role.empty() ||
-                         !tags.empty() || !where.empty() || !os.empty() ||
-                         !arch.empty() || !version.empty() || !trust_range.empty() ||
-                         !mesh.empty() || !cap.empty() || nearest || random_n > 0 || top_n > 0;
+            std::string input(line);
+            free(line);
 
-    smo::select::NodeSet selected_nodes;
-    if (has_selection) {
-        // Load local membership from PeerStore
-        auto data_dir = get_data_dir();
-        smo::MembershipTable local_table;
-        smo::PeerStore peer_store;
-        if (auto r = peer_store.open(data_dir); r) {
-            auto sync_r = peer_store.sync_to_membership(local_table);
-            if (!sync_r) {
-                std::fprintf(stderr, "Warning: failed to load peer store: %s\n",
-                             sync_r.error().message.c_str());
+            if (input.empty()) continue;
+
+            add_history(input.c_str());
+            context_.add_history(input);
+
+            if (input == "exit" || input == "quit") break;
+            if (input == "clear") { system("clear"); continue; }
+
+            auto parse_result = parser_->parse(input);
+            if (!parse_result) {
+                std::cerr << "Error: " << parse_result.error().message << "\n";
+                continue;
+            }
+
+            auto& intent = parse_result.value().intent;
+            auto result = execute_intent(intent);
+            if (!result) {
+                std::cerr << "Error: " << result.error().message << "\n";
             }
         }
 
-        // Also add local node
-        auto id_path = data_dir + "/identity.json";
-        if (fs::exists(id_path)) {
-            std::ifstream f(id_path);
-            std::string content((std::istreambuf_iterator<char>(f)),
-                                 std::istreambuf_iterator<char>());
-            auto pos = content.find("\"node_id\"");
-            if (pos == std::string::npos) pos = content.find("\"id\"");
-            if (pos != std::string::npos) {
-                auto start = content.find('"', pos + 8);
-                auto end = content.find('"', start + 1);
-                if (start != std::string::npos && end != std::string::npos) {
-                    std::string id_hex = content.substr(start + 1, end - start - 1);
-                    if (id_hex.size() == 64) {
-                        smo::NodeID local_id;
-                        for (size_t i = 0; i < 32; ++i) {
-                            local_id.value[i] = static_cast<uint8_t>(
-                                std::stoi(id_hex.substr(i * 2, 2), nullptr, 16));
-                        }
-                        smo::PeerRecord local_rec;
-                        local_rec.node_id = local_id;
-                        local_rec.display_name = name.empty() ? "local" : name;
-                        local_rec.state = smo::PeerState::Online;
-                        local_table.upsert(std::move(local_rec));
-                    }
-                }
-            }
+        write_history(hist_file.c_str());
+        tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios_);
+
+        std::cout << "Bye." << std::endl;
+        return 0;
+    }
+
+    Result<int> run_command(const std::vector<std::string>& args) {
+        if (args.empty()) return 1;
+
+        auto result = parser_->parse(args);
+        if (!result) {
+            std::cerr << "Parse error: " << result.error().message << "\n";
+            return 1;
         }
 
-        // Build selection query
-        smo::select::SelectQuery query;
-        if (!name.empty()) query.name = name;
-        if (!node_id.empty()) {
-            // Parse node_id hex
-            smo::NodeID id;
-            if (node_id.size() == 64) {
-                for (size_t i = 0; i < 32; ++i) {
-                    id.value[i] = static_cast<uint8_t>(
-                        std::stoi(node_id.substr(i * 2, 2), nullptr, 16));
-                }
-                query.node_id = id;
-            }
+        return execute_intent(result.value().intent);
+    }
+
+private:
+    static void handle_sigint(int) {
+        rl_free_line_state();
+        rl_cleanup_after_signal();
+        rl_line_buffer[0] = '\0';
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+    }
+
+    static void handle_sigterm(int) {
+        // will be caught by the main loop
+    }
+
+    Result<int> execute_intent(const Intent& intent) {
+        switch (intent.type) {
+            case IntentType::Help:      return handle_help(intent);
+            case IntentType::Exit:      return 0;
+            case IntentType::Select:    return handle_select(intent);
+            case IntentType::Execute:   return handle_exec(intent);
+            case IntentType::Transfer:  return handle_transfer(intent);
+            case IntentType::Filesystem:return handle_filesystem(intent);
+            case IntentType::Process:   return handle_process(intent);
+            case IntentType::Deploy:    return handle_deploy(intent);
+            case IntentType::Undeploy:  return handle_undeploy(intent);
+            case IntentType::Status:    return handle_status(intent);
+            case IntentType::Policy:    return handle_policy(intent);
+            case IntentType::Control:   return handle_control(intent);
+            case IntentType::Context:   return handle_context(intent);
+            case IntentType::Mesh:      return handle_mesh(intent);
+            case IntentType::Connect:   return handle_connect(intent);
+            case IntentType::Disconnect:return handle_disconnect(intent);
+            case IntentType::Discover:  return handle_discover(intent);
+            case IntentType::Export:    return handle_export(intent);
+            case IntentType::Session:   return handle_session(intent);
+            case IntentType::History:   return handle_history(intent);
+            case IntentType::Trace:     return handle_trace(intent);
+            default:
+                std::cerr << "Unknown intent type: " << (int)intent.type << "\n";
+                return 1;
         }
-        if (!role.empty()) query.role = smo::Role::Reader; // parse role string
-        query.tags = tags;
-        query.where_expr = where;
-        query.os = os;
-        query.arch = arch;
-        query.version_constraint = version;
-        query.mesh_name = mesh;
-        query.cap_mask = cap;
-        if (nearest) query.mode = smo::select::SelectMode::NEAREST;
-        else if (random_n > 0) { query.mode = smo::select::SelectMode::RANDOM; query.limit = random_n; }
-        else if (top_n > 0) { query.mode = smo::select::SelectMode::TOP_N; query.limit = top_n; }
-        else if (!scope.empty()) {
-            if (scope == "single") query.mode = smo::select::SelectMode::SINGLE;
-            else if (scope == "mesh") query.mode = smo::select::SelectMode::MESH;
+    }
+
+    // ---- Command implementations ----
+
+    Result<int> handle_help(const Intent& intent) {
+        if (!intent.flags.empty() && intent.flags.begin()->first != "command") {
+            std::cout << parser_->generate_usage(intent.flags.begin()->first);
+        } else {
+            std::cout << parser_->generate_help();
+        }
+        return 0;
+    }
+
+    Result<int> handle_select(const Intent& intent) {
+        // selection context from intent
+        SelectionContext sel;
+        sel.node_names = intent.node_names;
+        sel.node_ids = intent.node_ids;
+        sel.roles = intent.roles;
+        sel.tags = intent.tags;
+        sel.where_expression = intent.where_expression;
+        sel.mesh_name = intent.mesh_filter;
+        sel.os_filter = intent.os_filter;
+        sel.arch_filter = intent.arch_filter;
+        sel.version_filter = intent.version_filter;
+
+        if (intent.trust_min) sel.trust_min = std::stof(intent.trust_min.value());
+        if (intent.trust_max) sel.trust_max = std::stof(intent.trust_max.value());
+
+        if (intent.flags.count("clear")) {
+            context_.clear_selection();
+            std::cout << "Selection cleared.\n";
+            return 0;
         }
 
-        // Execute selection
-        smo::select::Selector selector(local_table);
-        auto select_result = selector.select(query);
-        if (select_result) {
-            selected_nodes = std::move(select_result.value());
-            if (selected_nodes.empty()) {
-                std::fprintf(stderr, "No nodes match selection criteria\n");
+        sel.is_active = true;
+        auto res = context_.set_selection(sel);
+        if (!res) return 1;
+
+        if (intent.save_selection && !intent.selection_name.empty()) {
+            context_.save_selection(intent.selection_name);
+            std::cout << "Selection saved as '" << intent.selection_name << "'.\n";
+        }
+
+        std::cout << "Selection active: "
+                  << (sel.node_names.empty() ? "*" : sel.node_names.front())
+                  << " (" << (sel.roles.empty() ? "any" : sel.roles.front()) << ")"
+                  << "\n";
+        return 0;
+    }
+
+    Result<int> handle_exec(const Intent& intent) {
+        if (intent.args.empty()) {
+            std::cerr << "Usage: exec <command> [args...]\n";
+            return 1;
+        }
+
+        std::string cmd = intent.args[0];
+        // Check if in a session (direct connection) or need dispatch
+        if (context_.is_connected()) {
+            std::cout << "[session " << context_.get_connected_node()
+                      << "] $ " << cmd << "\n";
+            // Would pipe through transport to connected node
+            return 0;
+        }
+
+        // Check if there is an active selection
+        auto sel_result = context_.get_selection();
+        if (!sel_result) {
+            std::cerr << "No active selection. Use 'select' or 'connect' first.\n";
+            return 1;
+        }
+
+        const auto& sel = sel_result.value();
+        std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
+        std::cout << "[" << scope_str << " over " << sel.node_names.size() << " node(s)]"
+                  << " $ " << cmd << "\n";
+        std::cout << "(Dispatch not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_transfer(const Intent& intent) {
+        std::cout << "[transfer] " << intent.opcode;
+        for (const auto& a : intent.args) std::cout << " " << a;
+        std::cout << "\n";
+        std::cout << "(Transfer not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_filesystem(const Intent& intent) {
+        std::cout << "[filesystem] " << intent.opcode;
+        for (const auto& a : intent.args) std::cout << " " << a;
+        std::cout << "\n";
+        std::cout << "(Filesystem operations not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_process(const Intent& intent) {
+        std::cout << "[process] " << intent.opcode;
+        for (const auto& a : intent.args) std::cout << " " << a;
+        std::cout << "\n";
+        std::cout << "(Process operations not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_deploy(const Intent& intent) {
+        if (intent.args.empty()) {
+            std::cerr << "Usage: deploy <contract_path> [--policy NAME] [--mesh MESH]\n";
+            return 1;
+        }
+        std::cout << "Deploying contract: " << intent.args[0] << "\n";
+        std::cout << "(Deploy not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_undeploy(const Intent& intent) {
+        if (intent.args.empty()) {
+            std::cerr << "Usage: undeploy <contract_id>\n";
+            return 1;
+        }
+        std::cout << "Undeploying contract: " << intent.args[0] << "\n";
+        std::cout << "(Undeploy not yet implemented)\n";
+        return 0;
+    }
+
+    Result<int> handle_status(const Intent& intent) {
+        if (intent.args.empty()) {
+            std::cout << "Context status:\n";
+            std::cout << "  Mesh:     " << (context_.get_current_mesh() ? context_.get_current_mesh().value() : "(none)") << "\n";
+            auto sel = context_.get_selection();
+            if (sel) {
+                std::cout << "  Selection: active (" << sel.value().node_names.size() << " nodes)\n";
+            } else {
+                std::cout << "  Selection: (none)\n";
+            }
+            std::cout << "  Control:  " << (int)context_.get_control_level() << "\n";
+            std::cout << "  Scope:    " << (int)context_.get_scope() << "\n";
+            std::cout << "  Timeout:  " << context_.get_timeout() << " ms\n";
+            std::cout << "  Retry:    " << context_.get_retry() << "\n";
+            if (context_.is_connected()) {
+                std::cout << "  Session:  " << context_.get_connected_node() << "\n";
+            }
+        } else {
+            std::cout << "Contract status for: " << intent.args[0] << "\n";
+            std::cout << "(Contract status not yet implemented)\n";
+        }
+        return 0;
+    }
+
+    Result<int> handle_policy(const Intent& intent) {
+        if (intent.flags.count("list")) {
+            std::cout << "Available policies:\n";
+            std::cout << "  - default (safe, single, 30s timeout)\n";
+            std::cout << "  - enterprise (elevated, quorum, 60s)\n";
+            std::cout << "  - emergency (emergency, mesh, 10s)\n";
+            return 0;
+        }
+        if (intent.flags.count("show")) {
+            std::cout << "Policy: " << intent.flags.at("show") << "\n";
+            std::cout << "(Policy details not yet implemented)\n";
+            return 0;
+        }
+        if (intent.flags.count("preset")) {
+            std::string preset = intent.flags.at("preset");
+            ExecutionContext ctx = ExecutionContext{};
+            auto exec_ctx = context_.get_execution_context();
+            if (exec_ctx) ctx = exec_ctx.value();
+            if (preset == "default") {
+                ctx.control = ControlLevel::Safe;
+                ctx.scope = ExecutionScope::Single;
+                ctx.timeout_ms = 30000;
+            } else if (preset == "enterprise") {
+                ctx.control = ControlLevel::Normal;
+                ctx.scope = ExecutionScope::Quorum;
+                ctx.timeout_ms = 60000;
+            } else if (preset == "emergency") {
+                ctx.control = ControlLevel::Emergency;
+                ctx.scope = ExecutionScope::Mesh;
+                ctx.timeout_ms = 10000;
+            } else {
+                std::cerr << "Unknown policy preset: " << preset << "\n";
                 return 1;
             }
-            std::printf("Selected %zu node(s):\n", selected_nodes.size());
-            for (auto& e : selected_nodes.entries) {
-                std::printf("  %s (%s) rtt=%.2fms\n",
-                            e.display_name.c_str(),
-                            e.id.value.data(),
-                            e.rtt_ms);
-            }
-        } else {
-            std::fprintf(stderr, "Selection failed: %s\n",
-                         select_result.error().message.c_str());
-            return 1;
-        }
-    }
-    // ───────────────────────────────────────────────────────────────
-
-    // Support positional opcode (first non-flag arg)
-    if (opcode.empty() && !args.empty() && args[0] != "exec") {
-        opcode = args[0];
-    }
-    if (opcode.empty()) {
-        if (dry_run) {
-            // Selection-only mode: show what would be selected
-            std::printf("Selection Engine (dry-run):\n");
-            if (!name.empty())      std::printf("  -> name:       %s\n", name.c_str());
-            if (!role.empty())      std::printf("  -> role:       %s\n", role.c_str());
-            if (!tags.empty())      { std::printf("  -> tags:       "); for (auto& t : tags) std::printf("%s ", t.c_str()); std::printf("\n"); }
-            if (!where.empty())     std::printf("  -> where:      %s\n", where.c_str());
-            if (!os.empty())        std::printf("  -> os:         %s\n", os.c_str());
-            if (!arch.empty())      std::printf("  -> arch:       %s\n", arch.c_str());
-            if (!version.empty())   std::printf("  -> version:    %s\n", version.c_str());
-            if (!trust_range.empty()) std::printf("  -> trust:      %s\n", trust_range.c_str());
-            if (!mesh.empty())      std::printf("  -> mesh:       %s\n", mesh.c_str());
-            if (!cap.empty())       std::printf("  -> cap:        %s\n", cap.c_str());
-            if (!scope.empty())     std::printf("  -> scope:      %s\n", scope.c_str());
-            if (nearest)            std::printf("  -> mode:       nearest\n");
-            if (random_n > 0)       std::printf("  -> mode:       random %d\n", random_n);
-            if (top_n > 0)          std::printf("  -> mode:       top %d\n", top_n);
-            std::printf("  (dry-run — no execution)\n");
+            context_.set_execution_context(ctx);
+            std::cout << "Applied policy: " << preset << "\n";
             return 0;
         }
-        std::fprintf(stderr, "Error: --opcode is required\n");
-        return 1;
-    }
-
-    // Built-in contracts
-    if (opcode == "ping") {
-        std::printf("{\"status\":\"pong\",\"timestamp\":%ld,\"node\":\"%s\"",
-                    std::time(nullptr), name.empty() ? "localhost" : name.c_str());
-        if (!scope.empty()) std::printf(",\"scope\":\"%s\"", scope.c_str());
-        std::printf("}\n");
+        std::cout << "Policy management.\n";
         return 0;
     }
 
-    if (opcode == "whoami") {
-        auto data_dir = get_data_dir();
-        auto id_path = data_dir + "/identity.json";
-        if (fs::exists(id_path)) {
-            std::ifstream f(id_path);
-            std::printf("%s", std::string((std::istreambuf_iterator<char>(f)),
-                                           std::istreambuf_iterator<char>()).c_str());
-        } else {
-            std::printf("{\"node_id\":\"unknown\"}\n");
+    Result<int> handle_control(const Intent& intent) {
+        if (intent.flags.count("level")) {
+            std::string l = intent.flags.at("level");
+            if (l == "safe")      context_.set_control_level(ControlLevel::Safe);
+            else if (l == "normal") context_.set_control_level(ControlLevel::Normal);
+            else if (l == "force")  context_.set_control_level(ControlLevel::Force);
+            else if (l == "emergency") context_.set_control_level(ControlLevel::Emergency);
+            else { std::cerr << "Invalid level\n"; return 1; }
+        }
+        if (intent.flags.count("scope")) {
+            std::string s = intent.flags.at("scope");
+            if (s == "single")   context_.set_scope(ExecutionScope::Single);
+            else if (s == "mesh")   context_.set_scope(ExecutionScope::Mesh);
+            else if (s == "quorum") context_.set_scope(ExecutionScope::Quorum);
+            else if (s == "witness") context_.set_scope(ExecutionScope::Witness);
+            else { std::cerr << "Invalid scope\n"; return 1; }
+        }
+        if (intent.flags.count("timeout")) {
+            context_.set_timeout(std::stoi(intent.flags.at("timeout")));
+        }
+        if (intent.flags.count("retry")) {
+            context_.set_retry(std::stoi(intent.flags.at("retry")));
+        }
+        std::cout << "Control: level=" << (int)context_.get_control_level()
+                  << " scope=" << (int)context_.get_scope()
+                  << " timeout=" << context_.get_timeout() << "ms"
+                  << " retry=" << context_.get_retry() << "\n";
+        return 0;
+    }
+
+    Result<int> handle_context(const Intent& intent) {
+        if (intent.flags.count("list")) {
+            std::cout << "Current context:\n";
+            return handle_status(Intent{IntentType::Status, "", {}, {}});
+        }
+        if (intent.flags.count("save")) {
+            context_.save_execution_context(intent.flags.at("save"));
+            std::cout << "Context saved.\n";
+            return 0;
+        }
+        if (intent.flags.count("load")) {
+            context_.load_execution_context(intent.flags.at("load"));
+            std::cout << "Context loaded.\n";
+            return 0;
+        }
+        if (intent.flags.count("clear")) {
+            context_.clear_selection();
+            context_.disconnect();
+            std::cout << "Context cleared.\n";
+            return 0;
+        }
+        return handle_status(Intent{IntentType::Status});
+    }
+
+    Result<int> handle_mesh(const Intent& intent) {
+        if (intent.flags.count("list") || intent.flags.empty()) {
+            auto mesh_res = context_.get_current_mesh();
+            std::string current = mesh_res ? mesh_res.value() : "(none)";
+            std::cout << "Current mesh: " << current << "\n";
+            if (!current.empty()) {
+                std::cout << "  (single mesh mode)\n";
+            } else {
+                std::cout << "  No mesh selected.\n";
+            }
+            return 0;
+        }
+        if (intent.flags.count("use")) {
+            std::string name = intent.flags.at("use");
+            context_.set_mesh(name);
+            std::cout << "Switched to mesh: " << name << "\n";
+            return 0;
+        }
+        if (intent.flags.count("create")) {
+            std::string name = intent.flags.at("create");
+            context_.set_mesh(name);
+            std::cout << "Created and switched to mesh: " << name << "\n";
+            return 0;
+        }
+        if (intent.flags.count("join")) {
+            std::cout << "Join mesh request (not yet implemented)\n";
+            return 0;
+        }
+        if (intent.flags.count("leave")) {
+            context_.set_mesh("");
+            std::cout << "Left current mesh.\n";
+            return 0;
         }
         return 0;
     }
 
-    if (dry_run) {
-        std::printf("Intent: %s\n", opcode.c_str());
-        if (!name.empty())      std::printf("  -> name:       %s\n", name.c_str());
-        if (!node_id.empty())   std::printf("  -> id:         %s\n", node_id.c_str());
-        if (!role.empty())      std::printf("  -> role:       %s\n", role.c_str());
-        if (!tags.empty())      { std::printf("  -> tags:       "); for (auto& t : tags) std::printf("%s ", t.c_str()); std::printf("\n"); }
-        if (!where.empty())     std::printf("  -> where:      %s\n", where.c_str());
-        if (!os.empty())        std::printf("  -> os:         %s\n", os.c_str());
-        if (!arch.empty())      std::printf("  -> arch:       %s\n", arch.c_str());
-        if (!version.empty())   std::printf("  -> version:    %s\n", version.c_str());
-        if (!trust_range.empty()) std::printf("  -> trust:      %s\n", trust_range.c_str());
-        if (!mesh.empty())      std::printf("  -> mesh:       %s\n", mesh.c_str());
-        if (!cap.empty())       std::printf("  -> cap:        %s\n", cap.c_str());
-        if (!scope.empty())     std::printf("  -> scope:      %s\n", scope.c_str());
-        if (nearest)            std::printf("  -> mode:       nearest\n");
-        if (random_n > 0)       std::printf("  -> mode:       random %d\n", random_n);
-        if (top_n > 0)          std::printf("  -> mode:       top %d\n", top_n);
-        std::printf("  (dry-run)\n");
+    Result<int> handle_connect(const Intent& intent) {
+        if (intent.args.empty()) {
+            if (context_.is_connected()) {
+                std::cout << "Connected to: " << context_.get_connected_node() << "\n";
+            } else {
+                std::cout << "Not connected.\n";
+            }
+            return 0;
+        }
+        auto res = context_.connect(intent.args[0]);
+        if (res) {
+            std::cout << "Connected to " << intent.args[0] << "\n";
+        }
+        return res ? 0 : 1;
+    }
+
+    Result<int> handle_disconnect(const Intent&) {
+        context_.disconnect();
+        std::cout << "Disconnected.\n";
         return 0;
     }
 
-    std::printf("Executing %s...\n", opcode.c_str());
-    std::printf("  (Execution via daemon — not yet implemented)\n");
-    return 0;
-}
-
-// ── discover ─────────────────────────────────────────────────────
-static int cmd_discover(const std::vector<std::string>& args) {
-    bool full = false;
-    int wait_sec = 0;
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "--full") full = true;
-        if (args[i] == "--wait" && i + 1 < args.size()) wait_sec = std::stoi(args[++i]);
+    Result<int> handle_discover(const Intent& intent) {
+        std::cout << "[discover]";
+        for (const auto& a : intent.args) std::cout << " " << a;
+        std::cout << "\n";
+        std::cout << "(Discovery not yet implemented)\n";
+        return 0;
     }
 
-    if (wait_sec > 0) {
-        std::printf("Waiting %d seconds for peers...\n", wait_sec);
-        // In real mode, would poll discovery engine
+    Result<int> handle_export(const Intent& intent) {
+        std::cout << "[export]";
+        for (const auto& a : intent.args) std::cout << " " << a;
+        std::cout << "\n";
+        std::cout << "(Export not yet implemented)\n";
+        return 0;
     }
 
-    std::printf("%-8s %-14s %-12s %-20s %s\n",
-                "ID", "NAME", "ROLE", "TAGS", "STATUS");
-    std::printf("%-8s %-14s %-12s %-20s %s\n",
-                "--------", "--------------", "------------", "--------------------", "-------");
-
-    // Try to read peer table from data dir
-    auto data_dir = get_data_dir();
-    auto peers_path = data_dir + "/peers.json";
-    if (fs::exists(peers_path)) {
-        std::ifstream f(peers_path);
-        std::string line;
-        while (std::getline(f, line)) {
-            std::printf("%s\n", line.c_str());
-        }
-    } else {
-        // Read name from node.json (simpler format)
-        auto node_path = data_dir + "/node.json";
-        std::string name = "unknown";
-        if (fs::exists(node_path)) {
-            std::ifstream f(node_path);
-            std::string content((std::istreambuf_iterator<char>(f)),
-                                 std::istreambuf_iterator<char>());
-            // Parse {"name":"...",...}
-            auto pos = content.find("\"name\"");
-            if (pos != std::string::npos) {
-                auto val_start = content.find('"', pos + 7); // past "name":
-                if (val_start != std::string::npos) {
-                    auto val_end = content.find('"', val_start + 1);
-                    if (val_end != std::string::npos)
-                        name = content.substr(val_start + 1,
-                                              val_end - val_start - 1);
-                }
+    Result<int> handle_session(const Intent& intent) {
+        if (intent.flags.count("status")) {
+            if (context_.is_connected()) {
+                std::cout << "Active session: " << context_.get_connected_node() << "\n";
+            } else {
+                std::cout << "No active session.\n";
             }
         }
-        std::printf("%-8s %-14s %-12s %-20s %s\n",
-                    "local", name.c_str(), "Member", "-", "Online");
-        if (full) {
-            std::printf("(No peer table yet — run 'smo node connect' to join mesh)\n");
-        }
-    }
-    return 0;
-}
-
-// ── mesh ─────────────────────────────────────────────────────────
-static int cmd_mesh(const std::vector<std::string>& args) {
-    if (args.size() < 2) {
-        std::fprintf(stderr, "Usage: smo mesh create|discover\n");
-        return 1;
-    }
-    auto sub = args[1];
-    if (sub == "create") {
-        std::string mesh_name;
-        for (size_t i = 2; i < args.size(); ++i) {
-            if (args[i] == "--name") { if (i + 1 < args.size()) mesh_name = args[++i]; }
-        }
-        if (mesh_name.empty()) {
-            std::fprintf(stderr, "Usage: smo mesh create --name <mesh-name>\n");
-            return 1;
-        }
-        auto etc_dir = get_etc_dir();
-        fs::create_directories(etc_dir);
-        auto mesh_path = etc_dir + "/mesh.json";
-        std::ofstream f(mesh_path);
-        f << "{\"name\":\"" << mesh_name << "\",\"created_at\":" << std::time(nullptr) << "}\n";
-        f.close();
-        std::printf("Mesh created: %s (%s)\n", mesh_name.c_str(), mesh_path.c_str());
         return 0;
     }
-    if (sub == "discover") {
-        // Forward to discover command
-        std::vector<std::string> discover_args(args.begin() + 2, args.end());
-        return cmd_discover(discover_args);
-    }
-    std::fprintf(stderr, "Unknown subcommand: mesh %s\n", sub.c_str());
-    return 1;
-}
 
-// ── export ───────────────────────────────────────────────────────
-static int cmd_export(const std::vector<std::string>& args) {
-    std::string format = "json";
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "--format" && i + 1 < args.size()) format = args[++i];
-    }
-
-    auto data_dir = get_data_dir();
-    auto id_path = data_dir + "/identity.json";
-    if (!fs::exists(id_path)) {
-        std::fprintf(stderr, "Error: node not initialized\n");
-        return 1;
-    }
-
-    // Build enrollment request JSON
-    std::string enroll_req =
-        "{\n"
-        "  \"version\": 1,\n"
-        "  \"mesh_id\": \"SOC-Production\",\n"
-        "  \"display_name\": \"soc-hn-01\",\n"
-        "  \"platform\": \"linux\",\n"
-        "  \"version\": \"3.0.0\",\n"
-        "  \"public_key\": \"\",\n"
-        "  \"timestamp\": \"" + std::to_string(std::time(nullptr)) + "\",\n"
-        "  \"nonce\": \"0000000000000000\"\n"
-        "}\n";
-
-    std::printf("%s", enroll_req.c_str());
-    return 0;
-}
-
-// ── session ──────────────────────────────────────────────────────
-static int cmd_session(const std::vector<std::string>& args) {
-    if (args.size() < 2) {
-        std::fprintf(stderr, "Usage: smo session open|close|list\n");
-        return 1;
-    }
-    auto sub = args[1];
-    if (sub == "open") {
-        std::string name;
-        for (size_t i = 2; i < args.size(); ++i) {
-            if (args[i] == "--name") { if (i + 1 < args.size()) name = args[++i]; }
+    Result<int> handle_history(const Intent& intent) {
+        const auto& hist = context_.get_history();
+        size_t limit = 20;
+        if (intent.flags.count("limit")) {
+            try { limit = std::stoul(intent.flags.at("limit")); } catch (...) {}
         }
-        if (name.empty()) {
-            std::fprintf(stderr, "Usage: smo session open --name <node-name>\n");
-            return 1;
+        size_t start = hist.size() > limit ? hist.size() - limit : 0;
+        for (size_t i = start; i < hist.size(); ++i) {
+            std::cout << std::setw(4) << (i + 1) << ": " << hist[i] << "\n";
         }
-        std::printf("Session opened with %s\n", name.c_str());
-        std::printf("  SessionID: demo-0001\n");
         return 0;
     }
-    std::fprintf(stderr, "Unknown subcommand: session %s\n", sub.c_str());
-    return 1;
+
+    Result<int> handle_trace(const Intent& intent) {
+        if (intent.args.empty()) {
+            std::cout << "Usage: trace <trace_id>\n";
+            return 1;
+        }
+        std::cout << "Trace: " << intent.args[0] << "\n";
+        std::cout << "(Trace not yet implemented)\n";
+        return 0;
+    }
+};
+
+CLIApplication::CLIApplication() : impl_(std::make_unique<Impl>()) {}
+
+CLIApplication::~CLIApplication() = default;
+
+Result<int> CLIApplication::run(int argc, char* argv[]) {
+    if (argc < 2) {
+        return impl_->run_repl();
+    }
+    std::vector<std::string> args(argv + 1, argv + argc);
+    return impl_->run_command(args);
 }
 
-// ===========================================================================
-// Main
-// ===========================================================================
+Result<void> CLIApplication::initialize(const std::string& data_dir) {
+    return impl_->init(data_dir);
+}
+
+} // namespace smo
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        print_usage(argv[0]);
+    smo::CLIApplication app;
+    auto init_result = app.initialize("~/.smo");
+    if (!init_result) {
+        std::cerr << "Failed to initialize: " << init_result.error().message << "\n";
         return 1;
     }
-
-    std::vector<std::string> args(argv + 1, argv + argc);
-
-    for (auto& a : args) {
-        if (a == "--help" || a == "-h") {
-            print_usage(argv[0]);
-            return 0;
-        }
-    }
-
-    auto cmd = args[0];
-
-    if (cmd == "node") {
-        if (args.size() < 2) {
-            std::fprintf(stderr, "Usage: smo node init|info|rename|join|leave|connect|import\n");
-            return 1;
-        }
-        auto sub = args[1];
-        if (sub == "init") return cmd_node_init(args);
-        if (sub == "info") return cmd_node_info();
-        if (sub == "import") return cmd_node_import(args);
-        if (sub == "connect") return cmd_node_connect(args);
-        if (sub == "rename") return cmd_node_rename(args);
-        std::fprintf(stderr, "Unknown subcommand: node %s\n", sub.c_str());
-        return 1;
-    }
-
-    if (cmd == "exec") return cmd_exec(args);
-    if (cmd == "mesh") return cmd_mesh(args);
-    if (cmd == "export") return cmd_export(args);
-    if (cmd == "session") return cmd_session(args);
-    if (cmd == "discover") return cmd_discover(args);
-
-    std::fprintf(stderr, "Unknown command: %s\n", cmd.c_str());
-    print_usage(argv[0]);
-    return 1;
+    auto result = app.run(argc, argv);
+    if (!result) return 1;
+    return result.value();
 }

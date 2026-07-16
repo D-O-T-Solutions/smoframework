@@ -77,9 +77,9 @@ static bool test_hex_roundtrip() {
 static bool test_contract_id_from_json() {
     std::string json = R"({"key":"value","contract_version":"1.0"})";
     auto cid = ContractID::compute(json);
-    ASSERT(cid.hex.size() == 64);
+    ASSERT(cid.to_hex().size() == 64);
     ASSERT(!cid.empty());
-    ASSERT(ContractID::is_valid_hex(cid.hex));
+    ASSERT(ContractID::is_valid_hex(cid.to_hex()));
     return true;
 }
 
@@ -87,14 +87,14 @@ static bool test_contract_id_deterministic() {
     std::string json = R"({"a":1,"b":2})";
     auto cid1 = ContractID::compute(json);
     auto cid2 = ContractID::compute(json);
-    ASSERT(cid1.hex == cid2.hex);
+    ASSERT(cid1.to_hex() == cid2.to_hex());
     return true;
 }
 
 static bool test_contract_id_different() {
     auto a = ContractID::compute(R"({"x":1})");
     auto b = ContractID::compute(R"({"x":2})");
-    ASSERT(a.hex != b.hex);
+    ASSERT(a.to_hex() != b.to_hex());
     return true;
 }
 
@@ -147,7 +147,7 @@ static bool test_definition_roundtrip() {
     ASSERT(res2);
     auto& def2 = res2.value();
 
-    ASSERT(def.contract_id.hex == def2.contract_id.hex);
+    ASSERT(def.contract_id.to_hex() == def2.contract_id.to_hex());
     ASSERT(def.opcode == def2.opcode);
     ASSERT(def.semver == def2.semver);
     ASSERT(def.parameters.size() == def2.parameters.size());

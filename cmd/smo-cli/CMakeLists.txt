@@ -1,4 +1,5 @@
-add_executable(smo-cli main.cpp)
+add_executable(smo-cli main.cpp cli_context.cpp intent_parser.cpp ${CMAKE_SOURCE_DIR}/third_party/readline/readline.cpp)
+target_include_directories(smo-cli PRIVATE ${CMAKE_SOURCE_DIR}/third_party/readline)
 target_link_libraries(smo-cli PRIVATE smo_sdk smo_tooling)
 smo_set_warnings(smo-cli)
 smo_set_optimisation(smo-cli)

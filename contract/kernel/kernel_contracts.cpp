@@ -8,7 +8,7 @@ namespace smo {
 
 static ContractID make_kernel_id(const std::string& name) {
     auto& hp = HashProvider::default_provider();
-    return ContractID::compute(hp.hash_hex("kernel:" + name));
+    return ContractID::from_hex(hp.hash_hex("kernel:" + name));
 }
 
 static ContractABI make_kernel_abi(const std::string& name) {

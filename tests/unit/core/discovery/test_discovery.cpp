@@ -5,20 +5,6 @@
 
 using namespace smo;
 
-// ==========================================================================
-// Dummy Transport for testing
-// ==========================================================================
-class DummyTransport : public Transport {
-public:
-    Result<ListenerPtr> listen(const Endpoint&) override {
-        return SMO_ERR_TRANSPORT(306, Error, NoRetry, RestartFSM, "dummy");
-    }
-    Result<SessionPtr> connect(const Endpoint&) override {
-        return SMO_ERR_TRANSPORT(300, Error, RetryBackoff, Reconnect, "dummy");
-    }
-};
-
-// ---------------------------------------------------------------------------
 static int failures = 0;
 
 #define TEST(name)                                                      \
