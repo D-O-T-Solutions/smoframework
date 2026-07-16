@@ -62,10 +62,17 @@ echo "Node: $(hostname)"
 echo "Date: $(date)"
 echo ""
 
+# Find the actual mesh directory created by entrypoint
+ACTUAL_MESH_DIR=$(find /var/lib/smo-mesh/meshes -maxdepth 1 -mindepth 1 -type d | head -1)
+if [ -z "$ACTUAL_MESH_DIR" ]; then
+    echo "ERROR: No mesh directory found in /var/lib/smo-mesh/meshes/"
+    exit 1
+fi
+MESH_DIR="$ACTUAL_MESH_DIR"
+
 SMO_DATA="/tmp/smo-test-$$"
-MESH_DIR="$SMO_DATA/mesh"
 NODE_DIR="$SMO_DATA/node"
-mkdir -p "$MESH_DIR" "$NODE_DIR"
+mkdir -p "$NODE_DIR"
 
 # ── Phase 1: Tooling Smoke Tests ───────────────────────
 step "1/6  Tooling — Help & Basic Commands"
