@@ -379,3 +379,166 @@ struct Executor {
     Result<ExecutionResult> execute(const ExecutionGraph&, const Session&);
 };
 ```
+
+---
+
+## Sprint 5C — Bootstrap & Publish (2026-07-17)
+
+### Problem
+Mesh creation is currently offline — `smo-admin create-mesh` generates keys and `mesh.json` but no network configuration. The first Authority node has no declared endpoint, so Join Tokens cannot carry bootstrap addresses and new nodes cannot discover where to connect.
+
+### Design
+Two new concepts: **Listen Address** (what the daemon binds to) and **Advertise Address** (what peers connect to). Mesh is not considered "online" until `bootstrap` is configured. Join Tokens read `bootstrap_endpoints[]` from `mesh.json`.
+
+### Tasks
+
+| # | Task | File |
+|---|------|------|
+| 1 | Add `bootstrap_endpoints: vector<string>` and `advertise_addresses: vector<string>` to `MeshConfig` | `core/mesh/mesh_manager.hpp` |
+| 2 | Add `listen_address: string` (default `0.0.0.0:7777`) to `MeshConfig` | `core/mesh/mesh_manager.hpp` |
+| 3 | Serialize/deserialize new fields in `mesh.json` | `core/mesh/mesh_manager.cpp` |
+| 4 | Implement `smo-admin mesh publish` interactive wizard | `cmd/smo-admin/main.cpp` |
+| 5 | Implement `smo-admin bootstrap configure` interactive wizard (alias for publish) | `cmd/smo-admin/main.cpp` |
+| 6 | Auto-detect local interfaces (loopback, private, public) | `core/network/interface.hpp/.cpp` |
+| 7 | Auto-detect public IP via STUN or UDP echo | `core/network/public_ip.hpp/.cpp` |
+| 8 | Port availability verification (`bind()` probe) | `core/network/port_check.hpp/.cpp` |
+| 9 | DNS resolution support (prefer DNS over IP when available) | `core/network/dns.hpp/.cpp` |
+| 10 | Cloud firewall reminder (AWS, Azure, GCP, OCI, UFW, iptables) | `cmd/smo-admin/main.cpp` |
+| 11 | NAT detection (private vs public mismatch) | `core/network/nat_detect.hpp/.cpp` |
+| 12 | Update `generate-invite` to read `bootstrap_endpoints` from `mesh.json` instead of requiring `--endpoint` | `cmd/smo-admin/main.cpp` |
+| 13 | Daemon reads `listen_address` from mesh config on startup | `cmd/smo-node/main.cpp` |
+| 14 | Daemon startup summary shows listening + advertised addresses | `cmd/smo-node/main.cpp` |
+| 15 | New error codes: 223 (BOOTSTRAP_NOT_CONFIGURED), 224 (PORT_UNAVAILABLE), 225 (NO_PUBLIC_IP_DETECTED) | `core/errors/error_codes.md` |
+
+### Wizard Flow (`smo-admin mesh publish`)
+
+```
+$ smo-admin --mesh-dir ./production mesh publish
+
+Mesh: production
+
+Step 1: Listen Address
+  Bind address [0.0.0.0:7777]:
+  → 0.0.0.0:7777
+
+Step 2: Port Check
+  Checking port 7777...
+  ✓ Port 7777 is available
+
+Step 3: Advertise Address
+  Detected interfaces:
+    1) 127.0.0.1          (loopback)
+    2) 192.168.1.5        (private)
+    3) 203.113.x.x        (public) ← auto-detected
+
+  Choose advertise address [3]:
+  → 3
+
+  Or enter custom (e.g. authority.company.com):
+  → authority.company.com:7777
+
+Step 4: NAT Notice
+  ⚠ Private: 192.168.1.5
+  ⚠ Public:  203.113.x.x
+  ⚠ NAT detected — ensure port 7777 is forwarded.
+
+Step 5: Cloud Firewall
+  ┌─────────────────────────────────────────────┐
+  │ Remember to open TCP port 7777 on your      │
+  │ cloud firewall:                              │
+  │                                             │
+  │   AWS Security Group → Inbound → Custom TCP │
+  │   Azure NSG         → Inbound → 7777        │
+  │   GCP Firewall      → Ingress → tcp:7777    │
+  │   OCI Security List → Ingress → 7777         │
+  │   UFW:  sudo ufw allow 7777/tcp             │
+  │   iptables: sudo iptables -A INPUT -p tcp   │
+  │            --dport 7777 -j ACCEPT           │
+  └─────────────────────────────────────────────┘
+
+Step 6: Confirm
+  Listen:     0.0.0.0:7777
+  Advertise:  authority.company.com:7777
+              tcp://203.113.x.x:7777
+  Bootstrap:  YES
+
+  Publish? [Y/n]:
+  → y
+
+  ✓ Mesh 'production' is now online.
+```
+
+### Listen vs Advertise
+
+```
+┌──────────────────┐     ┌───────────────────┐
+│  smo-node        │     │  Peer connects to  │
+│  Listen:         │     │  Advertise address │
+│  0.0.0.0:7777   │◄────│  authority.smo:7777│
+│  (all interfaces)│     │                    │
+└──────────────────┘     └───────────────────┘
+```
+
+| Concept | Meaning | Example |
+|---------|---------|---------|
+| `listen_address` | What the OS socket binds to | `0.0.0.0:7777` or `10.0.0.1:7777` |
+| `advertise_addresses` | What peers see in the mesh | `authority.company.com:7777`, `203.113.x.x:7777` |
+
+### Bootstrap Endpoints in Join Token
+
+After publish, `generate-invite` reads `bootstrap_endpoints` directly from `mesh.json`:
+
+```
+$ smo-admin --mesh-dir ./production generate-invite Worker --expire 30m
+```
+
+Token CBOR contains:
+```
+bootstrap_endpoints: [
+    "authority.company.com:7777",
+    "203.113.x.x:7777"
+]
+```
+
+New node joins:
+```
+$ smo mesh join SMO-JOIN-<base64url(...)>
+  → Decodes token
+  → Connects to bootstrap_endpoints[0]
+  → Sends CSR
+  → Receives certificate
+  → Ready.
+```
+
+### Daemon Bootstrap
+
+On `smo-node --daemon`:
+1. Read `mesh.json` (if Authority) or use config
+2. Bind `listen_address`
+3. Verify port is actually listening
+4. Start heartbeat/gossip on all advertised addresses
+5. Print summary:
+```
+Mesh: production
+Status: ONLINE
+Listen:     0.0.0.0:7777
+Advertise:  authority.company.com:7777
+            203.113.x.x:7777
+Bootstrap:  YES
+```
+
+### Files
+
+| File | Content |
+|------|---------|
+| `core/mesh/mesh_manager.hpp` | MeshConfig.bootstrap_endpoints, advertise_addresses, listen_address |
+| `core/mesh/mesh_manager.cpp` | Serialize/deserialize new fields |
+| `core/network/interface.hpp/.cpp` | Local interface enumeration |
+| `core/network/public_ip.hpp/.cpp` | Public IP detection (STUN / UDP echo) |
+| `core/network/port_check.hpp/.cpp` | Port availability probe |
+| `core/network/dns.hpp/.cpp` | DNS resolution utility |
+| `core/network/nat_detect.hpp/.cpp` | NAT detection (private vs public mismatch) |
+| `cmd/smo-admin/main.cpp` | `mesh publish` wizard, `bootstrap configure` |
+| `cmd/smo-node/main.cpp` | Read listen_address, startup summary |
+| `core/errors/error_codes.md` | Codes 214-216 |
+| `RFC/0032-bootstrap-publish.md` | New RFC for bootstrap design |

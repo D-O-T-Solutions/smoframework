@@ -99,6 +99,9 @@ Every module returns `Result<T, Error>`. Every `Error` carries:
 | 220 | DISPLAY_NAME_ALREADY_EXISTS | W | S | N | Display name is already taken by another node (UNIQUE constraint violation) |
 | 221 | INVALID_DISPLAY_NAME | W | N | N | Display name fails format validation (empty, bad chars, etc.) |
 | 222 | DISPLAY_NAME_TOO_LONG | W | N | N | Display name exceeds 128-character limit |
+| 223 | BOOTSTRAP_NOT_CONFIGURED | E | N | E | Mesh has no published bootstrap endpoints; run `smo-admin mesh publish` |
+| 224 | PORT_UNAVAILABLE | W | N | N | Port is already in use by another process |
+| 225 | NO_PUBLIC_IP_DETECTED | W | N | N | No public IP detected; provide DNS name or manual advertise address |
 
 **Recovery notes:**
 - Most cert errors → re-enroll (`smo-node import`).

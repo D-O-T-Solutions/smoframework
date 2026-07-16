@@ -1295,7 +1295,117 @@ std::string clipboard_info();     // human-readable diagnostic string
 
 ---
 
-### 7.6 Root Key vs Authority Key
+### 7.6 Listen vs Advertise Address
+
+**Problem:** The first Authority node has no declared endpoint. Join Tokens require `bootstrap_endpoints[]` but `mesh.json` has never stored network configuration. Nodes behind NAT or with multiple NICs need different addresses for listening vs advertising.
+
+**Decision:** Two separate address fields in `MeshConfig`:
+
+| Field | Purpose | Default |
+|---|---|---|
+| `listen_address` | What the OS socket binds to | `0.0.0.0:7777` |
+| `advertise_addresses` | What peers see in the mesh (DNS name, public IP, etc.) | empty (set via `publish`) |
+| `bootstrap_endpoints` | Derived from `advertise_addresses` at publish time | same as advertise |
+
+```
+┌──────────────────┐     ┌──────────────────┐
+│  smo-node        │     │  Peer connects   │
+│  Listen:         │     │  to Advertise    │
+│  0.0.0.0:7777   │◄────│  authority:7777  │
+│  (all interfaces)│     │                  │
+└──────────────────┘     └──────────────────┘
+```
+
+**Resolution order for advertise:**
+1. DNS name if provided (preferred — survives IP changes)
+2. Public IP detected via STUN / UDP echo
+3. Private IP if no public detected (NAT warning)
+4. Loopback as last resort
+
+**Invariant:** Mesh is not "online" until `bootstrap` is configured. `generate-invite` without published endpoints returns error 214 (BOOTSTRAP_NOT_CONFIGURED).
+
+---
+
+### 7.7 Bootstrap & Publish
+
+**Problem:** `smo-admin create-mesh` generates keys offline with no network configuration. The operator must explicitly declare how the mesh will be reachable.
+
+**Decision:** Mesh creation and mesh publishing are separate steps:
+
+```
+smo-admin --mesh-dir production create-mesh production
+  → Keys + mesh.json (offline)
+
+smo-admin --mesh-dir production mesh publish
+  → Interactive wizard
+  → Detects interfaces, public IP, DNS
+  → Verifies port availability
+  → Saves bootstrap_endpoints to mesh.json
+  → Mesh is now ONLINE
+```
+
+**Publish wizard steps:**
+
+| Step | Action | Auto | Interactive |
+|---|---|---|---|
+| 1 | Configure listen address | `0.0.0.0:7777` | Overridable |
+| 2 | Check port availability | `bind()` probe | Shows result |
+| 3 | Detect local interfaces | Enumerate all NICs | Choose which to advertise |
+| 4 | Detect public IP | STUN / UDP echo | Confirm |
+| 5 | DNS lookup (optional) | Resolve hostname | Prompt if no public IP |
+| 6 | NAT warning | Compare private vs public | Must acknowledge |
+| 7 | Cloud firewall reminder | Print platform-specific instructions | Must acknowledge |
+| 8 | Confirm | Show summary | Y/n |
+
+**Port availability check:**
+```
+Checking port 7777...
+  ✓ Port is available    (nothing listening)
+  ✗ Port 7777 in use by PID 12345 (process name)
+```
+
+The check uses `bind()` to `0.0.0.0:port` with `SO_REUSEADDR` and immediately closes. It does NOT open a permanent socket — that happens when `smo-node --daemon` starts.
+
+**Cloud firewall reminder** (non-blocking informational):
+```
+┌───────────────────────────────────────────────────┐
+│ Remember to open TCP port 7777 on your firewall:  │
+│                                                   │
+│   AWS:    EC2 → Security Groups → Inbound → 7777 │
+│   Azure:  NSG → Inbound security rule → 7777     │
+│   GCP:    VPC → Firewall → Ingress → tcp:7777   │
+│   OCI:    Security List → Ingress → 7777         │
+│   UFW:    sudo ufw allow 7777/tcp                │
+│   iptables: sudo iptables -A INPUT -p tcp        │
+│              --dport 7777 -j ACCEPT              │
+└───────────────────────────────────────────────────┘
+```
+
+SMO does NOT automatically open firewall ports — cloud environments each have different APIs.
+
+**Daemon startup after publish:**
+```
+$ smo-node --daemon --data /var/lib/smo
+
+Mesh: production
+Status: ONLINE
+Listen:     0.0.0.0:7777
+Advertise:  authority.company.com:7777
+            203.113.x.x:7777
+Bootstrap:  YES
+Peers:      0 (first node in mesh)
+```
+
+**Publish is idempotent.** Running `mesh publish` again updates `bootstrap_endpoints` and `advertise_addresses`. Join Tokens generated afterward use the new endpoints.
+
+**Error codes:**
+- 223: BOOTSTRAP_NOT_CONFIGURED — `generate-invite` or `--daemon` without published endpoints
+- 224: PORT_UNAVAILABLE — `bind()` probe failed in publish wizard
+- 225: NO_PUBLIC_IP_DETECTED — no public IP found, operator must provide DNS or manual address
+
+---
+
+### 7.8 Root Key vs Authority Key
 
 **Problem:** Old SMF had no distinction between the mesh creator's key and operational keys. One key controlled everything — theft meant total compromise.
 
@@ -1349,7 +1459,7 @@ recovery.smo {
 
 ---
 
-### 7.6 Multiple Authorities (Not One)
+### 7.9 Multiple Authorities (Not One)
 
 **Problem:** Single Authority is a single point of failure. If it goes offline, no new nodes can join, no certificates can be rotated.
 
@@ -1393,7 +1503,7 @@ Revoked node loses Authority capabilities
 
 ---
 
-### 7.7 Capability Epoch
+### 7.10 Capability Epoch
 
 **Problem:** Certificate revocation lists (CRLs) require checking against a growing list. In a mesh with gossip, maintaining a consistent CRL across all nodes is complex.
 
@@ -1428,7 +1538,7 @@ Propagation: gossip
 
 ---
 
-### 7.8 Roles Are Presets (Not Hardcoded)
+### 7.11 Roles Are Presets (Not Hardcoded)
 
 **Problem:** The old SMF and early SMO spec both risked hardcoding R/W/X as the only permission model.
 
@@ -1472,7 +1582,7 @@ The runtime does not know what "SOC_ANALYST" means. It only checks `CapabilitySe
 
 ---
 
-### 7.9 Deferred to Post-MVP
+### 7.12 Deferred to Post-MVP
 
 These topics were discussed and explicitly deferred:
 
@@ -1494,7 +1604,7 @@ These topics were discussed and explicitly deferred:
 
 ---
 
-### 7.10 Mesh Context Switching (Multi-Tenant Nodes)
+### 7.13 Mesh Context Switching (Multi-Tenant Nodes)
 
 **Problem:** A node may belong to multiple meshes (SOC, Production, Research). How does it switch between them?
 
@@ -1526,7 +1636,7 @@ Each mesh context has its own:
 
 ---
 
-### 7.11 Summary: Identity & Decision Log
+### 7.14 Summary: Identity & Decision Log
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
