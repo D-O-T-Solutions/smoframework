@@ -107,7 +107,7 @@ do_verify "Post-import summary"    "smo-node --data $NODE_DIR 2>&1" "NodeID"
 # ── Phase 5: Join Token ────────────────────────────────
 step "5/6  Enrollment — Join Token"
 
-do_verify "Generate invite"        "smo-admin --mesh-dir $MESH_DIR generate-invite Worker --expire 1h --endpoint 172.20.0.10:7777 2>&1" "SMO-JOIN-"
+do_verify "Generate invite"        "smo-admin --mesh-dir $MESH_DIR generate-invite Worker --expire 1h --endpoint node-a:7777 2>&1" "SMO-JOIN-"
 
 # ── Phase 6: Daemon Smoke Test ─────────────────────────
 step "6/6  Daemon — Quick Smoke"
