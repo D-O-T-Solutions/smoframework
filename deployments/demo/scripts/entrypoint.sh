@@ -9,9 +9,25 @@ SEED_NODE="${SMO_SEED_NODE:-}"
 IS_AUTHORITY="${SMO_IS_AUTHORITY:-false}"
 
 SMO_DATA="/var/lib/smo"
-MESH_DIR="/var/lib/smo-mesh"
+MESH_BASE_DIR="/var/lib/smo-mesh"
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
+
+get_mesh_dir() {
+    # Find mesh directory by display name
+    if [ -d "$MESH_BASE_DIR/meshes" ]; then
+        for dir in "$MESH_BASE_DIR/meshes"/*/; do
+            if [ -f "$dir/mesh.json" ]; then
+                local name=$(grep -o '"display_name":"[^"]*"' "$dir/mesh.json" 2>/dev/null | cut -d'"' -f4)
+                if [ "$name" = "$MESH_NAME" ]; then
+                    echo "$dir"
+                    return 0
+                fi
+            fi
+        done
+    fi
+    return 1
+}
 
 phase_init() {
     log "=== Phase 1: Node Init ==="
@@ -22,23 +38,33 @@ phase_init() {
         smo-node --init --name "$NODE_NAME" --data "$SMO_DATA"
         log "Identity created for $NODE_NAME"
     else
-        log "Identity already exists at $SMO_DATA"
+        # Verify identity is valid
+        if smo-node --data "$SMO_DATA" 2>&1 | grep -q "NodeID:"; then
+            log "Identity already exists at $SMO_DATA"
+        else
+            log "Identity file exists but invalid, recreating..."
+            rm -f "$SMO_DATA/identity.json"
+            smo-node --init --name "$NODE_NAME" --data "$SMO_DATA"
+            log "Identity recreated for $NODE_NAME"
+        fi
     fi
 
     if [ "$IS_AUTHORITY" = "true" ]; then
-        if [ ! -f "$MESH_DIR/mesh.json" ]; then
-            mkdir -p "$MESH_DIR"
-            smo-admin --mesh-dir "$MESH_DIR" create-mesh "$MESH_NAME"
-            log "Mesh '$MESH_NAME' created at $MESH_DIR"
+        local mesh_dir=$(get_mesh_dir)
+        if [ -z "$mesh_dir" ] || [ ! -f "$mesh_dir/mesh.json" ]; then
+            mkdir -p "$MESH_BASE_DIR/meshes"
+            smo-admin --mesh-dir "$MESH_BASE_DIR" create-mesh "$MESH_NAME"
+            log "Mesh '$MESH_NAME' created"
+            mesh_dir=$(get_mesh_dir)
         else
-            log "Mesh already exists at $MESH_DIR"
+            log "Mesh already exists at $mesh_dir"
         fi
 
-        # Publish mesh (configure bootstrap endpoints)
-        log "Publishing mesh..."
-        smo-admin --mesh-dir "$MESH_DIR" mesh publish --port "$NODE_PORT" || true
-
-        log "Mesh published. Other nodes can now join."
+        if [ -n "$mesh_dir" ] && [ -f "$mesh_dir/mesh.json" ]; then
+            log "Publishing mesh..."
+            smo-admin --mesh-dir "$mesh_dir" mesh publish --port "$NODE_PORT" || true
+            log "Mesh published."
+        fi
     fi
 }
 
@@ -50,33 +76,43 @@ phase_enroll() {
     log "=== Phase 2: Enrollment ==="
     log "Waiting for mesh to be published by authority..."
 
-    # Wait for mesh.json to appear (authority publishes it)
     local timeout=60
-    while [ ! -f "$MESH_DIR/mesh.json" ] && [ $timeout -gt 0 ]; do
+    local mesh_dir=""
+    while [ $timeout -gt 0 ]; do
+        mesh_dir=$(get_mesh_dir)
+        if [ -n "$mesh_dir" ] && [ -f "$mesh_dir/mesh.json" ]; then
+            # Check if bootstrap_configured
+            if grep -q '"bootstrap_configured":true' "$mesh_dir/mesh.json" 2>/dev/null; then
+                break
+            fi
+        fi
         sleep 1
         timeout=$((timeout - 1))
     done
 
-    if [ ! -f "$MESH_DIR/mesh.json" ]; then
+    if [ -z "$mesh_dir" ] || [ ! -f "$mesh_dir/mesh.json" ]; then
         log "Warning: Mesh not published yet, will rely on seed for bootstrap"
         return 0
     fi
+
+    log "Mesh found at $mesh_dir"
 
     # Export CSR
     log "Exporting CSR for signing..."
     smo-node --export "$SMO_DATA/node.csr.smor" --data "$SMO_DATA"
 
-    # Sign CSR via authority (copy to authority mesh dir and sign)
-    # In demo, authority mesh dir is shared via volume or we copy
-    local authority_mesh_dir="/tmp/authority-mesh"
-    if [ -f "$authority_mesh_dir/mesh.json" ]; then
+    # Sign CSR via authority (in demo, authority mesh dir is same)
+    local auth_mesh_dir="/var/lib/smo-mesh/meshes/$(ls /var/lib/smo-mesh/meshes/ 2>/dev/null | head -1)"
+    if [ -f "$auth_mesh_dir/mesh.json" ]; then
         log "Signing CSR with authority..."
-        smo-admin --mesh-dir "$authority_mesh_dir" sign "$SMO_DATA/node.csr.smor" -o "$SMO_DATA/node.cert.smoc"
+        smo-admin --mesh-dir "$auth_mesh_dir" sign "$SMO_DATA/node.csr.smor" -o "$SMO_DATA/node.cert.smoc" 2>/dev/null || true
 
-        log "Importing certificate..."
-        smo-node --import "$SMO_DATA/node.cert.smoc" --data "$SMO_DATA"
+        if [ -f "$SMO_DATA/node.cert.smoc" ]; then
+            log "Importing certificate..."
+            smo-node --import "$SMO_DATA/node.cert.smoc" --data "$SMO_DATA"
+        fi
     else
-        log "Authority mesh dir not found at $authority_mesh_dir, will use seed bootstrap"
+        log "Authority mesh dir not found, will use seed bootstrap"
     fi
 }
 
