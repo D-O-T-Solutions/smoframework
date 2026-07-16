@@ -1,5 +1,6 @@
 #include "cli_context.hpp"
 
+#include <cstdlib>
 #include <chrono>
 #include <algorithm>
 #include <iomanip>
@@ -9,6 +10,53 @@
 #include <iostream>
 
 namespace smo {
+
+namespace {
+
+std::string context_file_path() {
+    const char* home = std::getenv("HOME");
+    if (!home) return "/tmp/.smo_context.json";
+    return std::string(home) + "/.smo/context.json";
+}
+
+void ensure_dir(const std::string& path) {
+    auto dir = std::filesystem::path(path).parent_path();
+    if (!dir.empty()) std::filesystem::create_directories(dir);
+}
+
+std::string read_file(const std::string& path) {
+    std::ifstream f(path);
+    if (!f) return "";
+    return std::string((std::istreambuf_iterator<char>(f)),
+                        std::istreambuf_iterator<char>());
+}
+
+void write_file(const std::string& path, const std::string& content) {
+    ensure_dir(path);
+    std::ofstream f(path);
+    if (f) f << content;
+}
+
+std::string json_get(const std::string& json, const std::string& key) {
+    auto pos = json.find("\"" + key + "\"");
+    if (pos == std::string::npos) return "";
+    auto colon = json.find(':', pos);
+    if (colon == std::string::npos) return "";
+    auto start = json.find('"', colon);
+    if (start == std::string::npos) return "";
+    auto end = json.find('"', start + 1);
+    if (end == std::string::npos) return "";
+    return json.substr(start + 1, end - start - 1);
+}
+
+void json_set(std::string& json, const std::string& key, const std::string& value) {
+    // Simple append mode for building JSON from scratch
+    (void)json;
+    (void)key;
+    (void)value;
+}
+
+} // anonymous namespace
 
 struct CLIContextManager::Impl {
     // Mesh context
@@ -40,12 +88,73 @@ struct CLIContextManager::Impl {
         execution_.timeout_ms = 30000;
         execution_.retry_count = 3;
         execution_.dry_run = false;
+        load_context();
     }
-    
+
+    // ── Context persistence ──────────────────────────────────
+
+    void save_context() {
+        std::string path = context_file_path();
+        std::ostringstream json;
+        json << "{\n";
+        json << "  \"current_mesh\": \"" << current_mesh_ << "\",\n";
+        json << "  \"control_level\": " << static_cast<int>(execution_.control) << ",\n";
+        json << "  \"execution_scope\": " << static_cast<int>(execution_.scope) << ",\n";
+        json << "  \"timeout_ms\": " << execution_.timeout_ms << ",\n";
+        json << "  \"retry_count\": " << execution_.retry_count << ",\n";
+        json << "  \"session_address\": \"" << (session_ ? session_->node_address : "") << "\",\n";
+        json << "  \"session_active\": " << (session_ && session_->is_active ? "true" : "false") << ",\n";
+        json << "  \"selection_active\": " << (selection_.is_active ? "true" : "false") << "\n";
+        json << "}\n";
+        write_file(path, json.str());
+    }
+
+    void load_context() {
+        std::string path = context_file_path();
+        std::string content = read_file(path);
+        if (content.empty()) return;
+
+        auto val = [&](const std::string& k) -> std::string {
+            return json_get(content, k);
+        };
+
+        current_mesh_ = val("current_mesh");
+
+        try {
+            int cl = std::stoi(val("control_level"));
+            execution_.control = static_cast<ControlLevel>(cl);
+        } catch (...) {}
+
+        try {
+            int es = std::stoi(val("execution_scope"));
+            execution_.scope = static_cast<ExecutionScope>(es);
+        } catch (...) {}
+
+        try {
+            execution_.timeout_ms = std::stoi(val("timeout_ms"));
+        } catch (...) {}
+        try {
+            execution_.retry_count = std::stoi(val("retry_count"));
+        } catch (...) {}
+
+        if (val("session_active") == "true") {
+            SessionContext sctx;
+            sctx.node_address = val("session_address");
+            sctx.node_name = sctx.node_address;
+            sctx.connected_at = std::chrono::steady_clock::now();
+            sctx.is_active = true;
+            session_ = std::move(sctx);
+        }
+
+        if (val("selection_active") == "true") {
+            selection_.is_active = true;
+        }
+    }
+
     // Mesh operations
     Result<void> set_mesh(const std::string& mesh_name) {
-        // In real impl, would validate mesh exists
         current_mesh_ = mesh_name;
+        save_context();
         return {};
     }
     
@@ -59,11 +168,13 @@ struct CLIContextManager::Impl {
     // Selection
     Result<void> set_selection(const SelectionContext& ctx) {
         selection_ = ctx;
+        save_context();
         return {};
     }
     
     Result<void> clear_selection() {
         selection_ = SelectionContext{};
+        save_context();
         return {};
     }
     
@@ -98,6 +209,7 @@ struct CLIContextManager::Impl {
     // Execution context
     Result<void> set_execution_context(const ExecutionContext& ctx) {
         execution_ = ctx;
+        save_context();
         return {};
     }
     
@@ -107,6 +219,7 @@ struct CLIContextManager::Impl {
     
     void set_control_level(ControlLevel level) {
         execution_.control = level;
+        save_context();
     }
     
     ControlLevel get_control_level() const {
@@ -115,6 +228,7 @@ struct CLIContextManager::Impl {
     
     void set_scope(ExecutionScope scope) {
         execution_.scope = scope;
+        save_context();
     }
     
     ExecutionScope get_scope() const {
@@ -123,6 +237,7 @@ struct CLIContextManager::Impl {
     
     void set_timeout(int ms) {
         execution_.timeout_ms = ms;
+        save_context();
     }
     
     int get_timeout() const {
@@ -131,6 +246,7 @@ struct CLIContextManager::Impl {
     
     void set_retry(int count) {
         execution_.retry_count = count;
+        save_context();
     }
     
     int get_retry() const {
@@ -153,11 +269,13 @@ struct CLIContextManager::Impl {
         ctx.connected_at = std::chrono::steady_clock::now();
         ctx.is_active = true;
         session_ = std::move(ctx);
+        save_context();
         return {};
     }
     
     Result<void> disconnect() {
         session_.reset();
+        save_context();
         return {};
     }
     

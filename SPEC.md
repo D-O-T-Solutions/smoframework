@@ -256,6 +256,9 @@ Never go directly from "algorithm idea" to "SMO protocol." Always validate again
 4. **Protocol describes meaning. Transport describes bytes.** The Control protocol defines what a Contract is, how it is signed, and how it flows. The Transport layer decides whether to send those bytes over TCP, UDP, or a Unix socket. These are independent decisions.
 5. **One protocol layer, one responsibility.** If a protocol message does two things, split it into two messages. If a protocol layer does two things, split it into two layers.
 
+### I-23: Private Keys Never Enter Transport
+Private keys SHALL NEVER be exported, copied, piped, or serialized outside secure storage. Enrollment SHALL NOT require temporary plaintext private-key export. Only public artifacts (CSR, certificate, public key, Join Token, encrypted Recovery Package) may use enrollment transports. Node private keys, Authority private keys, and unencrypted Root private keys are excluded.
+
 ---
 
 ## IV. SYSTEM LAYERS
@@ -406,7 +409,7 @@ smo/
 │   ├── state/               State type definitions
 │   ├── identity/            NodeIdentity, Ed25519 keypair generation, nonce signing
 │   ├── mesh/                MeshID, MeshGenesis, Epoch, MembershipCertificate
-│   ├── enroll/              EnrollRequest, EnrollResponse, ExportFormat
+│   ├── enroll/              Join Token (CBOR v1), EnrollRequest, EnrollResponse
 │   └── errors/              Error type definitions
 │
 ├── contract/                Contract subsystem
@@ -491,8 +494,9 @@ smo/
 │   ├── suite3_purepqc/      Suite 3: ML-DSA + ML-KEM
 │   └── perfhash/            xxHash3, CRC32C, CityHash (non-crypto)
 │
-├── deployments/             Deployment configurations and templates
-├── docs/                    Documentation
+├── examples/                Example contracts and configurations
+├── third_party/
+│   └── clipboard/           ClipboardProvider — X11 dlopen, OSC52, Win32, Cocoa, stdout
 ├── tests/                   Unit, integration, chaos, adversarial
 │   ├── unit/
 │   ├── integration/
@@ -500,8 +504,6 @@ smo/
 │   ├── chaos/
 │   ├── replay/
 │   └── adversarial/
-├── examples/                Example contracts and configurations
-├── deployments/             Deployment configurations and templates
 ├── docs/                    Documentation
 │   ├── DECISIONS_NEEDED.md
 │   ├── PLAN.md
@@ -735,7 +737,7 @@ Suite 2 (Phase 2 — Hybrid PQC)
   Hash:                Blake3
   Key derivation:      Blake3-based KDF
 
-Suite 3 (Future — Pure PQC)
+Suite 3 (Default — Pure PQC)
   Identity/signing:    ML-DSA (Dilithium)
   Key exchange:        ML-KEM (Kyber)
   Symmetric cipher:    XChaCha20-Poly1305
@@ -744,8 +746,8 @@ Suite 3 (Future — Pure PQC)
 ```
 
 **Rules:**
-- A node MUST implement Suite 1 (minimum baseline)
-- A node MAY implement additional suites
+- A node MUST implement Suite 3 (minimum baseline, PurePQC)
+- A node MAY implement additional suites for backward compatibility
 - During session establishment, nodes negotiate the highest mutually supported suite
 - The suite ID is part of the connection handshake, NOT part of every packet
 
@@ -884,30 +886,71 @@ MembershipCertificate {
 }
 ```
 
-**Node join flow:**
+**Node join flow (automated — one-contact):**
 
 ```
 smo node join --mesh <MeshID> --token <JoinToken>
 
 ↓
-Generate node Ed25519 keypair (if first run)
+Generate node keypair (Ed25519 / Suite 1, ML-DSA / Suite 3)
 
 ↓
-Send Certificate Signing Request (CSR) to mesh Authority:
-  NodeID
-  NodePublicKey
-  MeshID
+Propose display_name and send Certificate Signing Request (CSR):
+  NodeID             Blake3(NodePublicKey)
+  NodePublicKey      raw public key bytes
+  MeshID             target mesh
+  DisplayName        human-friendly name proposed by node
+  Platform           OS/arch string
+  Version            SMO runtime version
+  Role               requested role (e.g. "CONTRIBUTOR")
   Signed with NodePrivateKey (proves possession)
 
 ↓
-Authority validates CSR, signs Membership Certificate
+Authority receives CSR:
+  1. Validate signature (proves node holds private key)
+  2. Validate display_name format (non-empty, ≤128 chars,
+     [a-zA-Z0-9._-], starts with alphanumeric)
+  3. Normalize display_name: lowercase + trim
+     ("SOC-HN-01" → "soc-hn-01")
+  4. Atomic enrollment (single SQLite transaction):
+     a. INSERT node record (UNIQUE on display_name)
+     b. INSERT certificate record
+     c. INSERT alias record (display_name claimed as alias,
+        UNIQUE on alias)
+  5. If UNIQUE constraint violated → DisplayNameAlreadyExists
+     (error code 220). Node must choose a different name.
 
 ↓
-Node receives and stores Membership Certificate
+Authority returns Membership Certificate (.smoc)
+
+↓
+Node imports and stores Membership Certificate
 
 ↓
 Node is now a member of Mesh <MeshID>
 ```
+
+**Enrollment is atomic.** All three records (node, certificate, alias) are inserted in one SQLite transaction. If any insert fails, the entire enrollment is rolled back. There is no partial-enrollment state.
+
+**Race safety via UNIQUE constraint (no TOCTOU).** The registry does NOT use a SELECT-before-INSERT pattern. It always INSERTs first and catches `SQLITE_CONSTRAINT_UNIQUE`. This prevents time-of-check/time-of-use races where two nodes request the same display_name simultaneously.
+
+**Error 220 — DisplayNameAlreadyExists:**
+- `Severity: Warn`, `RetryClass: RetrySafe`, `Recovery: None`
+- Triggered when the proposed display_name (or alias) matches an existing entry.
+- The node should choose a different name and retry.
+
+**Whiteboard enrollment (two-file workflow):**
+
+```
+Node side:                         Authority side:
+smo-node init                      smo-admin sign <request.smor>
+smo export > request.smor          → validates, enrolls atomically
+         ──────────────────────►   → outputs membership.smoc
+         ◄──────────────────────
+smo import < membership.smoc
+```
+
+This mirrors SSH's proven UX pattern and works in air-gapped environments.
 
 **The Join Token:**
 - Generated by Authority: `Token = Blake3(AuthorityID || MeshID || Secret || Timestamp)`
@@ -950,7 +993,309 @@ The runtime auto-detects the encoding. No manual format selection needed.
 
 ---
 
-### 7.4 Root Key vs Authority Key
+### 7.4 NodeRegistry Schema
+
+The Authority maintains a **NodeRegistry** — a SQLite database (`node_registry.db`) that is the authoritative record of all nodes ever enrolled. It is separate from the PeerStore (which only reflects online/discovered nodes).
+
+**Schema:**
+
+```sql
+-- Nodes: one row per enrolled node
+CREATE TABLE nodes (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id_hex     TEXT NOT NULL,             -- Blake3(NodePublicKey), 64 hex chars
+    display_name    TEXT NOT NULL,             -- normalized (lowercased + trimmed), UNIQUE
+    mesh_id         TEXT NOT NULL,
+    role            TEXT NOT NULL,
+    cert_fingerprint TEXT NOT NULL,
+    status          TEXT NOT NULL DEFAULT 'active',  -- active | suspended | retired
+    epoch           INTEGER NOT NULL,
+    enrolled_at     INTEGER NOT NULL,          -- unix ms
+    last_seen       INTEGER DEFAULT 0,
+    UNIQUE(display_name)                       -- prevents duplicate display names
+);
+
+-- Certificates: one per issuance event
+CREATE TABLE certificates (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id_hex         TEXT NOT NULL,
+    serial_number       TEXT NOT NULL,
+    cert_fingerprint    TEXT NOT NULL,          -- Blake3(cert_bytes)
+    issuer_pubkey_hex   TEXT NOT NULL,
+    subject_pubkey_hex  TEXT NOT NULL,
+    role                TEXT NOT NULL,
+    status              TEXT NOT NULL DEFAULT 'active', -- active | revoked | expired
+    epoch               INTEGER NOT NULL,
+    issued_at           INTEGER NOT NULL,
+    expires_at          INTEGER NOT NULL,
+    revoked_at          INTEGER DEFAULT 0,
+    revocation_reason   TEXT
+);
+
+-- Node aliases: display_name is also inserted here so alias lookups work
+CREATE TABLE node_aliases (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    alias       TEXT NOT NULL,                 -- normalized, shares namespace with display_name
+    node_id_hex TEXT NOT NULL,
+    created_at  INTEGER NOT NULL,
+    UNIQUE(alias)                              -- no duplicate aliases (or display_names)
+);
+
+-- Pending enrollments: CSRs awaiting Authority action
+CREATE TABLE pending_enrollments (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id_hex     TEXT NOT NULL,
+    display_name    TEXT,
+    mesh_id         TEXT NOT NULL,
+    role            TEXT NOT NULL,
+    platform        TEXT,
+    version         TEXT,
+    timestamp       INTEGER,
+    csr_blob        TEXT,                      -- serialized CSR (hex)
+    submitted_at    INTEGER NOT NULL,
+    status          TEXT NOT NULL DEFAULT 'pending'  -- pending | approved | rejected | expired
+);
+```
+
+**Key design rules:**
+1. **UNIQUE on display_name** — SQLite rejects duplicate names at the DB level. No application-level check needed.
+2. **UNIQUE on alias** — Aliases share the namespace with display_name. A display_name is also inserted as an alias, so you cannot register an alias that matches an existing node's display_name.
+3. **No SELECT-before-INSERT** — The registry always INSERTs first and catches `SQLITE_CONSTRAINT_UNIQUE`. This is immune to TOCTOU races.
+4. **Atomic enrollment** — `enroll_node()` inserts node + certificate + alias in one transaction. Partial enrollment is impossible.
+5. **display_name normalization** — All names are lowercased and trimmed before storage and lookup. "SOC-HN-01" and "soc-hn-01" are the same name.
+
+---
+
+### 7.5 Enrollment Transport
+
+**Problem:** File-based enrollment (.smor → .smoc) is secure and auditable but friction-heavy for daily use. Operators should not need to think about file paths, formats, or intermediate artifacts.
+
+**Decision:** SMO defines an **Enrollment Transport** abstraction. The enrollment data (CSR, certificate) is format-stable. The transport is interchangeable. The CLI commands are transport-agnostic — the user chooses the carrier via flags, not via separate subcommands.
+
+#### 7.5.1 Supported Transports
+
+| Transport | Status | Use case |
+|---|---|---|
+| stdin/stdout (pipe) | ✅ MVP | Unix-native composability, CI/CD |
+| File | ✅ MVP | Air-gap, batch, audit trail |
+| Clipboard | ✅ MVP | Daily operator workflow (no file paths) |
+| Join Token | ✅ MVP | One-command onboarding |
+| QR Code | 🔮 Future | Air-gap with mobile device |
+| HTTP Enrollment | 🔮 Future | Cloud/enterprise mesh bootstrap |
+| GUI (drag & drop) | 🔮 Future | Desktop/web interface |
+
+#### 7.5.2 Transport Resolution (`smo node import`)
+
+`import` auto-detects transport in order:
+
+```
+1. stdin has data?        → read from stdin
+2. clipboard non-empty?   → read from clipboard
+3. filename argument?     → read from file
+4. otherwise              → Error: no enrollment data found
+```
+
+No flags. No format args. The runtime detects `.smor` vs `.smoc` vs `.pubkey` from content.
+
+#### 7.5.3 stdin/stdout (Pipe) — Default for Automation
+
+```
+smo-admin sign request.smor | smo node import
+```
+
+```
+ssh admin-node "smo-admin sign request.smor" | smo node import
+```
+
+Zero intermediate files. Works in CI/CD. No clipboard dependency on remote machines.
+
+#### 7.5.4 Clipboard — Default for Interactive Use
+
+```
+# Authority side
+smo-admin sign request.smor --copy
+  → Certificate fingerprint: SHA256:9f3b...
+  → Copied to clipboard.
+
+# Node side (same or different machine)
+smo node import
+  → Reads clipboard, detects format, verifies, installs.
+```
+
+No files. No paths. The clipboard is the wire.
+
+**Implementation:** SMO uses a `ClipboardProvider` abstraction (see §7.5.12). The runtime auto-detects the best available backend with ZERO external dependencies:
+
+| Backend | OS | Method | Copy | Paste |
+|---|---|---|---|---|
+| Win32 | Windows | Win32 API | ✅ | ✅ |
+| Cocoa | macOS | pbcopy/pbpaste (built-in) | ✅ | ✅ |
+| X11 | Linux | dlopen(libX11.so) at runtime | ✅ | ✅ |
+| OSC52 | any (SSH) | Terminal escape sequence | ✅ | ❌ |
+| Stdout | any (CI) | Print to stderr with delimiters | ✅ | ❌ |
+
+No xclip, xsel, wl-copy, or any external tool required on any platform.
+
+#### 7.5.5 File — Preserved for Air-Gap & Audit
+
+```
+smo-admin sign request.smor -o cert.smoc
+smo node import cert.smoc
+```
+
+Works without clipboard daemon, without network, without stdin. File doubles as an audit artifact.
+
+#### 7.5.6 Join Token — One-Command Onboarding
+
+The Join Token is a **bootstrap credential only**. It NEVER contains a certificate or private key.
+
+```
+smo mesh invite --role Worker --expire 30m
+  → SMO-JOIN-A83K-1PQX...
+
+smo mesh join SMO-JOIN-A83K-1PQX...
+
+  → Node extracts MeshID, Authority endpoint, nonce, secret
+  → Node generates keypair
+  → Node sends CSR to Authority endpoint (token proves authorization)
+  → Authority validates token, signs certificate
+  → Node receives and imports certificate
+  → Ready.
+```
+
+**Token contents (no certificate, no private key):**
+
+The Join Token is a CBOR map (RFC 7049 subset) signed with HMAC-SHA256 using the mesh's `hmac_secret`:
+
+```
+SMO-JOIN-<base64url(CBOR_payload || HMAC_SHA256(CBOR_payload))>
+```
+
+CBOR payload (concise binary — no fixed-size fields):
+
+| Field | CBOR type | Required |
+|---|---|---|
+| version | uint (1) | ✅ |
+| mesh_id | bstr (16 bytes) | ✅ |
+| mesh_epoch | uint | ✅ |
+| cipher_suite_id | uint | ✅ |
+| bootstrap_endpoints | [tstr] | ✅ (at least 1) |
+| role | tstr | ✅ |
+| expiry | uint (Unix timestamp) | ✅ |
+| nonce | bstr (8–16 bytes) | ✅ |
+
+No certificate in the token. No private key in the token. The token proves authorization to enroll, not identity.
+
+The HMAC is keyed with the mesh's `hmac_secret` (32-byte random generated at mesh creation and stored in `mesh.json`). The Authority validates the token and checks expiry (error 212 = invalid HMAC, 213 = expired) before accepting the CSR.
+
+#### 7.5.7 QR Code (Future)
+
+```
+smo-admin sign request.smor --qr
+  → Renders QR in terminal
+
+smo node scan
+  → Camera reads QR, imports certificate.
+```
+
+For physically isolated environments where no network, clipboard, or USB is permitted.
+
+#### 7.5.8 Public Key Display
+
+```
+smo node pubkey                        → SMO-PUBKEY-<base64url(pubkey)> to stdout
+smo node pubkey --copy                 → clipboard
+smo node pubkey --fingerprint          → short SHA256 fingerprint
+```
+
+The `SMO-PUBKEY-` prefix is parseable: the runtime can decode, verify checksum, and display metadata without a separate format flag.
+
+#### 7.5.9 Recovery Package — Encrypted Transport Only
+
+```
+smo mesh recovery --copy
+
+  → CLI prompts: "Passphrase:"
+  → AES-256-GCM encrypts the Recovery Package
+  → Copies encrypted blob to clipboard
+```
+
+Raw (unencrypted) Recovery Package MUST NOT enter clipboard or pipe. The `--copy` flag implies encryption.
+
+#### 7.5.10 Post-Import Summary
+
+After every successful import, the CLI displays:
+
+```
+Enrollment successful.
+
+  NodeID:          7A9F... (64 hex)
+  Certificate:     C9D3... (fingerprint)
+  Cipher Suite:    Suite 3 (Pure PQC)
+  Mesh:            SOC-Production
+  Role:            Worker
+  Epoch:           4
+  Valid until:     2027-07-17
+```
+
+This is not optional. Every import MUST print the summary for audit traceability.
+
+#### 7.5.11 Invariant: Private Keys NEVER Enter Transport
+
+| Data | `--copy` | Pipe stdout | File export | Join Token |
+|---|---|---|---|---|
+| CSR (.smor) | ✅ | ✅ | ✅ | N/A (embedded in protocol) |
+| Certificate (.smoc) | ✅ | ✅ | ✅ | N/A |
+| Public Key | ✅ | ✅ | ✅ | N/A |
+| Join Token | ✅ | ✅ | — | N/A |
+| Encrypted Recovery Package | ✅ (AES-256) | ❌ | ✅ | ❌ |
+| **Node private key** | ❌ | ❌ | ❌ | ❌ |
+| **Authority private key** | ❌ | ❌ | ❌ | ❌ |
+| **Root private key** | ❌ | ❌ | ❌ (encrypted only) | ❌ |
+
+**Additional invariant:** Enrollment SHALL NOT require temporary plaintext private-key export. Private keys are generated on-node, stored in secure storage, and never serialized outside that boundary — not even temporarily.
+
+This matches OpenSSH, WireGuard, and modern PKI design: the UX is fluid for public artifacts and hermetically sealed for secrets.
+
+#### 7.5.12 ClipboardProvider Abstraction
+
+**Problem:** Every OS has a different clipboard API. The naive approach (shelling out to `xclip`/`xsel`/`wl-copy`) introduces runtime dependencies that fail in SSH, headless, or minimal-container environments.
+
+**Decision:** `ClipboardProvider` is a single-header + implementation in `third_party/clipboard/`. It auto-detects the best available backend at runtime with ZERO external tool dependencies (no `xclip`, no `xsel`, no `wl-clipboard`):
+
+| Backend | Detection | Mechanism |
+|---|---|---|
+| **Win32** | `_WIN32` | Native `OpenClipboard`/`GetClipboardData`/`SetClipboardData` (CF_TEXT/CF_UNICODETEXT) |
+| **Cocoa** | `__APPLE__` | Shells to built-in `pbcopy`/`pbpaste` (always available on macOS) |
+| **X11** | Unix + `DISPLAY` | `dlopen("libX11.so.6")` — runtime-only, no build-time dependency on `libX11-dev` |
+| **OSC52** | `TERM` + `SSH_CONNECTION` or `SSH_CLIENT` | Sends `\e]52;c;<base64>\a` escape sequence for copy. No paste. |
+| **Stdout** | fallback | Prints `---BEGIN CLIPBOARD---` / `---END CLIPBOARD---` delimited block to stderr |
+
+**Capability API:**
+
+```cpp
+struct ClipboardCaps {
+    bool can_copy;
+    bool can_paste;
+};
+
+ClipboardCaps clipboard_caps();
+std::string clipboard_backend();  // "Win32", "Cocoa", "X11", "OSC52", "stdout"
+std::string clipboard_info();     // human-readable diagnostic string
+```
+
+**Invariant:** `clipboard_caps().can_paste` is `false` for OSC52 and Stdout backends. The `import` auto-detect shows a clear error if stdin has no data and clipboard paste is unavailable.
+
+**Design rationale:**
+
+- **No build-time X11 dependency.** `dlopen("libX11.so.6")` at runtime means no `find_package(X11)` in CMake, no `#include <X11/Xlib.h>`, no compile errors on headless build servers. The library is loaded only when the X11 backend is selected, and fails gracefully if absent (falls through to OSC52 → Stdout).
+- **SSH-first.** `SSH_CONNECTION` or `SSH_CLIENT` detected via environment variable. Terminal must support OSC52 (tmux, iTerm2, Kitty, GNOME Terminal ≥3.38, Windows Terminal). No X11 forwarding needed.
+- **CI/CD safe.** Stdout fallback always succeeds for copy. No blocking, no daemon required.
+- **No polling.** The `can_copy`/`can_paste` check is O(1) — simply checks what backend was selected at init. No X server round-trip, no polling.
+
+---
+
+### 7.6 Root Key vs Authority Key
 
 **Problem:** Old SMF had no distinction between the mesh creator's key and operational keys. One key controlled everything — theft meant total compromise.
 
@@ -1004,7 +1349,7 @@ recovery.smo {
 
 ---
 
-### 7.5 Multiple Authorities (Not One)
+### 7.6 Multiple Authorities (Not One)
 
 **Problem:** Single Authority is a single point of failure. If it goes offline, no new nodes can join, no certificates can be rotated.
 
@@ -1048,7 +1393,7 @@ Revoked node loses Authority capabilities
 
 ---
 
-### 7.6 Capability Epoch
+### 7.7 Capability Epoch
 
 **Problem:** Certificate revocation lists (CRLs) require checking against a growing list. In a mesh with gossip, maintaining a consistent CRL across all nodes is complex.
 
@@ -1083,7 +1428,7 @@ Propagation: gossip
 
 ---
 
-### 7.7 Roles Are Presets (Not Hardcoded)
+### 7.8 Roles Are Presets (Not Hardcoded)
 
 **Problem:** The old SMF and early SMO spec both risked hardcoding R/W/X as the only permission model.
 
@@ -1127,7 +1472,7 @@ The runtime does not know what "SOC_ANALYST" means. It only checks `CapabilitySe
 
 ---
 
-### 7.8 Deferred to Post-MVP
+### 7.9 Deferred to Post-MVP
 
 These topics were discussed and explicitly deferred:
 
@@ -1149,7 +1494,7 @@ These topics were discussed and explicitly deferred:
 
 ---
 
-### 7.8 Mesh Context Switching (Multi-Tenant Nodes)
+### 7.10 Mesh Context Switching (Multi-Tenant Nodes)
 
 **Problem:** A node may belong to multiple meshes (SOC, Production, Research). How does it switch between them?
 
@@ -1181,7 +1526,7 @@ Each mesh context has its own:
 
 ---
 
-### 7.9 Summary: Identity & Decision Log
+### 7.11 Summary: Identity & Decision Log
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1196,11 +1541,13 @@ Each mesh context has its own:
 │ 5. Multiple Authorities from MVP. Not single Authority.         │
 │ 6. Membership Certificate per node per mesh.                    │
 │    → CSR pattern, private key never leaves node.                │
-│ 7. Capability Epoch as lightweight revocation.                  │
+│ 7. Enrollment is atomic (node + cert + alias in one transaction).│
+│    → No partial enrollment. No TOCTOU (UNIQUE constraint).       │
+│ 8. Capability Epoch as lightweight revocation.                  │
 │    → No CRL needed. Increment epoch → old certs invalid.        │
-│ 8. Roles are presets. Runtime only knows capabilities.          │
-│ 9. Multi-mesh nodes: one Identity, multiple Memberships.        │
-│ 10. Recovery Package (AES-256 encrypted) instead of "save 5 keys"│
+│ 9. Roles are presets. Runtime only knows capabilities.          │
+│ 10. Multi-mesh nodes: one Identity, multiple Memberships.        │
+│ 11. Recovery Package (AES-256 encrypted) instead of "save 5 keys"│
 └─────────────────────────────────────────────────────────────────┘
 ```
 

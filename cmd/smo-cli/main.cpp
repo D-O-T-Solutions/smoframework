@@ -136,6 +136,14 @@ public:
     Result<int> run_command(const std::vector<std::string>& args) {
         if (args.empty()) return 1;
 
+        // Reconstruct command string for history
+        std::string cmd_line;
+        for (size_t i = 0; i < args.size(); ++i) {
+            if (i > 0) cmd_line += ' ';
+            cmd_line += args[i];
+        }
+        context_.add_history(cmd_line);
+
         auto result = parser_->parse(args);
         if (!result) {
             std::cerr << "Parse error: " << result.error().message << "\n";
@@ -230,8 +238,12 @@ private:
             std::cout << "Selection saved as '" << intent.selection_name << "'.\n";
         }
 
-        std::cout << "Selection active: "
-                  << (sel.node_names.empty() ? "*" : sel.node_names.front())
+        std::string sel_desc;
+        if (!sel.node_names.empty()) sel_desc = sel.node_names.front();
+        else if (!sel.roles.empty()) sel_desc = "role:" + sel.roles.front();
+        else if (!sel.tags.empty()) sel_desc = "tag:" + sel.tags.front();
+        else sel_desc = "*";
+        std::cout << "Selection active: " << sel_desc
                   << " (" << (sel.roles.empty() ? "any" : sel.roles.front()) << ")"
                   << "\n";
         return 0;
@@ -400,8 +412,30 @@ private:
         if (intent.flags.count("retry")) {
             context_.set_retry(std::stoi(intent.flags.at("retry")));
         }
-        std::cout << "Control: level=" << (int)context_.get_control_level()
-                  << " scope=" << (int)context_.get_scope()
+        auto level_to_str = [](ControlLevel l) -> const char* {
+            switch (l) {
+                case ControlLevel::Safe:      return "safe";
+                case ControlLevel::Normal:    return "normal";
+                case ControlLevel::Elevated:  return "elevated";
+                case ControlLevel::Force:     return "force";
+                case ControlLevel::Emergency: return "emergency";
+                case ControlLevel::Privileged:return "privileged";
+                default:                      return "unknown";
+            }
+        };
+        auto scope_to_str = [](ExecutionScope s) -> const char* {
+            switch (s) {
+                case ExecutionScope::Single:  return "single";
+                case ExecutionScope::Mesh:    return "mesh";
+                case ExecutionScope::Cluster: return "cluster";
+                case ExecutionScope::Global:  return "global";
+                case ExecutionScope::Quorum:  return "quorum";
+                case ExecutionScope::Witness: return "witness";
+                default:                      return "unknown";
+            }
+        };
+        std::cout << "Control: level=" << level_to_str(context_.get_control_level())
+                  << " scope=" << scope_to_str(context_.get_scope())
                   << " timeout=" << context_.get_timeout() << "ms"
                   << " retry=" << context_.get_retry() << "\n";
         return 0;
@@ -455,8 +489,24 @@ private:
             std::cout << "Created and switched to mesh: " << name << "\n";
             return 0;
         }
+        if (intent.flags.count("invite")) {
+            std::string role  = intent.flags.count("role") ? intent.flags.at("role") : "Worker";
+            std::string expire = intent.flags.count("expire") ? intent.flags.at("expire") : "1h";
+            std::cout << "To generate a Join Token, run on the Authority machine:\n";
+            std::cout << "  smo-admin --mesh-dir <mesh-dir> generate-invite " << role
+                      << " --expire " << expire << "\n";
+            std::cout << "\nThen share the SMO-JOIN-... token with the node operator.\n";
+            return 0;
+        }
         if (intent.flags.count("join")) {
-            std::cout << "Join mesh request (not yet implemented)\n";
+            std::string token = intent.flags.count("join") ? intent.flags.at("join") : "";
+            if (token.empty()) {
+                std::cout << "Usage: mesh join --token SMO-JOIN-...\n";
+                std::cout << "\nThe Join Token must be generated first via:\n";
+                std::cout << "  smo-admin --mesh-dir <dir> generate-invite <role>\n";
+            } else {
+                std::cout << "Joining mesh with token (not yet implemented)\n";
+            }
             return 0;
         }
         if (intent.flags.count("leave")) {

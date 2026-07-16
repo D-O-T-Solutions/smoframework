@@ -1,5 +1,8 @@
 #include "mesh_manager.hpp"
 
+#include "core/crypto/registry.hpp"
+#include "core/enroll/join_token.hpp"
+
 #include <filesystem>
 #include <sqlite3.h>
 #include <chrono>
@@ -7,6 +10,7 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <array>
 #include <fstream>
 
 namespace smo {
@@ -72,6 +76,8 @@ static std::string serialize_config(const MeshConfig& config) {
     oss << "\"display_name\":\"" << config.display_name << "\",";
     oss << "\"authority_pubkey\":\"" << config.authority_pubkey << "\",";
     oss << "\"root_pubkey\":\"" << config.root_pubkey << "\",";
+    oss << "\"hmac_secret\":\"" << config.hmac_secret << "\",";
+    oss << "\"cipher_suite_id\":" << (int)config.cipher_suite_id << ",";
     oss << "\"epoch\":" << config.epoch << ",";
     oss << "\"created_at\":" << config.created_at;
     oss << "}";
@@ -128,7 +134,21 @@ public:
     }
 
     Result<void> create_mesh(const MeshConfig& config, const std::string& name) {
-        std::string mesh_id = config.mesh_id.empty() ? generate_mesh_id(config) : config.mesh_id;
+        // Copy config so we can fill in defaults
+        MeshConfig cfg = config;
+
+        // Generate HMAC secret if not provided
+        if (cfg.hmac_secret.empty()) {
+            std::array<uint8_t, 32> secret;
+            std::random_device rd;
+            for (auto& b : secret) b = static_cast<uint8_t>(rd());
+            std::ostringstream oss;
+            for (uint8_t b : secret)
+                oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+            cfg.hmac_secret = oss.str();
+        }
+
+        std::string mesh_id = cfg.mesh_id.empty() ? generate_mesh_id(cfg) : cfg.mesh_id;
         auto exists = find_mesh(mesh_id, name);
         if (exists) {
             return SMO_ERR_STORAGE(902, Warn, NoRetry, None, "Mesh already exists");
@@ -138,7 +158,7 @@ public:
         ensure_dirs(paths);
         // Write mesh.json
         std::ofstream mf(paths.mesh_json);
-        mf << serialize_config(config);
+        mf << serialize_config(cfg);
         mf.close();
         // Insert into catalog
         std::string sql = "INSERT INTO meshes (mesh_id, display_name, authority_pubkey, "
@@ -151,12 +171,12 @@ public:
         }
         sqlite3_bind_text(stmt, 1, mesh_id.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, config.authority_pubkey.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 4, config.root_pubkey.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int64(stmt, 5, config.epoch);
+        sqlite3_bind_text(stmt, 3, cfg.authority_pubkey.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, cfg.root_pubkey.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int64(stmt, 5, cfg.epoch);
         sqlite3_bind_int64(stmt, 6, std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count());
-        sqlite3_bind_text(stmt, 7, serialize_config(config).c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 7, serialize_config(cfg).c_str(), -1, SQLITE_TRANSIENT);
         rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
         if (rc != SQLITE_DONE) {
@@ -318,5 +338,74 @@ Result<MeshManager::MeshHandle> MeshManager::open_mesh(const std::string& mesh_i
 }
 
 MeshManager::MeshHandle::~MeshHandle() = default;
+
+Result<const CryptoProvider*> MeshManager::cipher_suite(const std::string& mesh_id) const {
+    auto ctx = impl_->get_mesh(mesh_id);
+    if (!ctx) return SMO_ERR_STORAGE(404, Info, NoRetry, None,
+                                     "mesh not found: " + mesh_id);
+    // TODO: read cipher_suite_id from ctx->config once config is populated
+    // For now default to kSuitePurePQC
+    return CryptoRegistry::instance().get_suite(kSuitePurePQC);
+}
+
+namespace {
+
+int64_t parse_duration(const std::string& dur) {
+    if (dur.empty()) return 3600; // default 1h
+    char unit = dur.back();
+    int64_t num = 0;
+    try { num = std::stoll(dur.substr(0, dur.size() - 1)); } catch (...) { return 3600; }
+    switch (unit) {
+        case 's': return num;
+        case 'm': return num * 60;
+        case 'h': return num * 3600;
+        case 'd': return num * 86400;
+        default:  return num * 3600; // assume hours if no unit
+    }
+}
+
+} // anonymous namespace
+
+Result<std::string> MeshManager::generate_invite(
+    const std::string& mesh_id,
+    const std::string& role,
+    const std::string& expiry_duration,
+    const std::vector<std::string>& bootstrap_endpoints)
+{
+    auto ctx = impl_->get_mesh(mesh_id);
+    if (!ctx) return SMO_ERR_STORAGE(404, Info, NoRetry, None,
+                                     "mesh not found: " + mesh_id);
+
+    auto& config = ctx.value()->config;
+
+    auto crypto_result = cipher_suite(mesh_id);
+    if (!crypto_result) return crypto_result.error();
+    const auto* crypto = crypto_result.value();
+
+    Bytes hmac_secret;
+    for (size_t i = 0; i + 1 < config.hmac_secret.size(); i += 2) {
+        char buf[3] = {config.hmac_secret[i], config.hmac_secret[i+1], 0};
+        hmac_secret.push_back(static_cast<uint8_t>(std::strtoul(buf, nullptr, 16)));
+    }
+
+    int64_t duration_sec = parse_duration(expiry_duration);
+    auto now_sec = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    int64_t expiry = duration_sec > 0 ? now_sec + duration_sec : 0;
+
+    auto token_result = enroll::generate_token(
+        config.mesh_id,
+        config.epoch,
+        static_cast<int>(config.cipher_suite_id),
+        bootstrap_endpoints,
+        role,
+        expiry,
+        hmac_secret,
+        crypto->hash
+    );
+    if (!token_result) return token_result.error();
+
+    return enroll::encode_token_wire(token_result.value());
+}
 
 } // namespace smo

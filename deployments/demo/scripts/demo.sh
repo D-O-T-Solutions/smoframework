@@ -75,17 +75,6 @@ case "$ACTION" in
         cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" logs "${@:-}"
         ;;
 
-    exec)
-        shift
-        if [ $# -lt 2 ]; then
-            echo "Usage: $0 exec <node> <command...>"
-            echo "  Nodes: node-a, node-b, node-c"
-            exit 1
-        fi
-        NODE="$1"; shift
-        cmd $DOCKER_COMPOSE -f "$COMPOSE_FILE" exec "$NODE" "${@:-bash}"
-        ;;
-
     test)
         shift || true
         NODE="${1:-node-a}"

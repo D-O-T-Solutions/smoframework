@@ -2,7 +2,7 @@ FROM ubuntu:24.04 AS builder
 
 RUN apt-get update && apt-get install -y \
     build-essential cmake git ninja-build \
-    libssl-dev libfmt-dev \
+    libssl-dev libfmt-dev python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
@@ -10,13 +10,12 @@ COPY . /src/smoframework
 RUN mkdir -p /src/smoframework/build && \
     cmake -S /src/smoframework -B /src/smoframework/build \
         -DCMAKE_BUILD_TYPE=Release \
-        -DWITH_PQC=OFF \
+        -DWITH_PQC=ON \
         -GNinja && \
-    ninja -C /src/smoframework/build smo-node smo-cli smo-admin smo-debug && \
+    ninja -C /src/smoframework/build smo-node smo-cli smo-admin && \
     cp /src/smoframework/build/cmd/smo-node/smo-node /usr/local/bin/ && \
     cp /src/smoframework/build/cmd/smo-cli/smo-cli /usr/local/bin/ && \
-    cp /src/smoframework/build/cmd/smo-admin/smo-admin /usr/local/bin/ && \
-    cp /src/smoframework/build/cmd/smo-debug/smo-debug /usr/local/bin/
+    cp /src/smoframework/build/cmd/smo-admin/smo-admin /usr/local/bin/
 
 FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y \
@@ -26,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/bin/smo-* /usr/local/bin/
 RUN ln -s /usr/local/bin/smo-cli /usr/local/bin/smo
 
-RUN mkdir -p /etc/smo /var/lib/smo
+RUN mkdir -p /etc/smo /var/lib/smo /var/lib/smo-mesh
 
 COPY deployments/demo/scripts/ /usr/local/lib/smo-demo/
 RUN chmod +x /usr/local/lib/smo-demo/*.sh

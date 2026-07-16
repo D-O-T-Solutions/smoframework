@@ -96,6 +96,9 @@ Every module returns `Result<T, Error>`. Every `Error` carries:
 | 216 | MANIFEST_VERSION_MISMATCH | W | N | E | Mesh Manifest protocol version does not match node version |
 | 217 | CHAIN_INCOMPLETE | E | N | M | Certificate chain is missing intermediate certificates |
 | 218 | ROOT_KEY_FINGERPRINT_MISMATCH | A | N | M | Root Public Key fingerprint does not match expected value |
+| 220 | DISPLAY_NAME_ALREADY_EXISTS | W | S | N | Display name is already taken by another node (UNIQUE constraint violation) |
+| 221 | INVALID_DISPLAY_NAME | W | N | N | Display name fails format validation (empty, bad chars, etc.) |
+| 222 | DISPLAY_NAME_TOO_LONG | W | N | N | Display name exceeds 128-character limit |
 
 **Recovery notes:**
 - Most cert errors → re-enroll (`smo-node import`).
@@ -377,7 +380,7 @@ Every module returns `Result<T, Error>`. Every `Error` carries:
 |---|---|---|
 | Crypto | 1 — 99 | 15 |
 | Identity | 100 — 199 | 11 |
-| Certificate | 200 — 299 | 19 |
+| Certificate | 200 — 299 | 22 |
 | Transport | 300 — 399 | 24 |
 | Discovery | 400 — 499 | 10 |
 | Session | 500 — 599 | 12 |
@@ -388,6 +391,6 @@ Every module returns `Result<T, Error>`. Every `Error` carries:
 | Internal | 1000 — 1099 | 10 |
 | Compiler | 1100 — 1199 | 8 |
 | Trust | 1200 — 1299 | 9 |
-| **Total** | | **187** |
+| **Total** | | **190** |
 
 Each category has room for expansion (up to code 1023 per category).

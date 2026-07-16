@@ -61,14 +61,14 @@ public:
         add("top", "Show process stats", IntentType::Process, {}, {{"delay", "Update delay"}, {"sort", "Sort field"}});
         add("deploy", "Deploy contract", IntentType::Deploy, {"contract_path"}, {{"policy", "Policy preset"}, {"mesh", "Target mesh"}, {"force", "Force deploy"}});
         add("undeploy", "Undeploy contract", IntentType::Undeploy, {"contract_id"}, {{"force", "Force undeploy"}});
-        add("status", "Show contract status", IntentType::Status, {"contract_id"}, {{"details", "Show details"}});
+        add("status", "Show status", IntentType::Status, {}, {{"contract", "Contract ID"}, {"details", "Show details"}});
         add("history", "Show history", IntentType::History, {}, {{"contract", "Contract ID"}, {"execution", "Execution ID"}, {"trace", "Trace ID"}, {"node", "Node ID"}, {"failed", "Failed only"}, {"from", "From timestamp"}, {"to", "To timestamp"}, {"limit", "Limit results"}});
         add("trace", "Show trace", IntentType::History, {"trace_id"}, {{"detail", "Show details"}});
         add("select", "Select nodes", IntentType::Select, {}, {{"name", "Selection name"}, {"role", "Role filter"}, {"tag", "Tag filter"}, {"where", "Where expression"}, {"mesh", "Mesh filter"}, {"os", "OS filter"}, {"arch", "Arch filter"}, {"version", "Version filter"}, {"trust", "Trust range"}, {"clear", "Clear selection"}});
         add2("policy", "Policy management", IntentType::Policy, {}, {}, {{"preset", "Policy preset"}, {"custom", "Custom policy file"}, {"list", "List policies"}, {"show", "Show policy details"}});
         add2("control", "Control level", IntentType::Control, {}, {}, {{"level", "Control level: safe|normal|force|emergency"}, {"scope", "Scope: single|mesh|quorum|witness"}, {"timeout", "Timeout ms"}, {"retry", "Retry count"}});
-        add2("mesh", "Mesh management", IntentType::Mesh, {}, {}, {{"list", "List meshes"}, {"use", "Use mesh"}, {"create", "Create mesh"}, {"join", "Join mesh"}, {"leave", "Leave mesh"}, {"remove", "Remove mesh"}});
-        add("connect", "Connect to node", IntentType::Connect, {"address"}, {{"name", "Connection name"}});
+        add2("mesh", "Mesh management", IntentType::Mesh, {}, {}, {{"list", "List meshes"}, {"use", "Use mesh"}, {"create", "Create mesh"}, {"join", "Join mesh"}, {"leave", "Leave mesh"}, {"remove", "Remove mesh"}, {"invite", "Generate Join Token"}, {"expire", "Token expiry duration (e.g. 30m, 1h)"}, {"role", "Node role: Worker, Validator, Observer, Relay"}});
+        add("connect", "Connect to node", IntentType::Connect, {}, {{"address", "Node address"}, {"name", "Connection name"}});
         add("disconnect", "Disconnect", IntentType::Disconnect, {}, {});
         add2("context", "Context management", IntentType::Context, {}, {}, {{"list", "List contexts"}, {"save", "Save context"}, {"load", "Load context"}, {"clear", "Clear context"}});
         add2("help", "Show help", IntentType::Help, {}, {}, {{"command", "Command name"}});
@@ -167,12 +167,12 @@ Result<ParsedCommand> IntentParser::parse(const std::vector<std::string>& args) 
         }
     }
 
-    // Assign positional args
-    for (size_t i = 0; i < positional.size() && i < def.required_args.size(); ++i) {
+    // Assign all positional args to intent.args
+    for (size_t i = 0; i < positional.size(); ++i) {
         intent.args.push_back(positional[i]);
     }
 
-    // Validate required args
+    // Validate required args count
     if (positional.size() < def.required_args.size()) {
         return SMO_ERR(Protocol, 102, Error, NoRetry, None, 
                       "Missing required argument: " + def.required_args[positional.size()]);

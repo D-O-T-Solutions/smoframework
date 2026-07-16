@@ -9,9 +9,12 @@
 // - execute DAG tasks
 
 #include <core/crypto/impl.hpp>
+#include <core/crypto/registry.hpp>
+#include <core/crypto/suite.hpp>
 #include <core/discovery/discovery.hpp>
 #include <core/errors/error.hpp>
 #include <core/identity/identity.hpp>
+#include <core/types.hpp>
 #include <core/transport/transport.hpp>
 #include <core/transport/tcp_transport.hpp>
 #include <core/network/udp/udp_transport.hpp>
@@ -21,18 +24,50 @@
 #include <core/network/sync/membership_sync.hpp>
 #include <core/network/transport/address_resolver.hpp>
 #include <core/discovery/peer_store.hpp>
+#include <core/certificate/certificate.hpp>
+
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
+
+#include <tooling/clipboard.hpp>
 
 #include <chrono>
 #include <csignal>
+#include <poll.h>
+#include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
+
+// ---------------------------------------------------------------------------
+// Local utilities
+// ---------------------------------------------------------------------------
+namespace {
+
+std::string bytes_to_base64(smo::BytesView data) {
+    static const char kEnc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    for (size_t i = 0; i < data.size(); i += 3) {
+        uint32_t v = (uint32_t)data[i] << 16;
+        if (i + 1 < data.size()) v |= (uint32_t)data[i + 1] << 8;
+        if (i + 2 < data.size()) v |= (uint32_t)data[i + 2];
+        out += kEnc[(v >> 18) & 0x3f];
+        out += kEnc[(v >> 12) & 0x3f];
+        out += (i + 1 < data.size()) ? kEnc[(v >> 6) & 0x3f] : '=';
+        out += (i + 2 < data.size()) ? kEnc[v & 0x3f] : '=';
+    }
+    return out;
+}
+
+} // anonymous namespace
 
 // Global flag for graceful shutdown
 static volatile bool g_running = true;
@@ -42,49 +77,34 @@ static void print_usage(const char* prog) {
     std::fprintf(stderr, R"(SMO Node Daemon
 
 Usage:
+  %s --init --name <name> [--data <dir>]
+  %s --export [<file> | --copy] [--data <dir>]
+  %s --import [<file>] [--data <dir>]
+  %s --pubkey [--copy | --fingerprint] [--data <dir>]
   %s --daemon --port <port> --data <data-dir> [--name <name>]
                  [--seed <host:port>]
 
 Options:
-  --daemon          Run as daemon
-  --port <port>     Listen port (default: 7777)
+  --init            Generate identity and save to data directory
+  --name <name>     Display name for the node
   --data <dir>      Data directory (default: /var/lib/smo)
-  --name <name>     Display name
-  --seed <addr>     Seed node address (e.g. node-a:7777)
+  --export <file>   Export CSR to file
+  --export --copy   Copy CSR to clipboard
+  --import [<file>] Import certificate (auto-detect: stdin→clipboard→file)
+  --pubkey          Display public key
+  --pubkey --copy   Copy public key to clipboard
+  --pubkey --fingerprint  Show short fingerprint
+  --daemon          Run as mesh node daemon
+  --port <port>     Listen port (default: 7777)
+  --seed <host:port>  Bootstrap seed node for discovery
   --help            Show this help
 )",
-        prog);
+        prog, prog, prog, prog, prog);
 }
 
 // ===========================================================================
 // Helpers
 // ===========================================================================
-
-static smo::NodeID load_local_node_id(const std::string& data_dir) {
-    smo::NodeID id;
-    std::string id_path = data_dir + "/identity.json";
-    std::ifstream f(id_path);
-    if (!f) return id;
-
-    std::string content((std::istreambuf_iterator<char>(f)),
-                         std::istreambuf_iterator<char>());
-    f.close();
-
-    // Find "node_id": "hex..."
-    auto pos = content.find("\"node_id\"");
-    if (pos == std::string::npos) return id;
-    auto start = content.find('"', pos + 9);
-    auto end = content.find('"', start + 1);
-    if (start == std::string::npos || end == std::string::npos) return id;
-
-    std::string hex = content.substr(start + 1, end - start - 1);
-    if (hex.size() != 64) return id;
-
-    for (size_t i = 0; i < 32; ++i) {
-        id.value[i] = static_cast<uint8_t>(std::stoi(hex.substr(i * 2, 2), nullptr, 16));
-    }
-    return id;
-}
 
 static void node_id_to_hex(const smo::NodeID& id, std::string& out) {
     std::ostringstream oss;
@@ -92,6 +112,427 @@ static void node_id_to_hex(const smo::NodeID& id, std::string& out) {
         oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
     }
     out = oss.str();
+}
+
+// Load file contents as Bytes
+static smo::Bytes load_file_binary(const std::string& path) {
+    std::ifstream f(path, std::ios::binary | std::ios::ate);
+    if (!f) return {};
+    auto size = f.tellg();
+    f.seekg(0);
+    smo::Bytes data(static_cast<size_t>(size));
+    f.read(reinterpret_cast<char*>(data.data()), size);
+    return data;
+}
+
+// Write Bytes to file
+static bool write_file_binary(const std::string& path, smo::BytesView data) {
+    std::ofstream f(path, std::ios::binary);
+    if (!f) return false;
+    f.write(reinterpret_cast<const char*>(data.data()), data.size());
+    return f.good();
+}
+
+// ===========================================================================
+// Utils
+// ===========================================================================
+
+static std::string read_stdin() {
+    std::string data;
+    char buf[4096];
+    while (fgets(buf, sizeof(buf), stdin)) {
+        data.append(buf);
+    }
+    return data;
+}
+
+static bool has_stdin_data() {
+    struct pollfd pfd = {STDIN_FILENO, POLLIN, 0};
+    return poll(&pfd, 1, 0) > 0 && (pfd.revents & POLLIN);
+}
+
+static smo::Bytes load_cert_blob(const std::string& path_or_empty) {
+    // Try stdin first
+    if (has_stdin_data()) {
+        auto data = read_stdin();
+        if (!data.empty()) {
+            std::fprintf(stderr, "[smo-node] Reading certificate from stdin...\n");
+            return smo::Bytes(data.begin(), data.end());
+        }
+    }
+    // Try clipboard
+    if (path_or_empty.empty() && smo::clipboard_available()) {
+        auto data = smo::clipboard_paste();
+        if (!data.empty()) {
+            std::fprintf(stderr, "[smo-node] Reading certificate from clipboard...\n");
+            return smo::Bytes(data.begin(), data.end());
+        }
+    }
+    // Try file
+    if (!path_or_empty.empty()) {
+        return load_file_binary(path_or_empty);
+    }
+    return {};
+}
+
+// ===========================================================================
+// Register all available crypto suites
+// ===========================================================================
+static void ensure_crypto() {
+    smo::providers::register_suite1_classical();
+    smo::providers::register_suite3_purepqc();
+}
+
+// ===========================================================================
+// Look up crypto provider by suite ID from registry
+// ===========================================================================
+static const smo::CryptoProvider* get_crypto(smo::CryptoSuiteID suite_id) {
+    auto& reg = smo::CryptoRegistry::instance();
+    auto prov_result = reg.get_suite(suite_id);
+    if (!prov_result) {
+        std::fprintf(stderr, "Error: cipher suite %u not registered\n",
+                     (unsigned)suite_id);
+        return nullptr;
+    }
+    return prov_result.value();
+}
+
+// ===========================================================================
+// Cmd: --init
+// ===========================================================================
+static int cmd_init(const std::string& name, const std::string& data_dir) {
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+    auto rng = crypto->default_rng();
+
+    // Create identity (generates keypair)
+    auto id_result = smo::Identity::create(*crypto, rng);
+    if (!id_result) {
+        std::fprintf(stderr, "Error: identity creation failed: %s\n",
+                     id_result.error().message.c_str());
+        return 1;
+    }
+    auto identity = std::move(id_result.value());
+
+    // Save identity to file
+    std::string id_path = data_dir + "/identity.json";
+    if (auto r = identity.save_to_file(id_path); !r) {
+        std::fprintf(stderr, "Error: cannot save identity: %s\n",
+                     r.error().message.c_str());
+        return 1;
+    }
+
+    // Build CSR
+    smo::CertificateSigningRequest csr;
+    csr.new_public_key = smo::Bytes(identity.public_key().begin(), identity.public_key().end());
+    csr.display_name = name;
+    csr.platform = "linux";
+    csr.version = "0.1.0";
+    csr.timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    // For initial CSR, sign with the new key itself
+    auto sign_result = csr.sign(crypto->signer, identity.secret_key(), rng);
+    if (!sign_result) {
+        std::fprintf(stderr, "Error: CSR signing failed: %s\n",
+                     sign_result.error().message.c_str());
+        return 1;
+    }
+
+    // Save CSR
+    std::string csr_path = data_dir + "/node.csr.smor";
+    auto csr_serialized = csr.serialize();
+    if (!write_file_binary(csr_path, csr_serialized)) {
+        std::fprintf(stderr, "Error: cannot write CSR file: %s\n", csr_path.c_str());
+        return 1;
+    }
+
+    std::string nid_hex;
+    node_id_to_hex(identity.node_id(), nid_hex);
+    std::printf("Identity created:\n");
+    std::printf("  NodeID:       %s\n", nid_hex.c_str());
+    std::printf("  Display name: %s\n", name.c_str());
+    std::printf("  Identity:     %s\n", id_path.c_str());
+    std::printf("  CSR:          %s\n", csr_path.c_str());
+    std::printf("\n");
+    std::printf("Next: Submit %s to the mesh authority for signing.\n", csr_path.c_str());
+    std::printf("      Then run: smo-node --import <signed-cert>.smoc --data %s\n", data_dir.c_str());
+    return 0;
+}
+
+// ===========================================================================
+// Cmd: --export
+// ===========================================================================
+static int cmd_export(const std::string& output_path, const std::string& data_dir) {
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result) {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n",
+                     id_result.error().message.c_str());
+        return 1;
+    }
+    auto& identity = id_result.value();
+    auto rng = crypto->default_rng();
+
+    // Read existing CSR if present, else build a new one
+    std::string csr_path = data_dir + "/node.csr.smor";
+    auto existing = load_file_binary(csr_path);
+    if (!existing.empty()) {
+        // Copy existing CSR to output
+        if (!write_file_binary(output_path, existing)) {
+            std::fprintf(stderr, "Error: cannot write CSR file: %s\n", output_path.c_str());
+            return 1;
+        }
+        std::printf("CSR exported: %s -> %s\n", csr_path.c_str(), output_path.c_str());
+        return 0;
+    }
+
+    // Build new CSR
+    smo::CertificateSigningRequest csr;
+    csr.new_public_key = smo::Bytes(identity.public_key().begin(), identity.public_key().end());
+
+    // Try to read display name from existing cert or use "unnamed"
+    csr.display_name = "unnamed-node";
+    csr.platform = "linux";
+    csr.version = "0.1.0";
+    csr.timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+
+    auto sign_result = csr.sign(crypto->signer, identity.secret_key(), rng);
+    if (!sign_result) {
+        std::fprintf(stderr, "Error: CSR signing failed: %s\n",
+                     sign_result.error().message.c_str());
+        return 1;
+    }
+
+    auto csr_serialized = csr.serialize();
+    if (!write_file_binary(output_path, csr_serialized)) {
+        std::fprintf(stderr, "Error: cannot write CSR file: %s\n", output_path.c_str());
+        return 1;
+    }
+
+    // Also save to data dir for convenience
+    write_file_binary(csr_path, csr_serialized);
+
+    std::printf("CSR exported: %s (%zu bytes)\n", output_path.c_str(), csr_serialized.size());
+    return 0;
+}
+
+// ===========================================================================
+// Cmd: --import
+//
+// Auto-detect transport: stdin → clipboard → filename
+// ===========================================================================
+static int cmd_import(const std::string& cert_path_or_empty, const std::string& data_dir) {
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+
+    // Load identity
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result) {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n",
+                     id_result.error().message.c_str());
+        return 1;
+    }
+    auto identity = std::move(id_result.value());
+
+    // Auto-detect transport: stdin → clipboard → file
+    auto cert_blob = load_cert_blob(cert_path_or_empty);
+    if (cert_blob.empty()) {
+        std::fprintf(stderr, "Error: no certificate data found.\n"
+                             "  Try: smo node import <file.smoc>\n"
+                             "   or: cat cert.smoc | smo node import\n"
+                             "   or: smo node import (with certificate in clipboard)\n");
+        return 1;
+    }
+
+    auto cert_result = smo::Certificate::deserialize(cert_blob);
+    if (!cert_result) {
+        std::fprintf(stderr, "Error: invalid certificate: %s\n",
+                     cert_result.error().message.c_str());
+        return 1;
+    }
+    auto& cert = cert_result.value();
+
+    // Verify certificate signature
+    auto verify_result = cert.verify(crypto->signer);
+    if (!verify_result) {
+        std::fprintf(stderr, "Error: certificate verification failed: %s\n",
+                     verify_result.error().message.c_str());
+        return 1;
+    }
+    if (!verify_result.value()) {
+        std::fprintf(stderr, "Error: certificate signature is invalid\n");
+        return 1;
+    }
+
+    // Update identity state
+    identity.transition_to(smo::IdentityState::Enrolled);
+
+    // Save updated identity
+    if (auto r = identity.save_to_file(data_dir + "/identity.json"); !r) {
+        std::fprintf(stderr, "Error: cannot save identity: %s\n",
+                     r.error().message.c_str());
+        return 1;
+    }
+
+    // Save certificate
+    std::string cert_out = data_dir + "/node.cert.smoc";
+    if (!write_file_binary(cert_out, cert_blob)) {
+        std::fprintf(stderr, "Error: cannot save certificate: %s\n", cert_out.c_str());
+        return 1;
+    }
+
+    // ── Post-import summary ────────────────────────────────────
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char expiry_buf[32] = {};
+    if (cert.not_after > 0) {
+        std::tm* tm = std::gmtime(&cert.not_after);
+        if (tm) std::strftime(expiry_buf, sizeof(expiry_buf), "%Y-%m-%d", tm);
+    }
+
+    std::printf("\n");
+    std::printf("  Enrollment successful.\n");
+    std::printf("\n");
+    std::printf("  NodeID:          %s\n", identity.node_id().to_string().c_str());
+    {
+        auto fp_hash = crypto->hash.hash(smo::BytesView(cert_blob));
+        std::string fp_hex = fp_hash ? smo::bytes_to_hex(fp_hash.value()).substr(0, 16) : "???";
+        std::printf("  Certificate:     %s\n", fp_hex.c_str());
+    }
+    std::printf("  Cipher Suite:    Suite %d\n", (int)crypto->suite_id);
+    std::printf("  Display Name:    %s\n", cert.display_name.c_str());
+    std::printf("  Role:            %s\n", smo::to_string(cert.role));
+    std::printf("  Epoch:           %llu\n", (unsigned long long)cert.epoch);
+    if (expiry_buf[0])
+        std::printf("  Valid until:     %s\n", expiry_buf);
+    std::printf("\n");
+    std::printf("  Node is now enrolled. Run with --daemon to start.\n");
+    return 0;
+}
+
+// ===========================================================================
+// Cmd: --export --copy (send CSR to clipboard)
+// ===========================================================================
+static int cmd_export_to_clipboard(const std::string& data_dir) {
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result) {
+        std::fprintf(stderr, "Error: cannot load identity.\n"
+                             "  Run 'smo-node --init --name <name>' first\n");
+        return 1;
+    }
+    auto& identity = id_result.value();
+    auto rng = crypto->default_rng();
+
+    // Build CSR
+    std::string csr_path = data_dir + "/node.csr.smor";
+    auto existing = load_file_binary(csr_path);
+    smo::Bytes csr_serialized;
+    if (!existing.empty()) {
+        csr_serialized = existing;
+    } else {
+        smo::CertificateSigningRequest csr;
+        csr.new_public_key = smo::Bytes(identity.public_key().begin(), identity.public_key().end());
+        csr.display_name = "unnamed-node";
+        csr.platform = "linux";
+        csr.version = "0.1.0";
+        csr.timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+        auto sign_result = csr.sign(crypto->signer, identity.secret_key(), rng);
+        if (!sign_result) {
+            std::fprintf(stderr, "Error: CSR signing failed: %s\n",
+                         sign_result.error().message.c_str());
+            return 1;
+        }
+        csr_serialized = csr.serialize();
+    }
+
+    // Copy to clipboard (base64-encoded for text safety)
+    std::string b64 = bytes_to_base64(csr_serialized);
+    if (smo::clipboard_copy(b64)) {
+        std::printf("CSR copied to clipboard (%zu bytes).\n", csr_serialized.size());
+        std::printf("  On the Authority machine, run:\n");
+        std::printf("    smo-admin sign --paste\n");
+        return 0;
+    }
+    std::fprintf(stderr, "Error: clipboard not available\n");
+    return 1;
+}
+
+// ===========================================================================
+// Cmd: --pubkey
+// ===========================================================================
+static int cmd_pubkey(bool do_copy, bool show_fingerprint, const std::string& data_dir) {
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result) {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n",
+                     id_result.error().message.c_str());
+        std::fprintf(stderr, "  Run 'smo-node --init --name <name>' first\n");
+        return 1;
+    }
+    auto& identity = id_result.value();
+
+    if (show_fingerprint) {
+        auto hash = crypto->hash.hash(identity.public_key());
+        if (!hash) {
+            std::fprintf(stderr, "Error: fingerprint computation failed\n");
+            return 1;
+        }
+        std::string hex = smo::bytes_to_hex(hash.value());
+        // Format as colon-separated pairs
+        for (size_t i = 0; i < hex.size(); i += 2) {
+            if (i > 0) std::putchar(':');
+            std::printf("%c%c", hex[i], hex[i+1]);
+            if (i >= 18) break; // show first 20 hex chars = 10 bytes
+        }
+        std::putchar('\n');
+        return 0;
+    }
+
+    // Base64url-encode public key with SMO-PUBKEY- prefix
+    auto pk = identity.public_key();
+    std::string b64;
+    static const char kEnc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz0123456789-_";
+    for (size_t i = 0; i < pk.size(); i += 3) {
+        uint32_t v = (uint32_t)pk[i] << 16;
+        if (i + 1 < pk.size()) v |= (uint32_t)pk[i + 1] << 8;
+        if (i + 2 < pk.size()) v |= (uint32_t)pk[i + 2];
+        b64 += kEnc[(v >> 18) & 0x3f];
+        b64 += kEnc[(v >> 12) & 0x3f];
+        if (i + 1 < pk.size()) b64 += kEnc[(v >> 6) & 0x3f];
+        if (i + 2 < pk.size()) b64 += kEnc[v & 0x3f];
+    }
+    std::string output = "SMO-PUBKEY-" + b64;
+
+    if (do_copy) {
+        if (smo::clipboard_copy(output)) {
+            std::printf("Public key copied to clipboard.\n");
+            return 0;
+        }
+        std::fprintf(stderr, "Error: clipboard not available\n");
+        return 1;
+    }
+
+    std::printf("%s\n", output.c_str());
+    return 0;
 }
 
 // ===========================================================================
@@ -102,44 +543,120 @@ int main(int argc, char* argv[]) {
     std::signal(SIGINT, handle_signal);
     std::signal(SIGTERM, handle_signal);
 
-    // Parse args
+    // ── Parse common args ──────────────────────────────────────
     bool daemon_mode = false;
+    bool init_mode = false;
+    bool export_mode = false;
+    bool import_mode = false;
+    bool pubkey_mode = false;
+    bool pubkey_copy = false;
+    bool pubkey_fingerprint = false;
+    bool export_copy = false;
     int port = 7777;
     std::string data_dir = "/var/lib/smo";
     std::string node_name;
     std::string seed_addr;
+    std::string export_path;
+    std::string import_path;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--daemon") daemon_mode = true;
+        else if (arg == "--init") init_mode = true;
         else if (arg == "--port" && i + 1 < argc) port = std::atoi(argv[++i]);
         else if (arg == "--data" && i + 1 < argc) data_dir = argv[++i];
         else if (arg == "--name" && i + 1 < argc) node_name = argv[++i];
         else if (arg == "--seed" && i + 1 < argc) seed_addr = argv[++i];
+        else if (arg == "--export" && i + 1 < argc) { export_mode = true; export_path = argv[++i]; }
+        else if (arg == "--import" && i + 1 < argc) { import_mode = true; import_path = argv[++i]; }
+        else if (arg == "--pubkey") pubkey_mode = true;
+        else if (arg == "--copy") { pubkey_copy = true; export_copy = true; }
+        else if (arg == "--fingerprint") pubkey_fingerprint = true;
         else if (arg == "--help") { print_usage(argv[0]); return 0; }
     }
 
+    // ── Initialize data directory ──────────────────────────────
+    auto create_dir = [](const std::string& dir) {
+        if (dir.empty()) return;
+        namespace fs = std::filesystem;
+        fs::create_directories(dir);
+    };
+
+    // ── Mode dispatch ──────────────────────────────────────────
+
+    if (pubkey_mode) {
+        if (!data_dir.empty()) create_dir(data_dir);
+        return cmd_pubkey(pubkey_copy, pubkey_fingerprint, data_dir);
+    }
+
+    if (init_mode) {
+        if (node_name.empty()) {
+            std::fprintf(stderr, "Error: --name <name> is required with --init\n");
+            return 1;
+        }
+        if (!data_dir.empty()) create_dir(data_dir);
+        return cmd_init(node_name, data_dir);
+    }
+
+    if (export_mode) {
+        if (export_copy) {
+            // --copy flag: send CSR to clipboard instead of file
+            return cmd_export_to_clipboard(data_dir);
+        }
+        if (export_path.empty()) {
+            std::fprintf(stderr, "Error: --export <file> requires a file path\n");
+            return 1;
+        }
+        return cmd_export(export_path, data_dir);
+    }
+
+    if (import_mode) {
+        // import_path may be empty → auto-detect (stdin → clipboard → file)
+        return cmd_import(import_path, data_dir);
+    }
+
+    // ── Legacy: show info if no flags ──────────────────────────
     if (!daemon_mode) {
         std::printf("SMO Node\n");
         std::printf("  Data dir: %s\n", data_dir.c_str());
         std::printf("  Port:     %d\n", port);
         if (!node_name.empty()) std::printf("  Name:     %s\n", node_name.c_str());
         if (!seed_addr.empty()) std::printf("  Seed:     %s\n", seed_addr.c_str());
-        std::printf("  Mode:     standalone (use --daemon to run as service)\n");
+        std::printf("  Mode:     standalone (use --daemon to run as service, "
+                    "--init to enroll)\n");
         return 0;
     }
 
-    // ── Initialize ────────────────────────────────────────────
+    // ====================================================================
+    // ── Daemon mode ─────────────────────────────────────────────
+    // ====================================================================
     std::printf("[smo-node] Starting daemon...\n");
     std::printf("[smo-node] Data: %s, Port: %d\n", data_dir.c_str(), port);
     if (!node_name.empty()) std::printf("[smo-node] Name: %s\n", node_name.c_str());
     if (!seed_addr.empty()) std::printf("[smo-node] Seed: %s\n", seed_addr.c_str());
 
-    // Load local NodeID
-    smo::NodeID local_id = load_local_node_id(data_dir);
+    // Initialize crypto (register all suites)
+    ensure_crypto();
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto) return 1;
+
+    // Load identity
+    std::string id_path = data_dir + "/identity.json";
+    auto id_result = smo::Identity::load_from_file(id_path, *crypto);
+    if (!id_result) {
+        std::fprintf(stderr, "[smo-node] Fatal: cannot load identity from %s: %s\n",
+                     id_path.c_str(), id_result.error().message.c_str());
+        std::fprintf(stderr, "[smo-node] Run 'smo-node --init --name <name>' first\n");
+        return 1;
+    }
+    auto local_identity = std::move(id_result.value());
+
+    // Load NodeID
+    smo::NodeID local_id = local_identity.node_id();
     std::string local_id_hex;
     node_id_to_hex(local_id, local_id_hex);
-    std::printf("[smo-node] Local NodeID: %s\n", local_id_hex.c_str());
+    std::printf("[smo-node] Local NodeID: %s (state: %s)\n",
+                local_id_hex.c_str(), smo::to_string(local_identity.state()));
 
     // Initialize core components
     smo::MembershipTable membership;
@@ -189,7 +706,7 @@ int main(int argc, char* argv[]) {
     hb_config.ping_interval_ms = 5000;
     hb_config.ping_timeout_ms = 3000;
     hb_config.max_misses = 3;
-    hb_config.local_port = port; // same port for UDP
+    hb_config.local_port = port;
 
     smo::network::udp::HeartbeatService heartbeat_service(hb_config);
     auto hb_start = heartbeat_service.start(*static_cast<smo::network::udp::UdpTransport*>(udp_transport.get()),
@@ -259,7 +776,6 @@ int main(int argc, char* argv[]) {
                     if (recv) {
                         std::printf("[smo-node] Received peer table (%zu bytes)\n",
                                     recv.value().size());
-                        // TODO: Parse NodeInfoMsg list and populate membership
                     }
                 }
 
@@ -275,8 +791,6 @@ int main(int argc, char* argv[]) {
 
     // Subscribe to membership events for gossip
     membership_sync.subscribe([&](const smo::network::sync::MembershipEvent& ev) {
-        // Forward to GossipEngine for propagation
-        // For now just log
         std::printf("[smo-node] Membership event: type=%d\n",
                     static_cast<int>(ev.type));
     });
@@ -293,15 +807,14 @@ int main(int argc, char* argv[]) {
             std::chrono::system_clock::now().time_since_epoch().count());
 
         // Periodic ticks
-        if (now_ns - last_tick > 5000000000LL) { // 5s
+        if (now_ns - last_tick > 5000000000LL) {
             discovery_engine.tick(now_ns);
             heartbeat_service.tick(now_ns);
             last_tick = now_ns;
         }
 
-        if (now_ns - last_gossip > 5000000000LL) { // 5s
+        if (now_ns - last_gossip > 5000000000LL) {
             gossip_engine.tick(now_ns);
-            // Propagate membership changes via gossip
             auto events = membership_sync.pending_events(gossip_engine.current_sequence());
             if (!events.empty()) {
                 // TODO: Send gossip messages to fanout peers
@@ -310,7 +823,7 @@ int main(int argc, char* argv[]) {
         }
 
         // Periodic PeerStore sync
-        if (now_ns - last_peerstore_sync > 30000000000LL) { // 30s
+        if (now_ns - last_peerstore_sync > 30000000000LL) {
             peer_store.sync_from_membership(membership);
             last_peerstore_sync = now_ns;
         }
@@ -323,8 +836,6 @@ int main(int argc, char* argv[]) {
 
             auto data = tcp_session.value()->recv(4096);
             if (data) {
-                // Parse discovery message and dispatch
-                // For now: echo back
                 std::printf("[smo-node] Received %zu bytes from %s\n",
                             data.value().size(),
                             tcp_session.value()->remote_endpoint().to_string().c_str());
@@ -332,11 +843,6 @@ int main(int argc, char* argv[]) {
             }
             tcp_session.value()->close();
         }
-
-        // Accept UDP packets
-        // Note: UDP listener is in heartbeat_service's listener_
-        // For now, we poll the UDP socket manually
-        // TODO: Integrate UDP listener into main loop properly
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }

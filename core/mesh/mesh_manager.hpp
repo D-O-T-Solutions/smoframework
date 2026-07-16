@@ -11,6 +11,7 @@
 #include "core/errors/error.hpp"
 #include "core/contract/contract.hpp"
 #include "core/acl/policy_engine.hpp"
+#include "core/crypto/impl.hpp"
 
 namespace smo {
 
@@ -19,6 +20,8 @@ struct MeshConfig {
     std::string display_name;
     std::string authority_pubkey;
     std::string root_pubkey;
+    std::string hmac_secret;  // hex-encoded 32-byte HMAC key for Join Token signing
+    CryptoSuiteID cipher_suite_id = kSuitePurePQC;  // default: Suite3 PurePQC
     int64_t epoch = 1;
     int64_t created_at = 0;
 };
@@ -80,6 +83,16 @@ public:
         ~MeshHandle();
     };
     Result<MeshHandle> open_mesh(const std::string& mesh_id);
+
+    // Crypto: get the CryptoProvider for a mesh's cipher suite
+    Result<const CryptoProvider*> cipher_suite(const std::string& mesh_id) const;
+
+    // Enrollment
+    Result<std::string> generate_invite(
+        const std::string& mesh_id,
+        const std::string& role,
+        const std::string& expiry_duration,
+        const std::vector<std::string>& bootstrap_endpoints = {});
 
 private:
     class Impl;

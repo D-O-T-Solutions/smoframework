@@ -2,8 +2,20 @@
 
 #include <algorithm>
 #include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
 
 namespace smo {
+
+Bytes hex_to_bytes(const std::string& hex) {
+    Bytes out;
+    for (size_t i = 0; i + 1 < hex.size(); i += 2) {
+        char buf[3] = {hex[i], hex[i+1], 0};
+        out.push_back(static_cast<uint8_t>(std::strtoul(buf, nullptr, 16)));
+    }
+    return out;
+}
 
 // ---------------------------------------------------------------------------
 // NodeID derivation
@@ -120,6 +132,86 @@ Result<void> Identity::transition_to(IdentityState new_state) noexcept {
     }
     state_ = new_state;
     return {};
+}
+
+std::string Identity::to_json() const {
+    std::ostringstream json;
+    json << "{\n";
+    json << "  \"node_id\": \"" << node_id_.to_string() << "\",\n";
+    json << "  \"state\": \"" << to_string(state_) << "\",\n";
+    json << "  \"suite_id\": " << (int)suite_id_ << ",\n";
+    json << "  \"public_key_hex\": \"" << bytes_to_hex(public_key_) << "\",\n";
+    json << "  \"secret_key_hex\": \"" << bytes_to_hex(secret_key_) << "\"\n";
+    json << "}\n";
+    return json.str();
+}
+
+Result<void> Identity::save_to_file(const std::string& path) const {
+    std::ofstream f(path);
+    if (!f) {
+        return SMO_ERR_STORAGE(900, Error, NoRetry, None,
+                               "cannot open identity file for writing: " + path);
+    }
+    f << to_json();
+    f.close();
+    return {};
+}
+
+Result<Identity> Identity::load_from_file(const std::string& path,
+                                           const CryptoProvider& crypto) {
+    std::ifstream f(path);
+    if (!f) {
+        return SMO_ERR_STORAGE(900, Error, NoRetry, None,
+                               "cannot open identity file: " + path);
+    }
+    std::string content((std::istreambuf_iterator<char>(f)),
+                         std::istreambuf_iterator<char>());
+    f.close();
+
+    // Parse JSON manually (no external dependency in core)
+    auto get_field = [&](const std::string& key) -> std::string {
+        auto pos = content.find("\"" + key + "\"");
+        if (pos == std::string::npos) return "";
+        auto colon = content.find(':', pos);
+        if (colon == std::string::npos) return "";
+        auto start = content.find('"', colon);
+        if (start == std::string::npos) return "";
+        auto end = content.find('"', start + 1);
+        if (end == std::string::npos) return "";
+        return content.substr(start + 1, end - start - 1);
+    };
+
+    auto pk_hex = get_field("public_key_hex");
+    auto sk_hex = get_field("secret_key_hex");
+    auto state_str = get_field("state");
+
+    if (pk_hex.empty() || sk_hex.empty()) {
+        return SMO_ERR_STORAGE(901, Error, NoRetry, None,
+                               "identity file missing key material");
+    }
+
+    auto public_key = hex_to_bytes(pk_hex);
+    auto secret_key = hex_to_bytes(sk_hex);
+
+    // Derive NodeID from public key
+    NodeID node_id;
+    if (crypto.hash.hash) {
+        auto nid = node_id_from_public_key(public_key, crypto.hash);
+        if (!nid) return nid.error();
+        node_id = nid.value();
+    } else {
+        size_t copy = std::min(public_key.size(), node_id.value.size());
+        std::memcpy(node_id.value.data(), public_key.data(), copy);
+    }
+
+    IdentityState state = IdentityState::KeypairReady;
+    if (state_str == "Enrolled") state = IdentityState::Enrolled;
+    else if (state_str == "Active") state = IdentityState::Active;
+    else if (state_str == "CertificatePending") state = IdentityState::CertificatePending;
+
+    Identity id(node_id, crypto.suite_id,
+                std::move(public_key), std::move(secret_key), state);
+    return id;
 }
 
 } // namespace smo

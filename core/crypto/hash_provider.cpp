@@ -6,13 +6,7 @@ namespace smo {
 static std::unique_ptr<HashProvider> g_provider;
 
 std::string HashProvider::bytes_to_hex(BytesView data) {
-    static constexpr char kHex[] = "0123456789abcdef";
-    std::string out(data.size() * 2, '\0');
-    for (size_t i = 0; i < data.size(); ++i) {
-        out[i * 2]     = kHex[(data[i] >> 4) & 0x0F];
-        out[i * 2 + 1] = kHex[data[i] & 0x0F];
-    }
-    return out;
+    return smo::bytes_to_hex(data);
 }
 
 Bytes HashProvider::hex_to_bytes(std::string_view hex) {

@@ -9,57 +9,47 @@ SEED_NODE="${SMO_SEED_NODE:-}"
 IS_AUTHORITY="${SMO_IS_AUTHORITY:-false}"
 
 SMO_DATA="/var/lib/smo"
-SMO_ETC="/etc/smo"
-
-mkdir -p "$SMO_DATA" "$SMO_ETC"
+MESH_DIR="/var/lib/smo-mesh"
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
 phase_init() {
     log "=== Phase 1: Node Init ==="
     log "Node: $NODE_NAME, Role: $NODE_ROLE, Mesh: $MESH_NAME"
-    log "SMO runtime identity managed by smo-node daemon"
-}
+    log ""
 
-phase_mesh() {
-    log "=== Phase 2: Mesh Setup ==="
-    if [ "$IS_AUTHORITY" = "true" ]; then
-        log "This node is the mesh Authority"
-        smo mesh --create "$MESH_NAME" || log "Mesh may already exist"
-        smo mesh --use "$MESH_NAME" || true
+    if [ ! -f "$SMO_DATA/identity.json" ]; then
+        smo-node --init --name "$NODE_NAME" --data "$SMO_DATA"
+        log "Identity created for $NODE_NAME"
     else
-        smo mesh --use "$MESH_NAME" 2>/dev/null || log "Mesh not local — will join via seed"
-        if [ -n "$SEED_NODE" ]; then
-            log "Connecting to seed: $SEED_NODE"
-            sleep 2
-            smo connect "$SEED_NODE" || log "Connect will work after daemon starts"
+        log "Identity already exists at $SMO_DATA"
+    fi
+
+    if [ "$IS_AUTHORITY" = "true" ]; then
+        if [ ! -f "$MESH_DIR/mesh.json" ]; then
+            mkdir -p "$MESH_DIR"
+            smo-admin --mesh-dir "$MESH_DIR" create-mesh "$MESH_NAME"
+            log "Mesh '$MESH_NAME' created at $MESH_DIR"
+        else
+            log "Mesh already exists at $MESH_DIR"
         fi
     fi
 }
 
 phase_ready() {
-    log "=== Node READY ==="
-    log "  Name:   $NODE_NAME"
-    log "  Role:   $NODE_ROLE"
-    log "  Mesh:   $MESH_NAME"
-    log "  Port:   $NODE_PORT"
-    log "  Data:   $SMO_DATA"
-    log ""
-    log "Waiting for commands..."
+    log "=== Phase 2: Starting Daemon ==="
+    local daemon_args="--daemon --port $NODE_PORT --data $SMO_DATA --name $NODE_NAME"
+    if [ -n "$SEED_NODE" ]; then
+        daemon_args="$daemon_args --seed $SEED_NODE"
+    fi
+    log "Exec: smo-node $daemon_args"
+    exec smo-node $daemon_args
 }
 
 case "${1:-}" in
     node-a|node-b|node-c)
         phase_init
-        phase_mesh
         phase_ready
-
-        if command -v smo-node &>/dev/null; then
-            exec smo-node --daemon --port "$NODE_PORT" --data "$SMO_DATA"
-        else
-            log "smo-node not found — running in CLI mode"
-            tail -f /dev/null
-        fi
         ;;
     test)
         shift

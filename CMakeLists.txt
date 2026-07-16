@@ -30,6 +30,7 @@ add_subdirectory(third_party/monocypher)
 if(WITH_PQC)
     add_subdirectory(third_party/liboqs)
 endif()
+add_subdirectory(third_party/clipboard)
 
 # ── Custom CMake modules ─────────────────────────────────────────────
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")

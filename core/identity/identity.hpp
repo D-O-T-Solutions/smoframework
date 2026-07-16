@@ -84,12 +84,22 @@ public:
     static Result<Identity> load(BytesView public_key, BytesView secret_key,
                                   CryptoSuiteID suite_id);
 
+    // Load from file (JSON identity.json).
+    static Result<Identity> load_from_file(const std::string& path,
+                                           const CryptoProvider& crypto);
+
     // Accessors
     const NodeID& node_id() const noexcept { return node_id_; }
     CryptoSuiteID suite_id() const noexcept { return suite_id_; }
     IdentityState state() const noexcept { return state_; }
     BytesView public_key() const noexcept { return public_key_; }
     BytesView secret_key() const noexcept { return secret_key_; }
+
+    // Serialize identity to JSON string
+    std::string to_json() const;
+
+    // Save identity to file as JSON
+    Result<void> save_to_file(const std::string& path) const;
 
     // State machine
     Result<void> transition_to(IdentityState new_state) noexcept;
