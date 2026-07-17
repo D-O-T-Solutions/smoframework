@@ -3,3 +3,6 @@ target_link_libraries(smo-node PRIVATE smo_runtime smo_tooling smo_suite1_classi
 smo_set_warnings(smo-node)
 smo_set_optimisation(smo-node)
 smo_link_dependencies(smo-node)
+
+# Suppress unused-function warnings for static command functions
+target_compile_options(smo-node PRIVATE -Wno-unused-function -Wno-error=old-style-cast)

@@ -81,6 +81,7 @@ Usage:
   %s --export [<file> | --copy] [--data <dir>]
   %s --import [<file>] [--data <dir>]
   %s --pubkey [--copy | --fingerprint] [--data <dir>]
+  %s --join <token> --data <dir> [--name <name>] [--port <port>]
   %s --daemon --port <port> --data <data-dir> [--name <name>]
                  [--seed <host:port>]
 
@@ -90,16 +91,17 @@ Options:
   --data <dir>      Data directory (default: /var/lib/smo)
   --export <file>   Export CSR to file
   --export --copy   Copy CSR to clipboard
-  --import [<file>] Import certificate (auto-detect: stdin→clipboard→file)
+  --import [<file>] Import certificate (auto-detect: stdin->clipboard->file)
   --pubkey          Display public key
   --pubkey --copy   Copy public key to clipboard
   --pubkey --fingerprint  Show short fingerprint
+  --join <token>    Join mesh using Join Token (auto-enrollment)
   --daemon          Run as mesh node daemon
   --port <port>     Listen port (default: 7777)
   --seed <host:port>  Bootstrap seed node for discovery
   --help            Show this help
 )",
-        prog, prog, prog, prog, prog);
+        prog, prog, prog, prog, prog, prog);
 }
 
 // ===========================================================================
@@ -553,6 +555,8 @@ int main(int argc, char* argv[]) {
     bool pubkey_copy = false;
     bool pubkey_fingerprint = false;
     bool export_copy = false;
+    bool join_mode = false;
+    std::string join_token;
     int port = 7777;
     std::string data_dir = "/var/lib/smo";
     std::string mesh_dir;
@@ -571,12 +575,8 @@ int main(int argc, char* argv[]) {
         else if (arg == "--name" && i + 1 < argc) node_name = argv[++i];
         else if (arg == "--seed" && i + 1 < argc) seed_addr = argv[++i];
         else if (arg == "--export" && i + 1 < argc) { export_mode = true; export_path = argv[++i]; }
-        else if (arg == "--import") {
-            import_mode = true;
-            if (i + 1 < argc && argv[i + 1][0] != '-') {
-                import_path = argv[++i];
-            }
-        }
+        else if (arg == "--import" && i + 1 < argc) { import_mode = true; import_path = argv[++i]; }
+        else if (arg == "--join" && i + 1 < argc) { join_mode = true; join_token = argv[++i]; }
         else if (arg == "--pubkey") pubkey_mode = true;
         else if (arg == "--copy") { pubkey_copy = true; export_copy = true; }
         else if (arg == "--fingerprint") pubkey_fingerprint = true;
@@ -623,6 +623,20 @@ int main(int argc, char* argv[]) {
         return cmd_import(import_path, data_dir);
     }
 
+    if (join_mode) {
+        if (join_token.empty()) {
+            std::fprintf(stderr, "Error: --join requires a token\n");
+            return 1;
+        }
+        if (data_dir == "/var/lib/smo") {
+            std::fprintf(stderr, "Error: --data <dir> required for --join\n");
+            return 1;
+        }
+        // TODO: Implement auto-enrollment
+        std::fprintf(stderr, "Error: --join not yet implemented\n");
+        return 1;
+    }
+
     // ── Legacy: show info if no flags ──────────────────────────
     if (!daemon_mode) {
         std::printf("SMO Node\n");
@@ -636,7 +650,7 @@ int main(int argc, char* argv[]) {
     }
 
     // ====================================================================
-    // ── Daemon mode ─────────────────────────────────────────────
+    // Daemon mode
     // ====================================================================
     std::printf("[smo-node] Starting daemon...\n");
     std::printf("[smo-node] Data: %s, Port: %d\n", data_dir.c_str(), port);

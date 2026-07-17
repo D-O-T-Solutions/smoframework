@@ -1,5 +1,7 @@
 #include "cli_context.hpp"
 #include "intent_parser.hpp"
+#include "core/enroll/join_token.hpp"
+#include "core/enroll/auto_enroll.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -12,6 +14,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <filesystem>
+#include <cstdlib>
 
 namespace smo {
 
@@ -111,7 +114,7 @@ public:
             context_.add_history(input);
 
             if (input == "exit" || input == "quit") break;
-            if (input == "clear") { system("clear"); continue; }
+            if (input == "clear") { (void)std::system("clear"); continue; }
 
             auto parse_result = parser_->parse(input);
             if (!parse_result) {
@@ -505,7 +508,32 @@ private:
                 std::cout << "\nThe Join Token must be generated first via:\n";
                 std::cout << "  smo-admin --mesh-dir <dir> generate-invite <role>\n";
             } else {
-                std::cout << "Joining mesh with token (not yet implemented)\n";
+                // Auto-enrollment via Join Token
+                std::cout << "Joining mesh with token...\n";
+
+                // Use auto_enroll module
+                smo::enroll::AutoEnrollConfig config;
+                config.data_dir = context_.get_data_dir().empty() ? "~/.smo/node" : context_.get_data_dir();
+                config.node_name = context_.get_node_name().empty() ? "node-" + std::to_string(getpid()) : context_.get_node_name();
+                config.port = context_.get_port().value_or(5454);
+                config.daemon_mode = true;
+
+                // Parse token and run auto-enrollment
+                auto token_result = smo::enroll::parse_token(token);
+                if (!token_result) {
+                    std::cerr << "Error: Invalid token: " << token_result.error().message << "\n";
+                    return 1;
+                }
+
+                // TODO: Implement actual auto-enrollment
+                std::cout << "Auto-enrollment not fully implemented yet.\n";
+                std::cout << "Token parsed successfully: mesh_id=" << token_result.value().mesh_id << "\n";
+                std::cout << "Please use manual enrollment for now:\n";
+                std::cout << "  1. smo-node --init --name <name> --data /tmp/node\n";
+                std::cout << "  2. smo-node --export /tmp/node.csr --data /tmp/node\n";
+                std::cout << "  3. smo-admin --mesh-dir <mesh> sign <csr> -o /tmp/cert.smoc\n";
+                std::cout << "  4. smo-node --import /tmp/cert.smoc --data /tmp/node\n";
+                std::cout << "  5. smo-node --daemon --data /tmp/node --seed <authority>:5454\n";
             }
             return 0;
         }

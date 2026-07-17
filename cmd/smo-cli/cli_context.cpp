@@ -8,6 +8,10 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <vector>
+#include "core/errors/error.hpp"
+#include "core/enroll/join_token.hpp"
+#include "core/enroll/auto_enroll.hpp"
 
 namespace smo {
 
@@ -50,7 +54,6 @@ std::string json_get(const std::string& json, const std::string& key) {
 }
 
 void json_set(std::string& json, const std::string& key, const std::string& value) {
-    // Simple append mode for building JSON from scratch
     (void)json;
     (void)key;
     (void)value;
@@ -80,6 +83,9 @@ struct CLIContextManager::Impl {
     std::string last_command_;
     std::vector<std::string> context_stack_;
     std::unordered_map<std::string, ExecutionContext> saved_execution_contexts_;
+    std::string data_dir_;
+    std::string node_name_;
+    int port_ = 5454;
 
     Impl() {
         // Default execution context
@@ -347,6 +353,13 @@ struct CLIContextManager::Impl {
     const std::vector<std::string>& get_history() const {
         return history_;
     }
+
+    void set_port(int port) { port_ = port; }
+    std::optional<int> get_port() const { return port_ > 0 ? std::optional<int>(port_) : std::nullopt; }
+    void set_data_dir(const std::string& dir) { data_dir_ = dir; }
+    std::string get_data_dir() const { return data_dir_; }
+    void set_node_name(const std::string& name) { node_name_ = name; }
+    std::string get_node_name() const { return node_name_; }
 };
 
 CLIContextManager::CLIContextManager() : impl_(std::make_unique<Impl>()) {}
@@ -468,6 +481,13 @@ void CLIContextManager::add_history(const std::string& command) {
 const std::vector<std::string>& CLIContextManager::get_history() const {
     return impl_->get_history();
 }
+
+void CLIContextManager::set_port(int port) { impl_->set_port(port); }
+std::optional<int> CLIContextManager::get_port() const { return impl_->get_port(); }
+void CLIContextManager::set_data_dir(const std::string& dir) { impl_->set_data_dir(dir); }
+std::string CLIContextManager::get_data_dir() const { return impl_->get_data_dir(); }
+void CLIContextManager::set_node_name(const std::string& name) { impl_->set_node_name(name); }
+std::string CLIContextManager::get_node_name() const { return impl_->get_node_name(); }
 
 Result<void> CLIContextManager::save_execution_context(const std::string& name) {
     // Not implemented yet

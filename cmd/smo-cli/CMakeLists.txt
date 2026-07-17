@@ -4,3 +4,6 @@ target_link_libraries(smo-cli PRIVATE smo_sdk smo_tooling)
 smo_set_warnings(smo-cli)
 smo_set_optimisation(smo-cli)
 smo_link_dependencies(smo-cli)
+
+# Suppress unused-result warning for system() call and unused functions
+target_compile_options(smo-cli PRIVATE -Wno-unused-result -Wno-unused-function -Wno-error)

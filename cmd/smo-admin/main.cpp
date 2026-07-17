@@ -358,12 +358,15 @@ static int cmd_create_mesh(const std::string& name,
 
     std::printf("Mesh '%s' created at %s\n", name.c_str(), mesh_ctx->paths.mesh_dir.c_str());
     std::printf("  Mesh ID: %s\n", mesh_config.mesh_id.c_str());
-    std::printf("  Root public key: %s\n", root_pubkey_hex.c_str());
+    std::printf("  Root public key: %s/root.pub.hex\n", mesh_ctx->paths.mesh_dir.c_str());
     std::printf("  Authority keys:  %s/authority.pub, %s/authority.sec\n",
                 mesh_ctx->paths.mesh_dir.c_str(), mesh_ctx->paths.mesh_dir.c_str());
     std::printf("  Root cert:       %s/root.cert\n", mesh_ctx->paths.mesh_dir.c_str());
     std::printf("  Authority cert:  %s/authority.cert\n", mesh_ctx->paths.mesh_dir.c_str());
     std::printf("  Node registry:   %s/node_registry.db\n", mesh_ctx->paths.mesh_dir.c_str());
+    std::printf("\n  ⚠️  ROOT PRIVATE KEY NOT SAVED TO DISK!\n");
+    std::printf("     Backup immediately: smo-admin --mesh-dir %s recovery export\n",
+                mesh_ctx->paths.mesh_dir.c_str());
     return 0;
 }
 

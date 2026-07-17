@@ -62,6 +62,9 @@ struct CLIContext {
     std::unordered_map<std::string, SelectionContext> saved_selections;
     std::unordered_map<std::string, ExecutionContext> saved_execution_contexts;
     std::vector<std::string> context_stack;  // For push/pop
+    std::string data_dir;    // Data directory
+    std::string node_name;   // Node name
+    int port = 5454;         // Listen port
 };
 
 class CLIContextManager {
@@ -114,6 +117,18 @@ public:
     // History
     void add_history(const std::string& command);
     const std::vector<std::string>& get_history() const;
+
+    // Port
+    void set_port(int port);
+    std::optional<int> get_port() const;
+
+    // Data dir
+    void set_data_dir(const std::string& dir);
+    std::string get_data_dir() const;
+    
+    // Node name
+    void set_node_name(const std::string& name);
+    std::string get_node_name() const;
 
     // Saved contexts
     Result<void> save_execution_context(const std::string& name);
