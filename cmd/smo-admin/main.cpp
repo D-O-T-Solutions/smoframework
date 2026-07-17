@@ -530,6 +530,23 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
         config.mesh_id = std::filesystem::path(mesh_dir).filename().string();
     }
 
+    // Extract port from listen_addr if --port not explicitly provided
+    // listen_addr format: "host:port" or just "host" (default port 7777)
+    if (port == 7777) { // default not overridden by --port
+        size_t colon_pos = listen_addr.rfind(':');
+        if (colon_pos != std::string::npos && colon_pos + 1 < listen_addr.size()) {
+            std::string port_str = listen_addr.substr(colon_pos + 1);
+            try {
+                port = static_cast<uint16_t>(std::stoi(port_str));
+                // Update listen_addr to use the extracted port (in case it was different)
+                std::string host = listen_addr.substr(0, colon_pos);
+                listen_addr = host + ":" + std::to_string(port);
+            } catch (...) {
+                // Keep default port if parse fails
+            }
+        }
+    }
+
     std::printf("Mesh: %s\n\n", config.display_name.empty() ? config.mesh_id.c_str() : config.display_name.c_str());
 
     // Step 1: Show listen address

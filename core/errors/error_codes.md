@@ -91,11 +91,10 @@ Every module returns `Result<T, Error>`. Every `Error` carries:
 | 211 | ENROLL_FAILED | E | S | E | Enrollment request was rejected by Authority |
 | 212 | ENROLL_TOKEN_INVALID | W | N | E | Join Token is invalid, expired, or already consumed |
 | 213 | ENROLL_TOKEN_EXPIRED | W | N | S | Join Token has expired; request a new one |
-| 214 | MANIFEST_BAD_SIGNATURE | C | N | M | Mesh Manifest has invalid Authority co-signatures |
-| 215 | MANIFEST_THRESHOLD_NOT_MET | E | N | G | Manifest does not have enough Authority signatures |
-| 216 | MANIFEST_VERSION_MISMATCH | W | N | E | Mesh Manifest protocol version does not match node version |
-| 217 | CHAIN_INCOMPLETE | E | N | M | Certificate chain is missing intermediate certificates |
-| 218 | ROOT_KEY_FINGERPRINT_MISMATCH | A | N | M | Root Public Key fingerprint does not match expected value |
+| 214 | BOOTSTRAP_UNREACHABLE | E | S | S | All bootstrap endpoints unreachable |
+| 215 | CSR_REJECTED | E | N | E | CSR rejected by Authority (policy violation) |
+| 216 | CERT_VERIFICATION_FAILED | E | S | S | Certificate chain verification failed |
+| 217 | MESH_NOT_FOUND | E | N | E | MeshID mismatch or mesh not found |
 | 220 | DISPLAY_NAME_ALREADY_EXISTS | W | S | N | Display name is already taken by another node (UNIQUE constraint violation) |
 | 221 | INVALID_DISPLAY_NAME | W | N | N | Display name fails format validation (empty, bad chars, etc.) |
 | 222 | DISPLAY_NAME_TOO_LONG | W | N | N | Display name exceeds 128-character limit |

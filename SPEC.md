@@ -1405,6 +1405,43 @@ Peers:      0 (first node in mesh)
 
 ---
 
+### 7.8 Zero-Touch Enrollment (`smo mesh join` / `smo-node --join`)
+
+**Problem:** Manual enrollment (init → export → copy → sign → copy → import → daemon) is error-prone, slow, and requires operator to handle CSR/certificate artifacts.
+
+**Decision:** Single-command zero-touch enrollment via Join Token.
+
+**Flow:**
+```
+smo mesh join SMO-JOIN-...
+    │
+    ├─ Decode token, validate HMAC & expiry
+    ├─ Initialize local identity (or reuse existing)
+    ├─ Generate CSR, sign with node key
+    ├─ POST /enroll to bootstrap_endpoints[] with CSR + token
+    │   └─ Authority validates token, verifies CSR, signs cert
+    ├─ Receive .smoc, verify chain, import
+    ├─ Start daemon with bootstrap_endpoints[] as seeds
+    └─ Print post-import summary
+```
+
+**Authority `/enroll` endpoint:**
+- `POST /enroll` with CBOR `{token, csr}`
+- Validates token HMAC, expiry, mesh_id, epoch
+- Verifies CSR signature, checks policy
+- Issues certificate signed by Authority key
+- Returns `{cert, chain}` CBOR
+
+**Error codes:** 212 (INVALID), 213 (EXPIRED), 214 (UNREACHABLE), 215 (REJECTED), 216 (VERIFY_FAILED), 217 (MESH_NOT_FOUND)
+
+**Invariants:**
+- Private key never leaves node
+- Cert chain verified to Root before import
+- Token single-use (Authority marks consumed)
+- Token TTL ≤ 24h (default 1h)
+
+---
+
 ### 7.8 Root Key vs Authority Key
 
 **Problem:** Old SMF had no distinction between the mesh creator's key and operational keys. One key controlled everything — theft meant total compromise.
