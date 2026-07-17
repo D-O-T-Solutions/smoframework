@@ -3,6 +3,9 @@
 #include "core/enroll/join_token.hpp"
 #include "core/enroll/auto_enroll.hpp"
 
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -511,29 +514,19 @@ private:
                 // Auto-enrollment via Join Token
                 std::cout << "Joining mesh with token...\n";
 
-                // Use auto_enroll module
-                smo::enroll::AutoEnrollConfig config;
-                config.data_dir = context_.get_data_dir().empty() ? "~/.smo/node" : context_.get_data_dir();
-                config.node_name = context_.get_node_name().empty() ? "node-" + std::to_string(getpid()) : context_.get_node_name();
-                config.port = context_.get_port().value_or(5454);
-                config.daemon_mode = true;
+                std::string data_dir = context_.get_data_dir().empty()
+                    ? "/tmp/smo-join-" + std::to_string(getpid())
+                    : context_.get_data_dir();
+                std::string node_name = context_.get_node_name().empty()
+                    ? "node-" + std::to_string(getpid())
+                    : context_.get_node_name();
+                uint16_t port = static_cast<uint16_t>(context_.get_port().value_or(5454));
 
-                // Parse token and run auto-enrollment
-                auto token_result = smo::enroll::parse_token(token);
-                if (!token_result) {
-                    std::cerr << "Error: Invalid token: " << token_result.error().message << "\n";
+                auto result = smo::enroll::run_join_command(token, data_dir, node_name, port, "");
+                if (!result) {
+                    std::cerr << "Error: " << result.error().message << "\n";
                     return 1;
                 }
-
-                // TODO: Implement actual auto-enrollment
-                std::cout << "Auto-enrollment not fully implemented yet.\n";
-                std::cout << "Token parsed successfully: mesh_id=" << token_result.value().mesh_id << "\n";
-                std::cout << "Please use manual enrollment for now:\n";
-                std::cout << "  1. smo-node --init --name <name> --data /tmp/node\n";
-                std::cout << "  2. smo-node --export /tmp/node.csr --data /tmp/node\n";
-                std::cout << "  3. smo-admin --mesh-dir <mesh> sign <csr> -o /tmp/cert.smoc\n";
-                std::cout << "  4. smo-node --import /tmp/cert.smoc --data /tmp/node\n";
-                std::cout << "  5. smo-node --daemon --data /tmp/node --seed <authority>:5454\n";
             }
             return 0;
         }
@@ -637,6 +630,8 @@ Result<void> CLIApplication::initialize(const std::string& data_dir) {
 } // namespace smo
 
 int main(int argc, char* argv[]) {
+    smo::providers::register_suite1_classical();
+    smo::providers::register_suite3_purepqc();
     smo::CLIApplication app;
     auto init_result = app.initialize("~/.smo");
     if (!init_result) {

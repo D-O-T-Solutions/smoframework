@@ -1,5 +1,6 @@
 #include <core/authority/authority.hpp>
 #include <core/authority/registry.hpp>
+#include <core/authority/enroll_server.hpp>
 #include <core/certificate/certificate.hpp>
 #include <core/crypto/impl.hpp>
 #include <core/crypto/registry.hpp>
@@ -20,10 +21,12 @@
 #include <tooling/clipboard.hpp>
 
 #include <chrono>
+#include <csignal>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <thread>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -42,6 +45,7 @@ Usage:
   %s --mesh-dir <dir> create-mesh <name>
   %s --mesh-dir <dir> mesh publish [--listen <addr>] [--advertise <addr>...] [--dns <name>]
   %s --mesh-dir <dir> generate-invite <role> [--expire <dur>] [--endpoint <ep>]
+  %s --mesh-dir <dir> serve [--port <port>]
   %s --help
 
 Commands:
@@ -49,8 +53,9 @@ Commands:
   create-mesh     Initialize a new mesh (generate root + authority keys)
   mesh publish    Configure network endpoints (bootstrap) for the mesh
   generate-invite Generate a Join Token for automated enrollment
+  serve           Start enroll HTTP server for zero-touch enrollment
 )",
-        prog, prog, prog, prog, prog);
+        prog, prog, prog, prog, prog, prog);
 }
 
 // ---------------------------------------------------------------------------
@@ -751,6 +756,83 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
 }
 
 // ---------------------------------------------------------------------------
+// Serve command — start enroll HTTP server
+// ---------------------------------------------------------------------------
+static int cmd_serve(const std::vector<std::string>& args, const std::string& mesh_dir) {
+    if (mesh_dir.empty()) {
+        std::fprintf(stderr, "Error: --mesh-dir is required for serve command\n");
+        return 1;
+    }
+
+    uint16_t port = 5454;
+    for (size_t i = 1; i < args.size(); ++i) {
+        if (args[i] == "--port" && i + 1 < args.size()) {
+            port = static_cast<uint16_t>(std::stoi(args[++i]));
+        }
+    }
+
+    // Load mesh config
+    auto config_result = smo::MeshManager::load_mesh_config(mesh_dir);
+    if (!config_result) {
+        std::fprintf(stderr, "Error: failed to load mesh config: %s\n",
+                     config_result.error().message.c_str());
+        return 1;
+    }
+
+    auto& mesh_config = config_result.value();
+
+    // Get crypto for the mesh's cipher suite
+    const smo::CryptoProvider* crypto = nullptr;
+    smo::RngRef rng{};
+    if (!get_crypto(mesh_config.cipher_suite_id, crypto, rng)) {
+        return 1;
+    }
+
+    // Setup authority
+    smo::authority::MeshAuthority authority;
+    if (auto r = authority.init(*crypto, rng); !r) {
+        std::fprintf(stderr, "Error: authority init failed: %s\n",
+                     r.error().message.c_str());
+        return 1;
+    }
+
+    smo::authority::MeshAuthority::Config cfg;
+    cfg.mesh_id = mesh_config.mesh_id;
+    cfg.data_dir = mesh_dir;
+    cfg.registry_path = mesh_dir + "/node_registry.db";
+
+    if (auto r = authority.open(cfg); !r) {
+        std::fprintf(stderr, "Error: authority open failed: %s\n",
+                     r.error().message.c_str());
+        return 1;
+    }
+
+    // Start enroll server
+    smo::authority::EnrollServer server;
+    auto start_result = server.start(port, authority, mesh_config.hmac_secret, crypto->hash);
+    if (!start_result) {
+        std::fprintf(stderr, "Error: failed to start enroll server on port %u: %s\n",
+                     port, start_result.error().message.c_str());
+        return 1;
+    }
+
+    std::printf("Enroll server listening on port %u\n", port);
+    std::printf("Mesh: %s (%s)\n", mesh_config.display_name.c_str(), mesh_config.mesh_id.c_str());
+    std::printf("Press Ctrl+C to stop.\n");
+
+    // Wait for shutdown signal
+    std::signal(SIGINT, [](int) { std::exit(0); });
+    std::signal(SIGTERM, [](int) { std::exit(0); });
+
+    // Block main thread
+    while (server.is_running()) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
@@ -816,6 +898,10 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         return cmd_generate_invite(args, mesh_dir);
+    }
+
+    if (cmd == "serve") {
+        return cmd_serve(args, mesh_dir);
     }
 
     if (cmd == "mesh") {

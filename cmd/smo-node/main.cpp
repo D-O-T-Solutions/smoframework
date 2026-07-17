@@ -25,6 +25,7 @@
 #include <core/network/transport/address_resolver.hpp>
 #include <core/discovery/peer_store.hpp>
 #include <core/certificate/certificate.hpp>
+#include <core/enroll/auto_enroll.hpp>
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
@@ -632,9 +633,16 @@ int main(int argc, char* argv[]) {
             std::fprintf(stderr, "Error: --data <dir> required for --join\n");
             return 1;
         }
-        // TODO: Implement auto-enrollment
-        std::fprintf(stderr, "Error: --join not yet implemented\n");
-        return 1;
+        ensure_crypto();
+        auto result = smo::enroll::run_join_command(join_token, data_dir,
+                                                      node_name,
+                                                      static_cast<uint16_t>(port),
+                                                      "");
+        if (!result) {
+            std::fprintf(stderr, "Error: %s\n", result.error().message.c_str());
+            return 1;
+        }
+        return 0;
     }
 
     // ── Legacy: show info if no flags ──────────────────────────
