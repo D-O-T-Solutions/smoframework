@@ -128,7 +128,8 @@ sleep 1
 
 if kill -0 $DAEMON_PID 2>/dev/null; then
     pass "Daemon started on port $SMO_DAEMON_PORT"
-    do_verify "Daemon listening"   "netstat -tlnp 2>/dev/null | grep $SMO_DAEMON_PORT || ss -tlnp 2>/dev/null | grep $SMO_DAEMON_PORT || echo LISTEN" "LISTEN"
+    sleep 2
+    do_verify "Daemon listening"   "nc -z 127.0.0.1 $SMO_DAEMON_PORT 2>&1 && echo LISTEN || echo FAIL" "LISTEN"
     kill $DAEMON_PID 2>/dev/null || true
     wait $DAEMON_PID 2>/dev/null || true
     pass "Daemon stopped cleanly"
@@ -153,5 +154,4 @@ if [ "$FAIL" -eq 0 ]; then
 else
     echo -e "${RED}$FAIL TEST(S) FAILED${NC}"
     exit 1
-fi
 fi
