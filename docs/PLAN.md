@@ -542,3 +542,13 @@ Bootstrap:  YES
 | `cmd/smo-node/main.cpp` | Read listen_address, startup summary |
 | `core/errors/error_codes.md` | Codes 214-216 |
 | `RFC/0032-bootstrap-publish.md` | New RFC for bootstrap design |
+
+---
+
+## Sprint 5 — Distributed Operating Platform
+
+Sprint 5 plan đã chuyển sang `docs/SPRINT-5.md`.
+
+Gồm 8 phases: 5.0 (Architecture Freeze) → 5A (Runtime Foundation) → 5B (Mesh Lifecycle) → 5C (Policy + Scheduler + Contracts) → 5D (Unified CLI + Offline Enrollment) → 5E (Vault) → 5F (Internal API) → 5G (Observability).
+
+See: [SPRINT-5.md](SPRINT-5.md)
