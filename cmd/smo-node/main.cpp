@@ -629,10 +629,6 @@ int main(int argc, char* argv[]) {
             std::fprintf(stderr, "Error: --join requires a token\n");
             return 1;
         }
-        if (data_dir == "/var/lib/smo") {
-            std::fprintf(stderr, "Error: --data <dir> required for --join\n");
-            return 1;
-        }
         ensure_crypto();
         auto result = smo::enroll::run_join_command(join_token, data_dir,
                                                       node_name,
