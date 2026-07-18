@@ -8,54 +8,65 @@
 ## I. TỔNG QUAN KIẾN TRÚC
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                         smo-node Daemon                           │
-│                                                                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────────┐ │
-│  │ Identity  │  │  Crypto   │  │ Transport│  │   Discovery     │ │
-│  │  System   │  │  Suites   │  │  TCP/UDP │  │   + Gossip      │ │
-│  └──────────┘  └──────────┘  └──────────┘  └─────────────────┘ │
-│                                                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │               Node Lifecycle FSM                          │   │
-│  │  New → CSR → Certified → Bootstrapping → Joining → Active│   │
-│  │  → Suspended → Recovering → Revoked → Removed            │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                              ↓                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │                 Packet Pipeline                           │   │
-│  │                                                          │   │
-│  │  TCP → Frame → Packet → PacketDispatcher                │   │
-│  │                              ↓                          │   │
-│  │                    SessionManager                        │   │
-│  │                    (verify session, timeout, renewal)    │   │
-│  │                    (CRL check at session creation)       │   │
-│  │                              ↓                          │   │
-│  │                    PolicyEngine                          │   │
-│  │                    (rule evaluate: allow/deny/audit/     │   │
-│  │                     sandbox/ratelimit/readonly)          │   │
-│  │                              ↓                          │   │
-│  │                    RuntimeBridge (THIN)                  │   │
-│  │                    (Packet → RuntimeRequest)            │   │
-│  │                              ↓                          │   │
-│  │                    RuntimeKernel                         │   │
-│  │                    (execute → dispatcher → contract)    │   │
-│  │                              ↓                          │   │
-│  │                    ActionExecutor                        │   │
-│  │                              ↓                          │   │
-│  │                    Packet → TCP                         │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                                                                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────┐  │
-│  │ Governance│  │  Trust   │  │   CRL    │  │  Policy Engine │  │
-│  │  Engine   │  │ Manager  │  │ (Revoke) │  │  (rules DB)    │  │
-│  └──────────┘  └──────────┘  └──────────┘  └────────────────┘  │
-│                                                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │               6 Native Contracts                          │   │
-│  │  Bootstrap → Join → Recovery → Governance → File → Process│   │
-│  └──────────────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          smo-node Daemon                                │
+│                                                                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────────────┐ │
+│  │ Identity  │  │  Crypto   │  │ Transport│  │   Discovery + Gossip  │ │
+│  │  System   │  │  Suites   │  │  TCP/UDP │  │   + Heartbeat         │ │
+│  └──────────┘  └──────────┘  └──────────┘  └────────────────────────┘ │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                  EVENT BUS (pub/sub)                             │   │
+│  │  Recovery ─▶ CRL ─▶ Session ─▶ Discovery ─▶ Audit ─▶ Trust      │   │
+│  │  (Tất cả module giao tiếp qua event, không gọi trực tiếp)        │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                              │                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                    PACKET PIPELINE                               │   │
+│  │  TCP → Frame → Packet → PacketDispatcher                        │   │
+│  │                              ↓                                  │   │
+│  │                    NodeLifecycleFSM                              │   │
+│  │                    (node state: ACTIVE? → tiếp, else DENY)      │   │
+│  │                              ↓                                  │   │
+│  │                    SessionManager                                │   │
+│  │                    (lookup, verify, timeout, renewal)            │   │
+│  │                    (CRL check ONLY at session::open)             │   │
+│  │                              ↓                                  │   │
+│  │                    Middleware Pipeline (pluggable)               │   │
+│  │                    ├─ PolicyMiddleware (allow/deny/audit/...)    │   │
+│  │                    ├─ AuditMiddleware (log all decisions)        │   │
+│  │                    ├─ QuotaMiddleware (rate limit per node)      │   │
+│  │                    ├─ SandboxMiddleware (restrict ops)           │   │
+│  │                    └─ TracingMiddleware (distributed tracing)    │   │
+│  │                              ↓                                  │   │
+│  │                    RuntimeBridge (THIN — chỉ convert)            │   │
+│  │                    (Packet.opcode → contract_id + method)       │   │
+│  │                    (Packet.payload → RuntimeRequest.params)     │   │
+│  │                              ↓                                  │   │
+│  │                    RuntimeKernel (đơn giản)                      │   │
+│  │                    (validate → find contract → execute → return) │   │
+│  │                              ↓                                  │   │
+│  │                    ActionExecutor                                │   │
+│  │                              ↓                                  │   │
+│  │                    Packet → TCP                                  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  SERVICE REGISTRY (RuntimeServices / DI container)               │   │
+│  │  Trust | Mesh | Storage | Authority | Crypto | Discovery | ...  │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────────────┐  │
+│  │ Governance│  │  Trust   │  │   CRL    │  │   Policy Store       │  │
+│  │  Engine   │  │ Manager  │  │ (Revoke) │  │   (SQLite + hot reload)│  │
+│  └──────────┘  └──────────┘  └──────────┘  └───────────────────────┘  │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │               6 Native Contracts                                 │   │
+│  │  Bootstrap → Join → Recovery → Governance → File → Process      │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -152,7 +163,7 @@
 
 ## III. PACKET PIPELINE — LUỒNG XỬ LÝ CHI TIẾT
 
-### Target Architecture (đúng)
+### Target Architecture (đã chốt)
 
 ```
 TCP
@@ -166,35 +177,42 @@ PacketDispatcher
  ├─ find handler
  └─ dispatch
     ↓
-Node Lifecycle FSM
- ├─ New → CSR Pending → Certified → Bootstrapping → Joining → Syncing → Active
- ├─ Active → Suspended → Recovering → Revoked → Removed
- └─ Nếu node không ở Active → DENY (trừ bootstrap/join)
+NodeLifecycleFSM
+ ├─ Node state = ACTIVE? → tiếp
+ ├─ Node state = BOOTSTRAPPING/JOINING? → chỉ cho bootstrap/join opcodes
+ └─ Node state = other → DENY
     ↓
 SessionManager
  ├─ lookup(session_id)
  ├─ verify session state (Active/Closed/Expired)
  ├─ handle timeout & renewal
- ├─ CRL check at session CREATION (cert not revoked → allow session)
- └─ Nếu session invalid → DENY
+ ├─ CRL check ONLY at Session::open()
+ └─ Session invalid → DENY
     ↓
-PolicyEngine
- ├─ load rules (from governance/policy contract)
- ├─ evaluate(session, contract, action, context)
- │   ├─ allow? → tiếp
- │   ├─ deny?  → DENY + audit log
- │   ├─ audit? → log + tiếp
- │   ├─ sandbox? → restrict capabilities
- │   ├─ ratelimit? → check quota
- │   └─ readonly? → deny writes
- └─ Nếu deny → trả về lỗi
+Middleware Pipeline (pluggable, mỗi middleware 1 việc)
+ ├─ [0] PolicyMiddleware
+ │    ├─ evaluate(session, request, node, system) → rules
+ │    ├─ allow? → next middleware
+ │    ├─ deny? → DENY + audit event
+ │    ├─ audit? → log + next
+ │    ├─ sandbox? → restrict params + next
+ │    └─ ratelimit? → check quota + next
+ ├─ [1] AuditMiddleware
+ │    └─ log(decision, context) → event bus
+ ├─ [2] QuotaMiddleware
+ │    └─ check(rate_limit, burst) → DENY nếu vượt quota
+ ├─ [3] SandboxMiddleware
+ │    └─ sanitize(params) theo policy sandbox rules
+ └─ [4] TracingMiddleware
+      └─ inject(trace_id, span_id) → RuntimeRequest
     ↓
 RuntimeBridge (THIN — chỉ convert)
  ├─ Packet.opcode → contract_id + method
  ├─ Packet.payload → RuntimeRequest.params
- └─ RuntimeRequest { contract_id, method, params, session_ctx }
+ ├─ thêm trace context từ middleware
+ └─ RuntimeRequest { contract_id, method, params }
     ↓
-RuntimeKernel::execute()
+RuntimeKernel (đơn giản)
  ├─ validate(contract exists)
  ├─ validate(input)
  ├─ contract->execute(input, ctx)
@@ -202,6 +220,95 @@ RuntimeKernel::execute()
     ↓
 ActionExecutor
  └─ NextAction → ActionDispatchMessage → TCP response
+```
+
+### Event Bus (thay thế gọi trực tiếp)
+
+Hiện tại các module gọi nhau trực tiếp:
+
+```
+Recovery → CRL → Session → Discovery
+```
+
+**Sai:** mỗi module biết quá nhiều module khác.
+
+**Đúng:** tất cả qua Event Bus (pub/sub):
+
+```
+Recovery emit(RecoveryApproved)
+    ↓
+Event Bus
+    ├──▶ CRL listens → revoke(cert)
+    ├──▶ Session listens → invalidate(node_id)
+    ├──▶ Discovery listens → gossip CRL update
+    ├──▶ Audit listens → log(revocation)
+    └──▶ Trust listens → mark(score -= 0.5)
+```
+
+Mỗi module chỉ biết Event Bus, không biết module khác.
+
+### Service Registry (thay thế constructor explosion)
+
+Hiện tại RuntimeContext phải truyền 20+ services qua constructor:
+
+```cpp
+RuntimeKernel(event_bus, output_mgr, dispatcher, plan_resolver,
+              trust_mgr, mesh_mgr, authority, governance, crl, ...);
+```
+
+**Sai:** mỗi lần thêm service là sửa tất cả constructors.
+
+**Đúng:** Service Registry / DI container nhẹ:
+
+```cpp
+auto& svc = RuntimeServices::instance();
+svc.register_service<TrustManager>("trust");
+svc.register_service<MeshManager>("mesh");
+// ...
+
+// Bất kỳ đâu cần:
+auto* trust = svc.get<TrustManager>("trust");
+double score = trust->get_score(node_id);
+```
+
+Lý do không dùng DI framework: project C++ không có DI chuẩn, tự làm nhẹ (singleton map + type erasure) đủ dùng.
+
+### Sprint 37 interim (cần loại bỏ)
+
+```
+⚠️ AuthorizationManager đang là GOD OBJECT:
+    1. Session lookup        → sẽ thuộc SessionManager
+    2. CRL check             → sẽ thuộc SessionManager::open()
+    3. Trust check           → sẽ là Policy rule
+    4. Capability check      → sẽ là Policy rule
+    5. Policy decision       → sẽ là PolicyMiddleware
+```
+
+**AuthorizationManager sẽ bị xoá hoàn toàn.** Thay bằng:
+- `SessionManager` (đã có, cần refactor)
+- `MiddlewarePipeline` (mới)
+- `PolicyMiddleware` (đã có `core/acl/policy_engine`, cần wire)
+- `EventBus` (đã có `runtime/event_bus.hpp`, cần wire vào mọi module)
+- `RuntimeServices` (mới, nhẹ)
+
+```
+Sau refactor:
+PacketDispatcher
+ ↓
+NodeLifecycleFSM::get_state(node_id)
+ ↓
+SessionManager::lookup(session_id)
+ ↓
+MiddlewarePipeline::process(context)
+ ├─ PolicyMiddleware
+ ├─ AuditMiddleware
+ ├─ QuotaMiddleware
+ ├─ SandboxMiddleware
+ └─ TracingMiddleware
+ ↓
+RuntimeBridge::convert(Packet → RuntimeRequest)
+ ↓
+RuntimeKernel::execute(RuntimeRequest)
 ```
 
 ### AuthorizationManager hiện tại (Sprint 37 interim — cần refactor)
@@ -763,47 +870,91 @@ cmd/smo            ── ❌ NOT BUILDING — orphan
 
 ## XIII. NEXT STEPS — SPRINT 37+
 
-### Priority 0: Fix bootstrap framing (E2E blocking)
-- [ ] Align `Bootstrap::find_seed()` wire format with `PacketDispatcher::dispatch_session()` framing
-- [ ] After fix: E2E test 2-node mesh thực tế
-- [ ] After fix: gửi ECHO opcode (0x06) qua TCP → verify RuntimeBridge → PolicyEngine → RuntimeKernel → Contract → ActionExecutor
+```
+P0 ── Fix bootstrap framing → E2E hoạt động
+P1 ── Refactor kiến trúc: xoá AuthorizationManager, tách SessionManager + PolicyMiddleware + thin Bridge
+P2 ── Wire NodeLifecycleFSM vào pipeline
+P3 ── Hoàn thiện PolicyEngine (DSL, cache, SQLite, hot reload)
+P4 ── Hoàn thiện Recovery → Governance → CRL flow
+P5 ── Chuyển hoàn toàn sang Middleware Pipeline (xoá execute_direct)
+P6 ── Event Bus + Service Registry + Telemetry
+```
 
-### Priority 1: Refactor AuthorizationManager → SessionManager + PolicyEngine + thin Bridge
-- [ ] **Tách CRL check ra khỏi AuthorizationManager**: move vào SessionManager::open() — CRL check lúc tạo session, không phải lúc runtime
-- [ ] **Tách Trust check ra khỏi AuthorizationManager**: Trust là attribute của Node, Policy mới evaluate
-- [ ] **Tách Capability check ra khỏi AuthorizationManager**: move vào Policy rules
-- [ ] **Làm RuntimeBridge mỏng**: chỉ convert Packet → RuntimeRequest, không biết Session/CRL/Trust/Capability
-- [ ] **Xóa AuthorizationManager** — thay bằng PolicyEngine
-- [ ] Wire `core/acl/policy_engine` — thêm CMakeLists.txt, compile, fix `SMO_ERR_ACL` macro
+### P0 — Fix bootstrap framing (E2E blocking)
+- [ ] Align `Bootstrap::find_seed()` wire format với `PacketDispatcher::dispatch_session()` framing
+- [ ] E2E test: 2-node mesh → gửi ECHO opcode (0x06) → verify full pipeline
 
-### Priority 2: Policy Engine implementation
-- [ ] Policy rule DSL (JSON hoặc custom format)
-- [ ] Policy Store (SQLite-backed, governance-updatable)
-- [ ] Rule cache with hot reload
-- [ ] Evaluate context: { session, request, node, system }
+### P1 — Refactor AuthorizationManager (xoá God Object)
+
+**Mục tiêu:** biến pipeline từ:
+
+```
+Packet → RuntimeBridge → AuthorizationManager → Kernel
+                         (session+crl+trust+cap+policy)
+```
+
+thành:
+
+```
+Packet → SessionManager → MiddlewarePipeline → thin Bridge → Kernel
+```
+
+**Các bước:**
+- [ ] **Tách CRL**: move từ AuthorizationManager vào `SessionManager::open()` — CRL check ONLY khi tạo session, runtime không bao giờ check CRL
+- [ ] **Tách Trust**: TrustManager chỉ trả lời `get_score(node_id)` → số. Không quyết định. Policy mới dùng.
+- [ ] **Tách Capability**: Capability là data attribute của Session. Policy mới evaluate.
+- [ ] **Tạo MiddlewarePipeline** (`core/runtime/middleware_pipeline.hpp`):
+      ```cpp
+      pipeline.push<PolicyMiddleware>();
+      pipeline.push<AuditMiddleware>();
+      pipeline.push(ctx); // bool → tiếp / DENY
+      ```
+- [ ] **Wire PolicyMiddleware**: fix `core/acl/policy_engine` (CMakeLists.txt, SMO_ERR_ACL macro), tích hợp vào pipeline
+- [ ] **Làm RuntimeBridge mỏng**: chỉ `Packet.opcode → contract_id + method`, `Packet.payload → params`. Xoá toàn bộ session/trust/crl/cap logic.
+- [ ] **Xoá AuthorizationManager**: thay bằng `MiddlewarePipeline + PolicyMiddleware`
+
+### P2 — Wire NodeLifecycleFSM
+
+- [ ] Implement FSM (NEW → IDENTITY_READY → CSR_PENDING → CERTIFIED → BOOTSTRAPPING → JOINING → SYNCHRONIZING → ACTIVE → SUSPENDED → RECOVERING → REVOKED → REMOVED)
+- [ ] Wire `PacketDispatcher::dispatch()`: kiểm tra node state trước khi process
+- [ ] ACTIVE → cho phép tất cả opcodes
+- [ ] BOOTSTRAPPING/JOINING → chỉ cho phép bootstrap/join opcodes
+- [ ] Other → DENY
+
+### P3 — Hoàn thiện PolicyEngine
+
+- [ ] Policy rule DSL (JSON hoặc format nhẹ)
+- [ ] Policy Store (SQLite-backed, cập nhật qua governance)
+- [ ] Rule cache + hot reload
+- [ ] Evaluate context: `{ session, request, node, system }`
 - [ ] Policy plugins: allow, deny, audit, sandbox, ratelimit, readonly
 
-### Priority 3: Node Lifecycle FSM
-- [ ] FSM implementation (NEW → IDENTITY_READY → CSR_PENDING → CERTIFIED → BOOTSTRAPPING → JOINING → SYNCHRONIZING → ACTIVE → SUSPENDED → RECOVERING → REVOKED → REMOVED)
-- [ ] Wire vào PacketDispatcher: chỉ ACTIVE mới xử lý opcodes
-- [ ] Bootstrap/Join opcodes bypass cho BOOTSTRAPPING/JOINING state
+### P4 — Recovery → Governance → CRL
 
-### Priority 4: Recovery → Governance → CRL flow
-- [ ] RecoveryContract emit RecoveryProposal (không revoke trực tiếp)
+- [ ] RecoveryContract emit `RecoveryProposal` (không revoke trực tiếp)
 - [ ] GovernanceEngine xử lý proposal (M-of-N vote)
-- [ ] CRL revoke sau khi governance approve
-- [ ] SessionManager::invalidate(node_id) disconnect
-- [ ] CRL gossip → peers
+- [ ] Governance approved → emit event `RecoveryApproved`
+- [ ] Event Bus → CRL listens → `CRL::revoke(fingerprint)`
+- [ ] Event Bus → Session listens → `SessionManager::invalidate(node_id)`
+- [ ] Event Bus → Discovery listens → gossip CRL update
+- [ ] Event Bus → Audit listens → log revocation
 
-### Priority 5: execute_direct() → execute() migration
-- [ ] Wire middleware pipeline (PolicyMiddleware)
-- [ ] Wire audit trail
-- [ ] Remove `execute_direct()` (keep only for debug)
+### P5 — Middleware Pipeline (xoá execute_direct)
 
-### Priority 6: TrustManager → full integration
-- [ ] Wire `record_success/failure` vào runtime kernel sau mỗi contract execution
-- [ ] Wire `record_offline` vào heartbeat service
-- [ ] Wire `apply_digest` vào gossip engine
+- [ ] Biến RuntimeKernel thành pure: validate → find → execute → return
+- [ ] MiddlewarePipeline xử lý toàn bộ cross-cutting concerns
+- [ ] Xoá `execute_direct()`, chỉ giữ `execute()`
+- [ ] Thêm factories: `pipeline.push(...)` để dễ mở rộng
+
+### P6 — Event Bus + Service Registry + Telemetry
+
+- [ ] Wire Event Bus (`core/runtime/event_bus.hpp`) vào tất cả module
+      - Recovery emit → CRL, Session, Discovery, Audit, Trust listen
+      - Session emit → disconnect → Discovery update membership
+      - Trust emit → score change → Audit log
+      - Governance emit → proposal update → all nodes
+- [ ] Service Registry: `RuntimeServices::get<T>("name")` — DI container nhẹ, thay thế constructor explosion
+- [ ] Telemetry: metrics, tracing (distributed trace_id qua middleware), health endpoint
 
 ---
 
