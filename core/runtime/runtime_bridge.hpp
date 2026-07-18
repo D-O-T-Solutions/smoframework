@@ -4,10 +4,8 @@
 #include "runtime_kernel.hpp"
 #include "contract_interface.hpp"
 #include "dispatcher.hpp"
-#include "authorization_manager.hpp"
+
 #include "core/session/session.hpp"
-#include "core/trust/trust.hpp"
-#include "core/recovery/crl.hpp"
 #include "protocol/packet/packet.h"
 
 #include <string>
@@ -24,55 +22,35 @@ struct OpcodeRoute {
 
 // RuntimeBridge: network → runtime adapter (RFC 0041)
 //
-//   Packet → OpcodeRoute → RuntimeRequest → RuntimeKernel → RuntimeResult
+//   PacketDispatcher → SessionManager::lookup()
+//                   → MiddlewarePipeline::process()
+//                   → RuntimeBridge::convert(Packet → RuntimeRequest)
+//                   → RuntimeKernel::execute()
 //
-// Bridge does NOT know Transport. It only converts between wire objects
-// (Packet) and runtime objects (RuntimeRequest / RuntimeResult).
+// Bridge is THIN — it only converts Packet to RuntimeRequest.
+// Session validation, authorization, policy are handled BEFORE bridge.
 class RuntimeBridge {
 public:
     RuntimeBridge(RuntimeKernel& kernel,
-                  Dispatcher& dispatcher,
-                  SessionManager& session_mgr,
-                  smo::TrustManager* trust_mgr = nullptr,
-                  smo::recovery::CRL* crl = nullptr)
+                  Dispatcher& dispatcher)
         : kernel_(kernel)
-        , dispatcher_(dispatcher)
-        , session_mgr_(session_mgr)
-        , auth_mgr_(session_mgr, trust_mgr, crl) {}
-
-    // Set TrustManager for trust-based authorization
-    void set_trust_manager(smo::TrustManager& tm) {
-        auth_mgr_.set_trust_manager(tm);
-    }
-
-    // Set CRL for certificate revocation checking
-    void set_crl(smo::recovery::CRL& crl) {
-        auth_mgr_.set_crl(crl);
-    }
+        , dispatcher_(dispatcher) {}
 
     // Register an opcode → contract_id + method mapping
     void register_route(uint32_t opcode_id,
                         std::string contract_id,
                         std::string method);
 
-    // Mark a contract as anonymous (no session/capability check)
-    void set_anonymous(const std::string& contract_id, bool anonymous = true);
-
     // Resolve opcode to route
     const OpcodeRoute* resolve(uint32_t opcode_id) const;
 
-    // Access to AuthorizationManager for external configuration
-    AuthorizationManager& authorization() { return auth_mgr_; }
-
-    // Bridge: Packet → RuntimeRequest → Kernel → RuntimeResult
-    // Returns the runtime result and any NextActions produced.
+    // Convert Packet → RuntimeRequest and execute via kernel.
+    // No authorization — that must happen before calling bridge().
     Result<RuntimeResult> bridge(Packet&& pkt);
 
 private:
     RuntimeKernel& kernel_;
     Dispatcher& dispatcher_;
-    SessionManager& session_mgr_;
-    AuthorizationManager auth_mgr_;
     std::unordered_map<uint32_t, OpcodeRoute> routes_;
 };
 

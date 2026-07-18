@@ -2,6 +2,7 @@
 
 #include "../capability/capability.h"
 #include "../certificate/certificate.hpp"
+#include "../recovery/crl.hpp"
 #include "../crypto/impl.hpp"
 #include "../errors/error.hpp"
 #include "../identity/identity.hpp"
@@ -46,6 +47,9 @@ struct SessionId {
 
     Bytes to_bytes() const;
     static Result<SessionId> from_bytes(BytesView data);
+
+    // Convert to hex string
+    std::string to_hex() const;
 };
 
 // ---------------------------------------------------------------------------
@@ -118,6 +122,11 @@ public:
         return capabilities_.test(static_cast<size_t>(cap));
     }
 
+    // Certificate fingerprint (hex string of cert hash) for CRL check.
+    // Set by caller after create() if CRL checking is desired.
+    void set_cert_fingerprint(std::string fp) { cert_fingerprint_ = std::move(fp); }
+    const std::string& cert_fingerprint() const { return cert_fingerprint_; }
+
     // Serialization
     Bytes serialize() const;
     static Result<Session> deserialize(BytesView data);
@@ -128,6 +137,7 @@ private:
     NodeID        peer_id_{};
     Certificate   peer_cert_;
     CapabilitySet capabilities_;
+    std::string   cert_fingerprint_;
     int64_t       created_at_  = 0;
     int64_t       expires_at_  = 0;
     int64_t       last_active_ = 0;
@@ -140,7 +150,12 @@ class SessionManager {
 public:
     SessionManager() = default;
 
+    // Set CRL for revocation checks at session open time.
+    // If nullptr, no CRL check is performed (permissive).
+    void set_crl(recovery::CRL* crl) { crl_ = crl; }
+
     // Create a new session and add to manager
+    // If CRL is set and the peer certificate is revoked, returns error.
     Result<Session*> open(Session session);
 
     // Look up a session by ID
@@ -148,6 +163,11 @@ public:
 
     // Close a session (moves to Closed state)
     Result<void> close(const SessionId& id, int64_t now);
+
+    // Invalidate all sessions for a node (when CRL revokes its cert).
+    // Closes and removes all sessions matching peer_id.
+    // Returns the number of sessions invalidated.
+    size_t invalidate(const NodeID& peer_id);
 
     // Transition an existing session
     Result<void> transition(const SessionId& id, SessionEvent event, int64_t now);
@@ -166,6 +186,7 @@ public:
 
 private:
     std::unordered_map<uint64_t, Session> sessions_;
+    recovery::CRL* crl_ = nullptr;
 
     static uint64_t to_key(const SessionId& id);
 };

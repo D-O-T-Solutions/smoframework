@@ -71,6 +71,17 @@ Bytes SessionId::to_bytes() const {
     return Bytes(bytes.begin(), bytes.end());
 }
 
+std::string SessionId::to_hex() const {
+    static const char* hex = "0123456789abcdef";
+    std::string out;
+    out.reserve(32);
+    for (uint8_t b : bytes) {
+        out.push_back(hex[b >> 4]);
+        out.push_back(hex[b & 0xF]);
+    }
+    return out;
+}
+
 Result<SessionId> SessionId::from_bytes(BytesView data) {
     if (data.size() < 16) {
         return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect,
@@ -303,6 +314,20 @@ uint64_t SessionManager::to_key(const SessionId& id) {
 }
 
 Result<Session*> SessionManager::open(Session session) {
+    // CRL check: if CRL is configured and session has a cert fingerprint,
+    // verify the certificate is not revoked.
+    if (crl_ && !session.cert_fingerprint().empty()) {
+        auto revoked = crl_->is_revoked(session.cert_fingerprint());
+        if (!revoked) {
+            return SMO_ERR_SESSION(507, Error, NoRetry, Reconnect,
+                                   "CRL check failed: " + revoked.error().message);
+        }
+        if (revoked.value()) {
+            return SMO_ERR_SESSION(508, Error, NoRetry, Reconnect,
+                                   "session rejected: certificate is revoked");
+        }
+    }
+
     auto key = to_key(session.id());
     if (sessions_.find(key) != sessions_.end()) {
         return SMO_ERR_SESSION(504, Warn, NoRetry, None,
@@ -321,6 +346,19 @@ Session* SessionManager::lookup(const SessionId& id) {
     auto it = sessions_.find(key);
     if (it == sessions_.end()) return nullptr;
     return &it->second;
+}
+
+size_t SessionManager::invalidate(const NodeID& peer_id) {
+    size_t count = 0;
+    for (auto it = sessions_.begin(); it != sessions_.end(); ) {
+        if (it->second.peer_id() == peer_id) {
+            it = sessions_.erase(it);
+            ++count;
+        } else {
+            ++it;
+        }
+    }
+    return count;
 }
 
 Result<void> SessionManager::close(const SessionId& id, int64_t now) {

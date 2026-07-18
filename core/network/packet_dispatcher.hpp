@@ -5,6 +5,7 @@
 #include "core/transport/transport.hpp"
 #include "core/errors/error.hpp"
 #include "core/types.hpp"
+#include "core/fsm/node_lifecycle_fsm.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -43,7 +44,15 @@ public:
     // Called when data cannot be unframed or parsed as a Packet.
     void register_raw_handler(RawHandler handler);
 
+    // Set the NodeLifecycleFSM for state-based opcode filtering.
+    // If set, dispatch() will check local node state before processing.
+    void set_lifecycle_fsm(NodeLifecycleFSM* fsm) { lifecycle_fsm_ = fsm; }
+
     // Dispatch a packet to its registered handler (high-level transport).
+    // If lifecycle_fsm_ is set, checks node state first:
+    //   ACTIVE → allow all opcodes
+    //   BOOTSTRAPPING/JOINING/SYNCHRONIZING → allow only bootstrap/join opcodes
+    //   other → DENY
     Result<void> dispatch(Packet&& pkt, const hl::Endpoint& remote, hl::Transport& transport);
 
     // Dispatch a frame from a low-level TcpSession.
@@ -54,6 +63,7 @@ public:
 private:
     std::unordered_map<uint32_t, HandlerFunc> handlers_;
     RawHandler raw_handler_;
+    NodeLifecycleFSM* lifecycle_fsm_ = nullptr;
 };
 
 } // namespace smo::network

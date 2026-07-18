@@ -40,9 +40,13 @@ namespace smo::acl {
 // ===========================================================================
 
 enum class PolicyDecision : uint8_t {
-    Allow = 0,
-    Deny = 1,
+    Allow     = 0,
+    Deny      = 1,
     Conditional = 2,
+    Audit     = 3,    // log + allow but flag for audit
+    Sandbox   = 4,    // allow in sandbox (constrained execution)
+    RateLimit = 5,    // allow with rate limiting
+    ReadOnly  = 6,    // allow read-only operations only
 };
 
 struct PolicyRule {
@@ -81,16 +85,32 @@ struct PolicySet {
 };
 
 struct PolicyEvaluationContext {
-    std::string actor_id;
-    std::string target_id;
-    std::string contract_id;
-    std::vector<std::string> actor_capabilities;
-    std::vector<std::string> target_capabilities;
-    std::vector<std::string> actor_roles;
-    std::vector<std::string> target_roles;
-    int32_t trust_score = 0;
-    std::vector<std::string> certifications;
-    std::string mesh_id;
+    // Session context  (MASTER doc §VII)
+    std::string session_id;
+    std::vector<std::string> session_roles;
+    std::vector<std::string> session_caps;
+    double      session_trust_score = 0.0;
+    std::string session_mesh_id;
+    int64_t     session_created_at = 0;
+
+    // Request context
+    std::string request_contract_id;
+    std::string request_method;
+    std::string request_params;  // serialized params (for rule matching)
+
+    // Node context
+    std::string node_state;       // NodeLifecycleState name
+    std::string node_version;
+    uint64_t    node_uptime_ns = 0;
+
+    // System context
+    int64_t     system_time_ns = 0;
+    double      system_load = 0.0;
+    int64_t     system_mesh_policy_version = 0;
+
+    // Legacy flat fields (kept for backward compat)
+    std::string actor_id;         // alias for session_id
+    std::string contract_id;      // alias for request_contract_id
     std::unordered_map<std::string, std::string> custom_attributes;
 };
 
@@ -127,17 +147,17 @@ public:
     Result<void> load_policy_set(const PolicySet& policy_set);
 
     // Evaluate policy for a request
-    Result<PolicyResult> evaluate(const PolicyEvaluationContext& context) const;
+    Result<PolicyResult> evaluate(const PolicyEvaluationContext& context);
 
     // Check specific capability
     Result<bool> check_capability(const std::string& actor_id, 
                                    const std::string& capability,
-                                   const std::string& target_id = "") const;
+                                   const std::string& target_id = "");
 
     // Get effective capabilities for actor
     Result<std::vector<std::string>> get_effective_capabilities(
         const std::string& actor_id,
-        const std::string& target_id = "") const;
+        const std::string& target_id = "");
 
     // List available policies
     Result<std::vector<std::string>> list_policies() const;

@@ -6,7 +6,8 @@ add_library(smo_runtime STATIC
     runtime_kernel.cpp
     runtime_bridge.cpp
     action_executor.cpp
-    authorization_manager.cpp
+    middleware_pipeline.cpp
+    policy_middleware.cpp
     middleware.cpp
     plan_executor.cpp
     contract_registry.cpp
@@ -27,6 +28,7 @@ target_link_libraries(smo_runtime PUBLIC
     smo_core
     smo_storage
     smo_contract
+    smo_acl
 )
 
 target_compile_features(smo_runtime PUBLIC cxx_std_20)

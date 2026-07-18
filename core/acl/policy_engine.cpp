@@ -79,9 +79,13 @@ struct PolicyEngine::Impl {
                     }
                     if (rule_node["effect"]) {
                         std::string effect = rule_node["effect"].as<std::string>();
-                        if (effect == "allow") rule.effect = PolicyDecision::Allow;
-                        else if (effect == "deny") rule.effect = PolicyDecision::Deny;
+                        if (effect == "allow")         rule.effect = PolicyDecision::Allow;
+                        else if (effect == "deny")    rule.effect = PolicyDecision::Deny;
                         else if (effect == "conditional") rule.effect = PolicyDecision::Conditional;
+                        else if (effect == "audit")   rule.effect = PolicyDecision::Audit;
+                        else if (effect == "sandbox") rule.effect = PolicyDecision::Sandbox;
+                        else if (effect == "ratelimit") rule.effect = PolicyDecision::RateLimit;
+                        else if (effect == "readonly") rule.effect = PolicyDecision::ReadOnly;
                     }
                     if (rule_node["min_trust"]) rule.min_trust_score = rule_node["min_trust"].as<int32_t>();
                     if (rule_node["max_trust"]) rule.max_trust_score = rule_node["max_trust"].as<int32_t>();
@@ -107,7 +111,7 @@ struct PolicyEngine::Impl {
         return {};
     }
 
-    Result<PolicyResult> evaluate_impl(const PolicyEvaluationContext& context) const {
+    Result<PolicyResult> evaluate_impl(const PolicyEvaluationContext& context) {
         PolicyResult decision;
         decision.decision = PolicyDecision::Deny;
         decision.reason = "No matching policy";
@@ -133,9 +137,9 @@ struct PolicyEngine::Impl {
 
             // Check capability requirements
             for (const auto& cap : rule.required_capabilities) {
-                if (std::find(context.actor_capabilities.begin(), 
-                             context.actor_capabilities.end(), cap) 
-                    == context.actor_capabilities.end()) {
+                if (std::find(context.session_caps.begin(), 
+                              context.session_caps.end(), cap) 
+                    == context.session_caps.end()) {
                     decision.missing_capabilities.push_back(cap);
                 } else {
                     decision.required_capabilities.push_back(cap);
@@ -144,9 +148,9 @@ struct PolicyEngine::Impl {
 
             // Check forbidden capabilities
             for (const auto& cap : rule.forbidden_capabilities) {
-                if (std::find(context.actor_capabilities.begin(), 
-                             context.actor_capabilities.end(), cap) 
-                    != context.actor_capabilities.end()) {
+                if (std::find(context.session_caps.begin(), 
+                              context.session_caps.end(), cap) 
+                    != context.session_caps.end()) {
                     decision.decision = PolicyDecision::Deny;
                     decision.reason = "Forbidden capability: " + cap;
                     return decision;
@@ -155,20 +159,20 @@ struct PolicyEngine::Impl {
 
             // Check roles
             for (const auto& role : rule.required_roles) {
-                if (std::find(context.actor_roles.begin(), 
-                             context.actor_roles.end(), role) 
-                    == context.actor_roles.end()) {
+                if (std::find(context.session_roles.begin(), 
+                              context.session_roles.end(), role) 
+                    == context.session_roles.end()) {
                     decision.missing_capabilities.push_back("role:" + role);
                 }
             }
 
             // Check trust score
-            if (rule.min_trust_score && context.trust_score < *rule.min_trust_score) {
+            if (rule.min_trust_score && context.session_trust_score < *rule.min_trust_score) {
                 decision.decision = PolicyDecision::Deny;
                 decision.reason = "Insufficient trust score";
                 return decision;
             }
-            if (rule.max_trust_score && context.trust_score > *rule.max_trust_score) {
+            if (rule.max_trust_score && context.session_trust_score > *rule.max_trust_score) {
                 decision.decision = PolicyDecision::Deny;
                 decision.reason = "Trust score too high";
                 return decision;
@@ -176,9 +180,7 @@ struct PolicyEngine::Impl {
 
             // Check certifications
             for (const auto& cert : rule.required_certifications) {
-                if (std::find(context.certifications.begin(), 
-                             context.certifications.end(), cert) 
-                    == context.certifications.end()) {
+                if (context.custom_attributes.find(cert) == context.custom_attributes.end()) {
                     decision.decision = PolicyDecision::Deny;
                     decision.reason = "Missing certification: " + cert;
                     return decision;
@@ -196,14 +198,35 @@ struct PolicyEngine::Impl {
             // If we reach here, rule matches
             decision.matched_rules.push_back(rule.name);
 
-            // If deny, stop evaluating
+            // Deny — stop evaluating immediately
             if (rule.effect == PolicyDecision::Deny) {
                 return decision;
             }
-            // If allow, continue checking for higher priority deny
+            // Allow — continue checking for higher-priority deny
             if (rule.effect == PolicyDecision::Allow) {
                 decision.decision = PolicyDecision::Allow;
-                // Continue to check for higher priority deny
+                continue;
+            }
+            // Plugin effects — apply and continue
+            if (rule.effect == PolicyDecision::Audit) {
+                decision.metadata["audit"] = "true";
+                decision.decision = PolicyDecision::Allow;
+                continue;
+            }
+            if (rule.effect == PolicyDecision::Sandbox) {
+                decision.metadata["sandbox"] = "true";
+                decision.decision = PolicyDecision::Allow;
+                continue;
+            }
+            if (rule.effect == PolicyDecision::RateLimit) {
+                decision.metadata["ratelimit"] = "true";
+                decision.decision = PolicyDecision::Allow;
+                continue;
+            }
+            if (rule.effect == PolicyDecision::ReadOnly) {
+                decision.metadata["readonly"] = "true";
+                decision.decision = PolicyDecision::Allow;
+                continue;
             }
         }
 
@@ -212,10 +235,9 @@ struct PolicyEngine::Impl {
 
     bool matches_context(const PolicyRule& rule, const PolicyEvaluationContext& context) const {
         // Check mesh
-        if (!rule.mesh_id.empty() && rule.mesh_id != context.mesh_id) {
+        if (!rule.mesh_id.empty() && rule.mesh_id != context.session_mesh_id) {
             return false;
         }
-        // Could add more context matching here
         return true;
     }
 
@@ -248,7 +270,7 @@ struct PolicyEngine::Impl {
         return {};
     }
 
-    Result<PolicyResult> evaluate(const PolicyEvaluationContext& context) const {
+    Result<PolicyResult> evaluate(const PolicyEvaluationContext& context) {
         std::lock_guard<std::mutex> lock(mutex_);
         
         // Check cache
@@ -268,7 +290,7 @@ struct PolicyEngine::Impl {
         // Cache result
         if (config.enable_caching && decision) {
             std::string cache_key = make_cache_key(context);
-            cache_[cache_key] = *decision;
+            cache_[cache_key] = decision.value();
             // TODO: implement cache eviction
         }
 
@@ -276,12 +298,11 @@ struct PolicyEngine::Impl {
     }
 
     Result<bool> check_capability(const std::string& actor_id, 
-                                   const std::string& capability,
-                                   const std::string& target_id) const {
+                                    const std::string& capability,
+                                    const std::string& target_id) {
         PolicyEvaluationContext context;
-        context.actor_id = actor_id;
-        context.target_id = target_id;
-        context.actor_capabilities = {capability};
+        context.session_id = actor_id;
+        context.session_caps = {capability};
         
         auto decision = evaluate(context);
         if (!decision) return decision.error();
@@ -291,7 +312,7 @@ struct PolicyEngine::Impl {
 
     Result<std::vector<std::string>> get_effective_capabilities(
         const std::string& actor_id,
-        const std::string& target_id) const {
+        const std::string& target_id) {
         // Would need to query all capabilities and evaluate
         return std::vector<std::string>{};
     }
@@ -315,6 +336,7 @@ struct PolicyEngine::Impl {
     Result<void> reload() {
         std::lock_guard<std::mutex> lock(mutex_);
         policies_.clear();
+        cache_.clear();
         load_builtin_presets();
         if (!config.policy_dir.empty()) {
             return load_policies(config.policy_dir);
@@ -324,10 +346,51 @@ struct PolicyEngine::Impl {
 
 private:
     std::string make_cache_key(const PolicyEvaluationContext& context) const {
-        std::string key = context.actor_id + "|" + context.target_id + "|" 
-                         + context.contract_id + "|" + context.mesh_id;
+        std::string key = context.session_id + "|" + context.request_contract_id
+                         + "|" + context.request_method + "|" + context.session_mesh_id;
         return key;
     }
 };
+
+} // namespace smo::acl
+
+// Public wrapper methods
+namespace smo::acl {
+
+Result<PolicyResult> PolicyEngine::evaluate(const PolicyEvaluationContext& context) {
+    return impl_->evaluate(context);
+}
+
+Result<void> PolicyEngine::load_policies(const std::string& path) {
+    return impl_->load_policies(path);
+}
+
+Result<void> PolicyEngine::load_policy_set(const PolicySet& policy_set) {
+    return impl_->load_policy_set(policy_set);
+}
+
+Result<bool> PolicyEngine::check_capability(const std::string& actor_id,
+                                            const std::string& capability,
+                                            const std::string& target_id) {
+    return impl_->check_capability(actor_id, capability, target_id);
+}
+
+Result<std::vector<std::string>> PolicyEngine::get_effective_capabilities(
+    const std::string& actor_id,
+    const std::string& target_id) {
+    return impl_->get_effective_capabilities(actor_id, target_id);
+}
+
+Result<std::vector<std::string>> PolicyEngine::list_policies() const {
+    return impl_->list_policies();
+}
+
+Result<PolicySet> PolicyEngine::get_policy(const std::string& name) const {
+    return impl_->get_policy(name);
+}
+
+Result<void> PolicyEngine::reload() {
+    return impl_->reload();
+}
 
 } // namespace smo::acl

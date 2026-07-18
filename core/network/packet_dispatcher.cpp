@@ -66,6 +66,12 @@ void PacketDispatcher::register_raw_handler(RawHandler handler) {
 }
 
 Result<void> PacketDispatcher::dispatch(Packet&& pkt, const hl::Endpoint& remote, hl::Transport& transport) {
+    // Node lifecycle state check
+    if (lifecycle_fsm_) {
+        auto state_check = lifecycle_fsm_->check_opcode_allowed(pkt.opcode_id);
+        if (!state_check) return state_check;
+    }
+
     auto it = handlers_.find(pkt.opcode_id);
     if (it == handlers_.end()) {
         return SMO_ERR_PROTOCOL(604, Error, NoRetry, None,
@@ -92,6 +98,11 @@ Result<void> PacketDispatcher::dispatch_session(TcpSession& session, const hl::E
         // 3. Parse as Packet
         auto pkt = packet_from_buffer(payload);
         if (pkt) {
+            // 3a. Node lifecycle state check
+            if (lifecycle_fsm_) {
+                auto state_check = lifecycle_fsm_->check_opcode_allowed(pkt.value().opcode_id);
+                if (!state_check) return state_check;
+            }
             // 4. Look up handler
             auto it = handlers_.find(pkt.value().opcode_id);
             if (it == handlers_.end()) {

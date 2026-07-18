@@ -32,6 +32,15 @@ if(WITH_PQC)
 endif()
 add_subdirectory(third_party/clipboard)
 
+# yaml-cpp for PolicyEngine (core/acl)
+include(FetchContent)
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG yaml-cpp-0.7.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 # ── Custom CMake modules ─────────────────────────────────────────────
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CompilerOptions)
@@ -44,9 +53,7 @@ add_subdirectory(storage)
 add_subdirectory(contract)
 add_subdirectory(transport)
 add_subdirectory(trust)
-add_subdirectory(acl)
 add_subdirectory(compiler)
-# add_subdirectory(runtime)  # legacy runtime - moved to core/runtime
 add_subdirectory(sdk)
 add_subdirectory(providers)
 add_subdirectory(tooling)

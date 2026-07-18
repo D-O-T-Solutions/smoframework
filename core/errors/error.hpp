@@ -264,6 +264,8 @@ public:
     SMO_ERR(Runtime, code, sev, retry, rec, msg)
 #define SMO_ERR_GOVERNANCE(code, sev, retry, rec, msg) \
     SMO_ERR(Governance, code, sev, retry, rec, msg)
+#define SMO_ERR_ACL(code, sev, retry, rec, msg) \
+    SMO_ERR(Governance, code, sev, retry, rec, msg)
 #define SMO_ERR_STORAGE(code, sev, retry, rec, msg) \
     SMO_ERR(Storage, code, sev, retry, rec, msg)
 #define SMO_ERR_INTERNAL(code, sev, retry, rec, msg) \

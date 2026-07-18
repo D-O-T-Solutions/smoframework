@@ -32,8 +32,11 @@
 #include <core/governance/governance.hpp>
 #include <core/recovery/crl.hpp>
 #include <core/network/packet_dispatcher.hpp>
+#include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
 #include <core/runtime/runtime_bridge.hpp>
+#include <core/runtime/middleware_pipeline.hpp>
+#include <core/runtime/policy_middleware.hpp>
 #include <core/runtime/action_executor.hpp>
 #include <core/runtime/dispatcher.hpp>
 #include <core/runtime/contracts/echo_contract.hpp>
@@ -1017,10 +1020,16 @@ int main(int argc, char* argv[]) {
         "system.process",
         std::make_unique<smo::runtime::ProcessContract>());
 
-    // ── RuntimeBridge: opcode → contract ──────────────────────
+    // ── Middleware Pipeline ────────────────────────────────────
+    smo::runtime::MiddlewarePipeline middleware_pipeline;
+    auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr);
+    policy_mw->set_anonymous("system.bootstrap", true);
+    policy_mw->set_anonymous("system.join", true);
+    middleware_pipeline.push(std::move(policy_mw));
+
+    // ── RuntimeBridge: opcode → contract (THIN — no auth) ─────
     smo::runtime::RuntimeBridge runtime_bridge(
-        runtime_kernel, runtime_dispatcher, session_mgr,
-        &trust_mgr, &crl);
+        runtime_kernel, runtime_dispatcher);
 
     // Register routes for Echo
     runtime_bridge.register_route(
@@ -1084,12 +1093,8 @@ int main(int argc, char* argv[]) {
         static_cast<uint32_t>(smo::Opcode::PROCESS),
         "system.process", "invoke");
 
-    // Set bootstrap and join as anonymous (no session needed)
-    runtime_bridge.set_anonymous("system.bootstrap", true);
-    runtime_bridge.set_anonymous("system.join", true);
-
     // ── PacketDispatcher setup ─────────────────────────────────
-    // Helper lambda: bridge packet → execute actions → send response
+    // Helper lambda: session → middleware → bridge → execute → send response
     auto runtime_handler =
         [&](smo::Packet&& pkt, const smo::hl::Endpoint& remote,
             smo::hl::Transport& t) -> smo::Result<void>
@@ -1098,9 +1103,51 @@ int main(int argc, char* argv[]) {
         std::printf("[smo-node] Packet received opcode=0x%x from %s\n",
                     pkt.opcode_id, remote_str.c_str());
 
-        auto original_pkt = pkt;
+        // 1. Session lookup (if session_id present)
+        const smo::Session* session = nullptr;
+        bool has_session = pkt.session_id.size() >= 16;
+        if (has_session) {
+            auto sid_res = smo::SessionId::from_bytes(
+                smo::BytesView(pkt.session_id.data(), 16));
+            if (sid_res) {
+                session = session_mgr.lookup(sid_res.value());
+            }
+        }
 
-        // 1. Bridge: Packet → RuntimeKernel → RuntimeResult
+        // 2. Middleware pipeline: validate + policy
+        smo::runtime::PacketContext mw_ctx;
+        mw_ctx.session = session;
+        auto* route = runtime_bridge.resolve(pkt.opcode_id);
+        if (route) {
+            mw_ctx.contract_id = route->contract_id;
+            mw_ctx.method = route->method;
+        }
+        mw_ctx.payload = smo::BytesView(pkt.payload.data(), pkt.payload.size());
+        {
+            char hex[16];
+            std::snprintf(hex, sizeof(hex), "0x%04x", pkt.opcode_id);
+            mw_ctx.opcode_hex = hex;
+        }
+
+        auto mw_res = middleware_pipeline.process(mw_ctx);
+        if (!mw_res) {
+            std::printf("[smo-node] Middleware denied: %s\n",
+                        mw_res.error().message.c_str());
+            return mw_res.error();
+        }
+        if (mw_ctx.denied) {
+            std::printf("[smo-node] Policy denied: %s\n",
+                        mw_ctx.deny_reason.c_str());
+            return smo::Error(
+                smo::ErrorCode(smo::ErrorCategory::Session, 507,
+                               smo::Severity::Error,
+                               smo::RetryClass::NoRetry,
+                               smo::Recovery::None),
+                mw_ctx.deny_reason, __FILE__, __LINE__);
+        }
+
+        // 3. Bridge: Packet → RuntimeKernel → RuntimeResult
+        auto original_pkt = pkt;
         auto rt_result = runtime_bridge.bridge(std::move(pkt));
         if (!rt_result) {
             std::printf("[smo-node] RuntimeBridge failed: %s\n",
@@ -1108,7 +1155,7 @@ int main(int argc, char* argv[]) {
             return rt_result.error();
         }
 
-        // 2. Execute each NextAction via ActionExecutor
+        // 4. Execute each NextAction via ActionExecutor
         auto& next_actions = rt_result.value().next_actions;
         if (next_actions.empty()) {
             std::printf("[smo-node] No next actions — result: %s\n",
@@ -1144,7 +1191,14 @@ int main(int argc, char* argv[]) {
         return {};
     };
 
+    // ── Node Lifecycle FSM ─────────────────────────────────────
+    smo::NodeLifecycleFSM node_fsm;
+    node_fsm.on_event(smo::NodeLifecycleEvent::IDENTITY_CREATED);
+    std::printf("[smo-node] Node state: %s\n", node_fsm.state_name().c_str());
+
+    // ── PacketDispatcher setup ─────────────────────────────────
     smo::network::PacketDispatcher dispatcher;
+    dispatcher.set_lifecycle_fsm(&node_fsm);
 
     // Register runtime handler for all contract opcodes
     dispatcher.register_handler(
