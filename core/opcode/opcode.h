@@ -32,6 +32,29 @@ enum class Opcode : uint8_t {
     // Echo (Sprint 37 E2E test)
     ECHO       = 0x06,
 
+    // Bootstrap Contract methods
+    BOOTSTRAP_SNAPSHOT = 0x30,
+    BOOTSTRAP_INFO     = 0x31,
+
+    // Join Contract methods
+    JOIN               = 0x33,
+    LEAVE              = 0x34,
+    JOIN_INFO          = 0x35,
+
+    // Governance additional methods
+    GOV_LIST           = 0x27,
+    GOV_STATUS         = 0x28,
+    GOV_INFO           = 0x29,
+
+    // Recovery (single opcode, method in payload)
+    RECOVERY           = 0x2A,
+
+    // File (single opcode, method in payload)
+    FILE_OP            = 0x2B,
+
+    // Process (single opcode, method in payload)
+    PROCESS            = 0x2C,
+
     CUSTOM     = 0xFF,
 };
 

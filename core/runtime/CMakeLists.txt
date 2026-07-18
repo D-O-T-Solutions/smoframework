@@ -6,6 +6,7 @@ add_library(smo_runtime STATIC
     runtime_kernel.cpp
     runtime_bridge.cpp
     action_executor.cpp
+    authorization_manager.cpp
     middleware.cpp
     plan_executor.cpp
     contract_registry.cpp

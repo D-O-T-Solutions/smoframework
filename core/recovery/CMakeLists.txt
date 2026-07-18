@@ -1,5 +1,6 @@
 target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/recovery_engine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/crl.cpp
 )
 
 target_sources(smo_core INTERFACE

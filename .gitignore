@@ -1,32 +1,6 @@
-# Build
 build/
-cmake-build-*/
-out/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# CMake
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-compile_commands.json
-
-# Object files
+build_release/
 *.o
-*.obj
-*.a
 *.so
-*.dylib
-*.exe
-
-# Dependencies
-third_party/*/build/
+*.a
+.DS_Store

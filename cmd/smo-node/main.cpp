@@ -37,7 +37,18 @@
 #include <core/runtime/action_executor.hpp>
 #include <core/runtime/dispatcher.hpp>
 #include <core/runtime/contracts/echo_contract.hpp>
+#include <core/runtime/contracts/bootstrap_contract.hpp>
+#include <core/runtime/contracts/join_contract.hpp>
+#include <core/runtime/contracts/governance_contract.hpp>
+// Recovery/File/Process contracts registered in future sprint
 #include <core/runtime/output_manager.hpp>
+#include <core/session/session.hpp>
+#include <core/trust/trust.hpp>
+#include <core/recovery/recovery_engine.hpp>
+#include <core/recovery/crl.hpp>
+#include <core/runtime/contracts/recovery_contract.hpp>
+#include <core/runtime/contracts/file_contract.hpp>
+#include <core/runtime/contracts/process_contract.hpp>
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
@@ -669,6 +680,8 @@ int main(int argc, char* argv[]) {
     // ====================================================================
     // Daemon mode
     // ====================================================================
+    setvbuf(stdout, nullptr, _IONBF, 0);
+    setvbuf(stderr, nullptr, _IONBF, 0);
     std::printf("[smo-node] Starting daemon...\n");
     std::printf("[smo-node] Data: %s, Port: %d\n", data_dir.c_str(), port);
     if (!node_name.empty()) std::printf("[smo-node] Name: %s\n", node_name.c_str());
@@ -697,6 +710,12 @@ int main(int argc, char* argv[]) {
     std::printf("[smo-node] Local NodeID: %s (state: %s)\n",
                 local_id_hex.c_str(), smo::to_string(local_identity.state()));
 
+    // Register transports BEFORE any references
+    smo::TransportRegistry::instance().register_transport(
+        std::make_unique<smo::TcpTransport>(), "tcp");
+    smo::TransportRegistry::instance().register_transport(
+        std::make_unique<smo::network::udp::UdpTransport>(), "udp");
+
     // Initialize core components
     smo::MembershipTable membership;
     smo::HealthMonitor health_monitor;
@@ -706,12 +725,6 @@ int main(int argc, char* argv[]) {
     auto gossip_cfg = smo::GossipEngine::default_config();
     smo::GossipEngine gossip_engine(membership, gossip_cfg);
     smo::network::sync::MembershipSync membership_sync(membership, health_monitor);
-
-    // Register transports
-    smo::TransportRegistry::instance().register_transport(
-        std::make_unique<smo::TcpTransport>(), "tcp");
-    smo::TransportRegistry::instance().register_transport(
-        std::make_unique<smo::network::udp::UdpTransport>(), "udp");
 
     // Initialize PeerStore and sync with MembershipTable
     smo::PeerStore peer_store;
@@ -934,69 +947,238 @@ int main(int argc, char* argv[]) {
     smo::runtime::RuntimeKernel runtime_kernel(
         event_bus, output_mgr, runtime_dispatcher, plan_resolver);
 
-    // Register EchoContract
+    // SessionManager for tracking peer sessions
+    smo::SessionManager session_mgr;
+
+    // MeshManager for mesh directory/catalog operations
+    smo::MeshManager mesh_manager(smo::MeshManager::Config{});
+
+    // MeshAuthority for certificate signing and key management
+    smo::authority::MeshAuthority authority;
+
+    // GovernanceEngine for mesh governance
+    smo::GovernanceEngine governance_engine;
+
+    // TrustManager for peer trust scoring
+    smo::TrustManager trust_mgr;
+
+    // CRL for certificate revocation
+    smo::recovery::CRL crl;
+
+    // Recovery Engine
+    smo::recovery::RecoveryEngine recovery_engine(smo::recovery::RecoveryConfig{});
+
+    // ── Register all contracts ────────────────────────────────
+    // Echo (legacy, for backwards compat)
     runtime_dispatcher.register_contract(
         "system.echo",
         std::make_unique<smo::runtime::EchoContract>());
 
-    // RuntimeBridge: opcode → contract
-    smo::runtime::RuntimeBridge runtime_bridge(runtime_kernel);
+    // BootstrapContract: mesh bootstrap snapshots
+    runtime_dispatcher.register_contract(
+        "system.bootstrap",
+        std::make_unique<smo::runtime::BootstrapContract>(
+            mesh_manager,
+            authority,
+            &governance_engine,
+            nullptr));  // CRL deferred to future sprint
+
+    // JoinContract: node enrollment
+    {
+        auto rng = crypto->default_rng();
+        runtime_dispatcher.register_contract(
+            "system.join",
+            std::make_unique<smo::runtime::JoinContract>(
+                crypto->hash,
+                crypto->signer,
+                rng));
+    }
+
+    // GovernanceContract: proposals, voting, commit
+    runtime_dispatcher.register_contract(
+        "system.governance",
+        std::make_unique<smo::runtime::GovernanceContract>(
+            governance_engine,
+            authority));
+
+    // RecoveryContract: recovery sessions, CRL
+    runtime_dispatcher.register_contract(
+        "system.recovery",
+        std::make_unique<smo::runtime::RecoveryContract>(
+            recovery_engine, &crl));
+
+    // FileContract: filesystem operations
+    runtime_dispatcher.register_contract(
+        "system.file",
+        std::make_unique<smo::runtime::FileContract>());
+
+    // ProcessContract: process management
+    runtime_dispatcher.register_contract(
+        "system.process",
+        std::make_unique<smo::runtime::ProcessContract>());
+
+    // ── RuntimeBridge: opcode → contract ──────────────────────
+    smo::runtime::RuntimeBridge runtime_bridge(
+        runtime_kernel, runtime_dispatcher, session_mgr,
+        &trust_mgr, &crl);
+
+    // Register routes for Echo
     runtime_bridge.register_route(
         static_cast<uint32_t>(smo::Opcode::ECHO),
         "system.echo", "echo");
 
+    // Register routes for BootstrapContract
+    runtime_bridge.register_route(
+        smo::bootstrap::kOpcodeBootstrapRequest,
+        "system.bootstrap", "request");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT),
+        "system.bootstrap", "snapshot");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO),
+        "system.bootstrap", "info");
+
+    // Register routes for JoinContract
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::JOIN),
+        "system.join", "join");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::LEAVE),
+        "system.join", "leave");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::JOIN_INFO),
+        "system.join", "info");
+
+    // Register routes for GovernanceContract
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE),
+        "system.governance", "propose");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_VOTE),
+        "system.governance", "vote");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_COMMIT),
+        "system.governance", "commit");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_LIST),
+        "system.governance", "list");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_STATUS),
+        "system.governance", "status");
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::GOV_INFO),
+        "system.governance", "info");
+
+    // Register routes for RecoveryContract (single opcode, method in payload)
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::RECOVERY),
+        "system.recovery", "invoke");
+
+    // Register routes for FileContract (single opcode, method in payload)
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::FILE_OP),
+        "system.file", "invoke");
+
+    // Register routes for ProcessContract (single opcode, method in payload)
+    runtime_bridge.register_route(
+        static_cast<uint32_t>(smo::Opcode::PROCESS),
+        "system.process", "invoke");
+
+    // Set bootstrap and join as anonymous (no session needed)
+    runtime_bridge.set_anonymous("system.bootstrap", true);
+    runtime_bridge.set_anonymous("system.join", true);
+
     // ── PacketDispatcher setup ─────────────────────────────────
-    // All packets go through RuntimeBridge — no switch(opcode).
-    // One handler to rule them all (RFC 0041).
-    smo::network::PacketDispatcher dispatcher;
+    // Helper lambda: bridge packet → execute actions → send response
+    auto runtime_handler =
+        [&](smo::Packet&& pkt, const smo::hl::Endpoint& remote,
+            smo::hl::Transport& t) -> smo::Result<void>
+    {
+        std::string remote_str = remote.address + ":" + std::to_string(remote.port);
+        std::printf("[smo-node] Packet received opcode=0x%x from %s\n",
+                    pkt.opcode_id, remote_str.c_str());
 
-    dispatcher.register_handler(
-        static_cast<uint32_t>(smo::Opcode::ECHO),
-        [&](smo::Packet&& pkt, const smo::hl::Endpoint& remote, smo::hl::Transport& t) -> smo::Result<void> {
-            std::string remote_str = remote.address + ":" + std::to_string(remote.port);
-            std::printf("[smo-node] Packet received opcode=0x%x from %s\n",
-                        pkt.opcode_id, remote_str.c_str());
+        auto original_pkt = pkt;
 
-            // Save original packet before moving into bridge
-            auto original_pkt = pkt;
+        // 1. Bridge: Packet → RuntimeKernel → RuntimeResult
+        auto rt_result = runtime_bridge.bridge(std::move(pkt));
+        if (!rt_result) {
+            std::printf("[smo-node] RuntimeBridge failed: %s\n",
+                        rt_result.error().message.c_str());
+            return rt_result.error();
+        }
 
-            // 1. Bridge: Packet → RuntimeKernel → RuntimeResult
-            auto rt_result = runtime_bridge.bridge(std::move(pkt));
-            if (!rt_result) {
-                std::printf("[smo-node] RuntimeBridge failed: %s\n",
-                            rt_result.error().message.c_str());
-                return rt_result.error();
-            }
-
-            // 2. Execute each NextAction via ActionExecutor
-            //    ActionExecutor sends response packets back through t
-            auto& next_actions = rt_result.value().next_actions;
-            for (auto& action : next_actions) {
-                smo::runtime::ActionExecutor executor(
-                    [&](smo::Packet&& resp) -> smo::Result<void> {
-                        auto ec = t.send(std::move(resp), remote);
-                        if (ec) {
-                            return smo::Error(
-                                smo::ErrorCode(smo::ErrorCategory::Transport,
-                                               static_cast<uint16_t>(ec.value()),
-                                               smo::Severity::Error,
-                                               smo::RetryClass::RetrySafe,
-                                               smo::Recovery::None),
-                                "ActionExecutor send failed",
-                                __FILE__, __LINE__);
-                        }
-                        return {};
-                    });
-                auto exec_res = executor.execute(action, original_pkt);
-                if (!exec_res) {
-                    std::printf("[smo-node] ActionExecutor failed: %s\n",
-                                exec_res.error().message.c_str());
-                }
-            }
-
+        // 2. Execute each NextAction via ActionExecutor
+        auto& next_actions = rt_result.value().next_actions;
+        if (next_actions.empty()) {
+            std::printf("[smo-node] No next actions — result: %s\n",
+                        rt_result.value().output
+                            ? rt_result.value().output->data.c_str()
+                            : "(no output)");
             return {};
         }
-    );
+
+        for (auto& action : next_actions) {
+            smo::runtime::ActionExecutor executor(
+                [&](smo::Packet&& resp) -> smo::Result<void> {
+                    auto ec = t.send(std::move(resp), remote);
+                    if (ec) {
+                        return smo::Error(
+                            smo::ErrorCode(smo::ErrorCategory::Transport,
+                                           static_cast<uint16_t>(ec.value()),
+                                           smo::Severity::Error,
+                                           smo::RetryClass::RetrySafe,
+                                           smo::Recovery::None),
+                            "ActionExecutor send failed",
+                            __FILE__, __LINE__);
+                    }
+                    return {};
+                });
+            auto exec_res = executor.execute(action, original_pkt);
+            if (!exec_res) {
+                std::printf("[smo-node] ActionExecutor failed: %s\n",
+                            exec_res.error().message.c_str());
+            }
+        }
+
+        return {};
+    };
+
+    smo::network::PacketDispatcher dispatcher;
+
+    // Register runtime handler for all contract opcodes
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::ECHO), runtime_handler);
+    dispatcher.register_handler(
+        smo::bootstrap::kOpcodeBootstrapRequest, runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::JOIN), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::LEAVE), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::JOIN_INFO), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_VOTE), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_COMMIT), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_LIST), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_STATUS), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::GOV_INFO), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::RECOVERY), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::FILE_OP), runtime_handler);
+    dispatcher.register_handler(
+        static_cast<uint32_t>(smo::Opcode::PROCESS), runtime_handler);
 
     // ── Main loop ──────────────────────────────────────────────
     std::printf("[smo-node] Entering main loop...\n");
@@ -1013,6 +1195,8 @@ int main(int argc, char* argv[]) {
         if (now_ns - last_tick > 5000000000LL) {
             discovery_engine.tick(now_ns);
             heartbeat_service.tick(now_ns);
+            session_mgr.tick(now_ns);
+            session_mgr.collect_garbage();
             last_tick = now_ns;
         }
 
