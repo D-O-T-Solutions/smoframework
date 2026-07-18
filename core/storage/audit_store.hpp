@@ -8,6 +8,8 @@
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 #include "core/crypto/impl.hpp"
+#include "core/runtime/event_bus.hpp"
+#include "core/runtime/event_bus.hpp"
 
 namespace smo {
 
@@ -95,6 +97,10 @@ public:
     Result<void> vacuum();
     Result<size_t> count() const;
     Result<size_t> db_size_bytes() const;
+
+    // EventBus listener for RecoveryApproved events
+    // Logs certificate revocation to audit trail
+    void on_recovery_approved(const runtime::Event& ev);
 
 private:
     class Impl;

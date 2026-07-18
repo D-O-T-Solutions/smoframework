@@ -2,6 +2,7 @@
 
 #include "../errors/error.hpp"
 #include "../types.hpp"
+#include "runtime/event_bus.hpp"
 
 #include <cstdint>
 #include <string>
@@ -30,6 +31,9 @@ public:
                          const std::string& reason,
                          uint64_t epoch,
                          int64_t now);
+
+    // EventBus listener for RecoveryApproved events
+    void on_recovery_approved(const runtime::Event& ev);
 
     // Check if a certificate is revoked
     Result<bool> is_revoked(const std::string& cert_fingerprint) const;

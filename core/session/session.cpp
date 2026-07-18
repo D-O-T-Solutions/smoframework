@@ -2,6 +2,8 @@
 
 #include <cstring>
 #include <limits>
+#include <sstream>
+#include <string>
 
 namespace smo {
 
@@ -492,6 +494,49 @@ Result<SessionCloseMsg> SessionCloseMsg::deserialize(BytesView data) {
     msg.signature = Bytes(data.begin() + static_cast<ptrdiff_t>(off),
                           data.begin() + static_cast<ptrdiff_t>(off + 64));
     return msg;
+}
+
+// EventBus listener for RecoveryApproved events
+// Invalidates all sessions for the revoked node
+void SessionManager::on_recovery_approved(const runtime::Event& ev) {
+    // Parse JSON payload from event details
+    // Expected: "CertificateRevocation proposal approved: {fingerprint, node_id_hex, reason, epoch}"
+    std::string payload = ev.details;
+    size_t brace_pos = payload.find('{');
+    if (brace_pos == std::string::npos) return;
+
+    std::string json_str = payload.substr(brace_pos);
+
+    // Simple JSON parsing
+    auto extract_field = [&](const std::string& json, const std::string& key) -> std::string {
+        std::string search = "\"" + key + "\":\"";
+        size_t pos = json.find(search);
+        if (pos == std::string::npos) return "";
+        pos += search.length();
+        size_t end = json.find('"', pos);
+        if (end == std::string::npos) return "";
+        return json.substr(pos, end - pos);
+    };
+
+    std::string node_id_hex = extract_field(json_str, "node_id_hex");
+    if (node_id_hex.empty()) return;
+
+    // Convert hex string to NodeID
+    if (node_id_hex.size() != 64) return; // 32 bytes = 64 hex chars
+    NodeID node_id;
+    for (size_t i = 0; i < 32 && i * 2 + 1 < node_id_hex.size(); ++i) {
+        unsigned int byte = 0;
+        std::istringstream iss(node_id_hex.substr(i * 2, 2));
+        iss >> std::hex >> byte;
+        node_id.value[i] = static_cast<uint8_t>(byte);
+    }
+
+    // Invalidate all sessions for this node
+    size_t count = invalidate(node_id);
+    if (count > 0) {
+        std::printf("[smo-node] SessionManager: invalidated %zu sessions for node %s\n",
+                    count, node_id_hex.c_str());
+    }
 }
 
 } // namespace smo

@@ -2,6 +2,7 @@
 
 #include "../capability/capability.h"
 #include "../certificate/certificate.hpp"
+#include "runtime/event_bus.hpp"
 #include "../recovery/crl.hpp"
 #include "../crypto/impl.hpp"
 #include "../errors/error.hpp"
@@ -168,6 +169,10 @@ public:
     // Closes and removes all sessions matching peer_id.
     // Returns the number of sessions invalidated.
     size_t invalidate(const NodeID& peer_id);
+
+    // EventBus listener for RecoveryApproved events
+    // Invalidates all sessions for the revoked node
+    void on_recovery_approved(const runtime::Event& ev);
 
     // Transition an existing session
     Result<void> transition(const SessionId& id, SessionEvent event, int64_t now);

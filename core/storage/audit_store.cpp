@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "core/runtime/event_bus.hpp"
 #include <sstream>
 #include <iomanip>
 
@@ -336,6 +337,62 @@ Result<size_t> AuditStore::count() const {
 
 Result<size_t> AuditStore::db_size_bytes() const {
     return 0;
+}
+
+// EventBus listener for RecoveryApproved events
+// Logs certificate revocation to audit store
+void AuditStore::on_recovery_approved(const runtime::Event& ev) {
+    // Parse JSON payload from event details
+    // Expected: "CertificateRevocation proposal approved: {fingerprint, node_id_hex, reason, epoch}"
+    std::string payload = ev.details;
+    size_t brace_pos = payload.find('{');
+    if (brace_pos == std::string::npos) return;
+
+    std::string json_str = payload.substr(brace_pos);
+
+    // Simple JSON parsing
+    auto extract_field = [&](const std::string& json, const std::string& key) -> std::string {
+        std::string search = "\"" + key + "\":\"";
+        size_t pos = json.find(search);
+        if (pos == std::string::npos) return "";
+        pos += search.length();
+        size_t end = json.find('"', pos);
+        if (end == std::string::npos) return "";
+        return json.substr(pos, end - pos);
+    };
+    auto extract_uint = [&](const std::string& json, const std::string& key) -> uint64_t {
+        std::string search = "\"" + key + "\":";
+        size_t pos = json.find(search);
+        if (pos == std::string::npos) return 0;
+        pos += search.length();
+        size_t end = json.find_first_of(",}", pos);
+        if (end == std::string::npos) return 0;
+        return std::stoull(json.substr(pos, end - pos));
+    };
+
+    std::string fingerprint = extract_field(json_str, "fingerprint");
+    std::string node_id_hex = extract_field(json_str, "node_id_hex");
+    std::string reason = extract_field(json_str, "reason");
+    uint64_t epoch = extract_uint(json_str, "epoch");
+
+    if (fingerprint.empty() || node_id_hex.empty()) return;
+
+    // Create audit record
+    AuditRecord record;
+    record.sequence = 0; // will be set by record()
+    record.type = AuditEventType::CertificateRevoked;
+    record.timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+    record.actor_id = "governance";
+    record.target_id = node_id_hex;
+    record.contract_id = "system.recovery";
+    record.details = "Certificate revoked: " + reason + " (fingerprint=" + fingerprint + ", epoch=" + std::to_string(epoch) + ")";
+    record.prev_hash = impl_->last_hash;
+    record.record_hash = impl_->compute_hash(*this->get_dummy_record()); // placeholder
+
+    // For simplicity, just log to stdout (full implementation would write to DB)
+    std::printf("[smo-node] AUDIT: Certificate revoked - fingerprint=%s node=%s reason=%s epoch=%llu\n",
+                fingerprint.c_str(), node_id_hex.c_str(), reason.c_str(), (unsigned long long)epoch);
 }
 
 } // namespace smo

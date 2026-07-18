@@ -9,6 +9,8 @@
 #include "core/discovery/discovery.hpp"
 #include "core/errors/error.hpp"
 #include "core/identity/identity.hpp"
+#include "core/recovery/crl.hpp"
+#include "runtime/event_bus.hpp"
 
 namespace smo {
 
@@ -29,6 +31,8 @@ public:
 
     explicit GossipEngine(MembershipTable& table, const Config& cfg);
 
+    void set_crl(recovery::CRL* crl) { crl_ = crl; }
+
     static Config default_config();
 
     ~GossipEngine();
@@ -40,6 +44,10 @@ public:
     void stop();
 
     void tick(int64_t now_ns);
+
+    // EventBus listener for RecoveryApproved events
+    // Gossips CRL updates to peers
+    void on_recovery_approved(const runtime::Event& ev);
 
     // Get updates since a given sequence number (for delta sync)
     std::vector<GossipMessage> pending_updates(uint64_t since_sequence) const;
@@ -65,6 +73,8 @@ private:
     int64_t gossip_interval_ns_{5'000'000'000};
     int64_t last_gossip_{0};
     std::atomic<bool> running_{false};
+
+    recovery::CRL* crl_ = nullptr;
 };
 
 } // namespace smo
