@@ -185,6 +185,49 @@ struct OfflineMsg {
 };
 
 // ===========================================================================
+// UDP Discovery Protocol — wire format helpers
+//
+// Every UDP datagram carries: [magic:uint8=0x44('D')][type:uint8][payload]
+// ===========================================================================
+inline constexpr uint8_t kDiscoveryMagic = 0x44; // 'D'
+
+enum class DiscoveryMsgType : uint8_t {
+    Hello    = 1,
+    Welcome  = 2,
+    Ping     = 3,
+    Pong     = 4,
+    Discover = 5,
+    NodeInfo = 6,
+    Offline  = 7,
+};
+
+// Wrap serialized payload with magic + type header for UDP transmission
+inline Bytes wrap_discovery_msg(DiscoveryMsgType type, BytesView payload) {
+    Bytes out;
+    out.reserve(2 + payload.size());
+    out.push_back(kDiscoveryMagic);
+    out.push_back(static_cast<uint8_t>(type));
+    out.insert(out.end(), payload.begin(), payload.end());
+    return out;
+}
+
+// Peek first two bytes and return true if the buffer is a valid discovery frame
+inline bool is_discovery_msg(BytesView data) {
+    return data.size() >= 2 && data[0] == kDiscoveryMagic;
+}
+
+// Extract type from a discovery frame (caller must check is_discovery_msg first)
+inline DiscoveryMsgType discovery_msg_type(BytesView data) {
+    return static_cast<DiscoveryMsgType>(data[1]);
+}
+
+// Strip magic+type header and return payload. Returns empty view if too short.
+inline BytesView discovery_payload(BytesView data) {
+    if (data.size() < 2) return {};
+    return data.subspan(2);
+}
+
+// ===========================================================================
 // Bootstrap
 // ===========================================================================
 class Bootstrap {
@@ -201,6 +244,16 @@ public:
 // ===========================================================================
 // DiscoveryEngine
 // ===========================================================================
+// Dispatch a UDP discovery datagram to the appropriate Engine handler.
+// Extracts magic+type header, deserializes payload, calls handle_*.
+// Returns OK (possibly empty) for known types; propagates errors only for
+// structural deserialization failures.
+Result<void> dispatch_discovery_datagram(
+    BytesView data,
+    class DiscoveryEngine& engine,
+    const Endpoint& from,
+    int64_t now_ns);
+
 class DiscoveryEngine {
 public:
     DiscoveryEngine(MembershipTable& table, HealthMonitor& monitor, Transport& transport);

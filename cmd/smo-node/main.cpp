@@ -763,9 +763,26 @@ int main(int argc, char* argv[]) {
     // Initialize core components
     smo::MembershipTable membership;
     smo::HealthMonitor health_monitor;
-    auto* tcp_transport_ptr = smo::TransportRegistry::instance().get("tcp");
-    smo::Transport& transport_ref = *tcp_transport_ptr;
-    smo::DiscoveryEngine discovery_engine(membership, health_monitor, transport_ref);
+    auto* tcp_ptr = smo::TransportRegistry::instance().get("tcp");
+
+    // ── UDP Transport (§5.20: Discovery = UDP) ──────────────────
+    auto udp_transport = std::make_unique<smo::network::udp::UdpTransport>();
+    smo::Endpoint udp_listen_ep;
+    udp_listen_ep.scheme = "udp";
+    udp_listen_ep.host = "0.0.0.0";
+    udp_listen_ep.port = static_cast<uint16_t>(port);
+
+    auto udp_listener_result = udp_transport->listen(udp_listen_ep);
+    if (!udp_listener_result) {
+        std::fprintf(stderr, "[smo-node] Failed to listen UDP: %s\n",
+                     udp_listener_result.error().message.c_str());
+    } else {
+        std::printf("[smo-node] Listening on udp://0.0.0.0:%d\n", port);
+    }
+    auto* udp_listener = udp_listener_result ? udp_listener_result.value().get() : nullptr;
+
+    // ── DiscoveryEngine uses UDP transport (§5.20) ──────────────
+    smo::DiscoveryEngine discovery_engine(membership, health_monitor, *udp_transport);
     auto gossip_cfg = smo::GossipEngine::default_config();
     smo::GossipEngine gossip_engine(membership, gossip_cfg);
     smo::network::sync::MembershipSync membership_sync(membership, health_monitor);
@@ -785,21 +802,6 @@ int main(int argc, char* argv[]) {
     // Initialize AddressResolver
     smo::network::transport::AddressResolver address_resolver;
 
-    // Register UDP transport and start UDP listener
-    smo::Endpoint udp_listen_ep;
-    udp_listen_ep.scheme = "udp";
-    udp_listen_ep.host = "0.0.0.0";
-    udp_listen_ep.port = static_cast<uint16_t>(port);
-
-    auto udp_transport = std::make_unique<smo::network::udp::UdpTransport>();
-    auto udp_listen_result = udp_transport->listen(udp_listen_ep);
-    if (!udp_listen_result) {
-        std::fprintf(stderr, "[smo-node] Failed to listen UDP: %s\n",
-                     udp_listen_result.error().message.c_str());
-    } else {
-        std::printf("[smo-node] Listening on udp://0.0.0.0:%d\n", port);
-    }
-
     // Initialize HeartbeatService
     smo::network::udp::HeartbeatService::Config hb_config;
     hb_config.ping_interval_ms = 5000;
@@ -808,8 +810,7 @@ int main(int argc, char* argv[]) {
     hb_config.local_port = port;
 
     smo::network::udp::HeartbeatService heartbeat_service(hb_config);
-    auto hb_start = heartbeat_service.start(*static_cast<smo::network::udp::UdpTransport*>(udp_transport.get()),
-                                            membership, health_monitor);
+    auto hb_start = heartbeat_service.start(*udp_transport, membership, health_monitor);
     if (!hb_start) {
         std::fprintf(stderr, "[smo-node] Failed to start heartbeat: %s\n",
                      hb_start.error().message.c_str());
@@ -942,7 +943,7 @@ int main(int argc, char* argv[]) {
 
             auto rec_result = smo::Bootstrap::find_seed(
                 {seed_ep},
-                transport_ref,
+                *tcp_ptr,
                 local_id,
                 static_cast<int64_t>(now) * 1000000000LL);
 
@@ -1615,6 +1616,22 @@ int main(int argc, char* argv[]) {
             // pending MembershipEvents, connects via TCP, and sends framed data.
             gossip_engine.tick(now_ns);
             last_gossip = now_ns;
+        }
+
+        // ── UDP Discovery: read and dispatch datagrams (§5.20) ──
+        if (udp_listener) {
+            while (true) {
+                auto udp_session = udp_listener->accept();
+                if (!udp_session) break; // no more data (non-blocking)
+
+                auto recv_data = udp_session.value()->recv(8192);
+                if (recv_data) {
+                    smo::Endpoint from = udp_session.value()->remote_endpoint();
+                    (void)smo::dispatch_discovery_datagram(
+                        recv_data.value(), discovery_engine, from, now_ns);
+                }
+                udp_session.value()->close();
+            }
         }
 
         // Periodic PeerStore sync

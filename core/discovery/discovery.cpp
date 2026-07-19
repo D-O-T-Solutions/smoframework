@@ -690,11 +690,67 @@ void DiscoveryEngine::send_node_info(const Endpoint& to) const {
         NodeInfoMsg msg;
         msg.peer_record = rec;
         auto data = msg.serialize();
+        auto framed = wrap_discovery_msg(DiscoveryMsgType::NodeInfo, data);
         auto session = transport_.connect(to);
         if (session) {
-            session.value()->send(data).ignore();
+            session.value()->send(framed).ignore();
         }
     }
+}
+
+// ── UDP Discovery Dispatcher ─────────────────────────────────────────
+
+Result<void> dispatch_discovery_datagram(
+    BytesView data,
+    DiscoveryEngine& engine,
+    const Endpoint& from,
+    int64_t now_ns)
+{
+    if (!is_discovery_msg(data)) {
+        return {}; // not a discovery frame, ignore silently
+    }
+
+    auto type = discovery_msg_type(data);
+    auto payload = discovery_payload(data);
+
+    switch (type) {
+        case DiscoveryMsgType::Hello: {
+            auto msg = HelloMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_hello(msg.value(), from, now_ns);
+        }
+        case DiscoveryMsgType::Welcome: {
+            auto msg = WelcomeMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_welcome(msg.value(), now_ns);
+        }
+        case DiscoveryMsgType::Ping: {
+            auto msg = PingMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_ping(msg.value(), now_ns);
+        }
+        case DiscoveryMsgType::Pong: {
+            auto msg = PongMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_pong(msg.value(), now_ns);
+        }
+        case DiscoveryMsgType::Discover: {
+            auto msg = DiscoverMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_discover(msg.value(), from, now_ns);
+        }
+        case DiscoveryMsgType::NodeInfo: {
+            auto msg = NodeInfoMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_node_info(msg.value(), now_ns);
+        }
+        case DiscoveryMsgType::Offline: {
+            auto msg = OfflineMsg::deserialize(payload);
+            if (!msg) return {};
+            return engine.handle_offline(msg.value(), now_ns);
+        }
+    }
+    return {}; // unknown type, ignore
 }
 
 } // namespace smo

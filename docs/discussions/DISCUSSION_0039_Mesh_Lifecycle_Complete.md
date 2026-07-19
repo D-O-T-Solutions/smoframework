@@ -860,7 +860,7 @@ MeshManager
 | Priority | Gap | Status | Details |
 |----------|-----|--------|---------|
 | **1** | SyncService delta handlers (policy, crl, manifest, routing, contracts) | ❌ | Intervals defined in SyncSchedule but no handlers registered — only `membership` delta triggers gossip |
-| **2** | DiscoveryEngine (UDP) — HELLO/WELCOME/PING/PONG | ❌ | Per §5.20: UDP for LAN discovery + liveness. **BUG:** `DiscoveryEngine` currently wired to **TCP** transport (`smo-node:767`), not UDP. UDP transport registered but unused. `GossipEngine` was using UDP for fanout (wrong — fixed in Phase 7 to TCP). Need to rewire `DiscoveryEngine` to use UDP transport properly |
+| **2** | DiscoveryEngine (UDP) — HELLO/WELCOME/PING/PONG | ✅ | **FIXED:** Rewired `DiscoveryEngine` to UDP transport; added `dispatch_discovery_datagram()` with magic+type dispatch (`0x44('D')` + `DiscoveryMsgType`); added UDP read loop in daemon (`smo-node:1630-1645`); added `wrap_discovery_msg()` helper; `send_node_info()` now wraps with type tag. `Bootstrap::find_seed()` remains on TCP (per §5.20: bootstrap = TCP). Both TCP (bootstrap) and UDP (LAN discovery) HELLO paths coexist correctly |
 | **3** | GOSSIP_SYNC join FSM — wait for actual gossip readiness | ⚠️ stub | `auto_enroll.cpp:718-726` transitions `WAIT_SYNC → GOSSIP_STARTED → GOSSIP_COMPLETE → READY` immediately without waiting for GossipEngine to actually send/receive |
 | **4** | `smo mesh create` — full key generation | ⚠️ partial | Still delegates to `smo-admin create-mesh` for key generation; should integrate directly |
 
