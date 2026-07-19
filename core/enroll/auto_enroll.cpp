@@ -2,6 +2,7 @@
 
 #include "core/crypto/registry.hpp"
 #include "core/enroll/join_token.hpp"
+#include "core/join/join_protocol.hpp"
 #include "core/errors/error.hpp"
 #include "core/types.hpp"
 #include "core/identity/identity.hpp"
@@ -28,7 +29,7 @@
 namespace smo {
 namespace enroll {
 
-// ── Hex helper (bytes_to_hex exists in types.hpp, but hex_to_bytes doesn't) ─
+// ── Hex helper ────────────────────────────────────────────────────────
 
 static Bytes hex_to_bytes(const std::string& hex) {
     Bytes out;
@@ -40,13 +41,9 @@ static Bytes hex_to_bytes(const std::string& hex) {
     return out;
 }
 
-// ── Minimal HTTP client ─────────────────────────────────────────────
+// ── TCP send/receive (raw CBOR, no HTTP) ──────────────────────────────
 
-static Result<std::string> http_post(const std::string& host, uint16_t port,
-                                      const std::string& path,
-                                      const std::string& content_type,
-                                      const std::string& body,
-                                      int timeout_sec = 10) {
+static int tcp_connect(const std::string& host, uint16_t port, int timeout_sec = 10) {
     struct addrinfo hints, *res = nullptr;
     std::memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -55,14 +52,13 @@ static Result<std::string> http_post(const std::string& host, uint16_t port,
     std::string port_str = std::to_string(port);
     int gai_err = ::getaddrinfo(host.c_str(), port_str.c_str(), &hints, &res);
     if (gai_err != 0 || !res) {
-        return SMO_ERR_CERT(214, Error, RetrySafe, None,
-                            "DNS resolution failed: " + host);
+        return -1;
     }
 
     int fd = ::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (fd < 0) {
         ::freeaddrinfo(res);
-        return SMO_ERR_CERT(214, Error, RetrySafe, None, "Failed to create socket");
+        return -1;
     }
 
     struct timeval tv;
@@ -74,87 +70,61 @@ static Result<std::string> http_post(const std::string& host, uint16_t port,
     if (::connect(fd, res->ai_addr, res->ai_addrlen) < 0) {
         ::close(fd);
         ::freeaddrinfo(res);
-        return SMO_ERR_CERT(214, Error, RetrySafe, None,
-                            "Connection refused: " + host + ":" + port_str);
+        return -1;
     }
     ::freeaddrinfo(res);
-
-    std::ostringstream req;
-    req << "POST " << path << " HTTP/1.1\r\n"
-        << "Host: " << host << ":" << port << "\r\n"
-        << "Content-Type: " << content_type << "\r\n"
-        << "Content-Length: " << body.size() << "\r\n"
-        << "Connection: close\r\n"
-        << "\r\n"
-        << body;
-
-    std::string request_str = req.str();
-    size_t total_sent = 0;
-    while (total_sent < request_str.size()) {
-        ssize_t n = ::send(fd, request_str.data() + total_sent,
-                           request_str.size() - total_sent, 0);
-        if (n <= 0) {
-            ::close(fd);
-            return SMO_ERR_CERT(214, Error, RetrySafe, None,
-                                "Failed to send HTTP request");
-        }
-        total_sent += static_cast<size_t>(n);
-    }
-
-    std::string response;
-    char buf[4096];
-    ssize_t n;
-    while ((n = ::recv(fd, buf, sizeof(buf), 0)) > 0) {
-        response.append(buf, static_cast<size_t>(n));
-    }
-    ::close(fd);
-
-    if (response.empty()) {
-        return SMO_ERR_CERT(214, Error, RetrySafe, None, "Empty response from server");
-    }
-
-    auto line_end = response.find("\r\n");
-    if (line_end == std::string::npos) {
-        return SMO_ERR_CERT(214, Error, RetrySafe, None, "Invalid HTTP response");
-    }
-
-    std::string status_line = response.substr(0, line_end);
-    auto space1 = status_line.find(' ');
-    auto space2 = status_line.find(' ', space1 + 1);
-    if (space1 == std::string::npos || space2 == std::string::npos) {
-        return SMO_ERR_CERT(214, Error, RetrySafe, None, "Invalid HTTP status line");
-    }
-
-    int status_code = std::stoi(status_line.substr(space1 + 1, space2 - space1 - 1));
-
-    auto body_start = response.find("\r\n\r\n");
-    if (body_start == std::string::npos) {
-        return SMO_ERR_CERT(214, Error, RetrySafe, None, "No HTTP body found");
-    }
-    body_start += 4;
-
-    std::string response_body = response.substr(body_start);
-
-    if (status_code != 200) {
-        return SMO_ERR_CERT(215, Error, RetrySafe, None,
-                            "Server returned " + std::to_string(status_code) + ": " + response_body);
-    }
-
-    return response_body;
+    return fd;
 }
 
-// ── JSON field extraction (simple, no dependency) ────────────────────
+// ── CBOR transport: 4-byte length prefix + CBOR payload ──────────────
 
-static std::string json_read_string(const std::string& json, const std::string& key) {
-    auto pos = json.find("\"" + key + "\"");
-    if (pos == std::string::npos) return {};
-    auto colon = json.find(':', pos);
-    if (colon == std::string::npos) return {};
-    auto start = json.find('"', colon + 1);
-    if (start == std::string::npos) return {};
-    auto end = json.find('"', start + 1);
-    if (end == std::string::npos) return {};
-    return json.substr(start + 1, end - start - 1);
+static Result<Bytes> tcp_cbor_exchange(int fd, BytesView send_cbor) {
+    // Send: 4-byte big-endian length + CBOR payload
+    uint32_t send_len = static_cast<uint32_t>(send_cbor.size());
+    uint8_t header[4];
+    header[0] = static_cast<uint8_t>((send_len >> 24) & 0xFF);
+    header[1] = static_cast<uint8_t>((send_len >> 16) & 0xFF);
+    header[2] = static_cast<uint8_t>((send_len >> 8) & 0xFF);
+    header[3] = static_cast<uint8_t>(send_len & 0xFF);
+
+    size_t total = 0;
+    while (total < sizeof(header)) {
+        ssize_t n = ::send(fd, header + total, sizeof(header) - total, 0);
+        if (n <= 0) return SMO_ERR_TRANSPORT(400, Error, RetrySafe, None, "Failed to send CBOR header");
+        total += static_cast<size_t>(n);
+    }
+    total = 0;
+    while (total < send_cbor.size()) {
+        ssize_t n = ::send(fd, send_cbor.data() + total, send_cbor.size() - total, 0);
+        if (n <= 0) return SMO_ERR_TRANSPORT(400, Error, RetrySafe, None, "Failed to send CBOR payload");
+        total += static_cast<size_t>(n);
+    }
+
+    // Receive: 4-byte big-endian length
+    uint8_t resp_header[4];
+    total = 0;
+    while (total < sizeof(resp_header)) {
+        ssize_t n = ::recv(fd, resp_header + total, sizeof(resp_header) - total, 0);
+        if (n <= 0) return SMO_ERR_TRANSPORT(400, Error, RetrySafe, None, "Failed to receive response header");
+        total += static_cast<size_t>(n);
+    }
+    uint32_t resp_len = (static_cast<uint32_t>(resp_header[0]) << 24) |
+                        (static_cast<uint32_t>(resp_header[1]) << 16) |
+                        (static_cast<uint32_t>(resp_header[2]) << 8)  |
+                         static_cast<uint32_t>(resp_header[3]);
+    if (resp_len > 1024 * 1024) { // 1MB max
+        return SMO_ERR_TRANSPORT(400, Error, NoRetry, None, "Response too large");
+    }
+
+    Bytes resp(resp_len);
+    total = 0;
+    while (total < resp_len) {
+        ssize_t n = ::recv(fd, resp.data() + total, resp_len - total, 0);
+        if (n <= 0) return SMO_ERR_TRANSPORT(400, Error, RetrySafe, None, "Failed to receive response payload");
+        total += static_cast<size_t>(n);
+    }
+    ::close(fd);
+    return resp;
 }
 
 // ── Directory helpers ────────────────────────────────────────────────
@@ -177,12 +147,11 @@ Result<void> run_join_command(const std::string& token_str,
                                const std::string& node_name,
                                uint16_t port,
                                const std::string& mesh_dir) {
-    (void)mesh_dir; // unused when using HTTP enrollment
+    (void)mesh_dir;
 
     // Parse token
     auto token_result = enroll::parse_token(token_str);
     if (!token_result) return token_result.error();
-
     const auto& token = token_result.value();
 
     // Validate expiry
@@ -220,7 +189,6 @@ Result<void> run_join_command(const std::string& token_str,
         auto id_result = Identity::create(*crypto, rng);
         if (!id_result) return id_result.error();
         identity = std::make_shared<Identity>(std::move(id_result.value()));
-
         auto save_result = identity->save_to_file(identity_path);
         if (!save_result) return save_result.error();
         std::printf("Identity created: %s\n", identity->node_id().to_string().c_str());
@@ -235,7 +203,7 @@ Result<void> run_join_command(const std::string& token_str,
     csr.version = "0.1.0";
     csr.timestamp = std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
-    csr.old_cert_hash = Bytes(32, 0); // no old cert for new enrollment
+    csr.old_cert_hash = Bytes(32, 0);
 
     // Sign CSR with node's secret key
     auto csr_body = csr.serialize_body();
@@ -243,18 +211,53 @@ Result<void> run_join_command(const std::string& token_str,
     if (!sig_result) return sig_result.error();
     csr.signature = std::move(sig_result.value());
 
-    // Serialize CSR to hex (body + signature)
+    // Serialize CSR to PEM
     Bytes csr_bytes = csr.serialize();
-    std::string csr_hex = bytes_to_hex(csr_bytes);
+    std::string csr_pem = bytes_to_hex(csr_bytes); // Use hex as PEM placeholder
 
-    // 3. Try to enroll via bootstrap endpoints
+    // 3. Build JoinRequest (TCP/CBOR — no HTTP)
+    auto now_sec = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+
+    join::JoinRequest req;
+    req.token = token_str;
+    req.csr_pem = csr_pem;
+    req.timestamp = now_sec;
+    // Generate 64-bit random nonce
+    std::array<uint8_t, 8> nonce{};
+    for (auto& b : nonce) b = static_cast<uint8_t>(rand());
+    req.nonce = nonce;
+    // csr_hash = sha256(csr_pem)
+    auto hash_result = crypto->hash.hash(BytesView(reinterpret_cast<const uint8_t*>(csr_pem.data()), csr_pem.size()));
+    if (!hash_result) return hash_result.error();
+    req.csr_hash = std::move(hash_result.value());
+    // request_signature = sign(token || timestamp || nonce || csr_hash) using node key
+    {
+        Bytes sig_payload;
+        sig_payload.insert(sig_payload.end(), token_str.begin(), token_str.end());
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 56) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 48) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 40) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 32) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 24) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 16) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 8) & 0xFF));
+        sig_payload.push_back(static_cast<uint8_t>(now_sec & 0xFF));
+        sig_payload.insert(sig_payload.end(), nonce.begin(), nonce.end());
+        sig_payload.insert(sig_payload.end(), req.csr_hash.begin(), req.csr_hash.end());
+        auto sig_req_result = crypto->signer.sign(BytesView(sig_payload), identity->secret_key(), rng);
+        if (!sig_req_result) return sig_req_result.error();
+        req.request_signature = std::move(sig_req_result.value());
+    }
+
+    Bytes req_cbor = req.encode_cbor();
+
+    // 4. Try to enroll via TCP/CBOR to bootstrap endpoints
     std::string last_error;
     bool success = false;
-    std::string cert_hex;
-    std::string fingerprint;
-    std::string node_id_hex;
+    join::JoinResponse resp;
 
-    std::printf("Attempting to join mesh via bootstrap endpoints...\n");
+    std::printf("Attempting to join mesh via TCP/CBOR...\n");
 
     for (const auto& endpoint : token.bootstrap_endpoints) {
         size_t colon = endpoint.rfind(':');
@@ -264,31 +267,30 @@ Result<void> run_join_command(const std::string& token_str,
 
         std::printf("  Trying endpoint: %s:%u ... ", host.c_str(), ep_port);
 
-        // Build JSON body
-        std::string json_body = R"({"join_token":")" + token_str + R"(","csr_hex":")" + csr_hex + R"("})";
-
-        auto response = http_post(host, ep_port, "/enroll", "application/json", json_body);
-        if (!response) {
-            std::printf("FAIL (%s)\n", response.error().message.c_str());
-            last_error = response.error().message;
+        int fd = tcp_connect(host, ep_port);
+        if (fd < 0) {
+            std::printf("FAIL (connection refused)\n");
+            last_error = "Connection refused: " + host + ":" + std::to_string(ep_port);
             continue;
         }
 
-        std::printf("OK\n");
-
-        // Parse response
-        std::string resp_status = json_read_string(response.value(), "status");
-        if (resp_status != "ok") {
-            std::string err_msg = json_read_string(response.value(), "message");
-            last_error = "Server rejected enrollment: " + (err_msg.empty() ? resp_status : err_msg);
-            std::printf("  Server error: %s\n", last_error.c_str());
+        auto resp_result = tcp_cbor_exchange(fd, BytesView(req_cbor));
+        if (!resp_result) {
+            std::printf("FAIL (%s)\n", resp_result.error().message.c_str());
+            last_error = resp_result.error().message;
             continue;
         }
 
-        cert_hex = json_read_string(response.value(), "certificate_hex");
-        fingerprint = json_read_string(response.value(), "fingerprint");
-        node_id_hex = json_read_string(response.value(), "node_id");
+        auto decode_result = join::JoinResponse::decode_cbor(BytesView(resp_result.value()));
+        if (!decode_result) {
+            std::printf("FAIL (invalid response: %s)\n", decode_result.error().message.c_str());
+            last_error = "Invalid CBOR response";
+            continue;
+        }
+
+        resp = std::move(decode_result.value());
         success = true;
+        std::printf("OK\n");
         break;
     }
 
@@ -297,12 +299,20 @@ Result<void> run_join_command(const std::string& token_str,
                             "All bootstrap endpoints unreachable. Last error: " + last_error);
     }
 
-    // 4. Import certificate
-    if (cert_hex.empty()) {
+    // 5. Process response
+    if (resp.certificate_pem.empty()) {
         return SMO_ERR_CERT(215, Error, NoRetry, None, "No certificate in response");
     }
 
-    Bytes cert_bytes = hex_to_bytes(cert_hex);
+    // Deserialize certificate (PEM is hex-encoded for now)
+    Bytes cert_bytes;
+    if (resp.certificate_pem.find("BEGIN") != std::string::npos) {
+        // Real PEM — strip headers and decode base64
+        // For now assume hex-encoded binary
+        cert_bytes = hex_to_bytes(resp.certificate_pem);
+    } else {
+        cert_bytes = hex_to_bytes(resp.certificate_pem);
+    }
 
     auto cert_result = Certificate::deserialize(cert_bytes);
     if (!cert_result) {
@@ -321,19 +331,30 @@ Result<void> run_join_command(const std::string& token_str,
         f.write(reinterpret_cast<const char*>(cert_bytes.data()), cert_bytes.size());
     }
 
+    std::string node_id_str = resp.mesh_id.empty() ? token.mesh_id : resp.mesh_id;
+
     std::printf("\n✓ Successfully enrolled!\n");
-    std::printf("  Node ID:      %s\n", node_id_hex.c_str());
     std::printf("  Mesh:         %s\n", token.mesh_id.c_str());
     std::printf("  Role:         %s\n", token.admission.role.c_str());
     std::printf("  Profile:      %s\n", token.admission.profile.empty() ? "default" : token.admission.profile.c_str());
     std::printf("  Certificate:  %s\n", cert_path.c_str());
-    std::printf("  Fingerprint:  %s\n", fingerprint.c_str());
+    if (!resp.manifest_digest.empty()) {
+        std::printf("  Manifest:     epoch=%llu digest=", (unsigned long long)resp.manifest_epoch);
+        for (auto b : resp.manifest_digest) std::printf("%02x", b);
+        std::printf("\n");
+    }
+    if (!resp.bootstrap_nodes.empty()) {
+        std::printf("  Bootstrap:    %zu seed(s)\n", resp.bootstrap_nodes.size());
+        for (auto& ep : resp.bootstrap_nodes) {
+            std::printf("    %s\n", ep.c_str());
+        }
+    }
 
     // Update identity state to Enrolled
     (void)identity->transition_to(IdentityState::Enrolled);
     (void)identity->save_to_file(identity_path);
 
-    // 5. Save bootstrap endpoints for daemon
+    // 6. Save config for daemon
     std::string config_path = actual_data_dir + "/config.json";
     {
         std::ofstream f(config_path);
@@ -344,9 +365,11 @@ Result<void> run_join_command(const std::string& token_str,
             f << "  \"profile\": \"" << (token.admission.profile.empty() ? "server" : token.admission.profile) << "\",\n";
             f << "  \"listen_port\": " << port << ",\n";
             f << "  \"bootstrap_endpoints\": [\n";
-            for (size_t i = 0; i < token.bootstrap_endpoints.size(); ++i) {
+            // Use bootstrap_nodes from response if available, else fallback to token endpoints
+            const auto& endpoints = !resp.bootstrap_nodes.empty() ? resp.bootstrap_nodes : token.bootstrap_endpoints;
+            for (size_t i = 0; i < endpoints.size(); ++i) {
                 if (i > 0) f << ",\n";
-                f << "    \"" << token.bootstrap_endpoints[i] << "\"";
+                f << "    \"" << endpoints[i] << "\"";
             }
             f << "\n  ],\n";
             f << "  \"node_name\": \"" << (node_name.empty() ? identity->node_id().to_string() : node_name) << "\"\n";

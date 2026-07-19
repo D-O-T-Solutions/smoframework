@@ -10,10 +10,14 @@ OpcodeRegistry::OpcodeRegistry() {
     register_builtin(Opcode::GET,        "get",        0x01, true);
     register_builtin(Opcode::EXEC,       "exec",       0x01, false);
     register_builtin(Opcode::QUARANTINE, "quarantine", 0x01, false);
+
     register_builtin(Opcode::MKDIR,      "mkdir",      0x01, true);
     register_builtin(Opcode::RM,         "rm",         0x01, false);
     register_builtin(Opcode::CP,         "cp",         0x01, true);
-    register_builtin(Opcode::CUSTOM,     "custom",     0x01, false);
+
+    // JOIN namespace (0x06) - Phase 2
+    register_builtin(Opcode::JOIN,       "join",       0x01, false);
+    register_builtin(Opcode::LEAVE,      "leave",      0x01, true);
 }
 
 OpcodeRegistry& OpcodeRegistry::instance() {

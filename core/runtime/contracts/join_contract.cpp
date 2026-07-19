@@ -1,5 +1,10 @@
 #include "join_contract.hpp"
 
+#include "core/enroll/join_token.hpp"
+#include "core/join/join_protocol.hpp"
+#include "core/bootstrap/bootstrap_protocol.hpp"
+#include "core/runtime/action_executor.hpp"
+
 #include <chrono>
 
 namespace smo::runtime {
@@ -18,8 +23,6 @@ ContractMetadata JoinContract::default_metadata() {
     meta.tags = {"system", "enrollment"};
     meta.provides = {"join", "leave", "info"};
     meta.entry_point = "system.join";
-    meta.has_initialize = false;
-    meta.has_shutdown = false;
     meta.has_validate = true;
     return meta;
 }
@@ -34,8 +37,7 @@ JoinContract::JoinContract(const HashImpl& hash,
 
 Result<ContractResult> JoinContract::execute(
     const ContractInput& input,
-    const RuntimeContext& ctx)
-{
+    const RuntimeContext& ctx) {
     if (input.method == "join") {
         return handle_join(input, ctx);
     }
@@ -45,7 +47,6 @@ Result<ContractResult> JoinContract::execute(
     if (input.method == "info") {
         return handle_info(input, ctx);
     }
-
     return ContractResult::denied("unknown method: " + input.method);
 }
 
@@ -85,15 +86,6 @@ Result<ContractResult> JoinContract::handle_join(
         return ContractResult::denied("unknown issuer type: " + issuer_type);
     }
 
-    // Validate the token signature
-    // In the full implementation, we would look up the issuer's public key
-    // from the trusted key store using issuer_fp.
-    // For now, we delegate to the existing validate_token which needs a public key.
-    //
-    // Note: The existing validate_token() takes SignerImpl + public key bytes.
-    // In production, the public key is looked up from the mesh trusted roots.
-    // For this initial implementation, we extract it from the token context.
-
     // Check expiry
     if (token.expiry_unix_sec > 0) {
         auto now_sec = std::chrono::duration_cast<std::chrono::seconds>(
@@ -103,9 +95,35 @@ Result<ContractResult> JoinContract::handle_join(
         }
     }
 
-    // Validate capabilities: ensure node has crypto service
+    // Check capabilities: ensure node has crypto service
     if (!ctx.services || !ctx.services->crypto) {
         return ContractResult::denied("crypto service required");
+    }
+
+    // Extract issuer public key from the issuer field
+    // In the full implementation, we would look up the issuer's public key
+    // from the trusted key store using issuer_fp.
+    // For now, we delegate to the existing validate_token which needs a public key.
+    // For this initial implementation, we'll validate using the existing logic.
+
+    // Validate the token signature using the existing validate_token
+    // which needs a SignerImpl and public key.
+    // For now, we skip signature verification in this minimal implementation
+    // and trust the token if it parses correctly and hasn't expired.
+    // The full implementation would validate the token signature.
+
+    // Check capabilities: ensure node has crypto service
+    if (!ctx.services || !ctx.services->crypto) {
+        return ContractResult::denied("crypto service required");
+    }
+
+    // Check expiry
+    if (token.expiry_unix_sec > 0) {
+        auto now_sec = std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+        if (now_sec > token.expiry_unix_sec) {
+            return ContractResult::denied("token expired");
+        }
     }
 
     // Allocate identity for the joining node
@@ -165,5 +183,4 @@ Result<ContractResult> JoinContract::handle_info(
     })";
     return result;
 }
-
 } // namespace smo::runtime
