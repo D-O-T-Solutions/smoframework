@@ -51,6 +51,9 @@ struct JoinToken {
     std::string issuer;               // "root:<fingerprint>"
     Bytes       signature;            // Raw signature bytes
 
+    // token_id is an alias for nonce (128-bit random, replay protection per §5.16)
+    const std::string& token_id() const noexcept { return nonce; }
+
     Bytes serialize_payload() const;
     static Result<JoinToken> deserialize_payload(BytesView data);
 };

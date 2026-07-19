@@ -125,6 +125,45 @@ struct BootstrapSyncResponse {
     static Result<BootstrapSyncResponse> decode_cbor(BytesView data);
 };
 
+// ── Join State Machine ────────────────────────────────────────────────
+// States per DISCUSSION_0039 §5.21
+
+enum class JoinState : int64_t {
+    NEW             = 0,
+    TOKEN_RECEIVED  = 1,
+    CSR_CREATED     = 2,
+    JOIN_SENT       = 3,
+    WAIT_RESPONSE   = 4,
+    CERT_RECEIVED   = 5,
+    CERT_VERIFY     = 6,
+    BOOTSTRAP_SYNC  = 7,
+    WAIT_SYNC       = 8,
+    GOSSIP_SYNC     = 9,
+    WAIT_GOSSIP     = 10,
+    READY           = 11,
+    FAILED          = -1,
+};
+
+enum class JoinEvent : int64_t {
+    TOKEN_PARSED    = 100,
+    CSR_BUILT       = 101,
+    MSG_SENT        = 102,
+    RESPONSE_RCVD   = 103,
+    CERT_VERIFIED   = 104,
+    CERT_INVALID    = 105,
+    SYNC_REQUESTED  = 106,
+    SYNC_COMPLETE   = 107,
+    GOSSIP_STARTED  = 108,
+    GOSSIP_COMPLETE = 109,
+    TIMEOUT         = 110,
+    RETRY           = 111,
+    FAIL            = 112,
+};
+
+// Build transition table for the join FSM
+std::vector<smo::TransitionRule> join_transition_table();
+std::vector<smo::StateTimeout> join_timeout_table();
+
 // ── Handler declarations ─────────────────────────────────────────────
 
 Result<void> handle_join_request(

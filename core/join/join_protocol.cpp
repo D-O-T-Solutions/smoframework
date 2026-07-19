@@ -319,4 +319,50 @@ Result<BootstrapSyncResponse> BootstrapSyncResponse::decode_cbor(BytesView data)
     return resp;
 }
 
+// ── Join FSM transition table ────────────────────────────────────────
+
+std::vector<smo::TransitionRule> join_transition_table() {
+    using enum JoinState;
+    using enum JoinEvent;
+    return {
+        // Main path
+        {static_cast<int64_t>(NEW),             static_cast<int64_t>(TOKEN_PARSED),    static_cast<int64_t>(TOKEN_RECEIVED)},
+        {static_cast<int64_t>(TOKEN_RECEIVED),  static_cast<int64_t>(CSR_BUILT),       static_cast<int64_t>(CSR_CREATED)},
+        {static_cast<int64_t>(CSR_CREATED),     static_cast<int64_t>(MSG_SENT),        static_cast<int64_t>(JOIN_SENT)},
+        {static_cast<int64_t>(JOIN_SENT),       static_cast<int64_t>(RESPONSE_RCVD),   static_cast<int64_t>(WAIT_RESPONSE)},
+        {static_cast<int64_t>(WAIT_RESPONSE),   static_cast<int64_t>(RESPONSE_RCVD),   static_cast<int64_t>(CERT_RECEIVED)},
+
+        // CERT_VERIFY — new state per §5.21
+        {static_cast<int64_t>(CERT_RECEIVED),   static_cast<int64_t>(CERT_VERIFIED),   static_cast<int64_t>(CERT_VERIFY)},
+        {static_cast<int64_t>(CERT_RECEIVED),   static_cast<int64_t>(CERT_INVALID),    static_cast<int64_t>(FAILED)},
+
+        // Bootstrap sync
+        {static_cast<int64_t>(CERT_VERIFY),     static_cast<int64_t>(SYNC_REQUESTED),  static_cast<int64_t>(BOOTSTRAP_SYNC)},
+        {static_cast<int64_t>(BOOTSTRAP_SYNC),  static_cast<int64_t>(SYNC_COMPLETE),   static_cast<int64_t>(WAIT_SYNC)},
+
+        // Gossip sync
+        {static_cast<int64_t>(WAIT_SYNC),       static_cast<int64_t>(GOSSIP_STARTED),  static_cast<int64_t>(GOSSIP_SYNC)},
+        {static_cast<int64_t>(GOSSIP_SYNC),     static_cast<int64_t>(GOSSIP_COMPLETE), static_cast<int64_t>(WAIT_GOSSIP)},
+        {static_cast<int64_t>(WAIT_GOSSIP),     static_cast<int64_t>(GOSSIP_COMPLETE), static_cast<int64_t>(READY)},
+
+        // Retry / failure
+        {static_cast<int64_t>(WAIT_RESPONSE),   static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(JOIN_SENT)},
+        {static_cast<int64_t>(WAIT_SYNC),       static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(BOOTSTRAP_SYNC)},
+        {static_cast<int64_t>(WAIT_GOSSIP),     static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(GOSSIP_SYNC)},
+        {static_cast<int64_t>(WAIT_RESPONSE),   static_cast<int64_t>(FAIL),            static_cast<int64_t>(FAILED)},
+        {static_cast<int64_t>(WAIT_SYNC),       static_cast<int64_t>(FAIL),            static_cast<int64_t>(FAILED)},
+        {static_cast<int64_t>(WAIT_GOSSIP),     static_cast<int64_t>(FAIL),            static_cast<int64_t>(FAILED)},
+        {static_cast<int64_t>(CERT_VERIFY),     static_cast<int64_t>(FAIL),            static_cast<int64_t>(FAILED)},
+    };
+}
+
+std::vector<smo::StateTimeout> join_timeout_table() {
+    using enum JoinState;
+    return {
+        {static_cast<int64_t>(WAIT_RESPONSE),  30'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 30s
+        {static_cast<int64_t>(WAIT_SYNC),      30'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 30s
+        {static_cast<int64_t>(WAIT_GOSSIP),    60'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 60s
+    };
+}
+
 } // namespace smo::join
