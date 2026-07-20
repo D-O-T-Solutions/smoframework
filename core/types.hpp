@@ -46,4 +46,14 @@ inline std::string bytes_to_base64(BytesView data) {
     return out;
 }
 
+// ---------------------------------------------------------------------------
+// SeedInfo — bootstrap seed endpoint with metadata for smart seed selection
+// ---------------------------------------------------------------------------
+struct SeedInfo {
+    std::string endpoint;          // "host:port"
+    std::string region;            // "us-east-1", "ap-southeast-1", etc.
+    uint32_t    priority = 0;      // 0=highest
+    double      health_score = 1.0; // 0.0–1.0 (from health monitor)
+};
+
 } // namespace smo

@@ -40,7 +40,7 @@ struct BootstrapSnapshot {
 
     // Authority nodes
     std::vector<AuthorityInfo> authorities;
-    std::vector<std::string> seeds;
+    std::vector<SeedInfo> seeds;
 
     // Version info
     int64_t policy_version     = 1;

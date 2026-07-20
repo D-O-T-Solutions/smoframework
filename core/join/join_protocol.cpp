@@ -19,31 +19,42 @@ namespace smo::join {
 
 // ── CBOR key constants ──────────────────────────────────────────────
 namespace {
-// JoinRequest keys (DISCUSSION_0039 §5.17)
+// JoinRequest keys (DISCUSSION_0039 §5.17, DISCUSSION_0040 §F2)
 constexpr uint64_t K_REQ_TOKEN     = 1;
 constexpr uint64_t K_REQ_CSR       = 2;
 constexpr uint64_t K_REQ_TIMESTAMP = 3;
 constexpr uint64_t K_REQ_NONCE     = 4;
 constexpr uint64_t K_REQ_CSR_HASH  = 5;
 constexpr uint64_t K_REQ_SIG       = 6;
+constexpr uint64_t K_REQ_PROTOCOL_VER = 7;
+constexpr uint64_t K_REQ_CAPABILITIES = 8;
 
-// JoinResponse keys (DISCUSSION_0039 §5.1)
+// JoinResponse keys (DISCUSSION_0039 §5.1, DISCUSSION_0040 §F5)
 constexpr uint64_t K_RESP_CERT     = 1;
 constexpr uint64_t K_RESP_MESH_ID  = 2;
 constexpr uint64_t K_RESP_MF_DIGEST = 3;
 constexpr uint64_t K_RESP_MF_EPOCH = 4;
 constexpr uint64_t K_RESP_BOOT_NODES = 5;
 constexpr uint64_t K_RESP_NONCE    = 6;
+constexpr uint64_t K_RESP_SERVER_TIME = 7;
+constexpr uint64_t K_RESP_CAPABILITIES = 8;
 
-// BootstrapSyncRequest keys (DISCUSSION_0039 §5.2)
+// SeedInfo sub-keys (encoded as CBOR map within bootstrap_nodes array)
+constexpr uint64_t K_SEED_ENDPOINT    = 1;
+constexpr uint64_t K_SEED_REGION      = 2;
+constexpr uint64_t K_SEED_PRIORITY    = 3;
+constexpr uint64_t K_SEED_HEALTH_SCORE = 4;
+
+// BootstrapSyncRequest keys (DISCUSSION_0039 §5.2, DISCUSSION_0040 §F2)
 constexpr uint64_t K_SYNC_REQ_MESH_ID = 1;
 constexpr uint64_t K_SYNC_REQ_NODE_ID = 2;
 constexpr uint64_t K_SYNC_REQ_MF_EPOCH = 3;
 constexpr uint64_t K_SYNC_REQ_CRL_EPOCH = 4;
 constexpr uint64_t K_SYNC_REQ_MEMBER_EPOCH = 5;
 constexpr uint64_t K_SYNC_REQ_POLICY_VER = 6;
+constexpr uint64_t K_SYNC_REQ_PROTOCOL_VER = 9;
 
-// BootstrapSyncResponse keys (DISCUSSION_0039 §5.4)
+// BootstrapSyncResponse keys (DISCUSSION_0039 §5.4, DISCUSSION_0040 §F5)
 constexpr uint64_t K_SYNC_RESP_MF_DELTA   = 1;
 constexpr uint64_t K_SYNC_RESP_MEMBER_DELTA = 2;
 constexpr uint64_t K_SYNC_RESP_POLICY_DELTA = 3;
@@ -52,6 +63,7 @@ constexpr uint64_t K_SYNC_RESP_MF_EPOCH    = 5;
 constexpr uint64_t K_SYNC_RESP_MEMBER_EPOCH = 6;
 constexpr uint64_t K_SYNC_RESP_CRL_EPOCH   = 7;
 constexpr uint64_t K_SYNC_RESP_POLICY_VER  = 8;
+constexpr uint64_t K_SYNC_RESP_SERVER_TIME = 10;
 } // anonymous namespace
 
 // ── JoinRequest ──────────────────────────────────────────────────────
@@ -62,13 +74,17 @@ Bytes JoinRequest::encode_cbor() const {
     if (csr_hash.size() > 0) fields++;
     if (request_signature.size() > 0) fields++;
     fields++; // nonce always present
+    fields++; // protocol_version always present
+    if (capability_bitmap > 0) fields++;
     enc.encode_map(fields);
+    enc.encode_uint(K_REQ_PROTOCOL_VER); enc.encode_uint(protocol_version);
     enc.encode_uint(K_REQ_TOKEN); enc.encode_string(token);
     enc.encode_uint(K_REQ_CSR); enc.encode_string(csr_pem);
     if (timestamp > 0) { enc.encode_uint(K_REQ_TIMESTAMP); enc.encode_int(timestamp); }
     enc.encode_uint(K_REQ_NONCE); enc.encode_bytes(BytesView(nonce.data(), nonce.size()));
     if (csr_hash.size() > 0) { enc.encode_uint(K_REQ_CSR_HASH); enc.encode_bytes(BytesView(csr_hash)); }
     if (request_signature.size() > 0) { enc.encode_uint(K_REQ_SIG); enc.encode_bytes(BytesView(request_signature)); }
+    if (capability_bitmap > 0) { enc.encode_uint(K_REQ_CAPABILITIES); enc.encode_uint(capability_bitmap); }
     return enc.take();
 }
 
@@ -107,6 +123,14 @@ Result<JoinRequest> JoinRequest::decode_cbor(BytesView data) {
                 auto v = dec.decode_bytes(); if (!v) return v.error();
                 req.request_signature = Bytes(v.value().begin(), v.value().end()); break;
             }
+            case K_REQ_PROTOCOL_VER: {
+                auto v = dec.decode_uint(); if (!v) return v.error();
+                req.protocol_version = static_cast<uint8_t>(v.value()); break;
+            }
+            case K_REQ_CAPABILITIES: {
+                auto v = dec.decode_uint(); if (!v) return v.error();
+                req.capability_bitmap = v.value(); break;
+            }
             default: {
                 auto r = dec.skip(); if (!r) return r.error();
             }
@@ -116,6 +140,35 @@ Result<JoinRequest> JoinRequest::decode_cbor(BytesView data) {
 }
 
 // ── JoinResponse ────────────────────────────────────────────────────
+static void encode_seed_info(cbor::Encoder& enc, const SeedInfo& si) {
+    enc.encode_map(4);
+    enc.encode_uint(K_SEED_ENDPOINT); enc.encode_string(si.endpoint);
+    if (!si.region.empty()) { enc.encode_uint(K_SEED_REGION); enc.encode_string(si.region); }
+    enc.encode_uint(K_SEED_PRIORITY); enc.encode_uint(si.priority);
+    enc.encode_uint(K_SEED_HEALTH_SCORE);
+    uint64_t fixed = 0;
+    std::memcpy(&fixed, &si.health_score, sizeof(double));
+    enc.encode_uint(fixed);
+}
+
+static SeedInfo decode_seed_info(cbor::Decoder& dec) {
+    SeedInfo si;
+    auto map_sz = dec.decode_map_size();
+    if (!map_sz) return si;
+    for (size_t i = 0; i < map_sz.value(); ++i) {
+        auto key = dec.decode_uint();
+        if (!key) return si;
+        switch (key.value()) {
+            case K_SEED_ENDPOINT: { auto v = dec.decode_string(); if (v) si.endpoint = std::move(v.value()); break; }
+            case K_SEED_REGION: { auto v = dec.decode_string(); if (v) si.region = std::move(v.value()); break; }
+            case K_SEED_PRIORITY: { auto v = dec.decode_uint(); if (v) si.priority = static_cast<uint32_t>(v.value()); break; }
+            case K_SEED_HEALTH_SCORE: { auto v = dec.decode_uint(); if (v) { uint64_t f = v.value(); std::memcpy(&si.health_score, &f, sizeof(double)); } break; }
+            default: { auto r = dec.skip(); if (!r) return si; }
+        }
+    }
+    return si;
+}
+
 Bytes JoinResponse::encode_cbor() const {
     cbor::Encoder enc;
     int fields = 0;
@@ -125,6 +178,8 @@ Bytes JoinResponse::encode_cbor() const {
     if (manifest_epoch > 0) fields++;
     if (!bootstrap_nodes.empty()) fields++;
     fields++; // nonce always present
+    if (server_time > 0) fields++;
+    if (capability_bitmap > 0) fields++;
     if (fields == 0) fields = 1; // at least empty map
     enc.encode_map(fields);
     if (!certificate_pem.empty()) { enc.encode_uint(K_RESP_CERT); enc.encode_string(certificate_pem); }
@@ -134,9 +189,11 @@ Bytes JoinResponse::encode_cbor() const {
     if (!bootstrap_nodes.empty()) {
         enc.encode_uint(K_RESP_BOOT_NODES);
         enc.encode_array(bootstrap_nodes.size());
-        for (auto& ep : bootstrap_nodes) enc.encode_string(ep);
+        for (auto& si : bootstrap_nodes) encode_seed_info(enc, si);
     }
     enc.encode_uint(K_RESP_NONCE); enc.encode_bytes(BytesView(nonce.data(), nonce.size()));
+    if (server_time > 0) { enc.encode_uint(K_RESP_SERVER_TIME); enc.encode_int(server_time); }
+    if (capability_bitmap > 0) { enc.encode_uint(K_RESP_CAPABILITIES); enc.encode_uint(capability_bitmap); }
     return enc.take();
 }
 
@@ -169,8 +226,7 @@ Result<JoinResponse> JoinResponse::decode_cbor(BytesView data) {
             case K_RESP_BOOT_NODES: {
                 auto arr_sz = dec.decode_array_size(); if (!arr_sz) return arr_sz.error();
                 for (size_t j = 0; j < arr_sz.value(); ++j) {
-                    auto s = dec.decode_string(); if (!s) return s.error();
-                    resp.bootstrap_nodes.push_back(std::move(s.value()));
+                    resp.bootstrap_nodes.push_back(decode_seed_info(dec));
                 }
                 break;
             }
@@ -178,6 +234,14 @@ Result<JoinResponse> JoinResponse::decode_cbor(BytesView data) {
                 auto v = dec.decode_bytes(); if (!v) return v.error();
                 if (v.value().size() == 8) std::memcpy(resp.nonce.data(), v.value().data(), 8);
                 break;
+            }
+            case K_RESP_SERVER_TIME: {
+                auto v = dec.decode_int(); if (!v) return v.error();
+                resp.server_time = v.value(); break;
+            }
+            case K_RESP_CAPABILITIES: {
+                auto v = dec.decode_uint(); if (!v) return v.error();
+                resp.capability_bitmap = v.value(); break;
             }
             default: {
                 auto r = dec.skip(); if (!r) return r.error();
@@ -190,7 +254,7 @@ Result<JoinResponse> JoinResponse::decode_cbor(BytesView data) {
 // ── BootstrapSyncRequest ───────────────────────────────────────────
 Bytes BootstrapSyncRequest::encode_cbor() const {
     cbor::Encoder enc;
-    int fields = 0;
+    int fields = 1; // protocol_version always present
     if (!mesh_id.empty()) fields++;
     if (!node_id.empty()) fields++;
     if (manifest_epoch > 0) fields++;
@@ -198,6 +262,7 @@ Bytes BootstrapSyncRequest::encode_cbor() const {
     if (membership_epoch > 0) fields++;
     if (policy_version > 0) fields++;
     enc.encode_map(fields);
+    enc.encode_uint(K_SYNC_REQ_PROTOCOL_VER); enc.encode_uint(protocol_version);
     if (!mesh_id.empty()) { enc.encode_uint(K_SYNC_REQ_MESH_ID); enc.encode_string(mesh_id); }
     if (!node_id.empty()) { enc.encode_uint(K_SYNC_REQ_NODE_ID); enc.encode_string(node_id); }
     if (manifest_epoch > 0) { enc.encode_uint(K_SYNC_REQ_MF_EPOCH); enc.encode_uint(manifest_epoch); }
@@ -241,6 +306,10 @@ Result<BootstrapSyncRequest> BootstrapSyncRequest::decode_cbor(BytesView data) {
                 auto v = dec.decode_uint(); if (!v) return v.error();
                 req.policy_version = v.value(); break;
             }
+            case K_SYNC_REQ_PROTOCOL_VER: {
+                auto v = dec.decode_uint(); if (!v) return v.error();
+                req.protocol_version = static_cast<uint8_t>(v.value()); break;
+            }
             default: {
                 auto r = dec.skip(); if (!r) return r.error();
             }
@@ -261,6 +330,7 @@ Bytes BootstrapSyncResponse::encode_cbor() const {
     if (membership_epoch > 0) fields++;
     if (crl_epoch > 0) fields++;
     if (policy_version > 0) fields++;
+    if (server_time > 0) fields++;
     if (fields == 0) fields = 1;
     enc.encode_map(fields);
     if (!manifest_delta.empty()) { enc.encode_uint(K_SYNC_RESP_MF_DELTA); enc.encode_bytes(BytesView(manifest_delta)); }
@@ -271,6 +341,7 @@ Bytes BootstrapSyncResponse::encode_cbor() const {
     if (membership_epoch > 0) { enc.encode_uint(K_SYNC_RESP_MEMBER_EPOCH); enc.encode_uint(membership_epoch); }
     if (crl_epoch > 0) { enc.encode_uint(K_SYNC_RESP_CRL_EPOCH); enc.encode_uint(crl_epoch); }
     if (policy_version > 0) { enc.encode_uint(K_SYNC_RESP_POLICY_VER); enc.encode_uint(policy_version); }
+    if (server_time > 0) { enc.encode_uint(K_SYNC_RESP_SERVER_TIME); enc.encode_int(server_time); }
     return enc.take();
 }
 
@@ -315,6 +386,10 @@ Result<BootstrapSyncResponse> BootstrapSyncResponse::decode_cbor(BytesView data)
             case K_SYNC_RESP_POLICY_VER: {
                 auto v = dec.decode_uint(); if (!v) return v.error();
                 resp.policy_version = v.value(); break;
+            }
+            case K_SYNC_RESP_SERVER_TIME: {
+                auto v = dec.decode_int(); if (!v) return v.error();
+                resp.server_time = v.value(); break;
             }
             default: {
                 auto r = dec.skip(); if (!r) return r.error();
@@ -486,10 +561,16 @@ Result<JoinResponse> process_join_request(
     resp.mesh_id = token.mesh_id;
     resp.manifest_epoch = 1;
 
-    // Get current mesh for bootstrap nodes
+    // Get current mesh for bootstrap nodes (convert strings → SeedInfo)
     auto mesh_res = mesh_mgr.get_mesh(token.mesh_id);
     if (mesh_res) {
-        resp.bootstrap_nodes = mesh_res.value()->config.bootstrap_endpoints;
+        for (auto& ep : mesh_res.value()->config.bootstrap_endpoints) {
+            SeedInfo si;
+            si.endpoint = ep;
+            si.priority = 0;
+            si.health_score = 1.0;
+            resp.bootstrap_nodes.push_back(si);
+        }
     }
 
     return resp;

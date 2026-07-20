@@ -536,10 +536,13 @@ Result<JoinResult> run_join_command(const std::string& token_str,
             save_join_state(fsm, actual_data_dir);
         }
 
-        // Get bootstrap endpoints from JoinResponse or token
-        auto& endpoints = !resp.bootstrap_nodes.empty()
-            ? resp.bootstrap_nodes
-            : token.bootstrap_endpoints;
+        // Get bootstrap endpoint strings from JoinResponse (SeedInfo) or token (bare strings)
+        std::vector<std::string> endpoints;
+        if (!resp.bootstrap_nodes.empty()) {
+            for (auto& si : resp.bootstrap_nodes) endpoints.push_back(si.endpoint);
+        } else {
+            endpoints = token.bootstrap_endpoints;
+        }
 
         bool synced = false;
         std::string last_error;
@@ -754,8 +757,10 @@ Result<JoinResult> run_join_command(const std::string& token_str,
         }
         if (!resp.bootstrap_nodes.empty()) {
             std::printf("  Bootstrap:    %zu seed(s)\n", resp.bootstrap_nodes.size());
-            for (auto& ep : resp.bootstrap_nodes) {
-                std::printf("    %s\n", ep.c_str());
+            for (auto& si : resp.bootstrap_nodes) {
+                std::printf("    %s", si.endpoint.c_str());
+                if (!si.region.empty()) std::printf(" [%s]", si.region.c_str());
+                std::printf("\n");
             }
         }
 
@@ -774,10 +779,15 @@ Result<JoinResult> run_join_command(const std::string& token_str,
                 f << "  \"profile\": \"" << (token.admission.profile.empty() ? "server" : token.admission.profile) << "\",\n";
                 f << "  \"listen_port\": " << port << ",\n";
                 f << "  \"bootstrap_endpoints\": [\n";
-                const auto& endpoints = !resp.bootstrap_nodes.empty() ? resp.bootstrap_nodes : token.bootstrap_endpoints;
-                for (size_t i = 0; i < endpoints.size(); ++i) {
+                std::vector<std::string> eps;
+                if (!resp.bootstrap_nodes.empty()) {
+                    for (auto& si : resp.bootstrap_nodes) eps.push_back(si.endpoint);
+                } else {
+                    eps = token.bootstrap_endpoints;
+                }
+                for (size_t i = 0; i < eps.size(); ++i) {
                     if (i > 0) f << ",\n";
-                    f << "    \"" << endpoints[i] << "\"";
+                    f << "    \"" << eps[i] << "\"";
                 }
                 f << "\n  ],\n";
                 f << "  \"node_name\": \"" << (node_name.empty() ? identity->node_id().to_string() : node_name) << "\"\n";
@@ -796,8 +806,11 @@ Result<JoinResult> run_join_command(const std::string& token_str,
         jr.mesh_id = token.mesh_id;
         jr.role = token.admission.role;
         jr.profile = token.admission.profile.empty() ? "default" : token.admission.profile;
-        jr.bootstrap_endpoints = !resp.bootstrap_nodes.empty()
-            ? resp.bootstrap_nodes : token.bootstrap_endpoints;
+        if (!resp.bootstrap_nodes.empty()) {
+            for (auto& si : resp.bootstrap_nodes) jr.bootstrap_endpoints.push_back(si.endpoint);
+        } else {
+            jr.bootstrap_endpoints = token.bootstrap_endpoints;
+        }
         jr.manifest_epoch = resp.manifest_epoch;
         jr.manifest_digest = resp.manifest_digest;
         jr.node_name = node_name.empty() ? identity->node_id().to_string() : node_name;

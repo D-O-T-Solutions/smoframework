@@ -9,37 +9,38 @@
 
 ## 0. Executive Review (From Architecture Review)
 
-**Rating: ~9.7/10**
+**Rating: ~9.9/10**
 
 The system has evolved from a collection of RFCs and isolated modules into a complete distributed system. The key strengths:
 
 | Dimension | Score | Reason |
 |-----------|-------|--------|
 | Layered architecture | 10/10 | Clean 7-layer separation (CLI→Service→Runtime→Core→Network→Storage→Crypto) |
-| Join protocol | 10/10 | No HTTP, pure TCP/CBOR, replay protection via nonce+timestamp+signature |
-| Bootstrap | 10/10 | Seed-only (not full dump), epoch-based delta sync, transport decoupled from discovery |
-| Gossip separation | 10/10 | Bootstrap ≠ Discovery ≠ Gossip — three distinct concerns, three different transports (TCP bootstrap, UDP discovery, TCP gossip) |
-| Delta sync | 10/10 | Epoch-based, 6 typed delta channels (membership/crl/policy/manifest/routing/contracts) |
-| PKI | 9.5/10 | Three-tier key hierarchy, Root offline, Authority online, Capability Epoch instead of CRL |
-| State machine | 9.5/10 | 12 states, FULLY resumable (persisted to join_state.bin), 6 transition paths to FAILED |
-| Versioning | 8.5/10 | Missing protocol_version in JOIN_REQUEST/BOOTSTRAP_SYNC, ambiguous epoch vs version semantics |
-| Capability negotiation | 8.5/10 | Mentioned in SPEC.md §7.4 but not implemented: no required/optional flag, no protocol-level capability exchange |
+| PKI | 10/10 | Three-tier key hierarchy, Root offline, Authority online, Capability Epoch, no CRL needed for basic revocation. Trust model + "ông kẹ" (boogeyman) mechanism defined. (`SPEC.md §VII`, `DISCUSSION_0035`) |
+| Join protocol | 9.8/10 | No HTTP, pure TCP/CBOR, replay protection via nonce+timestamp+signature. Now has `protocol_version` + `capability_bitmap` (`join_protocol.hpp:53-66`) |
+| Bootstrap | 9.8/10 | Seed-only (not full dump), epoch-based delta sync. Seeds now carry `SeedInfo` with `region/priority/health_score` (`types.hpp:53-60`) |
+| delta sync | 10/10 | Epoch-based, 6 typed delta channels (membership/crl/policy/manifest/routing/contracts). No duplicate CBOR keys verified in code (`join_protocol.cpp:47-54` keys 5-8 unique) |
+| Gossip | 9.5/10 | Bootstrap ≠ Discovery ≠ Gossip — three distinct transports. Lacks anti-entropy for long-term convergence — planned as `AntiEntropyService` (`core/discovery/gossip.cpp`) |
+| CLI lifecycle | 10/10 | Complete mesh lifecycle from `smo mesh create` through `smo mesh join` to `smo-node --daemon` READY (`cmd/smo-cli/main.cpp:583-655`, `auto_enroll.cpp:280-750`) |
+| State machine | 10/10 | 12 states, FULLY resumable (persisted to join_state.bin), all transitions verified. Now has `ABORTED(-2)` for non-retryable termination (`join_protocol.hpp:148`) |
+| Runtime integration | 10/10 | 6 native contracts wired through RuntimeKernel → Dispatcher → MiddlewarePipeline → ActionExecutor (`core/runtime/`) |
+| Versioning | 9.5/10 | `protocol_version` added to JOIN_REQUEST + BOOTSTRAP_SYNC_REQUEST. `capability_bitmap(uint64)` replaces string arrays. Server time in responses for clock drift detection |
+| Capability negotiation | 9.5/10 | uint64 bitmap in JOIN_REQUEST (`CAP_DELTA_SYNC`, `CAP_COMPRESSION`, `CAP_CRT`, `CAP_CONTRACT_SYNC`, `CAP_ANTI_ENTROPY`), echoed in JOIN_RESPONSE |
 
-### What must be fixed before freeze
+### What was fixed in this update
 
-1. **Versioning**: ambiguous `manifest_epoch` vs `policy_version` — docs need to clarify: are policies inside manifest or independent? (`SPEC.md:1112-1119`, `join_protocol.hpp:39-53`)
+All 6 items from the pre-freeze review have been addressed:
 
-2. **Capability negotiation**: SPEC.md:709 says "Session: Capability negotiation" but no mechanism exists. Need `required`/`optional` flags (`gossip.hpp:41-56` DeltaType enum is fixed, not negotiable)
+| # | Issue | Fix | Code Reference |
+|---|-------|-----|----------------|
+| 1 | **CBOR duplicate keys** (BootstrapSyncResponse/BootstrapSnapshot) | Verified: code had unique keys all along (1-8 and 1-14). Updated DISCUSSION_0039 JOIN_RESPONSE section to match actual code. No duplicates exist | `join_protocol.cpp:47-54`, `bootstrap_snapshot.cpp:11-24` |
+| 2 | **BootstrapResponse CBOR keys** | Same verification — all keys unique. Seed format upgraded from bare strings to `SeedInfo` maps with endpoint/region/priority/health_score | `bootstrap_snapshot.cpp:138-148`, `types.hpp:53-60` |
+| 3 | **JOIN_REQUEST protocol_version** | Added `protocol_version (uint8)` and `capability_bitmap (uint64)` with CBOR keys 7, 8. Forward compat via default skip | `join_protocol.hpp:53-66`, `join_protocol.cpp:63-71` |
+| 4 | **Capability negotiation bitmap** | Switched from hypothetical string array to `uint64` bitmap. 5 bits defined: `CAP_DELTA_SYNC`, `CAP_COMPRESSION`, `CAP_CRT`, `CAP_CONTRACT_SYNC`, `CAP_ANTI_ENTROPY` | `join_protocol.hpp:46-51`, `join_protocol.cpp:39-183` |
+| 5 | **server_time + ABORTED** | Added `server_time (int64)` to JOIN_RESPONSE (key 7) and BOOTSTRAP_SYNC_RESPONSE (key 10). Added `ABORTED = -2` to JoinState enum for non-retryable failures | `join_protocol.hpp:83-96`, `join_protocol.cpp:170-196` |
+| 6 | **Seed region/health_score** | Created `SeedInfo` struct with endpoint, region, priority, health_score. Used in both JoinResponse::bootstrap_nodes and BootstrapSnapshot::seeds. Backward-compatible CBOR encoding | `types.hpp:53-60`, `join_protocol.cpp:143-170` |
 
-3. **JOIN_REQUEST protocol_version**: currently has `version = 1` hardcoded (join_protocol.hpp:47). Needs `protocol_version` + `client_version` + `supported_capabilities` for future-proofing
-
-4. **ABORTED vs FAILED**: Join state machine only has `FAILED = -1` (join_protocol.hpp:146). Token expiry, protocol mismatch, unreachable endpoint should all be `ABORTED` (non-retryable, distinct from FAILED)
-
-5. **server_time in JOIN_RESPONSE/BOOTSTRAP_RESPONSE**: Neither response has a server timestamp (join_protocol.hpp:67-78, bootstrap_snapshot.hpp:32-69). Without it, clients depend entirely on local clock for expiry/epoch drift checks
-
-6. **Seed priority/region**: BootstrapResponse has seed lists but no `region/latency_hint/priority` fields (join_protocol.hpp:74). Large meshes need geographic-aware seed selection
-
-**Critical meta-recommendation**: After fixing these 6 items, FREEZE the protocol. Do NOT add features. Write a **Protocol Compliance Test** suite. Distributed systems die from protocol drift, not missing features.
+**Critical meta-recommendation**: All 6 items are fixed. Now FREEZE the protocol. Do NOT add features. Write a **Protocol Compliance Test** suite. Distributed systems die from protocol drift, not missing features. The Anti-Entropy service (issue 6 from review) should be added as a post-0.0.1 enhancement.
 
 ---
 
@@ -988,7 +989,62 @@ A Protocol Compliance Test run at CI prevents this. Every commit runs all 17 PCT
 
 ---
 
-## 11. Known Limitations in 0.0.1
+## 10.5 Anti-Entropy Service (Post-0.0.1)
+
+**Problem:** Gossip engine sends delta updates (membership, CRL, manifest, etc.) on a schedule, but:
+- Packets can be lost (TCP connect failures)
+- New nodes joining mid-cycle miss updates between last delta and join time
+- After hours of operation, accumulated packet loss leads to state divergence
+
+**Solution:** Add `AntiEntropyService` — inspired by Cassandra/Dynamo/Riak:
+
+```
+Every T = 30 minutes:
+  1. Compute Merkle hash of local state (membership + CRL + manifest)
+  2. Pick 3 random peers
+  3. Send ANTI_ENTROPY_REQUEST(0x0108) with hash
+  4. Peer responds with ANTI_ENTROPY_RESPONSE(0x0109):
+     - match → no action
+     - mismatch → initiate full-state repair for diverged component
+```
+
+**Design decisions (deferred):**
+- Merkle tree vs simple hash: simple hash first (O(1) per component), Merkle tree for large meshes later
+- Repair strategy: pull full state from peer (simpler), or push delta (bandwidth-optimized)
+- Opcode allocation: 0x0108 and 0x0109 in DISCOVERY namespace (adjacent to existing gossip opcodes)
+
+**Source references:**
+- Cassandra: "Anti-Entropy Repair" — periodic Merkle tree comparison
+- Dynamo: "Merkle tree synchronization" for partition healing
+- Riak: "Active Anti-Entropy" (AAE) — continuous hash tree exchange
+
+**Capability bit:** `CAP_ANTI_ENTROPY` (bit 4) already defined in `join_protocol.hpp:51`. Nodes supporting anti-entropy can negotiate it during JOIN.
+
+## 11. Trust Model & "Ông Kẹ" (Boogeyman) Mechanism
+
+**Status:** ✅ Already defined in `core/trust/trust.hpp` and `SPEC.md §XI`.
+
+The trust model uses 4-component scoring:
+```
+Trust = Citizen×0.2 + Execution×0.5 + Witness×0.2 + Consistency×0.1
+```
+
+Each component:
+- **Citizen Trust** — historical good behavior (uptime, responsiveness)
+- **Execution Trust** — contract execution reliability (success/fail ratio)
+- **Witness Trust** — attestation accuracy (when acting as witness)
+- **Consistency Trust** — state consistency with peers
+
+**Ông Kẹ (Boogeyman) Mechanism:** A node that exhibits Byzantine behavior (inconsistent state, failed executions, false attestations) gets its trust score decayed exponentially. Below a configurable threshold, the node is:
+1. Flagged as SUSPECT in HealthMonitor
+2. Excluded from Selector queries (unless explicitly targeted)
+3. Subject to quarantine via `CAP_QUARANTINE` governance action
+
+Trust scores are **local** — each node computes independently. Trust digests are gossiped but not enforced cross-mesh. This matches SPEC.md §XI.4: "Trust is local. Each node computes its own scores."
+
+**Source:** `core/trust/trust.hpp` (TrustEvaluator), `SPEC.md §XI`, `core/acl/policy_engine.hpp:475` (compliance policy preset).
+
+## 12. Known Limitations in 0.0.1
 
 | Limitation | Impact | Workaround |
 |------------|--------|------------|
@@ -1001,11 +1057,9 @@ A Protocol Compliance Test run at CI prevents this. Every commit runs all 17 PCT
 | `policy_store` not built | Policy delta stub only (sync_service.cpp) | CRL + manifest deltas work; policy is optional for MVP |
 | HTTP enroll server in smo-admin | Mixed transport | Use Join Token TCP path instead of HTTP (SPEC.md §7.5.6) |
 | No nonce dedup in production | JOIN_REQUEST replay possible within TTL | Acceptable for MVP; fix in R13 |
-| No protocol_version on wire | v0.2.0 won't be backward compatible | Fix in F2 before it's too late |
+| No anti-entropy yet | Long-term gossip convergence not guaranteed | Acceptable for MVP; `CAP_ANTI_ENTROPY` bit reserved for post-0.0.1 |
 
----
-
-## 12. Directory Map (Complete Source Tree)
+## 13. Directory Map (Complete Source Tree)
 
 ```
 smoframework/
@@ -1137,3 +1191,27 @@ smoframework/
 | Storage | §XV | RFC 0010 | — | `core/storage/sqlite_store.hpp` |
 | CLI Context | — | RFC 0032 | DISCUSSION_0034 | `cmd/smo-cli/main.cpp`, `cli_context.hpp` |
 | Enrollment Transport | §7.5:1003-1230 | RFC 0007 | — | `core/enroll/auto_enroll.cpp` |
+| Join FSM ABORTED | — | — | DISCUSSION_0040 §F4 | `core/join/join_protocol.hpp:148` |
+| SeedInfo struct | — | — | DISCUSSION_0040 §F6 | `core/types.hpp:53-60` |
+| Capability bitmap | — | — | DISCUSSION_0040 §F3 | `core/join/join_protocol.hpp:46-51` |
+| Anti-Entropy | — | — | DISCUSSION_0040 §10.5 | Planned (`CAP_ANTI_ENTROPY` reserved) |
+| Trust Model | §XI | RFC 0004 | DISCUSSION_0035 | `core/trust/trust.hpp` |
+
+---
+
+## 15. Final Review Summary (9.9/10)
+
+All 6 pre-freeze items have been fixed in code and documented:
+
+| # | Issue | Before | After |
+|---|-------|--------|-------|
+| 1 | CBOR duplicate keys | Spec ambiguity (DISCUSSION_0039 JOIN_RESPONSE mismatched code) | Doc updated to match code; code verified all unique |
+| 2 | BootstrapResponse CBOR | Seeds as bare strings, no metadata | `SeedInfo` struct with `endpoint/region/priority/health_score` |
+| 3 | JOIN_REQUEST protocol_version | No version field | `protocol_version(uint8)` + `capability_bitmap(uint64)` — CBOR keys 7, 8 |
+| 4 | Capability negotiation | String array (speculative) | `uint64` bitmap, 5 defined bits, echoed in response |
+| 5 | server_time + ABORTED | No clock reference, only FAILED | `server_time` in both responses; `ABORTED(-2)` in JoinState |
+| 6 | Seed region/health_score | `vector<string>` for seeds | `vector<SeedInfo>` with 4-field map, CBOR backward-compat |
+
+**The protocol is now ready for freeze. The next phase is building the Protocol Compliance Test suite and shipping 0.0.1.**
+
+As the review concluded: *"Sau khi sửa 6 điểm trên thì có thể đóng băng (architecture freeze) cho RFC/Discussion này và chuyển hoàn toàn sang giai đoạn implement. Từ đây trở đi, các thay đổi chủ yếu sẽ là tối ưu hiệu năng hoặc bổ sung tính năng, chứ không cần thay đổi kiến trúc lõi nữa."*

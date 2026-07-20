@@ -209,8 +209,14 @@ Result<BootstrapResponse> handle_bootstrap_request(
         }
     }
 
-    // Seeds
-    snap.seeds = cfg.bootstrap_endpoints;
+    // Seeds (convert strings → SeedInfo)
+    for (auto& ep : cfg.bootstrap_endpoints) {
+        SeedInfo si;
+        si.endpoint = ep;
+        si.priority = 0;
+        si.health_score = 1.0;
+        snap.seeds.push_back(si);
+    }
 
     // CRL
     if (crl) {

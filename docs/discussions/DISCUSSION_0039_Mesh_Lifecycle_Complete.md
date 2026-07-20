@@ -198,16 +198,15 @@ Only send changed components (delta sync)
 }
 ```
 
-**Fixed - Seeds Only:**
+**Fixed - Seeds Only (matches `join_protocol.cpp:31-36`):**
 ```cbor
 {
-  1: certificate,
-  2: manifest,
-  3: seed_nodes,        // 5-10 nodes (bootstrap entry points)
-  4: bootstrap_nodes,   // Additional bootstrap entry points
-  5: policies,
-  6: crl_digest,
-  7: manifest_epoch
+  1: certificate_pem,     // PEM-encoded membership certificate
+  2: mesh_id,             // string — assigned mesh identifier
+  3: manifest_digest,     // bytes — Blake3 hash of current manifest
+  4: manifest_epoch,      // uint — current manifest epoch
+  5: bootstrap_nodes,     // [tstr] — seed endpoints to start gossip
+  6: nonce                // bytes — echoes request nonce
 }
 ```
 

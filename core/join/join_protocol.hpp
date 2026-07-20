@@ -43,8 +43,17 @@ inline constexpr uint32_t kOpcodeBootstrapSyncResp  = 0x0604;
 //   4: nonce           (bytes — 64-bit random per-request)
 //   5: csr_hash        (bytes — sha256(csr_cbor))
 //   6: request_signature (bytes — sign(token_wire || timestamp || nonce || csr_hash))
+// Capability bits for JOIN_REQUEST/JoinResponse capability negotiation
+inline constexpr uint64_t CAP_DELTA_SYNC    = 1ULL << 0;
+inline constexpr uint64_t CAP_COMPRESSION   = 1ULL << 1;
+inline constexpr uint64_t CAP_CRT           = 1ULL << 2;
+inline constexpr uint64_t CAP_CONTRACT_SYNC = 1ULL << 3;
+inline constexpr uint64_t CAP_ANTI_ENTROPY  = 1ULL << 4;
+
 struct JoinRequest {
     uint8_t version = 1;
+    uint8_t protocol_version = 1;   // JOIN protocol version for future compat
+    uint64_t capability_bitmap = 0;  // supported feature bits (CAP_*)
     std::string token;              // SMO-JOIN-xxxx token wire format
     std::string csr_pem;            // PEM-encoded CSR
     int64_t timestamp = 0;          // UNIX seconds (±30s window)
@@ -63,7 +72,8 @@ struct JoinRequest {
 //   2: mesh_id          (string — mesh identifier)
 //   3: manifest_digest  (bytes — sha256 of current manifest)
 //   4: manifest_epoch   (uint — current manifest epoch)
-//   5: bootstrap_nodes  (array of string — seed endpoints)
+//   5: bootstrap_nodes  (array — SeedInfo objects with endpoint/region/priority/health_score)
+
 struct JoinResponse {
     uint8_t version = 1;
     std::array<uint8_t, 8> nonce{};    // echoes request nonce
@@ -71,7 +81,9 @@ struct JoinResponse {
     std::string mesh_id;                // assigned mesh_id
     Bytes manifest_digest;              // sha256 of current manifest (optional)
     uint64_t manifest_epoch = 0;        // current manifest epoch
-    std::vector<std::string> bootstrap_nodes; // seed endpoints to start gossip
+    std::vector<SeedInfo> bootstrap_nodes; // seed endpoints with metadata
+    int64_t server_time = 0;            // UNIX ms — Authority's clock (for epoch drift)
+    uint64_t capability_bitmap = 0;     // echoed from request, filtered by Authority
 
     Bytes encode_cbor() const;
     static Result<JoinResponse> decode_cbor(BytesView data);
@@ -89,6 +101,7 @@ struct JoinResponse {
 //   6: policy_version    (uint — known policy version, 0 = none)
 struct BootstrapSyncRequest {
     uint8_t version = 1;
+    uint8_t protocol_version = 1;
     std::array<uint8_t, 8> nonce{};
     std::string mesh_id;
     std::string node_id;
@@ -122,6 +135,7 @@ struct BootstrapSyncResponse {
     uint64_t membership_epoch = 0;
     uint64_t crl_epoch = 0;
     uint64_t policy_version = 0;
+    int64_t server_time = 0;          // UNIX ms — server's clock
 
     Bytes encode_cbor() const;
     static Result<BootstrapSyncResponse> decode_cbor(BytesView data);
