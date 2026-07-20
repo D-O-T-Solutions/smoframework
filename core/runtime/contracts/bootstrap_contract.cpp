@@ -190,11 +190,11 @@ Result<ContractResult> BootstrapContract::handle_bootstrap_sync(
     join::BootstrapSyncResponse resp;
     resp.nonce = req.nonce;
 
-    // Always send current epochs so joiner knows latest state
-    resp.manifest_epoch = current_epoch;
+    // Always send current revisions so joiner knows latest state
+    resp.manifest_revision = current_epoch;
 
     // ── Manifest delta ────────────────────────────────────────────
-    if (req.manifest_epoch < current_epoch) {
+    if (req.manifest_revision < current_epoch) {
         cbor::Encoder man_enc;
         man_enc.encode_map(4);
         man_enc.encode_uint(1); man_enc.encode_string(cfg.mesh_id);
@@ -209,9 +209,9 @@ Result<ContractResult> BootstrapContract::handle_bootstrap_sync(
     }
 
     // ── Membership delta ──────────────────────────────────────────
-    uint64_t membership_epoch = current_epoch;
-    resp.membership_epoch = membership_epoch;
-    if (req.membership_epoch < membership_epoch) {
+    uint64_t membership_revision = current_epoch;
+    resp.membership_revision = membership_revision;
+    if (req.membership_revision < membership_revision) {
         auto nodes_res = authority_.registry().list_nodes(cfg.mesh_id);
         if (nodes_res) {
             cbor::Encoder mem_enc;
@@ -230,10 +230,10 @@ Result<ContractResult> BootstrapContract::handle_bootstrap_sync(
     }
 
     // ── CRL delta ─────────────────────────────────────────────────
-    uint64_t crl_epoch = current_epoch;
-    resp.crl_epoch = crl_epoch;
-    if (crl_ && req.crl_epoch < crl_epoch) {
-        auto entries = crl_->entries_since(req.crl_epoch);
+    uint64_t crl_revision = current_epoch;
+    resp.crl_revision = crl_revision;
+    if (crl_ && req.crl_revision < crl_revision) {
+        auto entries = crl_->entries_since(req.crl_revision);
         if (!entries.empty()) {
             cbor::Encoder crl_enc;
             crl_enc.encode_array(entries.size());
@@ -249,9 +249,9 @@ Result<ContractResult> BootstrapContract::handle_bootstrap_sync(
     }
 
     // ── Policy delta ──────────────────────────────────────────────
-    uint64_t policy_version = current_epoch;
-    resp.policy_version = policy_version;
-    if (req.policy_version < policy_version && governance_) {
+    uint64_t policy_revision = current_epoch;
+    resp.policy_revision = policy_revision;
+    if (req.policy_revision < policy_revision && governance_) {
         auto pending = governance_->pending();
         if (!pending.empty()) {
             cbor::Encoder pol_enc;
@@ -272,14 +272,14 @@ Result<ContractResult> BootstrapContract::handle_bootstrap_sync(
     ContractResult result = ContractResult::ok();
     result.data = "bootstrap sync response";
     result.binary = std::move(response_cbor);
-    result.metrics["manifest_epoch"] = ContextValue(static_cast<int64_t>(resp.manifest_epoch));
-    result.metrics["membership_epoch"] = ContextValue(static_cast<int64_t>(resp.membership_epoch));
-    result.metrics["crl_epoch"] = ContextValue(static_cast<int64_t>(resp.crl_epoch));
-    result.metrics["policy_version"] = ContextValue(static_cast<int64_t>(resp.policy_version));
+    result.metrics["manifest_revision"] = ContextValue(static_cast<int64_t>(resp.manifest_revision));
+    result.metrics["membership_revision"] = ContextValue(static_cast<int64_t>(resp.membership_revision));
+    result.metrics["crl_revision"] = ContextValue(static_cast<int64_t>(resp.crl_revision));
+    result.metrics["policy_revision"] = ContextValue(static_cast<int64_t>(resp.policy_revision));
 
     result.next_actions.push_back(
         emit_event("bootstrap.sync_delivered",
-                    "manifest_epoch=" + std::to_string(resp.manifest_epoch)));
+                    "manifest_revision=" + std::to_string(resp.manifest_revision)));
 
     return result;
 }

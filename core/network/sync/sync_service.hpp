@@ -15,20 +15,29 @@ namespace recovery { class CRL; }
 
 namespace smo::sync {
 
-// Per DISCUSSION_0039 §5.19: SyncScheduler with configurable intervals.
-//   membership_delta   (every 30s)
-//   policy_delta       (every 60s)
-//   crl_delta          (every 300s)
-//   manifest_delta     (on change)
-//   routing_delta      (every 15s)
-//   contracts_delta    (on change)
+// Per DISCUSSION_0039 §5.19: SyncScheduler with policy-driven intervals.
+// Defaults can be overridden via mesh policy (governance ChangePolicy action).
+//   heartbeat     (every 20s) — node health / liveness
+//   membership    (every 45s) — membership delta sync
+//   policy        (every 60s) — policy delta sync
+//   crl           (every 10min) — CRL delta sync
+//   manifest      (on change) — manifest delta sync
+//   routing       (every 15s) — routing table sync
+//   contracts     (on change) — contract registry sync
 struct SyncSchedule {
-    uint64_t membership_interval_ns = 30'000'000'000ULL;   // 30s
-    uint64_t policy_interval_ns     = 60'000'000'000ULL;   // 60s
-    uint64_t crl_interval_ns        = 300'000'000'000ULL;  // 300s
-    uint64_t routing_interval_ns    = 15'000'000'000ULL;   // 15s
-    uint64_t manifest_interval_ns   = 0;                   // on change (tick resets timer)
-    uint64_t contracts_interval_ns  = 0;                   // on change
+    // Named intervals matching mesh policy keys
+    uint64_t heartbeat_ns     = 20'000'000'000ULL;   // 20s
+    uint64_t membership_ns    = 45'000'000'000ULL;   // 45s
+    uint64_t policy_ns        = 60'000'000'000ULL;   // 60s
+    uint64_t crl_ns           = 600'000'000'000ULL;  // 10min
+    uint64_t manifest_ns      = 0;                   // on change (tick resets timer)
+    uint64_t routing_ns       = 15'000'000'000ULL;   // 15s
+    uint64_t contracts_ns     = 0;                   // on change
+
+    // Apply policy overrides from a CBOR map.
+    // Expected keys: "heartbeat", "membership", "policy", "crl", "manifest", "routing", "contracts"
+    // Each value is interval in seconds (uint).
+    void apply_policy(const std::string& policy_cbor);
 };
 
 class SyncService {

@@ -18,8 +18,8 @@ struct RecoveryPackage {
     std::string root_public_key;
     Bytes root_keypair_encrypted;    // Encrypted with recovery passphrase
     std::string recovery_passphrase_hash; // Blake3 hash of passphrase
-    uint32_t epoch = 1;
-    uint32_t manifest_version = 1;
+    uint32_t manifest_revision = 1;
+    uint32_t manifest_schema   = 1;
     std::string genesis_manifest_json;
     uint64_t created_at = 0;
 

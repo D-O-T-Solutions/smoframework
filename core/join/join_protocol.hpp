@@ -43,12 +43,20 @@ inline constexpr uint32_t kOpcodeBootstrapSyncResp  = 0x0604;
 //   4: nonce           (bytes — 64-bit random per-request)
 //   5: csr_hash        (bytes — sha256(csr_cbor))
 //   6: request_signature (bytes — sign(token_wire || timestamp || nonce || csr_hash))
-// Capability bits for JOIN_REQUEST/JoinResponse capability negotiation
-inline constexpr uint64_t CAP_DELTA_SYNC    = 1ULL << 0;
-inline constexpr uint64_t CAP_COMPRESSION   = 1ULL << 1;
-inline constexpr uint64_t CAP_CRT           = 1ULL << 2;
-inline constexpr uint64_t CAP_CONTRACT_SYNC = 1ULL << 3;
-inline constexpr uint64_t CAP_ANTI_ENTROPY  = 1ULL << 4;
+// Capability bitmap bits (uint64) for JOIN_REQUEST/JoinResponse
+// negotiation and runtime capability discovery.
+inline constexpr uint64_t CAP_DELTA_SYNC       = 1ULL << 0;
+inline constexpr uint64_t CAP_COMPRESSION      = 1ULL << 1;
+inline constexpr uint64_t CAP_CRT              = 1ULL << 2;
+inline constexpr uint64_t CAP_CONTRACT_SYNC    = 1ULL << 3;
+inline constexpr uint64_t CAP_ANTI_ENTROPY     = 1ULL << 4;
+// Runtime capability negotiation bits (change 6)
+inline constexpr uint64_t CAP_COMPRESSION_ZSTD = 1ULL << 5;  // supports zstd compression
+inline constexpr uint64_t CAP_COMPRESSION_BROTLI = 1ULL << 6; // supports brotli compression
+inline constexpr uint64_t CAP_STREAM_CONTRACT  = 1ULL << 7;  // supports stream contracts
+inline constexpr uint64_t CAP_FILE_VAULT       = 1ULL << 8;  // supports file vault
+inline constexpr uint64_t CAP_GPU_COMPUTE      = 1ULL << 9;  // supports GPU compute
+inline constexpr uint64_t CAP_RUNTIME_NEGOTIATE = 1ULL << 10; // node supports extended runtime negotiation
 
 struct JoinRequest {
     uint8_t version = 1;
@@ -66,23 +74,20 @@ struct JoinRequest {
 };
 
 // ── JoinResponse ─────────────────────────────────────────────────────
-// Lightweight response: JOIN gives identity, not world state.
-// CBOR keys (per DISCUSSION_0039 §5.1):
+// Lightweight response: JOIN gives identity + bootstrap ticket, not world state.
+// Full mesh sync (manifest, policy, seeds) is done via BOOTSTRAP_SYNC.
+// CBOR keys:
 //   1: certificate      (string — PEM-encoded certificate)
 //   2: mesh_id          (string — mesh identifier)
-//   3: manifest_digest  (bytes — sha256 of current manifest)
-//   4: manifest_epoch   (uint — current manifest epoch)
-//   5: bootstrap_nodes  (array — SeedInfo objects with endpoint/region/priority/health_score)
+//   3: bootstrap_ticket (bytes — opaque ticket for BOOTSTRAP_SYNC auth)
 
 struct JoinResponse {
     uint8_t version = 1;
     std::array<uint8_t, 8> nonce{};    // echoes request nonce
     std::string certificate_pem;        // PEM-encoded certificate
     std::string mesh_id;                // assigned mesh_id
-    Bytes manifest_digest;              // sha256 of current manifest (optional)
-    uint64_t manifest_epoch = 0;        // current manifest epoch
-    std::vector<SeedInfo> bootstrap_nodes; // seed endpoints with metadata
-    int64_t server_time = 0;            // UNIX ms — Authority's clock (for epoch drift)
+    Bytes bootstrap_ticket;             // opaque ticket for BOOTSTRAP_SYNC
+    int64_t server_time = 0;            // UNIX ms — Authority's clock (for drift correction)
     uint64_t capability_bitmap = 0;     // echoed from request, filtered by Authority
 
     Bytes encode_cbor() const;
@@ -91,50 +96,55 @@ struct JoinResponse {
 
 // ── BootstrapSync Request/Response ───────────────────────────────────
 
-// Epoch-based delta sync request.
-// CBOR keys (per DISCUSSION_0039 §5.2):
+// Revision-based delta sync request.
+// CBOR keys:
 //   1: mesh_id           (string)
 //   2: node_id           (string)
-//   3: manifest_epoch    (uint — known manifest epoch, 0 = none)
-//   4: crl_epoch         (uint — known CRL epoch, 0 = none)
-//   5: membership_epoch  (uint — known membership epoch, 0 = none)
-//   6: policy_version    (uint — known policy version, 0 = none)
+//   3: manifest_revision (uint — known manifest revision, 0 = none)
+//   4: crl_revision      (uint — known CRL revision, 0 = none)
+//   5: membership_revision (uint — known membership revision, 0 = none)
+//   6: policy_revision   (uint — known policy revision, 0 = none)
+//   9: bootstrap_ticket  (bytes — opaque ticket from JoinResponse)
 struct BootstrapSyncRequest {
     uint8_t version = 1;
     uint8_t protocol_version = 1;
     std::array<uint8_t, 8> nonce{};
     std::string mesh_id;
     std::string node_id;
-    uint64_t manifest_epoch = 0;
-    uint64_t crl_epoch = 0;
-    uint64_t membership_epoch = 0;
-    uint64_t policy_version = 0;
+    Bytes bootstrap_ticket;           // opaque ticket from JoinResponse
+    uint64_t manifest_revision = 0;
+    uint64_t crl_revision = 0;
+    uint64_t membership_revision = 0;
+    uint64_t policy_revision = 0;
 
     Bytes encode_cbor() const;
     static Result<BootstrapSyncRequest> decode_cbor(BytesView data);
 };
 
 // Delta sync response: only send changed components.
-// CBOR keys (per DISCUSSION_0039 §5.4):
-//   1: manifest_delta    (bytes — present if manifest_epoch > known)
-//   2: membership_delta  (bytes — present if membership_epoch > known)
-//   3: policy_delta      (bytes — present if policy_version > known)
-//   4: crl_delta         (bytes — present if crl_epoch > known)
-//   5: manifest_epoch    (uint — current manifest epoch)
-//   6: membership_epoch  (uint — current membership epoch)
-//   7: crl_epoch         (uint — current CRL epoch)
-//   8: policy_version    (uint — current policy version)
+// CBOR keys:
+//   1: manifest_delta    (bytes — present if manifest_revision > known)
+//   2: membership_delta  (bytes — present if membership_revision > known)
+//   3: policy_delta      (bytes — present if policy_revision > known)
+//   4: crl_delta         (bytes — present if crl_revision > known)
+//   5: manifest_revision (uint — current manifest revision)
+//   6: membership_revision (uint — current membership revision)
+//   7: crl_revision      (uint — current CRL revision)
+//   8: policy_revision   (uint — current policy revision)
+// Plus seed info for gossip bootstrap.
+//  11: seeds            (array — SeedInfo with endpoint/region/weight/health_score)
 struct BootstrapSyncResponse {
     uint8_t version = 1;
     std::array<uint8_t, 8> nonce{};   // echoes request nonce
     Bytes manifest_delta;             // manifest CBOR if changed
     Bytes membership_delta;           // membership delta if changed
     Bytes policy_delta;               // policy delta if changed
-    Bytes crl_delta;                  // CRL entries since known epoch
-    uint64_t manifest_epoch = 0;
-    uint64_t membership_epoch = 0;
-    uint64_t crl_epoch = 0;
-    uint64_t policy_version = 0;
+    Bytes crl_delta;                  // CRL entries since known revision
+    uint64_t manifest_revision = 0;
+    uint64_t membership_revision = 0;
+    uint64_t crl_revision = 0;
+    uint64_t policy_revision = 0;
+    std::vector<SeedInfo> seeds;      // seed endpoints for gossip (moved from JOIN_RESPONSE)
     int64_t server_time = 0;          // UNIX ms — server's clock
 
     Bytes encode_cbor() const;

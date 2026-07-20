@@ -234,6 +234,11 @@ Result<GovernanceProposal> GovernanceProposal::deserialize(BytesView data) {
 // GovernanceEngine
 // ===========================================================================
 Result<ProposalID> GovernanceEngine::submit(GovernanceProposal proposal) {
+    if (static_cast<int>(proposal.level) < 0 ||
+        proposal.level > GovernanceLevel::Genesis) {
+        return SMO_ERR_GOVERNANCE(811, Error, NoRetry, None,
+                                  "invalid governance level");
+    }
     if (proposal.payload.empty()) {
         return SMO_ERR_GOVERNANCE(810, Error, NoRetry, None,
                                   "proposal payload cannot be empty");

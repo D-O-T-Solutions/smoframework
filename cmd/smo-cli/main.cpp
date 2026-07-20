@@ -751,10 +751,7 @@ private:
                         f << "  \"mesh_id\": \"" << jr.mesh_id << "\",\n";
                         f << "  \"role\": \"" << jr.role << "\",\n";
                         f << "  \"profile\": \"" << jr.profile << "\",\n";
-                        f << "  \"manifest_epoch\": " << jr.manifest_epoch << ",\n";
-                        f << "  \"manifest_digest\": \"";
-                        for (auto b : jr.manifest_digest) f << std::hex << std::setw(2) << std::setfill('0') << (int)b;
-                        f << "\",\n";
+                        f << "  \"bootstrap_endpoints\": [\n";
                         f << "  \"bootstrap_endpoints\": [\n";
                         for (size_t i = 0; i < jr.bootstrap_endpoints.size(); ++i) {
                             if (i > 0) f << ",\n";
@@ -982,8 +979,8 @@ private:
             std::cout << "  Mesh:     " << m.mesh_id << "\n";
             std::cout << "  State:    " << m.state << "\n";
             std::cout << "  Profile:  " << to_string(m.profile) << "\n";
-            std::cout << "  Epoch:    " << m.epoch << "\n";
-            std::cout << "  Version:  " << m.manifest_version << "\n";
+            std::cout << "  Revision: " << m.manifest_revision << "\n";
+            std::cout << "  Schema:   " << m.manifest_schema << "\n";
             std::cout << "  Authorities: min=" << m.authorities.minimum
                       << " preferred=" << m.authorities.preferred
                       << " max=" << m.authorities.maximum << "\n";

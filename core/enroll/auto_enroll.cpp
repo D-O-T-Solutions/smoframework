@@ -523,12 +523,12 @@ Result<JoinResult> run_join_command(const std::string& token_str,
         current_state() <= join::JoinState::BOOTSTRAP_SYNC) {
         std::printf("Requesting bootstrap sync...\n");
 
-        // Build BootstrapSyncRequest with known epochs from response
+        // Build BootstrapSyncRequest with known revisions from JoinResponse ticket
         join::BootstrapSyncRequest sync_req;
         sync_req.mesh_id = resp.mesh_id.empty() ? token.mesh_id : resp.mesh_id;
         sync_req.node_id = identity->node_id().to_string();
-        sync_req.manifest_epoch = resp.manifest_epoch;
-        // crl_epoch, membership_epoch, policy_version default to 0 (full sync)
+        sync_req.bootstrap_ticket = resp.bootstrap_ticket;
+        // manifest_revision, crl_revision, membership_revision, policy_revision default to 0 (full sync)
 
         if (current_state() == join::JoinState::CERT_VERIFY) {
             auto r = fsm.on_event(static_cast<int64_t>(join::JoinEvent::SYNC_REQUESTED));
@@ -536,18 +536,13 @@ Result<JoinResult> run_join_command(const std::string& token_str,
             save_join_state(fsm, actual_data_dir);
         }
 
-        // Get bootstrap endpoint strings from JoinResponse (SeedInfo) or token (bare strings)
-        std::vector<std::string> endpoints;
-        if (!resp.bootstrap_nodes.empty()) {
-            for (auto& si : resp.bootstrap_nodes) endpoints.push_back(si.endpoint);
-        } else {
-            endpoints = token.bootstrap_endpoints;
-        }
+        // Bootstrap endpoints come from token (the join response is lightweight)
+        std::vector<std::string> endpoints = token.bootstrap_endpoints;
 
         bool synced = false;
         std::string last_error;
         std::printf("  Bootstrap sync via secure TCP/CBOR (epoch: %llu)...\n",
-                    (unsigned long long)sync_req.manifest_epoch);
+                    (unsigned long long)sync_req.manifest_revision);
 
         // Try each bootstrap endpoint until one works
         for (const auto& endpoint : endpoints) {
@@ -601,11 +596,12 @@ Result<JoinResult> run_join_command(const std::string& token_str,
             }
 
             const auto& sync_resp = decode_result.value();
-            std::printf("OK (mf=%llu mem=%llu crl=%llu pol=%llu)\n",
-                        (unsigned long long)sync_resp.manifest_epoch,
-                        (unsigned long long)sync_resp.membership_epoch,
-                        (unsigned long long)sync_resp.crl_epoch,
-                        (unsigned long long)sync_resp.policy_version);
+            std::printf("OK (mf=%llu mem=%llu crl=%llu pol=%llu seeds=%zu)\n",
+                        (unsigned long long)sync_resp.manifest_revision,
+                        (unsigned long long)sync_resp.membership_revision,
+                        (unsigned long long)sync_resp.crl_revision,
+                        (unsigned long long)sync_resp.policy_revision,
+                        sync_resp.seeds.size());
 
             // Apply deltas
             if (!sync_resp.manifest_delta.empty()) {
@@ -750,19 +746,7 @@ Result<JoinResult> run_join_command(const std::string& token_str,
         std::printf("  Mesh:         %s\n", token.mesh_id.c_str());
         std::printf("  Role:         %s\n", token.admission.role.c_str());
         std::printf("  Profile:      %s\n", token.admission.profile.empty() ? "default" : token.admission.profile.c_str());
-        if (!resp.manifest_digest.empty()) {
-            std::printf("  Manifest:     epoch=%llu digest=", (unsigned long long)resp.manifest_epoch);
-            for (auto b : resp.manifest_digest) std::printf("%02x", b);
-            std::printf("\n");
-        }
-        if (!resp.bootstrap_nodes.empty()) {
-            std::printf("  Bootstrap:    %zu seed(s)\n", resp.bootstrap_nodes.size());
-            for (auto& si : resp.bootstrap_nodes) {
-                std::printf("    %s", si.endpoint.c_str());
-                if (!si.region.empty()) std::printf(" [%s]", si.region.c_str());
-                std::printf("\n");
-            }
-        }
+        std::printf("  Bootstrap:    %zu seed(s)\n", token.bootstrap_endpoints.size());
 
         // Update identity state to Enrolled
         (void)identity->transition_to(IdentityState::Enrolled);
@@ -779,15 +763,9 @@ Result<JoinResult> run_join_command(const std::string& token_str,
                 f << "  \"profile\": \"" << (token.admission.profile.empty() ? "server" : token.admission.profile) << "\",\n";
                 f << "  \"listen_port\": " << port << ",\n";
                 f << "  \"bootstrap_endpoints\": [\n";
-                std::vector<std::string> eps;
-                if (!resp.bootstrap_nodes.empty()) {
-                    for (auto& si : resp.bootstrap_nodes) eps.push_back(si.endpoint);
-                } else {
-                    eps = token.bootstrap_endpoints;
-                }
-                for (size_t i = 0; i < eps.size(); ++i) {
+                for (size_t i = 0; i < token.bootstrap_endpoints.size(); ++i) {
                     if (i > 0) f << ",\n";
-                    f << "    \"" << eps[i] << "\"";
+                    f << "    \"" << token.bootstrap_endpoints[i] << "\"";
                 }
                 f << "\n  ],\n";
                 f << "  \"node_name\": \"" << (node_name.empty() ? identity->node_id().to_string() : node_name) << "\"\n";
@@ -806,13 +784,7 @@ Result<JoinResult> run_join_command(const std::string& token_str,
         jr.mesh_id = token.mesh_id;
         jr.role = token.admission.role;
         jr.profile = token.admission.profile.empty() ? "default" : token.admission.profile;
-        if (!resp.bootstrap_nodes.empty()) {
-            for (auto& si : resp.bootstrap_nodes) jr.bootstrap_endpoints.push_back(si.endpoint);
-        } else {
-            jr.bootstrap_endpoints = token.bootstrap_endpoints;
-        }
-        jr.manifest_epoch = resp.manifest_epoch;
-        jr.manifest_digest = resp.manifest_digest;
+        jr.bootstrap_endpoints = token.bootstrap_endpoints;
         jr.node_name = node_name.empty() ? identity->node_id().to_string() : node_name;
         return jr;
     }

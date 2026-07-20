@@ -52,8 +52,8 @@ Result<Bytes> RecoveryPackage::serialize() const {
     oss << "  \"root_public_key\": " << json_esc(root_public_key) << ",\n";
     oss << "  \"root_keypair_encrypted\": " << json_esc(bytes_to_hex(root_keypair_encrypted)) << ",\n";
     oss << "  \"recovery_passphrase_hash\": " << json_esc(recovery_passphrase_hash) << ",\n";
-    oss << "  \"epoch\": " << epoch << ",\n";
-    oss << "  \"manifest_version\": " << manifest_version << ",\n";
+    oss << "  \"manifest_revision\": " << manifest_revision << ",\n";
+    oss << "  \"manifest_schema\": " << manifest_schema << ",\n";
     oss << "  \"genesis_manifest_json\": " << json_esc(genesis_manifest_json) << ",\n";
     oss << "  \"created_at\": " << created_at << "\n";
     oss << "}\n";
@@ -70,8 +70,8 @@ Result<RecoveryPackage> RecoveryPackage::deserialize(BytesView data) {
     pkg.root_public_key    = json_extract_str("root_public_key", json);
     pkg.recovery_passphrase_hash = json_extract_str("recovery_passphrase_hash", json);
     pkg.genesis_manifest_json    = json_extract_str("genesis_manifest_json", json);
-    pkg.epoch              = (uint32_t)json_extract_int("epoch", json);
-    pkg.manifest_version   = (uint32_t)json_extract_int("manifest_version", json);
+    pkg.manifest_revision   = (uint32_t)json_extract_int("manifest_revision", json);
+    pkg.manifest_schema     = (uint32_t)json_extract_int("manifest_schema", json);
     pkg.created_at         = json_extract_int("created_at", json);
 
     // Decode hex keypair
@@ -116,11 +116,11 @@ Result<RootSession> RecoveryPackage::unlock(
     }
 
     // Version compatibility check
-    if (manifest_version < 1 || manifest_version > 1) {
+    if (manifest_schema < 1 || manifest_schema > 1) {
         return SMO_ERR_GENESIS(1408, Error, NoRetry, ManualIntervention,
-                               "recovery package version " +
-                               std::to_string(manifest_version) +
-                               " is not supported (expected 1)");
+                                "recovery package schema " +
+                                std::to_string(manifest_schema) +
+                                " is not supported (expected 1)");
     }
 
     if (root_keypair_encrypted.empty()) {

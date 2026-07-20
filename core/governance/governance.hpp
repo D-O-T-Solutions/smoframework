@@ -67,7 +67,7 @@ enum class GovernanceAction : uint8_t {
     SuspendAuthority  = 2,
     ResumeAuthority   = 3,
 
-    // Level B — Constitution (manifest_version++, epoch++)
+    // Level B — Constitution (manifest_revision++, manifest_schema++)
     ChangeMaximum     = 4,
     ChangeMinimum     = 5,
     ChangeQuorum      = 6,

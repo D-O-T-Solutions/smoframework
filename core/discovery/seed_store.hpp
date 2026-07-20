@@ -12,8 +12,7 @@ namespace smo {
 
 struct SeedEntry {
     std::string endpoint;       // "host:port"
-    uint32_t    priority = 1;   // lower = higher priority
-    uint32_t    weight   = 100; // relative weight for weighted selection
+    uint32_t    weight   = 100; // relative weight for weighted random selection
     std::string mesh_id;        // optional — mesh this seed belongs to
     int64_t     added_at = 0;
 };

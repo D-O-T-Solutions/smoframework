@@ -26,8 +26,8 @@ Result<Bytes> GenesisManifest::serialize() const {
     oss << "  \"schema_version\": " << schema_version << ",\n";
     oss << "  \"mesh_id\": " << esc(mesh_id) << ",\n";
     oss << "  \"root_public_key\": " << esc(root_public_key) << ",\n";
-    oss << "  \"manifest_version\": " << manifest_version << ",\n";
-    oss << "  \"epoch\": " << epoch << ",\n";
+    oss << "  \"manifest_schema\": " << manifest_schema << ",\n";
+    oss << "  \"manifest_revision\": " << manifest_revision << ",\n";
     oss << "  \"state\": " << esc(state) << ",\n";
     oss << "  \"profile\": " << esc(to_string(profile)) << ",\n";
     oss << "  \"authorities\": {\n";
@@ -87,8 +87,8 @@ Result<GenesisManifest> GenesisManifest::deserialize(BytesView data) {
     m.schema_version  = (uint32_t)json_int_value("schema_version", json);
     m.mesh_id         = json_str_value("mesh_id", json);
     m.root_public_key = json_str_value("root_public_key", json);
-    m.manifest_version= (uint32_t)json_int_value("manifest_version", json);
-    m.epoch           = (uint32_t)json_int_value("epoch", json);
+    m.manifest_schema   = (uint32_t)json_int_value("manifest_schema", json);
+    m.manifest_revision = (uint32_t)json_int_value("manifest_revision", json);
     m.state           = json_str_value("state", json);
 
     auto profile_str = json_str_value("profile", json);

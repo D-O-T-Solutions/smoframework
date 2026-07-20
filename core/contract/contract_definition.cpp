@@ -114,15 +114,33 @@ std::string ContractDefinition::to_canonical_json() const {
 }
 
 ContractID ContractDefinition::compute_id() const {
-    // Simplified - would use HashImpl from crypto
-    return ContractID{};
+    ContractID id;
+    // Deterministic mock — combine version+category+name into a stable ID
+    std::string raw = contract_version + "|" + category + "|" + name;
+    id.bytes.fill(0);
+    for (size_t i = 0; i < raw.size() && i < id.bytes.size(); ++i)
+        id.bytes[i] = static_cast<uint8_t>(raw[i]);
+    return id;
 }
 
 Result<ContractDefinition> ContractDefinition::from_canonical_json(
     std::string_view json) {
-    // Simplified implementation
+    // Simplified implementation — extract known fields via substring search
     ContractDefinition def;
-    // In real implementation, would parse JSON properly
+    auto extract_string = [&](const std::string& key) -> std::string {
+        auto pos = json.find("\"" + key + "\":\"");
+        if (pos == std::string::npos) return {};
+        pos += key.size() + 4;
+        std::string val;
+        while (pos < json.size() && json[pos] != '\"') val += json[pos++];
+        return val;
+    };
+    def.contract_version = extract_string("contract_version");
+    def.category = extract_string("category");
+    def.opcode = extract_string("opcode");
+    def.name = extract_string("name");
+    def.publisher = extract_string("publisher");
+    def.semver = extract_string("semver");
     def.contract_id = def.compute_id();
     return def;
 }

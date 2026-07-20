@@ -7,7 +7,7 @@ namespace smo::network::bootstrap {
 
 // Seed resolver — parses and resolves seed node addresses.
 // Supports: host:port, ip:port, DNS-based seed discovery.
-// Seed priority fallback: try seed list in order, skip unreachable.
+// Seed weighted random selection: try seeds with higher weight first, skip unreachable.
 
 struct SeedEndpoint {
     std::string host;

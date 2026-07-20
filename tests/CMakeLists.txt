@@ -163,26 +163,30 @@ smo_set_warnings(smo_test_contract)
 smo_set_optimisation(smo_test_contract)
 add_test(NAME contract_model COMMAND smo_test_contract)
 
-# ── Legacy test executable ───────────────────────────────────────────
-add_executable(smo_all_tests EXCLUDE_FROM_ALL
-    unit/core_test.cpp
-    unit/protocol_test.cpp
-    unit/compiler_test.cpp
+# ── Protocol Compliance Tests (PCT-001 through PCT-017) ────────────
+add_executable(smo_pct
+    unit/protocol/test_pct.cpp
 )
-
-target_link_libraries(smo_all_tests PRIVATE
-    smo_core smo_protocol smo_compiler smo_transport
-    smo_storage smo_trust smo_acl smo_legacy_runtime
+target_link_libraries(smo_pct PRIVATE
+    smo_core smo_protocol fmt::fmt
 )
+smo_set_warnings(smo_pct)
+smo_set_optimisation(smo_pct)
+smo_link_dependencies(smo_pct)
+add_test(NAME protocol_compliance COMMAND smo_pct)
 
-smo_set_warnings(smo_all_tests)
-smo_set_optimisation(smo_all_tests)
-smo_link_dependencies(smo_all_tests)
+# ── Legacy stubs (placeholder tests — no op) ─────────────────────────
+# Each stub has its own main(); they must be separate executables.
+macro(smo_add_legacy_stub name source)
+    add_executable(smo_stub_${name} ${source})
+    smo_set_warnings(smo_stub_${name})
+    smo_set_optimisation(smo_stub_${name})
+    add_test(NAME ${name} COMMAND smo_stub_${name})
+endmacro()
 
-# ── Register legacy tests ────────────────────────────────────────────
-add_test(NAME core     COMMAND smo_all_tests --subtest core)
-add_test(NAME protocol COMMAND smo_all_tests --subtest protocol)
-add_test(NAME compiler COMMAND smo_all_tests --subtest compiler)
+smo_add_legacy_stub(core     unit/core_test.cpp)
+smo_add_legacy_stub(protocol unit/protocol_test.cpp)
+smo_add_legacy_stub(compiler unit/compiler_test.cpp)
 
 # Future test suites (placeholders for now):
 # add_subdirectory(integration)

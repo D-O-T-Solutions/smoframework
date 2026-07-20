@@ -50,7 +50,7 @@ Result<Bytes> RecoverySession::serialize() const {
     oss << "  \"mesh_id\": " << json_esc(mesh_id) << ",\n";
     oss << "  \"root_node_id\": " << json_esc(root_node_id) << ",\n";
     oss << "  \"new_epoch\": " << new_epoch << ",\n";
-    oss << "  \"manifest_version\": " << manifest_version << ",\n";
+    oss << "  \"manifest_revision\": " << manifest_revision << ",\n";
     oss << "  \"created_at\": " << created_at << ",\n";
     oss << "  \"expires_at\": " << expires_at << ",\n";
     oss << "  \"signatures\": [],\n";
@@ -69,7 +69,7 @@ Result<RecoverySession> RecoverySession::deserialize(BytesView data) {
     s.mesh_id        = json_val_str("mesh_id", json);
     s.root_node_id   = json_val_str("root_node_id", json);
     s.new_epoch      = json_val_int("new_epoch", json);
-    s.manifest_version = (uint32_t)json_val_int("manifest_version", json);
+    s.manifest_revision = (uint32_t)json_val_int("manifest_revision", json);
     s.created_at     = json_val_int("created_at", json);
     s.expires_at     = json_val_int("expires_at", json);
 

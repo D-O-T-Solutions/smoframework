@@ -23,8 +23,6 @@ struct JoinResult {
     std::string role;
     std::string profile;
     std::vector<std::string> bootstrap_endpoints;
-    uint64_t manifest_epoch = 0;
-    Bytes    manifest_digest;
     std::string node_name;
 };
 

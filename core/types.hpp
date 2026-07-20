@@ -47,12 +47,13 @@ inline std::string bytes_to_base64(BytesView data) {
 }
 
 // ---------------------------------------------------------------------------
-// SeedInfo — bootstrap seed endpoint with metadata for smart seed selection
+// SeedInfo — bootstrap seed endpoint with metadata for smart seed selection.
+// Client uses weighted random for selection.
 // ---------------------------------------------------------------------------
 struct SeedInfo {
     std::string endpoint;          // "host:port"
     std::string region;            // "us-east-1", "ap-southeast-1", etc.
-    uint32_t    priority = 0;      // 0=highest
+    uint32_t    weight = 100;      // relative weight for weighted random selection
     double      health_score = 1.0; // 0.0–1.0 (from health monitor)
 };
 

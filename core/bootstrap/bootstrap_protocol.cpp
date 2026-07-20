@@ -213,7 +213,7 @@ Result<BootstrapResponse> handle_bootstrap_request(
     for (auto& ep : cfg.bootstrap_endpoints) {
         SeedInfo si;
         si.endpoint = ep;
-        si.priority = 0;
+        si.weight = 100;
         si.health_score = 1.0;
         snap.seeds.push_back(si);
     }

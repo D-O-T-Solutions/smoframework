@@ -34,7 +34,7 @@ struct RecoverySession {
     std::string   mesh_id;
     std::string   root_node_id;
     uint64_t      new_epoch  = 0;
-    uint32_t      manifest_version = 0;
+    uint32_t      manifest_revision = 0;
     int64_t       created_at = 0;
     int64_t       expires_at = 0;
     std::vector<GovernanceSignature> signatures;

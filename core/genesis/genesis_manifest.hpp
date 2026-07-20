@@ -67,11 +67,11 @@ struct FaultTolerance {
 };
 
 struct GenesisManifest {
-    uint32_t schema_version   = 1;
+    uint32_t schema_version    = 1;
     std::string mesh_id;
     std::string root_public_key;
-    uint32_t manifest_version = 1;
-    uint32_t epoch            = 1;
+    uint32_t manifest_schema   = 1;   // manifest format version
+    uint32_t manifest_revision = 1;   // manifest content revision
     std::string state         = "genesis";
 
     DeploymentProfile profile  = DeploymentProfile::Enterprise;

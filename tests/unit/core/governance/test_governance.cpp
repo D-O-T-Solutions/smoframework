@@ -88,9 +88,11 @@ static bool test_proposal_state_to_string() {
 }
 
 static bool test_governance_action_to_string() {
-    ASSERT(std::strcmp(to_string(GovernanceAction::PolicyChange), "PolicyChange") == 0);
-    ASSERT(std::strcmp(to_string(GovernanceAction::AuthorityCreate), "AuthorityCreate") == 0);
-    ASSERT(std::strcmp(to_string(GovernanceAction::AuthorityRevoke), "AuthorityRevoke") == 0);
+    // Aliases test same as canonical names:
+    // AuthorityCreate==AddAuthority, AuthorityRevoke==RemoveAuthority, PolicyChange==ChangePolicy
+    ASSERT(std::strcmp(to_string(GovernanceAction::PolicyChange), "ChangePolicy") == 0);
+    ASSERT(std::strcmp(to_string(GovernanceAction::AuthorityCreate), "AddAuthority") == 0);
+    ASSERT(std::strcmp(to_string(GovernanceAction::AuthorityRevoke), "RemoveAuthority") == 0);
     ASSERT(std::strcmp(to_string(GovernanceAction::EpochIncrement), "EpochIncrement") == 0);
     ASSERT(std::strcmp(to_string(GovernanceAction::EmergencyLockdown), "EmergencyLockdown") == 0);
     return true;

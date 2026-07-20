@@ -34,7 +34,7 @@ namespace {
     // SeedInfo sub-keys (within K_SEEDS array elements)
     constexpr uint64_t K_SNAP_SEED_ENDPOINT    = 1;
     constexpr uint64_t K_SNAP_SEED_REGION      = 2;
-    constexpr uint64_t K_SNAP_SEED_PRIORITY    = 3;
+    constexpr uint64_t K_SNAP_SEED_WEIGHT      = 3;
     constexpr uint64_t K_SNAP_SEED_HEALTH      = 4;
 }
 
@@ -159,7 +159,7 @@ Bytes BootstrapSnapshot::encode_cbor() const {
         enc.encode_map(4);
         enc.encode_uint(K_SNAP_SEED_ENDPOINT); enc.encode_string(s.endpoint);
         if (!s.region.empty()) { enc.encode_uint(K_SNAP_SEED_REGION); enc.encode_string(s.region); }
-        enc.encode_uint(K_SNAP_SEED_PRIORITY); enc.encode_uint(s.priority);
+        enc.encode_uint(K_SNAP_SEED_WEIGHT); enc.encode_uint(s.weight);
         enc.encode_uint(K_SNAP_SEED_HEALTH);
         uint64_t f = 0;
         std::memcpy(&f, &s.health_score, sizeof(double));
@@ -262,7 +262,7 @@ Result<BootstrapSnapshot> BootstrapSnapshot::decode_cbor(BytesView data) {
                         switch (sk.value()) {
                             case K_SNAP_SEED_ENDPOINT: { auto v = dec.decode_string(); if (v) si.endpoint = std::move(v.value()); break; }
                             case K_SNAP_SEED_REGION: { auto v = dec.decode_string(); if (v) si.region = std::move(v.value()); break; }
-                            case K_SNAP_SEED_PRIORITY: { auto v = dec.decode_uint(); if (v) si.priority = static_cast<uint32_t>(v.value()); break; }
+                            case K_SNAP_SEED_WEIGHT: { auto v = dec.decode_uint(); if (v) si.weight = static_cast<uint32_t>(v.value()); break; }
                             case K_SNAP_SEED_HEALTH: { auto v = dec.decode_uint(); if (v) { uint64_t f = v.value(); std::memcpy(&si.health_score, &f, sizeof(double)); } break; }
                             default: { auto r = dec.skip(); if (!r) break; }
                         }

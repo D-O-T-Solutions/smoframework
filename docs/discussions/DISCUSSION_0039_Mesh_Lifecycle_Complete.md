@@ -12,8 +12,8 @@
 |--------|-----------------|
 | **Invite/Join mechanism** | ✅ **Static token (copy-paste)** — `SMO-JOIN-xxxxx` generated once, copied to joining node |
 | **Transport** | ✅ **Pure TCP/CBOR** — **NO HTTP anywhere** in mesh communication |
-| **Join flow** | Token (copy-paste) → TCP `JOIN_REQUEST` (0x0601) → `JOIN_RESPONSE` with cert + mesh_id + bootstrap_nodes (no full manifest) |
-| **Bootstrap sync** | `BOOTSTRAP_SYNC_REQUEST` (0x0603) → `BOOTSTRAP_SYNC_RESPONSE` delta (epoch-based, changed components only) |
+| **Join flow** | Token (copy-paste) → TCP `JOIN_REQUEST` (0x0601) → `JOIN_RESPONSE` with cert + mesh_id + bootstrap_ticket (no manifest, no seeds) |
+| **Bootstrap sync** | `BOOTSTRAP_SYNC_REQUEST` (0x0603) → `BOOTSTRAP_SYNC_RESPONSE` delta (revision-based, changed components only + seeds) |
 | **Auth** | Token is self-contained (CBOR payload + Ed25519/ML-DSA signature), no server-side session |
 
 ---
@@ -86,21 +86,22 @@ Node                          Bootstrap Endpoint
   │                                    │── verify request signature
   │                                    │── verify CSR
   │                                    │── issue certificate
-  │◄── JOIN_RESPONSE ──────────────────│
-  │    { certificate, mesh_id,         │
-  │      manifest_digest,              │
-  │      manifest_epoch,               │
-  │      bootstrap_nodes }             │
-  │                                    │
-  │── BOOTSTRAP_SYNC_REQUEST ─────────►│
-  │    { manifest_epoch, crl_epoch,    │
-  │      membership_epoch,             │
-  │      policy_version }              │
-  │◄── BOOTSTRAP_SYNC_RESPONSE ───────│
-  │    { manifest_delta?,              │
-  │      membership_delta?,            │
-  │      policy_delta?,                │
-  │      crl_delta?, ... }             │
+│◄── JOIN_RESPONSE ──────────────────│
+│    { certificate, mesh_id,         │
+│      bootstrap_ticket }            │
+│                                    │
+│── BOOTSTRAP_SYNC_REQUEST ─────────►│
+│    { manifest_revision,            │
+│      crl_revision,                 │
+│      membership_revision,          │
+│      policy_revision,              │
+│      bootstrap_ticket }            │
+│◄── BOOTSTRAP_SYNC_RESPONSE ───────│
+│    { manifest_delta?,              │
+│      membership_delta?,            │
+│      policy_delta?,                │
+│      crl_delta?,                   │
+│      seeds? ... }                  │
 ```
 
 ### New Opcodes (namespace 0x06 - Join):
@@ -122,14 +123,15 @@ Node                          Bootstrap Endpoint
 
 **Principle:** JOIN gives you a certificate. Bootstrap gives you state.
 
-**JOIN_RESPONSE (lightweight):**
+**JOIN_RESPONSE (minimal — identity only):**
 ```cbor
 {
-  1: certificate,
-  2: mesh_id,
-  3: manifest_digest,      // sha256 — verify later
-  4: manifest_epoch,       // monotonic uint64
-  5: bootstrap_nodes       // 5–10 seed endpoints
+  1: certificate,          // PEM-encoded certificate
+  2: mesh_id,              // assigned mesh identifier
+  3: bootstrap_ticket,     // opaque bytes — ticket for BOOTSTRAP_SYNC auth
+  6: nonce,                // echoes request nonce
+  7: server_time,          // UNIX ms — authority clock for drift correction
+  8: capabilities          // uint64 bitmap — filtered by authority
 }
 ```
 
@@ -152,36 +154,29 @@ READY
 
 ---
 
-### 5.2 Bootstrap Sync: Epoch-Based Delta Sync
+### 5.2 Bootstrap Sync: Revision-Based Delta Sync
 
-**Current Request (BROKEN - full sync):**
-```cbor
-{
-  mesh_id,
-  node_id,
-  known_epoch
-}
-```
-
-**Fixed Request (EPOCH-BASED):**
+**Fixed Request (REVISION-BASED):**
 ```cbor
 {
   1: mesh_id,
   2: node_id,
-  3: manifest_epoch,
-  4: crl_epoch,
-  5: membership_epoch,
-  6: policy_version
+  3: manifest_revision,
+  4: crl_revision,
+  5: membership_revision,
+  6: policy_revision,
+  7: bootstrap_ticket      // opaque ticket from JOIN_RESPONSE
 }
 ```
 
 **Bootstrap Response Logic:**
 ```
-manifest_epoch == local_manifest_epoch  → skip manifest
-crl_epoch == local_crl_epoch           → skip CRL
-membership_epoch == local_epoch        → skip membership
-policy_version == local_version        → skip policies
+manifest_revision == local_manifest_revision  → skip manifest
+crl_revision == local_crl_revision            → skip CRL
+membership_revision == local_revision         → skip membership
+policy_revision == local_revision             → skip policies
 Only send changed components (delta sync)
++ seeds (array of SeedInfo for gossip bootstrap)
 ```
 
 ---
@@ -198,19 +193,19 @@ Only send changed components (delta sync)
 }
 ```
 
-**Fixed - Seeds Only (matches `join_protocol.cpp:31-36`):**
+**Fixed - Identity Only (DISCUSSION_0040 change 1):**
 ```cbor
 {
   1: certificate_pem,     // PEM-encoded membership certificate
   2: mesh_id,             // string — assigned mesh identifier
-  3: manifest_digest,     // bytes — Blake3 hash of current manifest
-  4: manifest_epoch,      // uint — current manifest epoch
-  5: bootstrap_nodes,     // [tstr] — seed endpoints to start gossip
-  6: nonce                // bytes — echoes request nonce
+  3: bootstrap_ticket,    // bytes — opaque auth ticket for BOOTSTRAP_SYNC
+  6: nonce,               // bytes — echoes request nonce
+  7: server_time,         // int — authority clock for drift correction
+  8: capabilities         // uint64 — bitmap of granted capabilities
 }
 ```
 
-> **Rationale:** Full peer list is for GossipEngine to discover. JOIN_RESPONSE only needs enough to start gossip.
+> **Rationale:** JOIN does ONE thing: grant membership. Seeds, manifest, policy all come via BOOTSTRAP_SYNC.
 
 ---
 
@@ -226,17 +221,19 @@ Only send changed components (delta sync)
 }
 ```
 
-**Fixed - DELTA FORMAT (unique CBOR keys):**
+**Fixed - DELTA FORMAT + SEEDS:**
 ```cbor
 {
-  1: manifest_delta?,       // present only if manifest_epoch > known
-  2: membership_delta?,     // present if membership_epoch > known
-  3: policy_delta?,         // present if policy_version > known
-  4: crl_delta?,            // present if crl_epoch > known
-  5: manifest_epoch,        // monotonic uint64
-  6: membership_epoch,      // monotonic uint64
-  7: crl_epoch,             // monotonic uint64
-  8: policy_version         // monotonic uint64
+  1: manifest_delta?,          // present only if manifest_revision > known
+  2: membership_delta?,        // present if membership_revision > known
+  3: policy_delta?,            // present if policy_revision > known
+  4: crl_delta?,               // present if crl_revision > known
+  5: manifest_revision,        // monotonic uint64
+  6: membership_revision,      // monotonic uint64
+  7: crl_revision,             // monotonic uint64
+  8: policy_revision,          // monotonic uint64
+ 10: server_time,              // int — server clock for drift correction
+ 11: seeds                     // [SeedInfo] — seed endpoints for gossip bootstrap
 }
 ```
 
@@ -393,83 +390,90 @@ Resume from last completed step
 
 ---
 
-### 5.9 manifest_version Policy
+### 5.9 Manifest Revision & Schema (renamed from manifest_version)
 
-Add `manifest_version` alongside `manifest_epoch`:
+Renamed to avoid confusion with software version:
+- `manifest_version` → `manifest_schema` (manifest format version, e.g., 1, 2, 3)
+- `manifest_epoch` → `manifest_revision` (monotonic content revision counter)
 
 ```
-epoch:  1, 2, 3, 4      // only increments, no semantic meaning
-version: v2.1, v2.2, v3  // semantic: major.minor.patch
+manifest_revision:  1, 2, 3, 4     // only increments, ordering
+manifest_schema:   1, 2, 3          // format version for compatibility
 
 compatibility check:
-  node v2 joins mesh v3 → reject
-  node v3 joins mesh v3 → ok
-  node v3 joins mesh v2 → reject (downgrade)
+  schema mismatch → negotiate lowest common
+  revision comparison → delta sync
 ```
 
 ---
 
-### 5.10 BootstrapResponse Capabilities (Fixed Duplicate Keys)
+### 5.10 Capability Negotiation (uint64 Bitmap)
 
-Add capability negotiation with unique CBOR keys:
+Capabilities use a **uint64 bitmap** instead of string array for speed and size:
 
 ```cbor
-{
-  1: certificate,
-  2: manifest,
-  3: seed_nodes,
-  4: bootstrap_nodes,
-  5: policies,
-  6: crl_digest,
-  7: manifest_epoch,         // monotonic uint64
-  8: manifest_version,       // semantic "major.minor.patch"
-  9: capabilities: [         // capability negotiation
-      "gossip_v2",
-      "contract_sync",
-      "crt",
-      "delta_sync",
-      "compression:lz4",
-      "compression:zstd",
-      "compression:brotli",
-      "stream_sync"
-    ]
-}
+capabilities: uint64  // bitmask
 ```
 
-> **Compression negotiation:** Capabilities specify algorithm (`compression:lz4`). Response payload is optionally compressed. Node selects best mutually supported algorithm.
+| Bit | Capability | Description |
+|-----|-----------|-------------|
+| 0 | CAP_DELTA_SYNC | Supports delta sync |
+| 1 | CAP_COMPRESSION | Supports payload compression |
+| 2 | CAP_CRT | Supports certificate revocation transparency |
+| 3 | CAP_CONTRACT_SYNC | Supports contract registry sync |
+| 4 | CAP_ANTI_ENTROPY | Supports anti-entropy gossip |
+| 5 | CAP_COMPRESSION_ZSTD | Supports zstd compression algorithm |
+| 6 | CAP_COMPRESSION_BROTLI | Supports brotli compression algorithm |
+| 7 | CAP_STREAM_CONTRACT | Supports stream contracts |
+| 8 | CAP_FILE_VAULT | Supports file vault |
+| 9 | CAP_GPU_COMPUTE | Supports GPU compute contracts |
+| 10 | CAP_RUNTIME_NEGOTIATE | Supports extended runtime capability negotiation |
+
+> **Compression negotiation:** Both sides advertise supported algorithms via bitmap bits 5–6. Fallback to `none` if no common algorithm.
+>
+> **Runtime Negotiation (bit 10):** Nodes capable of extended runtime negotiation can exchange compression/contract/feature support beyond the basic JOIN bitmap.
 
 ---
 
-### 5.11 Seed Node Priority
+### 5.11 Seed Node Weight (priority removed)
+
+Seed nodes use **weight only** — no priority. Client performs weighted random selection.
 
 ```cbor
-seed_nodes: [
+seeds: [
   {
     "endpoint": "mesh.company.com:5454",
-    "priority": 1,
     "weight": 100
   },
   {
     "endpoint": "vpn.company.com:5454",
-    "priority": 2,
     "weight": 50
   }
 ]
 ```
 
+> **Weighted random:** Higher weight = more likely to be selected. Simple, no priority maintenance needed.
+> Previously had both `priority` and `weight`. Now weight-only for the wire protocol.
+
 ---
 
-### 5.12 SyncService Scheduler
+### 5.12 SyncService Scheduler (Policy-Driven)
+
+Intervals are **configurable via mesh policy** (governance ChangePolicy action), not hardcoded:
 
 ```
 SyncService
 └── SyncScheduler
-    ├── membership_delta  (every 30s)
-    ├── policy_delta      (every 60s)
-    ├── crl_delta         (every 300s)
-    ├── manifest_delta    (on change)
-    └── contracts_delta   (on change)
+    ├── heartbeat    (default 20s, policy key: "heartbeat")
+    ├── membership   (default 45s, policy key: "membership")
+    ├── policy       (default 60s, policy key: "policy")
+    ├── crl          (default 10min, policy key: "crl")
+    ├── manifest     (on change, policy key: "manifest")
+    ├── routing      (default 15s, policy key: "routing")
+    └── contracts    (on change, policy key: "contracts")
 ```
+
+> Mesh admins can tune via governance: `smo governance propose ChangePolicy {"heartbeat": 10, "membership": 30}`
 
 ---
 
@@ -507,18 +511,20 @@ JoinService builds response
 
 ---
 
-### 5.15 Epoch vs Version — Explicit Semantics
+### 5.15 Revision vs Schema — Explicit Semantics
+
+Renamed from epoch/version to avoid confusion with software versioning.
 
 | Field | Type | Semantics | Use |
 |-------|------|-----------|-----|
-| `manifest_epoch` | monotonic uint64 | 1, 2, 3, 4 ... | Sync ordering (what's newer) |
-| `manifest_version` | semver `major.minor.patch` | 2.1.0, 2.2.0, 3.0.0 | Compatibility check (what's compatible) |
+| `manifest_revision` | monotonic uint64 | 1, 2, 3, 4 ... | Sync ordering (what's newer) |
+| `manifest_schema` | uint32 | 1, 2, 3 ... | Manifest format version (compatibility check) |
 
 **Rules:**
-- NEVER use version for sync ordering — epoch handles that
-- NEVER use epoch for compatibility — version handles that
-- Downgrade detection: `join_version < mesh_version → reject`
-- Upgrade detection: `join_version >= mesh_version.next → warn` (future compat)
+- NEVER use schema for sync ordering — revision handles that
+- NEVER use revision for compatibility — schema handles that
+- Schema mismatch → negotiate lowest common schema
+- Schema 1 == original genesis manifest format
 
 ---
 
@@ -611,7 +617,7 @@ MeshManager
   │
   └── Stores
         ├── PeerStore       // peer list, heartbeat timestamps
-        ├── SeedStore       // bootstrap seed nodes with priority/weight
+        ├── SeedStore       // bootstrap seed nodes with weight (no priority)
         ├── AuthorityStore  // trusted authorities, CA chain
         ├── ManifestStore   // immutable manifest snapshots
         └── PolicyStore     // active policies
@@ -623,17 +629,20 @@ MeshManager
 
 ### 5.19 Gossip — Add routing_delta
 
+Policy-driven intervals (see §5.12), defaults shown:
+
 ```
 SyncScheduler:
-  membership_delta   (every 30s)
-  policy_delta       (every 60s)
-  crl_delta          (every 300s)
-  manifest_delta     (on change)
-  contracts_delta    (on change)
-  routing_delta      (every 15s)   ← NEW
+  heartbeat    (default 20s)     ← NEW — node liveness
+  membership   (default 45s)
+  policy       (default 60s)
+  crl          (default 10min)
+  manifest     (on change)
+  routing      (default 15s)     ← NEW
+  contracts    (on change)
 ```
 
-**routing_delta:** Routing table entries change frequently (peers connect/disconnect). 15s interval keeps routing fresh without flooding. Delta format: `{ added: [...], removed: [...], changed: [...] }`.
+> Defaults are overridable via mesh policy. Example: large mesh might set `heartbeat: 30, membership: 60, crl: 600`.
 
 ---
 
@@ -798,7 +807,7 @@ MeshManager
 - `cmd/smo-cli/main.cpp` → handler for `mesh join --token`
 - `core/enroll/auto_enroll.cpp` — replaced HTTP POST `/enroll` with TCP/CBOR ✅
 - JOIN_REQUEST: add timestamp, nonce, csr_hash, request_signature (replay protection) ✅
-- JOIN_RESPONSE: lightweight — cert, mesh_id, manifest_digest, manifest_epoch, bootstrap_nodes (NO full manifest) ✅
+- JOIN_RESPONSE: minimal — cert, mesh_id, bootstrap_ticket (NO manifest, NO seeds) ✅
 - **State machine:** add CERT_VERIFY state between CERT_RECEIVED and BOOTSTRAP_SYNC ✅
 - Persist state after each step (resume on crash) ✅
 
@@ -806,7 +815,8 @@ MeshManager
 - `BootstrapContract::handle_bootstrap_sync()` — BootstrapService is stateless ✅
 - Opcodes: `0x0603` (request), `0x0604` (response) — registered in PacketDispatcher + RuntimeBridge ✅
 - Delta sync: `manifest_delta?`, `membership_delta?`, `policy_delta?`, `crl_delta?` ✅
-- Epoch-based request: `{ manifest_epoch, crl_epoch, membership_epoch, policy_version }` ✅
+- Revision-based request: `{ manifest_revision, crl_revision, membership_revision, policy_revision, bootstrap_ticket }` ✅
+- BOOTSTRAP_SYNC_RESPONSE includes seeds for gossip bootstrap ✅
 - Client-side BootstrapSync TCP/CBOR in `auto_enroll.cpp` ✅
 - Daemon raw handler wired for JoinRequest + BootstrapSyncRequest ✅
 
@@ -880,12 +890,12 @@ smo mesh invite --role member --expire 1h --endpoint mesh.mydomain.com:5454
 # 4. Join (pure TCP/CBOR, no HTTP)
 smo mesh join --token SMO-JOIN-xxxxx
 # → TCP JOIN_REQUEST (0x0601, with timestamp+nonce+signature)
-# → JOIN_RESPONSE (cert + mesh_id + manifest_digest + bootstrap_nodes)
-# → BOOTSTRAP_SYNC_REQUEST (epochs) → BOOTSTRAP_SYNC_RESPONSE (deltas)
+# → JOIN_RESPONSE (cert + mesh_id + bootstrap_ticket)
+# → BOOTSTRAP_SYNC_REQUEST (revisions + ticket) → BOOTSTRAP_SYNC_RESPONSE (deltas + seeds)
 
 # 5. Start node
 smo-node --daemon --data /tmp/node1 --port 9121 --seed 127.0.0.1:5454
-# → BOOTSTRAP_SYNC_REQUEST (epochs) → BOOTSTRAP_SYNC_RESPONSE (deltas)
+# → BOOTSTRAP_SYNC_REQUEST (revisions) → BOOTSTRAP_SYNC_RESPONSE (deltas + seeds)
 # → Bootstrap complete. Peers: 1
 # State machine: NEW → TOKEN_RECEIVED → CSR_CREATED → JOIN_SENT → WAIT_RESPONSE → CERT_RECEIVED → CERT_VERIFY → BOOTSTRAP_SYNC → WAIT_SYNC → GOSSIP_SYNC → WAIT_GOSSIP → READY
 
@@ -901,28 +911,25 @@ smo mesh use mymesh
 
 ## Next Step
 
-**All 15 architectural improvements applied:**
-1. ✅ 5.1 JOIN_RESPONSE lightweight (no manifest)
-2. ✅ 5.4 BOOTSTRAP_SYNC_RESPONSE duplicate CBOR keys fixed
-3. ✅ 5.10 BootstrapResponse duplicate CBOR keys fixed (+ compression)
-4. ✅ 5.15 Epoch vs Version semantics clarified
-5. ✅ 5.16 Join Token nonce (token_id) for replay protection
-6. ✅ 5.17 JOIN_REQUEST timestamp+nonce+signature replay protection
-7. ✅ 5.18 BootstrapService stateless + store separation
-8. ✅ 5.19 Gossip routing_delta added (in SyncSchedule)
-9. ✅ 5.20 Discovery (UDP) vs Bootstrap (TCP) separation
-10. ✅ 5.21 State machine: CERT_VERIFY added
-11. ✅ 5.22 Manifest immutable (Git-like)
-12. ✅ 5.23 Service graph with dependency order
-13. ✅ Updated target protocol diagram
-14. ✅ Updated Acceptance Criteria
-15. ✅ Updated Phase 2–5 implementation steps
+**All 15 architectural improvements (updated for DISCUSSION_0040 changes):**
+1. ✅ 5.1 JOIN_RESPONSE minimal — cert + mesh_id + bootstrap_ticket only
+2. ✅ 5.4 BOOTSTRAP_SYNC_RESPONSE: delta + seeds, no duplicate CBOR keys
+3. ✅ 5.10 Capabilities as uint64 bitmap (not string array)
+4. ✅ 5.11 Seed weight only (no priority, weighted random)
+5. ✅ 5.12 SyncScheduler policy-driven (not hardcoded)
+6. ✅ 5.15 manifest_revision + manifest_schema (renamed from epoch/version)
+7. ✅ 5.16 Join Token nonce (token_id) for replay protection
+8. ✅ 5.17 JOIN_REQUEST timestamp+nonce+signature replay protection
+9. ✅ 5.18 BootstrapService stateless + store separation
+10. ✅ 5.19 Gossip routing + heartbeat intervals policy-configurable
+11. ✅ 5.20 Discovery (UDP) vs Bootstrap (TCP) separation
+12. ✅ 5.21 State machine: CERT_VERIFY + BOOTSTRAP_SYNC + GOSSIP_SYNC states
+13. ✅ 5.22 Manifest revision-based delta, seeds in BOOTSTRAP_SYNC_RESPONSE
+14. ✅ 5.23 Service graph with JoinService→BootstrapService→SyncService separation
+15. ✅ Runtime Capability Negotiation (CAP_RUNTIME_NEGOTIATE bit 10)
 
-**Phase 5**: `MeshManager::join_mesh` (secure) ✅
-**Phase 6**: `smo mesh list/use` in `smo` CLI ✅
-**Phase 7**: Mesh catalog sync via gossip ✅
-**Phase 8a**: SyncService delta handlers ✅
-**Phase 8b**: GOSSIP_SYNC join FSM — CLI gossip step fixed (3 events properly advance WAIT_SYNC → READY) ✅
-**Phase 8c**: `smo mesh create` — full key generation inline ✅
+**Phase 5—7**: Mesh catalog, sync, gossip ✅
+**Phase 8a—8c**: SyncService delta + GOSSIP_SYNC FSM + keygen ✅
+**Protocol freeze (DISCUSSION_0040)**: protocol_version, capability_bitmap, SeedInfo, ABORTED, CBOR keys ✅
 
 **Next Step**: All Phase 1–8 complete. Run end-to-end validation.

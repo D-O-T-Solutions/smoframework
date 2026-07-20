@@ -56,8 +56,8 @@ Result<GenesisResult> GenesisWizard::run_stage_0(
     pkg.mesh_id            = mesh_id;
     pkg.root_public_key    = root_public_key;
     pkg.recovery_passphrase_hash = recovery_passphrase;  // placeholder
-    pkg.epoch              = manifest.epoch;
-    pkg.manifest_version   = manifest.manifest_version;
+    pkg.manifest_revision   = manifest.manifest_revision;
+    pkg.manifest_schema     = manifest.manifest_schema;
     pkg.created_at         = now_ns;
 
     auto manifest_bytes_res = manifest.serialize();

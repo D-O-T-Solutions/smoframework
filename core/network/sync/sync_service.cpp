@@ -13,11 +13,12 @@ struct SyncService::Impl {
     recovery::CRL* crl;
     SyncSchedule schedule;
 
+    int64_t last_heartbeat_sync = 0;
     int64_t last_membership_sync = 0;
     int64_t last_policy_sync = 0;
     int64_t last_crl_sync = 0;
-    int64_t last_routing_sync = 0;
     int64_t last_manifest_sync = 0;
+    int64_t last_routing_sync = 0;
     int64_t last_contracts_sync = 0;
 
     std::unordered_map<std::string, DeltaCallback> delta_callbacks;
@@ -50,12 +51,13 @@ struct SyncService::Impl {
         };
 
         // Fire all delta callbacks first (they may queue data into GossipEngine)
-        check(last_routing_sync, schedule.routing_interval_ns, "routing");
-        check(last_policy_sync, schedule.policy_interval_ns, "policy");
-        check(last_crl_sync, schedule.crl_interval_ns, "crl");
-        check(last_manifest_sync, schedule.manifest_interval_ns, "manifest");
-        check(last_contracts_sync, schedule.contracts_interval_ns, "contracts");
-        check(last_membership_sync, schedule.membership_interval_ns, "membership");
+        check(last_heartbeat_sync, schedule.heartbeat_ns, "heartbeat");
+        check(last_membership_sync, schedule.membership_ns, "membership");
+        check(last_policy_sync, schedule.policy_ns, "policy");
+        check(last_crl_sync, schedule.crl_ns, "crl");
+        check(last_manifest_sync, schedule.manifest_ns, "manifest");
+        check(last_routing_sync, schedule.routing_ns, "routing");
+        check(last_contracts_sync, schedule.contracts_ns, "contracts");
 
         // Trigger gossip fanout after all deltas queued (sends everything together)
         if (flags & (1 << 5)) { // membership bit = flag 32
