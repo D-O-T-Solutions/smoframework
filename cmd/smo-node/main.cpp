@@ -23,6 +23,7 @@
 #include <core/network/udp/heartbeat_service.hpp>
 #include <core/discovery/gossip.hpp>
 #include <core/network/sync/membership_sync.hpp>
+#include <core/network/sync/sync_service.hpp>
 #include <core/network/transport/address_resolver.hpp>
 #include <core/discovery/peer_store.hpp>
 #include <core/certificate/certificate.hpp>
@@ -32,6 +33,7 @@
 #include <core/authority/authority.hpp>
 #include <core/governance/governance.hpp>
 #include <core/recovery/crl.hpp>
+#include <core/storage/manifest_store.hpp>
 #include <core/network/packet_dispatcher.hpp>
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
@@ -1013,6 +1015,102 @@ int main(int argc, char* argv[]) {
     // CRL for certificate revocation
     smo::recovery::CRL crl;
 
+    // ── SyncService (Phase 8a: typed delta sync) ─────────────────
+    smo::sync::SyncService sync_service(gossip_engine, &crl, smo::sync::SyncSchedule{});
+
+    // Create delta stores
+    smo::ManifestStore manifest_store;
+    std::string manifest_dir = data_dir + "/manifests";
+    if (auto r = manifest_store.open(manifest_dir); !r) {
+        std::printf("[smo-node] Warning: failed to open ManifestStore at %s: %s\n",
+                    manifest_dir.c_str(), r.error().message.c_str());
+    }
+
+    // Register delta callbacks for non-membership delta types
+    // CRL delta: serialize entries since last known epoch
+    uint64_t last_crl_epoch = 0;
+    sync_service.on_delta("crl", [&](const std::string&) -> smo::Result<void> {
+        auto entries = crl.entries_since(last_crl_epoch);
+        if (entries.empty()) return {};
+        for (const auto& e : entries) {
+            if (e.epoch > last_crl_epoch) last_crl_epoch = e.epoch;
+        }
+        // Serialize only new entries
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(entries.size());
+        // Reuse CRL serialization but only for the pending entries
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto& e : entries) {
+            auto ser = e.serialize();
+            uint32_t len = static_cast<uint32_t>(ser.size());
+            for (int i = 3; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+            buf.insert(buf.end(), ser.begin(), ser.end());
+        }
+        if (!buf.empty()) {
+            gossip_engine.queue_delta(smo::DeltaType::CRL, std::move(buf));
+        }
+        return {};
+    });
+
+    // Policy delta: stub (PolicyStore needs SqliteStore cleanup — tracked in Phase 8b)
+    sync_service.on_delta("policy", [](const std::string&) -> smo::Result<void> {
+        return {};
+    });
+
+    // Manifest delta: send new epoch list since last sync
+    uint64_t last_manifest_epoch = 0;
+    sync_service.on_delta("manifest", [&](const std::string&) -> smo::Result<void> {
+        if (!manifest_store.is_open()) return {};
+        auto latest = manifest_store.latest_epoch();
+        if (!latest || latest.value() <= last_manifest_epoch) return {};
+        auto epochs = manifest_store.list_epochs();
+        if (!epochs) return {};
+        std::vector<uint64_t> new_epochs;
+        for (auto e : epochs.value()) {
+            if (e > last_manifest_epoch) new_epochs.push_back(e);
+        }
+        if (new_epochs.empty()) return {};
+        last_manifest_epoch = latest.value();
+        // Serialize epoch list
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(new_epochs.size());
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto e : new_epochs) {
+            for (int i = 7; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((e >> (i * 8)) & 0xFF));
+        }
+        gossip_engine.queue_delta(smo::DeltaType::Manifest, std::move(buf));
+        return {};
+    });
+
+    // Routing delta: stub (routing table not yet implemented)
+    sync_service.on_delta("routing", [](const std::string&) -> smo::Result<void> {
+        // Routing table delta not yet implemented — log at higher verbosity
+        return {};
+    });
+
+    // Contracts delta: stub (contracts store not yet implemented)
+    sync_service.on_delta("contracts", [](const std::string&) -> smo::Result<void> {
+        // Contracts delta not yet implemented
+        return {};
+    });
+
+    // Register receive-side delta handlers in GossipEngine
+    gossip_engine.set_delta_handler(smo::DeltaType::Manifest, [&](smo::BytesView payload) -> smo::Result<void> {
+        if (payload.size() < 4) return {};
+        uint32_t count = 0;
+        for (int i = 0; i < 4; ++i)
+            count = (count << 8) | payload[i];
+        std::printf("[smo-node] Gossip: received manifest delta with %u epochs\n", count);
+        // Manifest fetch would go here (Phase 8b)
+        return {};
+    });
+
+    // ── ──────────────────────────────────────────────────────────
+
     // Recovery Engine
     smo::recovery::RecoveryEngine recovery_engine(smo::recovery::RecoveryConfig{});
 
@@ -1595,27 +1693,25 @@ int main(int argc, char* argv[]) {
     std::printf("[smo-node] Entering main loop...\n");
 
     int64_t last_tick = 0;
-    int64_t last_gossip = 0;
     int64_t last_peerstore_sync = 0;
+
+    sync_service.start();
 
     while (g_running) {
         int64_t now_ns = static_cast<int64_t>(
             std::chrono::system_clock::now().time_since_epoch().count());
 
-        // Periodic ticks
+        // SyncService: manages all delta intervals (membership, policy, crl,
+        // manifest, routing, contracts) and triggers GossipEngine fanout
+        sync_service.tick(now_ns);
+
+        // Periodic ticks (every 5s)
         if (now_ns - last_tick > 5000000000LL) {
             discovery_engine.tick(now_ns);
             heartbeat_service.tick(now_ns);
             session_mgr.tick(now_ns);
             session_mgr.collect_garbage();
             last_tick = now_ns;
-        }
-
-        if (now_ns - last_gossip > 5000000000LL) {
-            // GossipEngine::tick() handles fanout: selects peers, serializes
-            // pending MembershipEvents, connects via TCP, and sends framed data.
-            gossip_engine.tick(now_ns);
-            last_gossip = now_ns;
         }
 
         // ── UDP Discovery: read and dispatch datagrams (§5.20) ──

@@ -43,8 +43,6 @@ Bytes GossipEngine::pending_updates(uint64_t since_sequence) const {
         auto events = membership_sync_->pending_events(since_sequence);
         return membership_sync_->serialize_events(events);
     }
-    // Fallback: serialize PeerRecord list directly
-    // Format: [count: uint32 LE][[type:uint8=1(added)][node_id:32]...]
     Bytes out;
     auto peers = table_.peers();
     uint32_t count = 0;
@@ -59,37 +57,73 @@ Bytes GossipEngine::pending_updates(uint64_t since_sequence) const {
     put_u32(count);
     for (auto& rec : peers) {
         if (rec.state == PeerState::Offline) continue;
-        out.push_back(static_cast<uint8_t>(1)); // PeerAdded
+        out.push_back(static_cast<uint8_t>(1));
         out.insert(out.end(), rec.node_id.value.begin(), rec.node_id.value.end());
     }
     return out;
 }
 
-Result<void> GossipEngine::apply_gossip(BytesView data) {
-    if (membership_sync_) {
-        Bytes buf(data.begin(), data.end());
-        return membership_sync_->apply_events(buf);
+// ── assemble_gossip_payload ──────────────────────────────────────────
+// Wire format: [[delta_type:1][payload_len:4 LE][payload]...]
+Bytes GossipEngine::assemble_gossip_payload() {
+    Bytes out;
+
+    // 1. Membership data
+    Bytes membership = pending_updates(local_sequence_);
+    if (!membership.empty()) {
+        out.push_back(static_cast<uint8_t>(DeltaType::Membership));
+        uint32_t len = static_cast<uint32_t>(membership.size());
+        for (int i = 0; i < 4; ++i)
+            out.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+        out.insert(out.end(), membership.begin(), membership.end());
     }
-    // Fallback: parse minimal format
-    if (data.size() < 4) return {};
-    uint32_t count = 0;
-    for (int i = 3; i >= 0; --i) count = (count << 8) | data[i];
-    data = data.subspan(4);
-    for (uint32_t i = 0; i < count; ++i) {
-        if (data.size() < 33) break;
-        data = data.subspan(1); // skip type
-        NodeID nid;
-        std::copy_n(data.data(), 32, nid.value.begin());
-        data = data.subspan(32);
-        if (!table_.lookup(nid)) {
-            PeerRecord rec;
-            rec.node_id = nid;
-            rec.state = PeerState::Online;
-            rec.last_seen = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
-            (void)table_.upsert(std::move(rec));
+
+    // 2. Provider-based deltas (CRL, policy, manifest, routing, contracts)
+    for (auto& kv : delta_providers_) {
+        Bytes data = kv.second();
+        if (data.empty()) continue;
+        out.push_back(kv.first);
+        uint32_t len = static_cast<uint32_t>(data.size());
+        for (int i = 0; i < 4; ++i)
+            out.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+        out.insert(out.end(), data.begin(), data.end());
+    }
+
+    // 3. Queued deltas (added via queue_delta; overwrite semantics per type)
+    for (auto& kv : pending_deltas_) {
+        out.push_back(kv.first);
+        uint32_t len = static_cast<uint32_t>(kv.second.size());
+        for (int i = 0; i < 4; ++i)
+            out.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+        out.insert(out.end(), kv.second.begin(), kv.second.end());
+    }
+
+    return out;
+}
+
+// ── apply_gossip ─────────────────────────────────────────────────────
+// Read typed segments: [delta_type:1][payload_len:4 LE][payload]
+Result<void> GossipEngine::apply_gossip(BytesView data) {
+    if (data.empty()) return {};
+
+    while (data.size() >= 5) {
+        uint8_t dt = data[0];
+        uint32_t plen = 0;
+        for (int i = 0; i < 4; ++i)
+            plen |= (static_cast<uint32_t>(data[1 + i]) << (i * 8));
+
+        if (5 + plen > data.size()) break;
+
+        BytesView payload = data.subspan(5, plen);
+        data = data.subspan(5 + plen);
+
+        auto it = delta_handlers_.find(dt);
+        if (it != delta_handlers_.end()) {
+            auto r = it->second(payload);
+            if (!r) return r;
         }
     }
+
     return {};
 }
 
@@ -97,41 +131,86 @@ Result<void> GossipEngine::handle_gossip_message(BytesView payload, GossipEngine
     return engine.apply_gossip(payload);
 }
 
+// ── Typed delta support ──────────────────────────────────────────────
+
+void GossipEngine::queue_delta(DeltaType type, Bytes data) {
+    if (data.empty()) return;
+    pending_deltas_[static_cast<uint8_t>(type)] = std::move(data);
+}
+
+void GossipEngine::set_delta_handler(DeltaType type, DeltaHandler handler) {
+    delta_handlers_[static_cast<uint8_t>(type)] = std::move(handler);
+}
+
+void GossipEngine::set_delta_provider(DeltaType type, DeltaProvider provider) {
+    delta_providers_[static_cast<uint8_t>(type)] = std::move(provider);
+}
+
+void GossipEngine::set_membership_sync(network::sync::MembershipSync* ms) {
+    membership_sync_ = ms;
+    if (ms) {
+        set_delta_handler(DeltaType::Membership, [this](BytesView payload) -> Result<void> {
+            Bytes buf(payload.begin(), payload.end());
+            return membership_sync_->apply_events(buf);
+        });
+    }
+}
+
+void GossipEngine::set_crl(recovery::CRL* crl) {
+    crl_ = crl;
+    if (crl_) {
+        set_delta_handler(DeltaType::CRL, [this](BytesView payload) -> Result<void> {
+            auto crl_result = recovery::CRL::deserialize(payload);
+            if (!crl_result) return crl_result.error();
+            // Merge incoming CRL entries into local CRL
+            for (auto& entry : crl_result.value().entries_since(0)) {
+                auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::system_clock::now().time_since_epoch()).count();
+                (void)crl_->revoke(entry.cert_fingerprint, entry.node_id_hex,
+                                   entry.reason, entry.epoch, now);
+            }
+            return {};
+        });
+    }
+}
+
+// ── send_gossip_to_peer ──────────────────────────────────────────────
+
 void GossipEngine::send_gossip_to_peer(const Endpoint& target) {
     if (target.host.empty() || target.port == 0) return;
 
     auto fd = tcp_connect_to(target);
     if (!fd) return;
 
-    // Get pending events since our last acknowledged sequence
-    Bytes payload = pending_updates(local_sequence_);
+    // Assemble all pending deltas into typed GOSP payload
+    Bytes payload = assemble_gossip_payload();
     if (payload.empty()) {
         ::close(fd.value());
         return;
     }
 
-    // Frame: SMO FrameHeader + [gossip_magic:4] + payload
-    // gossip_magic = 'GOSP' (0x474F5350)
+    // Frame: SMO FrameHeader + [GOSP magic:4] + typed payload
     Bytes framed_payload;
-    uint32_t gmagic = 0x474F5350; // "GOSP"
+    uint32_t gmagic = 0x474F5350;
     framed_payload.reserve(4 + payload.size());
-    framed_payload.push_back(static_cast<uint8_t>((gmagic >> 24) & 0xFF));
-    framed_payload.push_back(static_cast<uint8_t>((gmagic >> 16) & 0xFF));
-    framed_payload.push_back(static_cast<uint8_t>((gmagic >> 8) & 0xFF));
-    framed_payload.push_back(static_cast<uint8_t>(gmagic & 0xFF));
+    for (int i = 3; i >= 0; --i)
+        framed_payload.push_back(static_cast<uint8_t>((gmagic >> (i * 8)) & 0xFF));
     framed_payload.insert(framed_payload.end(), payload.begin(), payload.end());
 
-    // Wrap in SMO FrameHeader (magic + payload_len + flags)
     Bytes frame;
     frame_write(framed_payload, kFrameFlagNone, frame);
 
     auto ok = tcp_send(fd.value(), frame);
-    if (ok && membership_sync_) {
-        // Update local sequence to last known
-        auto events = membership_sync_->pending_events(local_sequence_);
-        if (!events.empty()) {
-            local_sequence_ = events.back().sequence;
+    if (ok) {
+        if (membership_sync_) {
+            auto events = membership_sync_->pending_events(local_sequence_);
+            if (!events.empty()) {
+                local_sequence_ = events.back().sequence;
+            }
         }
+        pending_deltas_.clear();
+        // Re-queue membership for next tick (always driven by SyncService intervals)
+        // Other deltas are queued on each interval callback
     }
 
     ::close(fd.value());
@@ -201,17 +280,13 @@ Result<bool> GossipEngine::tcp_send(int fd, BytesView data) {
 }
 
 // EventBus listener for RecoveryApproved events
-// Gossips CRL updates to peers
 void GossipEngine::on_recovery_approved(const runtime::Event& ev) {
-    // Parse JSON payload from event details
-    // Expected: "CertificateRevocation proposal approved: {fingerprint, node_id_hex, reason, epoch}"
     std::string payload = ev.details;
     size_t brace_pos = payload.find('{');
     if (brace_pos == std::string::npos) return;
 
     std::string json_str = payload.substr(brace_pos);
 
-    // Simple JSON parsing
     auto extract_field = [&](const std::string& json, const std::string& key) -> std::string {
         std::string search = "\"" + key + "\":\"";
         size_t pos = json.find(search);
@@ -238,14 +313,12 @@ void GossipEngine::on_recovery_approved(const runtime::Event& ev) {
 
     if (fingerprint.empty() || node_id_hex.empty()) return;
 
-    // Add to CRL if available
     if (crl_) {
         int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count();
         crl_->revoke(fingerprint, node_id_hex, reason, epoch, now);
     }
 
-    // Increment incarnation to force full sync on next gossip cycle
     incarnation_++;
 
     std::printf("[smo-node] GossipEngine: CRL update gossiped for fingerprint=%s epoch=%llu\n",

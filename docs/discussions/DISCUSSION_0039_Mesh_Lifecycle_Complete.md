@@ -1,7 +1,7 @@
 # Discussion 0039 — Mesh Lifecycle: Complete Implementation Plan
 
 **Date:** 2026-07-20  
-**Status:** 🟢 PHASE 1–7 ✅ | PHASE 8 ❌  
+**Status:** 🟢 PHASE 1–7 ✅ | PHASE 8a ✅ | 8b–8c ❌  
 **Core Principle:** **NO HTTP in mesh communication.** Everything via TCP Transport + CBOR opcodes.
 
 ---
@@ -859,7 +859,7 @@ MeshManager
 
 | Priority | Gap | Status | Details |
 |----------|-----|--------|---------|
-| **1** | SyncService delta handlers (policy, crl, manifest, routing, contracts) | ❌ | Intervals defined in SyncSchedule but no handlers registered — only `membership` delta triggers gossip |
+| **1** | SyncService delta handlers (policy, crl, manifest, routing, contracts) | ✅ | `GossipEngine` extended with `DeltaType` enum + typed GOSP wire format `[delta_type:1][payload_len:4][payload]` per segment; `queue_delta()` / `set_delta_handler()` / `set_delta_provider()` added; `send_gossip_to_peer()` bundles all pending deltas; `apply_gossip()` dispatches by type. `SyncService::tick()` reordered to fire all delta callbacks before membership gossip fanout. CRL delta fully implemented (serialize `entries_since(epoch)` send-side, `CRL::deserialize` + merge receive-side via `set_crl()`). Manifest delta serializes new epoch list. Policy delta stubbed (PolicyStore `SqliteStore` mismatch tracked). Routing/contracts stubs registered. `SyncService` wired into daemon main loop, replacing direct `gossip_engine.tick()` call |
 | **2** | DiscoveryEngine (UDP) — HELLO/WELCOME/PING/PONG | ✅ | **FIXED:** Rewired `DiscoveryEngine` to UDP transport; added `dispatch_discovery_datagram()` with magic+type dispatch (`0x44('D')` + `DiscoveryMsgType`); added UDP read loop in daemon (`smo-node:1630-1645`); added `wrap_discovery_msg()` helper; `send_node_info()` now wraps with type tag. `Bootstrap::find_seed()` remains on TCP (per §5.20: bootstrap = TCP). Both TCP (bootstrap) and UDP (LAN discovery) HELLO paths coexist correctly |
 | **3** | GOSSIP_SYNC join FSM — wait for actual gossip readiness | ⚠️ stub | `auto_enroll.cpp:718-726` transitions `WAIT_SYNC → GOSSIP_STARTED → GOSSIP_COMPLETE → READY` immediately without waiting for GossipEngine to actually send/receive |
 | **4** | `smo mesh create` — full key generation | ⚠️ partial | Still delegates to `smo-admin create-mesh` for key generation; should integrate directly |
@@ -922,5 +922,6 @@ smo mesh use mymesh
 **Phase 5**: `MeshManager::join_mesh` (secure) ✅
 **Phase 6**: `smo mesh list/use` in `smo` CLI ✅
 **Phase 7**: Mesh catalog sync via gossip ✅
+**Phase 8a**: SyncService delta handlers ✅
 
-**Next Step**: Phase 8a — Wire SyncService delta handlers for policy, crl, manifest, routing, contracts (see §7)
+**Next Step**: Phase 8b — GOSSIP_SYNC join FSM: wait for actual gossip readiness before advancing to READY (see §7 gap 3)

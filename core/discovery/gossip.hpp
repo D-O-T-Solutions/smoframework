@@ -5,6 +5,7 @@
 #include <functional>
 #include <random>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include "core/discovery/discovery.hpp"
 #include "core/errors/error.hpp"
@@ -18,8 +19,21 @@ namespace smo::network::sync {
 
 namespace smo {
 
+// Delta types for typed gossip payloads (Phase 8a)
+enum class DeltaType : uint8_t {
+    Membership = 0,
+    CRL        = 1,
+    Policy     = 2,
+    Manifest   = 3,
+    Routing    = 4,
+    Contracts  = 5,
+};
+
 class GossipEngine {
 public:
+    using DeltaHandler  = std::function<Result<void>(BytesView)>;
+    using DeltaProvider = std::function<Bytes()>;
+
     static constexpr uint32_t kGossipOpcode = 0x010006;  // GOSSIP_SYNC in DISCOVERY namespace
 
     struct Config {
@@ -30,10 +44,10 @@ public:
 
     explicit GossipEngine(MembershipTable& table, const Config& cfg);
 
-    void set_crl(recovery::CRL* crl) { crl_ = crl; }
+    void set_crl(recovery::CRL* crl);
 
     // Set MembershipSync for rich event-based gossip payloads
-    void set_membership_sync(network::sync::MembershipSync* ms) { membership_sync_ = ms; }
+    void set_membership_sync(network::sync::MembershipSync* ms);
 
     static Config default_config();
 
@@ -60,6 +74,20 @@ public:
     // Handle an incoming gossip message from a peer
     static Result<void> handle_gossip_message(BytesView payload, GossipEngine& engine);
 
+    // ── Typed delta support (Phase 8a) ─────────────────────────────
+
+    // Queue a typed delta for sending on next gossip fanout cycle
+    void queue_delta(DeltaType type, Bytes data);
+
+    // Register handler for receiving a specific delta type
+    void set_delta_handler(DeltaType type, DeltaHandler handler);
+
+    // Register a provider callback that returns serialized delta data
+    // The provider is called during send_gossip_to_peer() for each fanout peer
+    void set_delta_provider(DeltaType type, DeltaProvider provider);
+
+    // ── ───────────────────────────────────────────────────────────
+
     // Get current sequence/incarnation
     uint64_t current_sequence() const noexcept { return incarnation_; }
 
@@ -68,6 +96,9 @@ public:
 private:
     void send_gossip_to_peer(const Endpoint& target);
     std::vector<Endpoint> select_fanout_peers();
+
+    // Combine all pending deltas into a single framed payload
+    Bytes assemble_gossip_payload();
 
     MembershipTable& table_;
     network::sync::MembershipSync* membership_sync_ = nullptr;
@@ -80,6 +111,11 @@ private:
     std::atomic<bool> running_{false};
 
     recovery::CRL* crl_ = nullptr;
+
+    // Typed delta queues and handlers (overwrite semantics: last write wins per type)
+    std::unordered_map<uint8_t, Bytes> pending_deltas_;
+    std::unordered_map<uint8_t, DeltaHandler> delta_handlers_;
+    std::unordered_map<uint8_t, DeltaProvider> delta_providers_;
 
     // TCP connect helper
     Result<int> tcp_connect_to(const Endpoint& ep) const;

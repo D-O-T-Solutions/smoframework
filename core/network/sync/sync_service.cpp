@@ -17,6 +17,8 @@ struct SyncService::Impl {
     int64_t last_policy_sync = 0;
     int64_t last_crl_sync = 0;
     int64_t last_routing_sync = 0;
+    int64_t last_manifest_sync = 0;
+    int64_t last_contracts_sync = 0;
 
     std::unordered_map<std::string, DeltaCallback> delta_callbacks;
 
@@ -28,26 +30,37 @@ struct SyncService::Impl {
         uint32_t flag = 1;
 
         auto check = [&](int64_t& last, uint64_t interval, const char* name) {
-            if (interval > 0 && (last == 0 || now_ns - last >= interval)) {
+            bool due = false;
+            if (interval == 0) {
+                // on-change: fire every tick; callback gates on actual changes
+                due = true;
                 last = now_ns;
+            } else if (last == 0 || now_ns - last >= interval) {
+                due = true;
+                last = now_ns;
+            }
+            if (due) {
                 flags |= flag;
-                // Fire external delta callback if registered
                 auto it = delta_callbacks.find(name);
                 if (it != delta_callbacks.end()) {
                     (void)it->second(name);
-                }
-                // For membership delta: trigger gossip fanout
-                if (std::strcmp(name, "membership") == 0) {
-                    gossip.tick(now_ns);
                 }
             }
             flag <<= 1;
         };
 
+        // Fire all delta callbacks first (they may queue data into GossipEngine)
         check(last_routing_sync, schedule.routing_interval_ns, "routing");
-        check(last_membership_sync, schedule.membership_interval_ns, "membership");
         check(last_policy_sync, schedule.policy_interval_ns, "policy");
         check(last_crl_sync, schedule.crl_interval_ns, "crl");
+        check(last_manifest_sync, schedule.manifest_interval_ns, "manifest");
+        check(last_contracts_sync, schedule.contracts_interval_ns, "contracts");
+        check(last_membership_sync, schedule.membership_interval_ns, "membership");
+
+        // Trigger gossip fanout after all deltas queued (sends everything together)
+        if (flags & (1 << 5)) { // membership bit = flag 32
+            gossip.tick(now_ns);
+        }
 
         return flags;
     }
