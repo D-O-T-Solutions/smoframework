@@ -23,7 +23,7 @@ This roadmap is **production-driven, not feature-driven**. All epics focus on co
 
 ---
 
-## 2. Sprint Plan — 12 Epics
+## 2. Sprint Plan — 12 Epics (10 Active)
 
 ### P1 — Anti-Entropy Service (Gossip Convergence)
 
@@ -53,6 +53,8 @@ tree_state = {
     merkle_root:    bytes[32]        // Blake3 of all buckets
 }
 ```
+
+**Version vector compaction:** For large meshes (10k+ nodes), a dense `map<node_id, epoch>` grows proportionally. The implementation MUST support one of the following compaction strategies — compressed sparse version vector (CSVV), dotted version vector (DVV), or active-writers-only (AWO). The choice is deferred to implementation but must be documented in the code. The protocol field is a variable-length vector so all strategies are wire-compatible.
 
 On sync, peers exchange `(epoch, version_vector, merkle_root)`. If roots differ, the version vector identifies which peer is behind in which dimension. Only the divergent tree's delta is requested — not the entire world state.
 
@@ -139,6 +141,8 @@ CI should verify the metrics endpoint from day one. Expose at minimum:
 | `smo_contract_epoch` | Gauge | Contract tree |
 | `smo_policy_epoch` | Gauge | Policy tree |
 | `smo_crl_epoch` | Gauge | CRL tree |
+| `smo_anti_entropy_duration_seconds` | Histogram | AntiEntropyService |
+| `smo_bootstrap_delta_bytes` | Histogram | Bootstrap FSM |
 
 **Tasks:**
 - [ ] P3.1 Create `.github/workflows/ci.yml` — 4 configs × 2 PQC options = 8 jobs
@@ -223,8 +227,7 @@ STUN, ICE, hole-punching, relay — this is an entire connectivity subsystem. Fo
 - [ ] P8.1 Audit history queries: implement `StorageService::query_audit()` with time-range + node filter
 - [ ] P8.2 HTTP enroll server cleanup: remove or isolate legacy `enroll_server` path in `smo-admin`
 - [ ] P8.3 Authority HA: support 2+ authority nodes — the chosen replication MUST provide linearizable writes, quorum reads, leader election, and log replication
-- [ ] P8.4 Compiler pipeline: wire SMIR stages for custom contract definitions
-- [ ] P8.5 Graceful shutdown: verify all timers/fds cleaned in `smo-node` signal handler
+- [ ] P8.4 Graceful shutdown: verify all timers/fds cleaned in `smo-node` signal handler
 
 ---
 
@@ -252,6 +255,8 @@ Log aggregation (ELK/Loki) is painful without a consistent schema.
   "timestamp": "2026-07-20T10:30:00.123Z",
   "node_id": "a1b2c3d4...",
   "mesh_id": "mesh-smo-dev",
+  "trace_id": "7b8a9c0d...",
+  "span_id": "e1f2a3b4...",
   "session_id": "550e8400-...",
   "component": "GossipEngine",
   "level": "info",
@@ -261,8 +266,10 @@ Log aggregation (ELK/Loki) is painful without a consistent schema.
 }
 ```
 
+`trace_id` and `span_id` enable distributed tracing across the Join → Bootstrap → Gossip → Anti-Entropy pipeline. `session_id` alone is insufficient for cross-service causality chains.
+
 **Tasks:**
-- [ ] P10.1 Define `LogEntry` struct with all standard fields
+- [ ] P10.1 Define `LogEntry` struct with all standard fields (including trace_id, span_id)
 - [ ] P10.2 Replace `printf` + raw `spdlog` calls with structured logger
 - [ ] P10.3 Add JSON + plaintext formatters (configurable)
 - [ ] P10.4 Node identity auto-injected into every log line
@@ -276,10 +283,30 @@ Log aggregation (ELK/Loki) is painful without a consistent schema.
 
 No `config_version` or `schema_version` means breaking changes cannot be detected or migrated.
 
+Each migration step carries a `migration_id` (monotonic, e.g. `0003`) so that if the process crashes mid-migration, the next restart can resume or skip the already-completed step. This makes migration idempotent.
+
+```
+schema_version = 1
+    ↓ migration_id = 0002
+schema_version = 2
+    ↓ migration_id = 0003
+schema_version = 3
+```
+
 **Tasks:**
-- [ ] P11.1 Add `config_version` and `schema_version` fields to `MeshConfig`
-- [ ] P11.2 Implement migration path: `schema_version < current` → auto-upgrade on load
-- [ ] P11.3 Add `PCT-023: Config version migration` test
+- [ ] P11.1 Add `config_version`, `schema_version`, and `migration_id` fields to `MeshConfig`
+- [ ] P11.2 Implement migration path: `schema_version < current` → auto-upgrade on load (idempotent via migration_id)
+- [ ] P11.3 Add `PCT-023: Config version migration` test (including crash-recovery during migration)
+
+---
+
+### ~~P12 — SMIR Compiler Pipeline~~ *(Postponed to v0.0.3)*
+
+*Gap: compiler pipeline exists as stubs only — DISCUSSION_0040 §12*
+
+The SMIR compiler is a large feature (lexer → parser → SSA → codegen) that does not affect runtime stability. Moving it to v0.0.3 keeps v0.0.2 focused on production qualities.
+
+**Decision:** SMIR compiler pipeline postponed to **v0.0.3**.
 
 ---
 
@@ -294,12 +321,13 @@ No `config_version` or `schema_version` means breaking changes cannot be detecte
 | P5 Policy Store | 3 days | none | Medium |
 | P6 Nonce Dedup | 1 day | none | Medium |
 | ~~P7 NAT Traversal~~ | ~~postponed~~ | — | — |
-| P8 Hardening | 5 days | P5 | Medium |
+| P8 Hardening | 4 days | P5 | Medium |
 | P9 Release | 1 day | P1–P8 | — |
 | P10 Structured Logging | 3 days | none | Medium |
 | P11 Config Versioning | 2 days | none | Low |
+| ~~P12 SMIR Compiler~~ | ~~postponed~~ | — | — |
 
-**Total (v0.0.2):** ~29 engineering days.
+**Total (v0.0.2):** ~28 engineering days.
 
 ---
 
@@ -315,13 +343,14 @@ No `config_version` or `schema_version` means breaking changes cannot be detecte
 | Q6 | CI runner? | GitHub-hosted (ubuntu-24.04) for OSS. Self-hosted for private builds. |
 | Q7 | Metrics format? | Prometheus text format. `/metrics` endpoint via embedded HTTP (no external dependency). |
 | Q8 | Log format — JSON always or configurable? | Configurable. Default = JSON for production, plaintext for development. |
+| Q9 | Version vector compaction strategy? | Implementation choice (CSVV / DVV / AWO), must be documented and wire-compatible. |
 
 ---
 
 ## 5. Success Criteria
 
 ```
-☐ All P1–P11 items verified in CI (P7 postponed)
+☐ All P1–P11 items verified in CI (P7, P12 postponed)
 ☐ Test suite ≥ 25 tests (19 existing + 6 new PCTs + integration)
 ☐ ASAN/UBSAN green on every PR
 ☐ E2E smoke test passes with 0 failures
@@ -331,11 +360,12 @@ No `config_version` or `schema_version` means breaking changes cannot be detecte
 ☐ Gossip FSM waits for all 6 readiness conditions before READY
 ☐ DEGRADED state exists and retries gossip probes
 ☐ Anti-entropy converges 2 partitioned nodes within 2 cycles (4 trees, version vectors)
+☐ Version vector compaction documented for large meshes (CSVV / DVV / AWO)
 ☐ Delta repair falls back to snapshot sync when > 500 entries
-☐ Prometheus `/metrics` endpoint exposes ≥ 10 metrics with correct types
+☐ Prometheus `/metrics` endpoint exposes ≥ 12 metrics with correct types
 ☐ Nonce dedup key includes mesh_id (cross-mesh safe)
-☐ Log output conforms to structured JSON schema
-☐ Config version migration works: schema_version < current → auto-upgrade
+☐ Log output conforms to structured JSON schema (trace_id + span_id present)
+☐ Config version migration works: schema_version < current → auto-upgrade (idempotent via migration_id)
 ☐ GitHub Actions CI green on every PR
 ```
 
@@ -350,7 +380,7 @@ v0.0.2 does not target Byzantine fault tolerance. The assumed failure model:
 | Network partition | Anti-entropy detects on heal, Merkle repair | P1 |
 | Node crash + restart | FSM restarts from NEW, re-join with existing cert | P2 |
 | Message loss (gossip) | Redundant fanout + periodic anti-entropy | P1 |
-| Clock skew | Timestamp window (±30s) enforced at JOIN | P6 |
+| Clock skew | Timestamp window (±30s) enforced at JOIN. Authoritative timestamp = Join Request receive time on Authority, **not sender clock**. | P6 |
 | Replay attack | Nonce dedup, TTL = token expiry | P6 |
 | Authority crash | Single Authority = SPOF in v0.0.2; HA via Raft in P8.3 | P8 |
 | Slow peer (straggler) | Anti-entropy detects version vector gap, snapshot sync | P1 |
