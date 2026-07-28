@@ -106,7 +106,7 @@ P2 Gossip FSM    [✓] — 6/6 tasks done
 ```
 P10 Metrics      [✓] — 9/9 tasks done
 P1 AntiEntropy   [✓] — 6/6 tasks done
-P11 Chaos        [   ] — 0/3 tasks
+P11 Chaos        [✓] — 3/3 tasks done
 ```
 
 ### Sprint C

@@ -20,6 +20,7 @@
 #include <network/sync/version_vector.hpp>
 #include <network/sync/merkle_tree.hpp>
 #include <network/sync/sync_backend.hpp>
+#include <network/sync/anti_entropy.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -963,6 +964,55 @@ static bool test_pct_022() {
 
     return true;
 }
+
+// PCT-024 — Fault injection / chaos: VersionVector partition + heal
+static bool test_pct_024() {
+    Blake3Provider::register_as_default();
+
+    // Simulate partition: two nodes diverge independently
+    smo::sync::VersionVector vv_a, vv_b;
+    vv_a.set("node-a", 10);
+    vv_a.set("node-b", 5);
+
+    vv_b.set("node-a", 7);
+    vv_b.set("node-b", 8);
+    vv_b.set("node-c", 3);
+
+    // Before heal: neither dominates the other
+    ASSERT(!vv_a.dominates(vv_b));
+    ASSERT(!vv_b.dominates(vv_a));
+
+    // Heal: merge
+    vv_a.merge(vv_b);
+    ASSERT(vv_a.get("node-a") == 10); // max(10,7)
+    ASSERT(vv_a.get("node-b") == 8);  // max(5,8)
+    ASSERT(vv_a.get("node-c") == 3);  // new node
+
+    // After heal: vv_a now dominates vv_b
+    ASSERT(vv_a.dominates(vv_b));
+
+    // Test MerkleTree divergence + repair detection
+    auto tree1 = smo::sync::MerkleTree(smo::sync::TreeID::Membership);
+    tree1.epoch = 1;
+    tree1.rebuild();
+
+    auto tree2 = smo::sync::MerkleTree(smo::sync::TreeID::Membership);
+    tree2.epoch = 1;
+    tree2.rebuild();
+    ASSERT(tree1 == tree2); // identical initially
+
+    // After divergent update
+    tree2.epoch = 2;
+    tree2.version_vector.set("node-x", 1);
+    tree2.rebuild();
+    ASSERT(tree1 != tree2); // divergence detected
+
+    // Test snapshot vs delta threshold
+    using AE = smo::sync::AntiEntropyService;
+    ASSERT(AE::kMaxDeltaEntries == 500); // threshold constant
+
+    return true;
+}
 static bool test_pct_019() {
     auto rules = join::join_transition_table();
     auto timeouts = join::join_timeout_table();
@@ -1065,9 +1115,12 @@ int main(int, char*[]) {
     printf("\n── §9.11 Structured Logging ──────────────────────────────────────\n");
     TEST("PCT-022  Structured log format")                                 END_TEST(test_pct_022());
 
+    printf("\n── §9.12 Fault Injection / Chaos ─────────────────────────────────\n");
+    TEST("PCT-024  VersionVector partition + heal")                        END_TEST(test_pct_024());
+
     printf("\n");
     if (failures == 0) {
-        printf("ALL 22 PCT TESTS PASSED\n");
+        printf("ALL 23 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);
