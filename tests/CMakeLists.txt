@@ -172,6 +172,7 @@ target_link_libraries(smo_pct PRIVATE
 )
 smo_set_warnings(smo_pct)
 smo_set_optimisation(smo_pct)
+target_compile_definitions(smo_pct PRIVATE SMO_TEST=1)
 smo_link_dependencies(smo_pct)
 add_test(NAME protocol_compliance COMMAND smo_pct)
 

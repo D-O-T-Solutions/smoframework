@@ -13,7 +13,9 @@
 #include <discovery/gossip.hpp>
 #include <discovery/discovery.hpp>
 #include <bootstrap/cbor.hpp>
+#include <crypto/hash_provider.hpp>
 #include <storage/policy_store/policy_store.h>
+#include <providers/blake3_provider/blake3_provider.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -803,6 +805,40 @@ static bool test_pct_020() {
     return true;
 }
 
+// PCT-021 — JOIN_REQUEST nonce dedup
+static bool test_pct_021() {
+    join::clear_nonce_cache();
+    Blake3Provider::register_as_default();
+
+    auto& hp = HashProvider::default_provider();
+
+    std::array<uint8_t, 8> nonce_a = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+    std::array<uint8_t, 8> nonce_b = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+    std::array<uint8_t, 8> nonce_c = {0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x00,0x11};
+
+    Bytes key_a;
+    key_a.insert(key_a.end(), "mesh-x", "mesh-x" + 6);
+    key_a.insert(key_a.end(), nonce_a.begin(), nonce_a.end());
+    auto hash_a = hp.hash(BytesView(key_a));
+
+    Bytes key_b;
+    key_b.insert(key_b.end(), "mesh-y", "mesh-y" + 6);
+    key_b.insert(key_b.end(), nonce_a.begin(), nonce_a.end());
+    auto hash_b = hp.hash(BytesView(key_b));
+
+    ASSERT(hash_a == hash_a);
+    ASSERT(hash_a != hash_b);
+
+    Bytes key_c;
+    key_c.insert(key_c.end(), "mesh-x", "mesh-x" + 6);
+    key_c.insert(key_c.end(), nonce_c.begin(), nonce_c.end());
+    auto hash_c = hp.hash(BytesView(key_c));
+    ASSERT(hash_a != hash_c);
+
+    join::clear_nonce_cache();
+    return true;
+}
+
 // ==========================================================================
 // Main
 // ==========================================================================
@@ -846,9 +882,12 @@ int main(int, char*[]) {
     printf("\n── §9.9  Policy Store ─────────────────────────────────────────\n");
     TEST("PCT-020  PolicyStore CRUD")                                     END_TEST(test_pct_020());
 
+    printf("\n── §9.10 Nonce Dedup ───────────────────────────────────────────\n");
+    TEST("PCT-021  JOIN_REQUEST nonce dedup")                             END_TEST(test_pct_021());
+
     printf("\n");
     if (failures == 0) {
-        printf("ALL 18 PCT TESTS PASSED\n");
+        printf("ALL 19 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);

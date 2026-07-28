@@ -5,15 +5,18 @@
 #include "core/crypto/suite.hpp"
 #include "core/crypto/impl.hpp"
 #include "core/crypto/registry.hpp"
+#include "core/crypto/hash_provider.hpp"
 #include "core/enroll/join_token.hpp"
 #include "core/errors/error.hpp"
 #include "core/authority/authority.hpp"
 #include "core/recovery/crl.hpp"
 #include "core/certificate/certificate.hpp"
 
+#include <mutex>
 #include <random>
 #include <chrono>
 #include <cstring>
+#include <unordered_map>
 
 namespace smo::join {
 
@@ -455,6 +458,54 @@ namespace {
         }
         return out;
     }
+
+    // ── Nonce dedup cache (P6) ────────────────────────────────────
+    // Key: Blake3(mesh_id || nonce)
+    // Value: expiry_unix_sec
+    // Thread-safe via mutex.
+    struct NonceCache {
+        std::mutex mtx;
+        std::unordered_map<std::string, int64_t> map;
+
+        bool check_and_insert(const std::string& mesh_id,
+                              const std::array<uint8_t, 8>& nonce,
+                              int64_t ttl_sec,
+                              int64_t now_sec) {
+            // Build key: Blake3(mesh_id || nonce)
+            Bytes raw;
+            raw.insert(raw.end(), mesh_id.begin(), mesh_id.end());
+            raw.insert(raw.end(), nonce.begin(), nonce.end());
+            auto& hp = HashProvider::default_provider();
+            auto key_bytes = hp.hash(BytesView(raw));
+            std::string key(key_bytes.begin(), key_bytes.end());
+
+            std::lock_guard<std::mutex> lock(mtx);
+
+            // Evict expired entries on access
+            for (auto it = map.begin(); it != map.end(); ) {
+                if (it->second <= now_sec)
+                    it = map.erase(it);
+                else
+                    ++it;
+            }
+
+            auto it = map.find(key);
+            if (it != map.end()) {
+                return false; // replay detected
+            }
+
+            int64_t expiry = (ttl_sec > 0) ? ttl_sec : (now_sec + 300); // default 5min
+            map[key] = expiry;
+            return true;
+        }
+    };
+
+    NonceCache g_nonce_cache;
+}
+
+void clear_nonce_cache() {
+    std::lock_guard<std::mutex> lock(g_nonce_cache.mtx);
+    g_nonce_cache.map.clear();
 }
 
 // ── process_join_request ────────────────────────────────────────────
@@ -484,6 +535,13 @@ Result<JoinResponse> process_join_request(
     // 3. Check token expiry
     if (token.expiry_unix_sec > 0 && now_sec > token.expiry_unix_sec) {
         return SMO_ERR_CERT(213, Error, NoRetry, None, "Join token expired");
+    }
+
+    // 3.5 Nonce dedup (P6): Blake3(mesh_id || nonce) scoped per mesh
+    if (!g_nonce_cache.check_and_insert(token.mesh_id, req.nonce,
+                                        token.expiry_unix_sec, now_sec)) {
+        return SMO_ERR_CERT(219, Error, NoRetry, None,
+                            "JoinRequest nonce replay detected");
     }
 
     // 4. Verify request_signature: sign(token || timestamp || nonce || csr_hash)

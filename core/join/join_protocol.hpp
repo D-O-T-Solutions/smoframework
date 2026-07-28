@@ -207,6 +207,11 @@ Result<BootstrapSyncResponse> process_bootstrap_sync(
     authority::MeshAuthority& authority,
     recovery::CRL* crl);
 
+#ifdef SMO_TEST
+// Clear nonce dedup cache (test helper, P6)
+void clear_nonce_cache();
+#endif
+
 } // namespace smo::join
 
 // ── CBOR helpers ─────────────────────────────────────────────────────
