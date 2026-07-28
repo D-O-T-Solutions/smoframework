@@ -1,7 +1,11 @@
 add_library(smo_core STATIC)
 target_include_directories(smo_core PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include/smo>
+)
+target_include_directories(smo_core PRIVATE
+    ${CMAKE_SOURCE_DIR}/third_party/blake3
 )
 target_link_libraries(smo_core PUBLIC fmt::fmt)
 target_link_libraries(smo_core PUBLIC smo_blake3_provider)
@@ -33,4 +37,5 @@ add_subdirectory(recovery)
 add_subdirectory(bootstrap)
 add_subdirectory(runtime)
 add_subdirectory(join)
+add_subdirectory(consensus)
 add_subdirectory(acl)

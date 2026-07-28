@@ -1,0 +1,193 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
+  CTEST_PARALLEL_LEVEL: 4
+
+jobs:
+  # ── Build & Test (Debug + Release) ─────────────────────────────────
+  build:
+    name: ${{ matrix.config }} / ${{ matrix.compiler }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Debug, Release]
+        compiler: [gcc-12, clang-16]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake ninja-build \
+            g++-12 clang-16 \
+            libomp-dev
+
+      - name: Configure (${{ matrix.config }})
+        run: >
+          cmake -S . -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.compiler == 'gcc-12' && 'g++-12' || 'clang++-16' }}
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  # ── Sanitizers (AddressSanitizer + UndefinedBehavior) ──────────────
+  sanitizer:
+    name: ASan+UBSan / ${{ matrix.compiler }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc-12, clang-16]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake ninja-build \
+            g++-12 clang-16 \
+            libomp-dev
+
+      - name: Configure (Debug + sanitizers)
+        run: >
+          cmake -S . -B build-san
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_COMPILER=${{ matrix.compiler == 'gcc-12' && 'g++-12' || 'clang++-16' }}
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build-san
+
+      - name: Test
+        env:
+          ASAN_OPTIONS: detect_leaks=1:strict_string_checks=1:alloc_dealloc_mismatch=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ctest --test-dir build-san --output-on-failure
+
+  # ── Code Linting (clang-format + clang-tidy) ───────────────────────
+  lint:
+    name: Lint / clang-format + clang-tidy
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake ninja-build \
+            clang-format-16 clang-tidy-16 \
+            g++-12
+
+      - name: Check clang-format
+        run: |
+          find . -name '*.cpp' -o -name '*.hpp' \
+            | grep -v build | grep -v third_party \
+            | xargs clang-format-16 --dry-run --Werror
+
+      - name: Configure (for compile_commands.json)
+        run: >
+          cmake -S . -B build-tidy
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_COMPILER=g++-12
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build (for headers)
+        run: cmake --build build-tidy
+
+      - name: Run clang-tidy
+        run: |
+          find . \( -name '*.cpp' -o -name '*.hpp' \) \
+            -not -path '*/build*' \
+            -not -path '*/third_party/*' \
+            -print0 | xargs -0 -P4 -n1 \
+            clang-tidy-16 \
+              --warnings-as-errors='*' \
+              -p build-tidy
+
+  # ── Code Coverage ──────────────────────────────────────────────────
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake ninja-build \
+            g++-12 \
+            lcov
+
+      - name: Configure (Coverage)
+        run: >
+          cmake -S . -B build-cov
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_COMPILER=g++-12
+          -DCMAKE_CXX_FLAGS="--coverage -O0 -g"
+          -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+          -DCMAKE_SHARED_LINKER_FLAGS="--coverage"
+          -DWITH_PQC=OFF
+
+      - name: Build
+        run: cmake --build build-cov
+
+      - name: Test
+        run: ctest --test-dir build-cov --output-on-failure
+
+      - name: Collect coverage
+        run: |
+          lcov --capture --directory . --output-file coverage.info \
+            --exclude '/usr/*' \
+            --exclude '*/third_party/*' \
+            --exclude '*/build-cov/*'
+          lcov --list coverage.info
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.info
+
+  # ── Result badge ───────────────────────────────────────────────────
+  status:
+    name: Status Check
+    needs: [build, sanitizer, lint, coverage]
+    if: always()
+    runs-on: ubuntu-22.04
+    steps:
+      - run: |
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Sanitizer: ${{ needs.sanitizer.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lint: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage: ${{ needs.coverage.result }}" >> $GITHUB_STEP_SUMMARY

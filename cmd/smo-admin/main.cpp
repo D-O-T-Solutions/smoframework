@@ -932,7 +932,8 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
         return 1;
     }
 
-    // Start enroll server
+    // Start enroll server (LEGACY — deprecated, use Join Token TCP path instead)
+    std::fprintf(stderr, "Warning: HTTP enroll server is deprecated. Use 'smo-node --join <token>' instead.\n");
     smo::authority::EnrollServer server;
     auto start_result = server.start(port, authority, mesh_config.hmac_secret, crypto->hash);
     if (!start_result) {

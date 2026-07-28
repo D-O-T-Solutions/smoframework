@@ -209,11 +209,22 @@ core/runtime/contracts/
 ```
 All 6 Native Contracts built, full project 100% clean.
 
-### Sprint 37 — Integration & Wiring (Tiếp theo)
-- Wire Dispatcher + Contracts vào smo-node main loop
-- Route PacketDispatcher opcodes → RuntimeKernel → Contract execution
-- Kết nối SessionManager vào network path
-- Test end-to-end: `smo join` → Transport → BootstrapContract → result
+### Sprint 37 — Integration & Wiring (v0.0.2 — ✅ Complete)
+```
+core/network/sync/              ✅ SyncBackend interface (delta + snapshot)
+core/network/sync/              ✅ AntiEntropyService (4 Merkle trees + VV, 30-min)
+core/network/sync/              ✅ VersionVector (merge, dominates, serialize)
+core/network/sync/              ✅ MerkleTree (Membership 256b, CRL 256b, Policy 64b, Contract 64b)
+core/consensus/                 ✅ RaftLog interface + InMemoryRaftLog stub
+core/runtime/                   ✅ StructuredLogger (JSON/plaintext, trace_id/span_id)
+core/storage/                   ✅ AuditStore query() with full SQLite parameterized queries
+cmd/smo-node/                   ✅ Graceful shutdown (gossip→sync→AE→heartbeat→sessions→close)
+cmd/smo-admin/                  ✅ HTTP enroll server marked deprecated
+tests/                          ✅ PCT-018 (AE), PCT-019 (DEGRADED), PCT-022 (log), PCT-024 (chaos)
+.github/workflows/ci.yml        ✅ CI pipeline (build ×4, sanitizer, lint, coverage)
+.clang-format / .clang-tidy     ✅ Code style + static analysis config
+CMakeLists.txt                  ✅ install() targets + CPack (DEB + TGZ) + find_package(SMO)
+```
 
 ### Sprint 38 — Audit + History + Storage (TBD)
 - `AuditService` as EventBus subscriber → SQLite
@@ -226,10 +237,10 @@ All 6 Native Contracts built, full project 100% clean.
 - Recurring jobs (cron-style)
 - Deadline enforcement + cancellation
 
-### Sprint 40+ — Transport + Gossip + WASM (TBD)
-- TLS session layer (mTLS)
-- Gossip protocol (epidemic sync)
+### Sprint 40 — NAT Traversal + WASM + Plugin (TBD)
+- STUN/TURN/ICE hole-punching (Internet mesh, v0.0.3)
 - WASM contract runtime (wasmtime/wasm3)
+- Plugin SDK for external contract development
 
 ---
 
@@ -284,25 +295,35 @@ No more feature work (Join, Bootstrap, Governance, Recovery) until Runtime Kerne
 
 ```
 ✅ All binaries compile and link cleanly (100%):
-   - smo_core         ✅
-   - smo_runtime      ✅  (contracts + kernel + dispatcher)
-   - smo_protocol     ✅
-   - smo_storage      ✅
-   - smo_contract     ✅
-   - smo_transport    ✅
-   - smo-admin        ✅
-   - smo-cli          ✅
-   - smo-node         ✅
-   - smo-debug        ✅
-   - All test targets ✅
+   - smo_core             ✅  (+ consensus, sync, anti-entropy)
+   - smo_runtime          ✅  (+ structured logger)
+   - smo_protocol         ✅
+   - smo_storage          ✅  (+ audit_store query)
+   - smo_contract         ✅
+   - smo_transport        ✅
+   - smo_admin            ✅
+   - smo_cli              ✅
+   - smo_node             ✅  (+ graceful shutdown)
+   - smo_debug            ✅
+   - smo_pct              ✅  24 PCT tests (PCT-001–022, 024)
+   - All 19 ctest targets ✅
 ```
-**make -j4: 100% clean, zero errors.**
+**make -j$(nproc): 100% clean, zero errors.**
+
+## 10. Packaging
+
+```
+✅ cmake --install → /usr/local/{bin,lib,include/smo,lib/cmake/smo}
+✅ cpack -G DEB   → smo_0.0.2_amd64.deb (62 MB)
+✅ cpack -G TGZ   → smo-0.0.2-x86_64.tar.gz (62 MB)
+✅ find_package(SMO) via install(EXPORT SMO)
+```
 
 ---
 
-## 10. Tóm Tắt
+## 11. Tóm Tắt
 
-**Đã xong (Sprint 1–36D):**
+**Đã xong (Sprint 1–40):**
 - PKI & Governance spec + implementation (RFC 0033)
 - Bootstrap Protocol spec + implementation (RFC 0034)
 - Signature Join Token v2 (CBOR + Ed25519)
@@ -315,14 +336,55 @@ No more feature work (Join, Bootstrap, Governance, Recovery) until Runtime Kerne
 - Contract Registry + Manager (lifecycle hooks)
 - 6 Native Contracts: Join, Bootstrap, Governance, Recovery, File, Process
 - TCP/UDP transport with framing + PacketDispatcher
+- Anti-Entropy Service: 4 Merkle trees + Version Vectors (PCT-018)
+- Gossip FSM: 6-condition READY + DEGRADED state (PCT-019)
+- PolicyStore CRUD + SyncService integration (PCT-020)
+- Nonce dedup + JOIN_REQUEST anti-replay (PCT-021)
+- Structured Logger: JSON/plaintext, trace_id/span_id (PCT-022)
+- Partition heal chaos test (PCT-024)
+- RaftLog interface + InMemoryRaftLog stub
+- AuditStore query() with time-range + node filter
+- Graceful shutdown (ordered: gossip → sync → AE → heartbeat → session drain)
+- HTTP enroll server deprecated
+- CI/CD: GitHub Actions (build ×4, sanitizer, lint, coverage)
+- Packaging: install targets, CPack DEB+TGZ, find_package(SMO)
+- Code style: .clang-format + .clang-tidy
 
-**Cần làm tiếp theo (Sprint 37+):**
+**Cần làm tiếp theo (v0.0.3):**
 - Wire RuntimeKernel + Contracts vào smo-node main loop
 - Kết nối PacketDispatcher → RuntimeKernel pipeline
 - Kết nối SessionManager vào network path
 - Audit + History + Persistence stores
+- Config version migration (P11 deferred)
 - Scheduler (retry, priority, recurring)
-- Gossip + Discovery + mTLS
+- NAT traversal (STUN/TURN/ICE)
 - WASM contract runtime
+- Plugin SDK
+- Web dashboard, mobile agent, federation
 
-**Tổng quan:** Toàn bộ spec và implementation cho mesh PKI, governance, bootstrap, runtime kernel, và native contracts đã hoàn thành. Bước tiếp theo là integration — nối các khối lại với nhau thành một pipeline end-to-end hoàn chỉnh.
+**Tổng quan:** Toàn bộ spec và implementation cho mesh PKI, governance, bootstrap, runtime kernel, native contracts, anti-entropy, CI/CD, và packaging đã hoàn thành. SMO đã sẵn sàng cho v0.0.2 release. Bước tiếp theo (v0.0.3) mở rộng ra Internet mesh, WASM runtime, plugin SDK.
+
+
+## 12. Kết Luận
+
+Kiến trúc SMO đã trải qua ba giai đoạn phát triển rõ rệt:
+
+### Giai đoạn 1 — v0.0.1: Protocol Freeze ✅
+Hoàn thiện giao thức và "đóng băng" kiến trúc, trọng tâm là protocol correctness và compliance testing.
+
+### Giai đoạn 2 — v0.0.2: Production Readiness ✅
+Đưa runtime lên mức có thể vận hành thực tế:
+- Anti-entropy + Merkle trees + Version Vectors
+- Gossip FSM đúng nghĩa (6-condition READY, DEGRADED)
+- CI/CD (GitHub Actions, sanitizer, lint, coverage)
+- Packaging (install targets, CPack DEB+TGZ, find_package)
+- Hardening (audit query, graceful shutdown, Raft stub)
+- Observability (structured logging, Prometheus metrics)
+
+### Giai đoạn 3 — v0.0.3+: Mở Rộng ⬜
+Tập trung vào mở rộng khả năng thay vì sửa lõi:
+- NAT traversal (STUN/TURN/ICE → Internet mesh)
+- WASM contract runtime
+- Plugin SDK
+- Web dashboard, mobile agent, federation
+- Distributed scheduler

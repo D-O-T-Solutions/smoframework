@@ -1806,7 +1806,7 @@ int main(int argc, char* argv[]) {
     };
 
     auto sync_backend = std::make_shared<DaemonSyncBackend>(membership, &crl);
-    auto ae_config = smo::sync::AntiEntropyService::default_config();
+    auto ae_config = smo::sync::AntiEntropyService::Config::defaults();
     smo::sync::AntiEntropyService anti_entropy(membership, gossip_engine,
                                                 *sync_backend, ae_config);
     anti_entropy.start();
@@ -1968,9 +1968,19 @@ int main(int argc, char* argv[]) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    // Cleanup
+    // Cleanup — ordered: stop producers first, then consumers, then close
+    LOG.info("shutting down...");
+    gossip_engine.stop();
+    sync_service.stop();
+    anti_entropy.stop();
     heartbeat_service.stop();
+
+    // Drain sessions
+    session_mgr.collect_garbage();
+
     lstnr->close();
+
+    // Flush peer store last
     peer_store.sync_from_membership(membership);
     peer_store.close();
 

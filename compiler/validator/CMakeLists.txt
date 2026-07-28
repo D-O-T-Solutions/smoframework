@@ -4,6 +4,6 @@ target_sources(smo_compiler PRIVATE
 )
 
 target_sources(smo_compiler INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/semantic.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/final.hpp
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/semantic.hpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/final.hpp>
 )

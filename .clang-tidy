@@ -1,0 +1,38 @@
+Checks: >
+  -*,
+  bugprone-*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-cstyle-cast,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-c-arrays,
+  -modernize-avoid-c-arrays,
+  -readability-magic-numbers,
+  -readability-avoid-const-params-in-decls,
+  -readability-uppercase-literal-suffix,
+  -readability-convert-member-functions-to-static,
+  -readability-implicit-bool-conversion,
+  -readability-function-cognitive-complexity,
+  -bugprone-easily-swappable-parameters,
+CheckOptions:
+  - key: modernize-use-trailing-return-type.IgnoredExceptionMacros
+    value: SMO_ERR
+WarningsAsErrors: >
+  clang-diagnostic-error,
+  clang-diagnostic-c++20-extensions,
+  clang-diagnostic-c++2b-extensions,
+  clang-diagnostic-pragma-once-outside-header,
+  bugprone-string-literal-with-embedded-nul,
+  bugprone-suspicious-string-compare,
+HeaderFilterRegex: '.*\.hpp'
+FormatStyle: file

@@ -11,9 +11,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square" alt="License"></a>
   <a href="SPEC.md"><img src="https://img.shields.io/badge/docs-SPEC.md-blueviolet?style=flat-square" alt="Specification"></a>
   <a href="RFC/"><img src="https://img.shields.io/badge/rfc-0001%E2%80%930044-8b5cf6?style=flat-square" alt="RFCs"></a>
-  <a href="https://github.com/D-O-T-Solutions/smoframework/releases/tag/v0.0.1-rc"><img src="https://img.shields.io/badge/release-v0.0.1--rc-f97316?style=flat-square" alt="Release"></a>
+  <a href="https://github.com/D-O-T-Solutions/smoframework/releases/tag/v0.0.2"><img src="https://img.shields.io/badge/release-v0.0.2-f97316?style=flat-square" alt="Release"></a>
   <img src="https://img.shields.io/badge/c%2B%2B-20-00599C?style=flat-square&logo=c%2B%2B" alt="C++20">
-  <img src="https://img.shields.io/badge/build-19%2F19%20tests-brightgreen?style=flat-square" alt="19/19 tests">
+  <img src="https://img.shields.io/badge/build-24%2F24%20tests-brightgreen?style=flat-square" alt="24/24 tests">
 </p>
 
 ---
@@ -38,12 +38,20 @@ make build       # cmake --build build -j$(nproc)
 make test        # ctest --test-dir build --output-on-failure
 ```
 
-**Result:** 19 protocol compliance tests green, E2E smoke test pass.
+**Result:** 24 protocol compliance tests green (PCT-001–022, 024), all passing.
 
 ```bash
-build/cmd/smo-node/smo-node --help
-build/cmd/smo-cli/smo-cli   --help
-build/cmd/smo-admin/smo-admin --help
+# Run tests
+make test        # ctest --test-dir build --output-on-failure
+
+# Install system-wide
+sudo cmake --install build   # /usr/local/bin/smo-node, /usr/local/lib/libsmo_*.a
+
+# Build Debian package
+cpack -G DEB     # smo_0.0.2_amd64.deb
+
+# Build portable tarball
+cpack -G TGZ     # smo-0.0.2-x86_64.tar.gz
 ```
 
 | Option | Default | Description |
@@ -62,23 +70,30 @@ build/cmd/smo-admin/smo-admin --help
                     │  Pipeline │ Dispatcher    │
                     └──────────┬───────────────┘
                                │
-         ┌─────────────────────┼─────────────────────┐
-         │                     │                     │
-   ┌─────▼──────┐       ┌─────▼──────┐       ┌─────▼──────┐
-   │  Protocol   │       │    Core    │       │  Storage   │
-   │  v1 Wire    │       │            │       │  SQLite    │
-   │  Sign/Enc   │       │ Identity   │       │  Session   │
-   │  Replay     │       │ Certificate│       │  Trust     │
-   └─────────────┘       │ PKI/Gov    │       │  Audit     │
-                         │ Bootstrap  │       │  DAG       │
-   ┌──────────────────────┤ Discovery  │       └────────────┘
-   │  3 Crypto Suites    │ Gossip     │
-   │  Classical (1)      │ Sessions   │       ┌─────────────────┐
-   │  Modern   (2)       │ Transport  │       │  Native Contracts│
-   │  PurePQC  (3)       │ FSM        │       │  Join, Bootstrap │
-   └──────────────────────┤ Contracts  │       │  Governance, ... │
-                         │ Runtime    │       └─────────────────┘
-                         └────────────┘
+          ┌────────────────────┼────────────────────────┐
+          │                    │                        │
+    ┌─────▼──────┐      ┌─────▼──────┐          ┌──────▼───────┐
+    │  Protocol   │      │    Core    │          │   Storage    │
+    │  v1 Wire    │      │            │          │   SQLite     │
+    │  Sign/Enc   │      │ Identity   │          │   Session    │
+    │  Replay     │      │ Certificate│          │   Trust      │
+    │  Nonce      │      │ PKI/Gov    │          │   Audit      │
+    │  Dedup      │      │ Bootstrap  │          │   DAG        │
+    └─────────────┘      │ Discovery  │          │   Policy     │
+                         │ Gossip     │          └──────────────┘
+    ┌──────────────────────┤ Sessions   │
+    │  3 Crypto Suites    │ Transport  │          ┌─────────────────┐
+    │  Classical (1)      │ FSM        │          │  Native Contracts│
+    │  Modern   (2)       │ Contracts  │          │  Join, Bootstrap │
+    │  PurePQC  (3)       │ Runtime    │          │  Governance, ... │
+    └──────────────────────┤ AE        │          └─────────────────┘
+                          │ Consensus  │
+                          │ Structured │          ┌──────────────────┐
+                          │ Logging    │          │  Anti-Entropy    │
+                          │ Sync       │          │  Merkle Tree x4  │
+                          │ (Delta/    │          │  Version Vectors │
+                          │  Snapshot) │          │  Repair (500)    │
+                          └────────────┘          └──────────────────┘
 ```
 
 ### Key Components
@@ -94,6 +109,10 @@ build/cmd/smo-admin/smo-admin --help
 | | Bootstrap | CBOR snapshot, slot-based join, delta sync |
 | | Discovery | Ping/pong, SWIM-inspired gossip engine |
 | | FSM | Generic FSM + NodeLifecycleFSM + JoinFSM (23+12+17 states) |
+| | Consensus | RaftLog interface + InMemoryRaftLog stub (core/consensus/) |
+| | Sync Service | Delta/snapshot sync for membership, CRL, policy, contracts |
+| | Anti-Entropy | 4 Merkle trees + Version Vectors, 30-min cycle, fanout 3 |
+| | Structured Logging | JSON/plaintext, trace_id + span_id, env-configurable |
 | **Crypto** | Suite 1 (Classical) | SHA-256, Ed25519, X25519, XChaCha20-Poly1305 |
 | | Suite 2 (Modern) | BLAKE3, Ed25519, X25519, XChaCha20-Poly1305 |
 | | Suite 3 (PurePQC) | BLAKE3, ML-DSA-65, ML-KEM-768, XChaCha20-Poly1305 |
@@ -118,13 +137,14 @@ cmd/            CLI daemons & tooling
 
 core/           Core runtime library
 ├── runtime/    Kernel, dispatcher, contracts
+├── consensus/  RaftLog interface + InMemoryRaftLog stub
 ├── genesis/    SlotRing, Manifest, RecoveryPackage
 ├── bootstrap/  CBOR, BootstrapSnapshot, BootstrapProtocol
 ├── governance/ 2-tier proposals, GovernanceEngine
 ├── recovery/   Soft/hard recovery, CRL
 ├── enroll/     JoinToken v2 (CBOR + Ed25519)
 ├── transport/  TCP (+framing), UDP, TransportRegistry
-├── network/    PacketDispatcher, HeartbeatService, sync
+├── network/    PacketDispatcher, HeartbeatService, sync (AE, Merkle, VV)
 ├── fsm/        Generic FSM, NodeLifecycleFSM
 ├── crypto/     Suite registry, KEM, signer providers
 ├── identity/   NodeID, Identity
@@ -172,13 +192,34 @@ Suite negotiation happens at join time via capability bitmap (CAP_DELTA_SYNC, CA
 ## Test Suite
 
 ```
- 19 tests total, 0 failures (1.9s)
+ 24 tests total, 0 failures (0.67s)
 
- ── Protocol ─────────────────
- ✓ Protocol model           13 tests (packet, schema, replay)
- ✓ Protocol compliance      17 PCTs (CBOR roundtrip, FSM, gossip, CRL, ...)
+ ── Protocol Compliance ─────
+ ✓ PCT-001  JoinRequest CBOR roundtrip
+ ✓ PCT-002  JoinResponse CBOR roundtrip
+ ✓ PCT-003  BootstrapSyncRequest CBOR roundtrip
+ ✓ PCT-004  BootstrapSyncResponse CBOR roundtrip
+ ✓ PCT-005  Join FSM full flow NEW → READY
+ ✓ PCT-006  Join FSM FAIL transitions
+ ✓ PCT-007  Join FSM TIMEOUT transitions
+ ✓ PCT-008  Join FSM persist + resume
+ ✓ PCT-009  BootstrapRequest/Response CBOR
+ ✓ PCT-010  GossipEngine basic operation
+ ✓ PCT-011  JoinToken parse/validate
+ ✓ PCT-012  Certificate encode/decode roundtrip
+ ✓ PCT-013  ReplayProtector nonce detection
+ ✓ PCT-014  Timestamp ±30s window
+ ✓ PCT-015  MembershipEvent serialization
+ ✓ PCT-016  CRL serialize/deserialize roundtrip
+ ✓ PCT-017  CBOR map key forward compat
+ ✓ PCT-018  Anti-entropy Merkle + version vector
+ ✓ PCT-019  Gossip readiness + DEGRADED state
+ ✓ PCT-020  PolicyStore CRUD
+ ✓ PCT-021  JOIN_REQUEST nonce dedup
+ ✓ PCT-022  Structured log format
+ ✓ PCT-024  VersionVector partition + heal
 
- ── Core ────────────────────
+ ── Model Tests ─────────────
  ✓ Trust model              4 tests
  ✓ Governance model         3 tests
  ✓ Discovery model          8 tests
@@ -190,16 +231,9 @@ Suite negotiation happens at join time via capability bitmap (CAP_DELTA_SYNC, CA
  ✓ Storage model            3 tests
  ✓ Crypto model             3 tests
  ✓ Error model              2 tests
-
- ── Transport ───────────────
  ✓ Transport model          4 tests
  ✓ High-level transport     2 tests
  ✓ Storage stores           1 test
-
- ── Legacy stubs ────────────
- ✓ core                     placeholder
- ✓ protocol                 placeholder
- ✓ compiler                 placeholder
 ```
 
 E2E smoke test:
@@ -219,6 +253,7 @@ bash tests/integration/smoke_test.sh build   # 8/8 checks
 | [docs/PLAN.md](docs/PLAN.md) | Sprint roadmap |
 | [docs/discussions/](docs/discussions/) | Design discussions 0033–0041 |
 | [ARCHITECTURE_SUMMARY.md](ARCHITECTURE_SUMMARY.md) | Vietnamese architecture summary |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | English architecture overview |
 
 ---
 
@@ -226,8 +261,9 @@ bash tests/integration/smoke_test.sh build   # 8/8 checks
 
 | Tag | Date | Status | Highlights |
 |-----|------|--------|------------|
-| [v0.0.1-rc](https://github.com/D-O-T-Solutions/smoframework/releases/tag/v0.0.1-rc) | 2026-07 | ✅ Current | Protocol freeze, 19/19 tests, E2E smoke pass |
-| v0.0.2 | TBD | 🔄 Planned | Anti-entropy, CI/CD, production hardening |
+| [v0.0.1-rc](https://github.com/D-O-T-Solutions/smoframework/releases/tag/v0.0.1-rc) | 2026-07 | ✅ | Protocol freeze, 19/19 tests, E2E smoke pass |
+| [v0.0.2](https://github.com/D-O-T-Solutions/smoframework/releases/tag/v0.0.2) | 2026-07 | ✅ Current | Anti-entropy, gossip readiness, CI/CD, packaging, structured logging, hardening — 24/24 tests |
+| v0.0.3 | TBD | 🔄 Planned | NAT traversal, WASM runtime, plugin SDK |
 
 See [DISCUSSION_0041](docs/discussions/DISCUSSION_0041_v0.0.2_Plan.md) for the v0.0.2 roadmap.
 

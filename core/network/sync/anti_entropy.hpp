@@ -18,16 +18,17 @@ public:
     struct Config {
         uint64_t interval_ns;
         uint32_t fanout;
-    };
+        uint32_t max_delta_entries;
 
-    static Config default_config() {
-        return Config{1800'000'000'000ULL, 3};
-    }
+        static Config defaults() {
+            return Config{1800'000'000'000ULL, 3, 500};
+        }
+    };
 
     AntiEntropyService(MembershipTable& table,
                        GossipEngine& gossip,
                        SyncBackend& backend,
-                       Config cfg = default_config());
+                       Config cfg = Config::defaults());
     ~AntiEntropyService();
 
     void start();
@@ -37,9 +38,10 @@ public:
     uint64_t repairs_done() const noexcept { return repairs_done_; }
     void clear_repairs() noexcept { repairs_done_ = 0; }
 
+    uint32_t max_delta_entries() const noexcept { return config_.max_delta_entries; }
+
     static constexpr uint32_t kRequestOpcode = 0x0108;
     static constexpr uint32_t kResponseOpcode = 0x0109;
-    static constexpr uint32_t kMaxDeltaEntries = 500;
 
 private:
     int64_t next_exchange_ns_ = 0;

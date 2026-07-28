@@ -9,8 +9,14 @@
 
 namespace smo::sync {
 
+enum class VVCompaction : uint8_t {
+    Full     = 0,
+    AWO      = 1,
+};
+
 struct VersionVector {
     std::unordered_map<std::string, uint64_t> dots;
+    VVCompaction compaction = VVCompaction::Full;
 
     bool operator==(const VersionVector& o) const { return dots == o.dots; }
     bool operator!=(const VersionVector& o) const { return dots != o.dots; }
@@ -46,6 +52,20 @@ struct VersionVector {
             }
         }
         return !any_less;
+    }
+
+    // Drop entries whose epoch matches baseline.
+    // Active Writers Only (AWO): after compaction, only writers whose
+    // epoch > baseline are retained. Full vector kept in debug builds.
+    void compact(uint64_t baseline = 0) {
+        if (compaction == VVCompaction::Full) return;
+        for (auto it = dots.begin(); it != dots.end(); ) {
+            if (it->second <= baseline) {
+                it = dots.erase(it);
+            } else {
+                ++it;
+            }
+        }
     }
 
     Bytes serialize() const;

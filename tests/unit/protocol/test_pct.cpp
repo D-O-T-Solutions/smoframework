@@ -1008,8 +1008,7 @@ static bool test_pct_024() {
     ASSERT(tree1 != tree2); // divergence detected
 
     // Test snapshot vs delta threshold
-    using AE = smo::sync::AntiEntropyService;
-    ASSERT(AE::kMaxDeltaEntries == 500); // threshold constant
+    ASSERT(smo::sync::AntiEntropyService::Config::defaults().max_delta_entries == 500);
 
     return true;
 }
