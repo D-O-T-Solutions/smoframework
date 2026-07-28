@@ -1018,7 +1018,9 @@ namespace smo {
             if (!crypto_initialized)
             {
                 smo::providers::register_suite1_classical();
+#ifdef SMO_WITH_PQC
                 smo::providers::register_suite3_purepqc();
+#endif
                 crypto_initialized = true;
             }
             auto& reg = smo::CryptoRegistry::instance();
@@ -1507,7 +1509,9 @@ namespace smo {
 int main(int argc, char* argv[])
 {
     smo::providers::register_suite1_classical();
+#ifdef SMO_WITH_PQC
     smo::providers::register_suite3_purepqc();
+#endif
     smo::CLIApplication app;
     auto init_result = app.initialize("~/.smo");
     if (!init_result)

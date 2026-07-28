@@ -99,7 +99,9 @@ static bool write_file(const std::string& path, BytesView data)
 static void register_all_suites()
 {
     smo::providers::register_suite1_classical();
+#ifdef SMO_WITH_PQC
     smo::providers::register_suite3_purepqc();
+#endif
 }
 
 // ---------------------------------------------------------------------------

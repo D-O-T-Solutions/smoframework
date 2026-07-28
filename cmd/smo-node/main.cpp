@@ -248,7 +248,9 @@ static void ensure_crypto()
 {
     smo::providers::register_suite1_classical();
     smo::providers::register_suite2_modern();
+#ifdef SMO_WITH_PQC
     smo::providers::register_suite3_purepqc();
+#endif
 }
 
 // ===========================================================================
