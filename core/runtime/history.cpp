@@ -13,45 +13,50 @@
 
 namespace smo {
 
-struct HistoryService::Impl {
-    sqlite3* db = nullptr;
-    Config config;
+    struct HistoryService::Impl
+    {
+        sqlite3* db = nullptr;
+        Config config;
 
-    Impl(const Config& config) : config(config) {}
+        Impl(const Config& config) : config(config) {}
 
-    ~Impl() { close(); }
+        ~Impl() { close(); }
 
-    ~Impl() { close(); }
+        ~Impl() { close(); }
 
-    Result<void> open() {
-        namespace fs = std::filesystem;
-        fs::path dir(config.audit_db_path);
-        fs::path dir_path = dir.parent_path();
-        if (!dir_path.empty()) {
-            std::error_code ec;
-            fs::create_directories(dir_path, ec);
-        }
+        Result<void> open()
+        {
+            namespace fs = std::filesystem;
+            fs::path dir(config.audit_db_path);
+            fs::path dir_path = dir.parent_path();
+            if (!dir_path.empty())
+            {
+                std::error_code ec;
+                fs::create_directories(dir_path, ec);
+            }
 
-        int rc = sqlite3_open(config.audit_db_path.c_str(), &db);
-        if (rc != SQLITE_OK) {
-            return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode,
-                                   "Failed to open audit DB: " + std::string(sqlite3_errmsg(db)));
-        }
+            int rc = sqlite3_open(config.audit_db_path.c_str(), &db);
+            if (rc != SQLITE_OK)
+            {
+                return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode,
+                                       "Failed to open audit DB: " + std::string(sqlite3_errmsg(db)));
+            }
 
-        // WAL mode
-        char* err = nullptr;
-        int rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", nullptr, nullptr, &err);
-        if (rc != SQLITE_OK) {
-            std::string msg = err ? err : "unknown";
-            sqlite3_free(err);
-            sqlite3_close(db);
-            return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode, msg);
-        }
+            // WAL mode
+            char* err = nullptr;
+            int rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", nullptr, nullptr, &err);
+            if (rc != SQLITE_OK)
+            {
+                std::string msg = err ? err : "unknown";
+                sqlite3_free(err);
+                sqlite3_close(db);
+                return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode, msg);
+            }
 
-        sqlite3_busy_timeout(db, 5000);
+            sqlite3_busy_timeout(db, 5000);
 
-        // Schema for history tables
-        const char* schema = R"(
+            // Schema for history tables
+            const char* schema = R"(
             CREATE TABLE IF NOT EXISTS contract_history (
                 contract_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -152,149 +157,166 @@ struct HistoryService::Impl {
             CREATE INDEX IF NOT EXISTS idx_mesh_timestamp ON mesh_history(timestamp_ns);
         )";
 
-        char* err = nullptr;
-        int rc = sqlite3_exec(db, schema, nullptr, nullptr, &err);
-        if (rc != SQLITE_OK) {
-            std::string msg = err ? err : "unknown";
-            sqlite3_free(err);
-            return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode, msg);
+            char* err = nullptr;
+            int rc = sqlite3_exec(db, schema, nullptr, nullptr, &err);
+            if (rc != SQLITE_OK)
+            {
+                std::string msg = err ? err : "unknown";
+                sqlite3_free(err);
+                return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode, msg);
+            }
+
+            return {};
         }
 
-        return {};
-    }
-
-    void close() {
-        if (db) {
-            sqlite3_close(db);
-            db = nullptr;
-        }
-    }
-
-    // Helper to execute prepared statements
-    template<typename Func>
-    Result<void> execute_query(const std::string& sql, Func&& func) {
-        sqlite3_stmt* stmt;
-        int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-        if (rc != SQLITE_OK) {
-            return SMO_ERR_STORAGE(905, Error, RetrySafe, RetryOperation, sqlite3_errmsg(db));
+        void close()
+        {
+            if (db)
+            {
+                sqlite3_close(db);
+                db = nullptr;
+            }
         }
 
-        while (true) {
-            int rc = sqlite3_step(stmt);
-            if (rc == SQLITE_DONE) break;
-            if (rc != SQLITE_ROW) {
-                sqlite3_finalize(stmt);
+        // Helper to execute prepared statements
+        template <typename Func> Result<void> execute_query(const std::string& sql, Func&& func)
+        {
+            sqlite3_stmt* stmt;
+            int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+            if (rc != SQLITE_OK)
+            {
                 return SMO_ERR_STORAGE(905, Error, RetrySafe, RetryOperation, sqlite3_errmsg(db));
             }
-            func(stmt);
+
+            while (true)
+            {
+                int rc = sqlite3_step(stmt);
+                if (rc == SQLITE_DONE)
+                    break;
+                if (rc != SQLITE_ROW)
+                {
+                    sqlite3_finalize(stmt);
+                    return SMO_ERR_STORAGE(905, Error, RetrySafe, RetryOperation, sqlite3_errmsg(db));
+                }
+                func(stmt);
+            }
+            sqlite3_finalize(stmt);
+            return {};
         }
-        sqlite3_finalize(stmt);
-        return {};
+    };
+
+    HistoryService::HistoryService(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
+
+    HistoryService::~HistoryService() = default;
+
+    HistoryService::HistoryService(HistoryService&&) noexcept = default;
+    HistoryService& HistoryService::operator=(HistoryService&&) noexcept = default;
+
+    Result<void> HistoryService::open()
+    {
+        return impl_->open();
     }
-};
 
-HistoryService::HistoryService(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
+    void HistoryService::close()
+    {
+        impl_->close();
+    }
 
-HistoryService::~HistoryService() = default;
+    Result<std::vector<ContractHistoryEntry>>
+    HistoryService::get_contract_history(const std::string& contract_id, uint64_t limit, uint64_t offset) const
+    {
+        return std::vector<ContractHistoryEntry>{};
+    }
 
-HistoryService::HistoryService(HistoryService&&) noexcept = default;
-HistoryService& HistoryService::operator=(HistoryService&&) noexcept = default;
+    Result<ContractHistoryEntry> HistoryService::get_contract(const std::string& contract_id) const
+    {
+        return ContractHistoryEntry{};
+    }
 
-Result<void> HistoryService::open() {
-    return impl_->open();
-}
+    Result<std::vector<ExecutionHistoryEntry>>
+    HistoryService::get_execution_history(const std::string& execution_id) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-void HistoryService::close() {
-    impl_->close();
-}
+    Result<std::vector<ExecutionHistoryEntry>>
+    HistoryService::get_contract_executions(const std::string& contract_id, uint64_t limit, uint64_t offset) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-Result<std::vector<ContractHistoryEntry>> HistoryService::get_contract_history(
-    const std::string& contract_id, uint64_t limit, uint64_t offset) const {
-    return std::vector<ContractHistoryEntry>{};
-}
+    Result<std::vector<ExecutionHistoryEntry>>
+    HistoryService::get_node_executions(const std::string& node_id, uint64_t limit, uint64_t offset) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-Result<ContractHistoryEntry> HistoryService::get_contract(const std::string& contract_id) const {
-    return ContractHistoryEntry{};
-}
+    Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_failed_executions(int64_t from_ns, int64_t to_ns,
+                                                                                     uint64_t limit) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_execution_history(
-    const std::string& execution_id) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
+    Result<std::vector<ExecutionEventEntry>> HistoryService::get_execution_events(const std::string& execution_id) const
+    {
+        return std::vector<ExecutionEventEntry>{};
+    }
 
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_contract_executions(
-    const std::string& contract_id, uint64_t limit, uint64_t offset) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
+    Result<std::vector<ExecutionEventEntry>> HistoryService::get_trace_events(const std::string& trace_id) const
+    {
+        return std::vector<ExecutionEventEntry>{};
+    }
 
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_node_executions(
-    const std::string& node_id, uint64_t limit, uint64_t offset) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
+    Result<std::vector<NodeHistoryEntry>> HistoryService::get_node_history(const std::string& node_id,
+                                                                           uint64_t limit) const
+    {
+        return std::vector<NodeHistoryEntry>{};
+    }
 
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_failed_executions(
-    int64_t from_ns, int64_t to_ns, uint64_t limit) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
+    Result<std::vector<NodeHistoryEntry>> HistoryService::get_mesh_nodes(const std::string& mesh_id,
+                                                                         uint64_t limit) const
+    {
+        return std::vector<NodeHistoryEntry>{};
+    }
 
-Result<std::vector<ExecutionEventEntry>> HistoryService::get_execution_events(
-    const std::string& execution_id) const {
-    return std::vector<ExecutionEventEntry>{};
-}
+    Result<std::vector<PolicyHistoryEntry>> HistoryService::get_policy_history(const std::string& policy_name,
+                                                                               uint64_t limit) const
+    {
+        return std::vector<PolicyHistoryEntry>{};
+    }
 
-Result<std::vector<ExecutionEventEntry>> HistoryService::get_trace_events(
-    const std::string& trace_id) const {
-    return std::vector<ExecutionEventEntry>{};
-}
+    Result<std::vector<MeshHistoryEntry>> HistoryService::get_mesh_history(const std::string& mesh_id,
+                                                                           uint64_t limit) const
+    {
+        return std::vector<MeshHistoryEntry>{};
+    }
 
-Result<std::vector<NodeHistoryEntry>> HistoryService::get_node_history(
-    const std::string& node_id, uint64_t limit) const {
-    return std::vector<NodeHistoryEntry>{};
-}
+    Result<std::vector<ExecutionHistoryEntry>>
+    HistoryService::query_executions(const std::optional<std::string>& contract_id,
+                                     const std::optional<std::string>& node_id,
+                                     const std::optional<std::string>& status, const std::optional<int64_t>& from_ns,
+                                     const std::optional<int64_t>& to_ns, uint64_t limit, uint64_t offset) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-Result<std::vector<NodeHistoryEntry>> HistoryService::get_mesh_nodes(
-    const std::string& mesh_id, uint64_t limit) const {
-    return std::vector<NodeHistoryEntry>{};
-}
+    Result<std::vector<ExecutionEventEntry>>
+    HistoryService::query_events(const std::optional<std::string>& execution_id,
+                                 const std::optional<std::string>& trace_id,
+                                 const std::optional<std::string>& event_type, const std::optional<int64_t>& from_ns,
+                                 const std::optional<int64_t>& to_ns, uint64_t limit, uint64_t offset) const
+    {
+        return std::vector<ExecutionEventEntry>{};
+    }
 
-Result<std::vector<PolicyHistoryEntry>> HistoryService::get_policy_history(
-    const std::string& policy_name, uint64_t limit) const {
-    return std::vector<PolicyHistoryEntry>{};
-}
+    Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_trace_executions(const std::string& trace_id) const
+    {
+        return std::vector<ExecutionHistoryEntry>{};
+    }
 
-Result<std::vector<MeshHistoryEntry>> HistoryService::get_mesh_history(
-    const std::string& mesh_id, uint64_t limit) const {
-    return std::vector<MeshHistoryEntry>{};
-}
-
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::query_executions(
-    const std::optional<std::string>& contract_id,
-    const std::optional<std::string>& node_id,
-    const std::optional<std::string>& status,
-    const std::optional<int64_t>& from_ns,
-    const std::optional<int64_t>& to_ns,
-    uint64_t limit, uint64_t offset) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
-
-Result<std::vector<ExecutionEventEntry>> HistoryService::query_events(
-    const std::optional<std::string>& execution_id,
-    const std::optional<std::string>& trace_id,
-    const std::optional<std::string>& event_type,
-    const std::optional<int64_t>& from_ns,
-    const std::optional<int64_t>& to_ns,
-    uint64_t limit, uint64_t offset) const {
-    return std::vector<ExecutionEventEntry>{};
-}
-
-Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_trace_executions(
-    const std::string& trace_id) const {
-    return std::vector<ExecutionHistoryEntry>{};
-}
-
-Result<std::vector<ExecutionEventEntry>> HistoryService::get_trace_events(
-    const std::string& trace_id) const {
-    return std::vector<ExecutionEventEntry>{};
-}
+    Result<std::vector<ExecutionEventEntry>> HistoryService::get_trace_events(const std::string& trace_id) const
+    {
+        return std::vector<ExecutionEventEntry>{};
+    }
 
 } // namespace smo

@@ -6,6 +6,6 @@
 
 namespace smo {
 
-Result<void> register_native_contracts(ContractRegistry& registry);
+    Result<void> register_native_contracts(ContractRegistry& registry);
 
 } // namespace smo

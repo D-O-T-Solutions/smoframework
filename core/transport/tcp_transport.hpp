@@ -5,60 +5,68 @@
 
 namespace smo {
 
-// ── TcpSession ──────────────────────────────────────────────────────────
+    // ── TcpSession ──────────────────────────────────────────────────────────
 
-class TcpSession final : public TransportSession {
-public:
-    TcpSession(int fd, Endpoint remote);
-    ~TcpSession() noexcept override;
+    class TcpSession final : public TransportSession
+    {
+    public:
+        TcpSession(int fd, Endpoint remote);
+        ~TcpSession() noexcept override;
 
-    TcpSession(const TcpSession&) = delete;
-    TcpSession& operator=(const TcpSession&) = delete;
+        TcpSession(const TcpSession&) = delete;
+        TcpSession& operator=(const TcpSession&) = delete;
 
-    Result<void> send(BytesView data) override;
-    Result<Bytes> recv(size_t max_bytes) override;
-    Result<void> close() override;
-    Endpoint remote_endpoint() const override;
-    bool is_open() const override;
+        Result<void> send(BytesView data) override;
+        Result<Bytes> recv(size_t max_bytes) override;
+        Result<void> close() override;
+        Endpoint remote_endpoint() const override;
+        bool is_open() const override;
 
-    int fd() const { return fd_; }
-    int release_fd() { int f = fd_; fd_ = -1; return f; }
+        int fd() const { return fd_; }
+        int release_fd()
+        {
+            int f = fd_;
+            fd_ = -1;
+            return f;
+        }
 
-private:
-    int fd_;
-    Endpoint remote_;
-    bool open_;
-};
+    private:
+        int fd_;
+        Endpoint remote_;
+        bool open_;
+    };
 
-// ── TcpListener ─────────────────────────────────────────────────────────
+    // ── TcpListener ─────────────────────────────────────────────────────────
 
-class TcpListener final : public TransportListener {
-public:
-    TcpListener(int fd, Endpoint local);
-    ~TcpListener() noexcept override;
+    class TcpListener final : public TransportListener
+    {
+    public:
+        TcpListener(int fd, Endpoint local);
+        ~TcpListener() noexcept override;
 
-    TcpListener(const TcpListener&) = delete;
-    TcpListener& operator=(const TcpListener&) = delete;
+        TcpListener(const TcpListener&) = delete;
+        TcpListener& operator=(const TcpListener&) = delete;
 
-    Result<SessionPtr> accept() override;
-    Result<void> close() override;
-    Endpoint local_endpoint() const override;
+        Result<SessionPtr> accept() override;
+        Result<void> close() override;
+        Endpoint local_endpoint() const override;
 
-private:
-    int fd_;
-    Endpoint local_;
-};
+    private:
+        int fd_;
+        Endpoint local_;
+    };
 
-// ── TcpTransport ────────────────────────────────────────────────────────
+    // ── TcpTransport ────────────────────────────────────────────────────────
 
-class TcpTransport final : public Transport {
-public:
-    TcpTransport() = default;
+    class TcpTransport final : public Transport
+    {
+    public:
+        TcpTransport() = default;
 
-    std::string_view name() const override { return "TCP"; }
+        std::string_view name() const override { return "TCP"; }
 
-    Result<ListenerPtr> listen(const Endpoint& ep) override;
-    Result<SessionPtr> connect(const Endpoint& ep) override;
-};
+        Result<ListenerPtr> listen(const Endpoint& ep) override;
+        Result<SessionPtr> connect(const Endpoint& ep) override;
+    };
 
 } // namespace smo

@@ -6,15 +6,12 @@
 
 namespace smo {
 
-class Executor {
-public:
-    Result<ExecutionResult> dispatch(
-        const ContractID& id,
-        const ExecutionContext& ctx);
+    class Executor
+    {
+    public:
+        Result<ExecutionResult> dispatch(const ContractID& id, const ExecutionContext& ctx);
 
-    Result<ExecutionResult> execute(
-        const ExecutionGraph& dag,
-        const ExecutionContext& ctx);
-};
+        Result<ExecutionResult> execute(const ExecutionGraph& dag, const ExecutionContext& ctx);
+    };
 
 } // namespace smo

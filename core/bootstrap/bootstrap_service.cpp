@@ -7,11 +7,10 @@
 
 namespace smo::bootstrap {
 
-Result<join::BootstrapSyncResponse> BootstrapService::handle_sync(
-    const join::BootstrapSyncRequest& req)
-{
-    // Delegate to process_bootstrap_sync (implemented in join_protocol.cpp)
-    return join::process_bootstrap_sync(req, mesh_mgr_, authority_, crl_);
-}
+    Result<join::BootstrapSyncResponse> BootstrapService::handle_sync(const join::BootstrapSyncRequest& req)
+    {
+        // Delegate to process_bootstrap_sync (implemented in join_protocol.cpp)
+        return join::process_bootstrap_sync(req, mesh_mgr_, authority_, crl_);
+    }
 
 } // namespace smo::bootstrap

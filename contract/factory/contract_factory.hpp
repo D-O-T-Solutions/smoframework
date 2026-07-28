@@ -10,16 +10,17 @@
 
 namespace smo {
 
-class ContractFactory {
-public:
-    ContractFactory(ContractRegistry& registry, OpcodeRegistry& opcodes);
+    class ContractFactory
+    {
+    public:
+        ContractFactory(ContractRegistry& registry, OpcodeRegistry& opcodes);
 
-    Result<ContractDefinition> resolve(const Intent& intent);
-    Result<ContractDefinition> resolve_by_id(const ContractID& id);
+        Result<ContractDefinition> resolve(const Intent& intent);
+        Result<ContractDefinition> resolve_by_id(const ContractID& id);
 
-private:
-    ContractRegistry& registry_;
-    OpcodeRegistry&   opcodes_;
-};
+    private:
+        ContractRegistry& registry_;
+        OpcodeRegistry& opcodes_;
+    };
 
 } // namespace smo

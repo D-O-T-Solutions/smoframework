@@ -19,116 +19,123 @@ namespace smo::network::sync {
 
 namespace smo {
 
-// Delta types for typed gossip payloads (Phase 8a)
-enum class DeltaType : uint8_t {
-    Membership = 0,
-    CRL        = 1,
-    Policy     = 2,
-    Manifest   = 3,
-    Routing    = 4,
-    Contracts  = 5,
-};
-
-class GossipEngine {
-public:
-    using DeltaHandler  = std::function<Result<void>(BytesView)>;
-    using DeltaProvider = std::function<Bytes()>;
-
-    static constexpr uint32_t kGossipOpcode = 0x010006;  // GOSSIP_SYNC in DISCOVERY namespace
-
-    struct Config {
-        uint32_t interval_ms = 5000;
-        uint32_t fanout = 3;
-        uint32_t max_payload = 65536;
+    // Delta types for typed gossip payloads (Phase 8a)
+    enum class DeltaType : uint8_t
+    {
+        Membership = 0,
+        CRL = 1,
+        Policy = 2,
+        Manifest = 3,
+        Routing = 4,
+        Contracts = 5,
     };
 
-    explicit GossipEngine(MembershipTable& table, const Config& cfg);
+    class GossipEngine
+    {
+    public:
+        using DeltaHandler = std::function<Result<void>(BytesView)>;
+        using DeltaProvider = std::function<Bytes()>;
 
-    void set_crl(recovery::CRL* crl);
+        static constexpr uint32_t kGossipOpcode = 0x010006; // GOSSIP_SYNC in DISCOVERY namespace
 
-    // Set MembershipSync for rich event-based gossip payloads
-    void set_membership_sync(network::sync::MembershipSync* ms);
+        struct Config
+        {
+            uint32_t interval_ms = 5000;
+            uint32_t fanout = 3;
+            uint32_t max_payload = 65536;
+        };
 
-    static Config default_config();
+        explicit GossipEngine(MembershipTable& table, const Config& cfg);
 
-    ~GossipEngine();
+        void set_crl(recovery::CRL* crl);
 
-    GossipEngine(const GossipEngine&) = delete;
-    GossipEngine& operator=(const GossipEngine&) = delete;
+        // Set MembershipSync for rich event-based gossip payloads
+        void set_membership_sync(network::sync::MembershipSync* ms);
 
-    void start();
-    void stop();
+        static Config default_config();
 
-    // Periodic tick — fanout gossip to random peers
-    void tick(int64_t now_ns);
+        ~GossipEngine();
 
-    // EventBus listener for RecoveryApproved events — gossips CRL updates
-    void on_recovery_approved(const runtime::Event& ev);
+        GossipEngine(const GossipEngine&) = delete;
+        GossipEngine& operator=(const GossipEngine&) = delete;
 
-    // Get pending events since a sequence number (delta sync)
-    Bytes pending_updates(uint64_t since_sequence) const;
+        void start();
+        void stop();
 
-    // Apply incoming gossip data (serialized MembershipEvents)
-    Result<void> apply_gossip(BytesView data);
+        // Periodic tick — fanout gossip to random peers
+        void tick(int64_t now_ns);
 
-    // Handle an incoming gossip message from a peer
-    static Result<void> handle_gossip_message(BytesView payload, GossipEngine& engine);
+        // EventBus listener for RecoveryApproved events — gossips CRL updates
+        void on_recovery_approved(const runtime::Event& ev);
 
-    // ── Typed delta support (Phase 8a) ─────────────────────────────
+        // Get pending events since a sequence number (delta sync)
+        Bytes pending_updates(uint64_t since_sequence) const;
 
-    // Queue a typed delta for sending on next gossip fanout cycle
-    void queue_delta(DeltaType type, Bytes data);
+        // Apply incoming gossip data (serialized MembershipEvents)
+        Result<void> apply_gossip(BytesView data);
 
-    // Register handler for receiving a specific delta type
-    void set_delta_handler(DeltaType type, DeltaHandler handler);
+        // Handle an incoming gossip message from a peer
+        static Result<void> handle_gossip_message(BytesView payload, GossipEngine& engine);
 
-    // Register a provider callback that returns serialized delta data
-    // The provider is called during send_gossip_to_peer() for each fanout peer
-    void set_delta_provider(DeltaType type, DeltaProvider provider);
+        // ── Typed delta support (Phase 8a) ─────────────────────────────
 
-    // ── ───────────────────────────────────────────────────────────
+        // Queue a typed delta for sending on next gossip fanout cycle
+        void queue_delta(DeltaType type, Bytes data);
 
-    // Get current sequence/incarnation
-    uint64_t current_sequence() const noexcept { return incarnation_; }
+        // Register handler for receiving a specific delta type
+        void set_delta_handler(DeltaType type, DeltaHandler handler);
 
-    void set_gossip_interval(int64_t ns) { gossip_interval_ns_ = ns; }
+        // Register a provider callback that returns serialized delta data
+        // The provider is called during send_gossip_to_peer() for each fanout peer
+        void set_delta_provider(DeltaType type, DeltaProvider provider);
 
-    // ── Readiness counters (P2) ───────────────────────────────────
-    uint64_t gossip_sent_count() const noexcept { return gossip_sent_; }
-    uint64_t gossip_received_count() const noexcept { return gossip_received_; }
-    void clear_counts() noexcept { gossip_sent_ = 0; gossip_received_ = 0; }
+        // ── ───────────────────────────────────────────────────────────
 
-private:
-    void send_gossip_to_peer(const Endpoint& target);
-    std::vector<Endpoint> select_fanout_peers();
+        // Get current sequence/incarnation
+        uint64_t current_sequence() const noexcept { return incarnation_; }
 
-    // Combine all pending deltas into a single framed payload
-    Bytes assemble_gossip_payload();
+        void set_gossip_interval(int64_t ns) { gossip_interval_ns_ = ns; }
 
-    MembershipTable& table_;
-    network::sync::MembershipSync* membership_sync_ = nullptr;
-    Config config_;
-    std::mt19937_64 rng_;
-    uint64_t incarnation_ = 1;
-    uint64_t local_sequence_ = 0;
-    int64_t gossip_interval_ns_{5'000'000'000};
-    int64_t last_gossip_{0};
-    std::atomic<bool> running_{false};
+        // ── Readiness counters (P2) ───────────────────────────────────
+        uint64_t gossip_sent_count() const noexcept { return gossip_sent_; }
+        uint64_t gossip_received_count() const noexcept { return gossip_received_; }
+        void clear_counts() noexcept
+        {
+            gossip_sent_ = 0;
+            gossip_received_ = 0;
+        }
 
-    recovery::CRL* crl_ = nullptr;
+    private:
+        void send_gossip_to_peer(const Endpoint& target);
+        std::vector<Endpoint> select_fanout_peers();
 
-    // Typed delta queues and handlers (overwrite semantics: last write wins per type)
-    std::unordered_map<uint8_t, Bytes> pending_deltas_;
-    std::unordered_map<uint8_t, DeltaHandler> delta_handlers_;
-    std::unordered_map<uint8_t, DeltaProvider> delta_providers_;
+        // Combine all pending deltas into a single framed payload
+        Bytes assemble_gossip_payload();
 
-    // Readiness counters (P2)
-    std::atomic<uint64_t> gossip_sent_{0};
-    std::atomic<uint64_t> gossip_received_{0};
+        MembershipTable& table_;
+        network::sync::MembershipSync* membership_sync_ = nullptr;
+        Config config_;
+        std::mt19937_64 rng_;
+        uint64_t incarnation_ = 1;
+        uint64_t local_sequence_ = 0;
+        int64_t gossip_interval_ns_{5'000'000'000};
+        int64_t last_gossip_{0};
+        std::atomic<bool> running_{false};
 
-    // TCP connect helper
-    Result<int> tcp_connect_to(const Endpoint& ep) const;
-    static Result<bool> tcp_send(int fd, BytesView data);
-};
+        recovery::CRL* crl_ = nullptr;
+
+        // Typed delta queues and handlers (overwrite semantics: last write wins per type)
+        std::unordered_map<uint8_t, Bytes> pending_deltas_;
+        std::unordered_map<uint8_t, DeltaHandler> delta_handlers_;
+        std::unordered_map<uint8_t, DeltaProvider> delta_providers_;
+
+        // Readiness counters (P2)
+        std::atomic<uint64_t> gossip_sent_{0};
+        std::atomic<uint64_t> gossip_received_{0};
+
+        // TCP connect helper
+        Result<int> tcp_connect_to(const Endpoint& ep) const;
+        static Result<bool> tcp_send(int fd, BytesView data);
+    };
 
 } // namespace smo

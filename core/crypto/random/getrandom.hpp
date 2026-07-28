@@ -6,21 +6,23 @@
 #include <cstdint>
 
 namespace smo {
-namespace random {
+    namespace random {
 
-void fill(BytesMutView buf);
+        void fill(BytesMutView buf);
 
-inline uint32_t uint32() {
-    uint32_t val;
-    fill(BytesMutView{reinterpret_cast<uint8_t*>(&val), sizeof(val)});
-    return val;
-}
+        inline uint32_t uint32()
+        {
+            uint32_t val;
+            fill(BytesMutView{reinterpret_cast<uint8_t*>(&val), sizeof(val)});
+            return val;
+        }
 
-inline uint64_t uint64() {
-    uint64_t val;
-    fill(BytesMutView{reinterpret_cast<uint8_t*>(&val), sizeof(val)});
-    return val;
-}
+        inline uint64_t uint64()
+        {
+            uint64_t val;
+            fill(BytesMutView{reinterpret_cast<uint8_t*>(&val), sizeof(val)});
+            return val;
+        }
 
-} // namespace random
+    } // namespace random
 } // namespace smo

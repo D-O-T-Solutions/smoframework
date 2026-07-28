@@ -8,25 +8,24 @@
 
 namespace smo {
 
-class Runtime {
-public:
-    Runtime();
-    ~Runtime();
+    class Runtime
+    {
+    public:
+        Runtime();
+        ~Runtime();
 
-    Result<void> initialise();
+        Result<void> initialise();
 
-    ExecutionResult execute(
-        const ContractID& id,
-        const ExecutionContext& ctx);
+        ExecutionResult execute(const ContractID& id, const ExecutionContext& ctx);
 
-    Executor& executor() { return executor_; }
-    Sandbox& sandbox() { return sandbox_; }
-    WorkerPool& worker_pool() { return worker_pool_; }
+        Executor& executor() { return executor_; }
+        Sandbox& sandbox() { return sandbox_; }
+        WorkerPool& worker_pool() { return worker_pool_; }
 
-private:
-    Executor   executor_;
-    Sandbox    sandbox_;
-    WorkerPool worker_pool_;
-};
+    private:
+        Executor executor_;
+        Sandbox sandbox_;
+        WorkerPool worker_pool_;
+    };
 
 } // namespace smo

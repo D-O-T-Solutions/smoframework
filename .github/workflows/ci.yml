@@ -104,7 +104,7 @@ jobs:
       - name: Check clang-format
         run: |
           find . -name '*.cpp' -o -name '*.hpp' \
-            | grep -v build | grep -v third_party \
+            | grep -v build | grep -v third_party | grep -v reference \
             | xargs clang-format-14 --dry-run --Werror
 
       - name: Configure (for compile_commands.json)

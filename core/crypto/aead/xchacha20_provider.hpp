@@ -6,18 +6,17 @@
 #include <cstdint>
 
 namespace smo {
-namespace aead {
+    namespace aead {
 
-struct XChaCha20Provider {
-    static constexpr size_t kKeySize      = 32;
-    static constexpr size_t kNonceSize    = 24;
-    static constexpr size_t kMacSize      = 16;
+        struct XChaCha20Provider
+        {
+            static constexpr size_t kKeySize = 32;
+            static constexpr size_t kNonceSize = 24;
+            static constexpr size_t kMacSize = 16;
 
-    static Bytes encrypt(BytesView plaintext, BytesView aad,
-                         BytesView key, BytesView nonce);
-    static Bytes decrypt(BytesView ciphertext, BytesView aad,
-                         BytesView key, BytesView nonce);
-};
+            static Bytes encrypt(BytesView plaintext, BytesView aad, BytesView key, BytesView nonce);
+            static Bytes decrypt(BytesView ciphertext, BytesView aad, BytesView key, BytesView nonce);
+        };
 
-} // namespace aead
+    } // namespace aead
 } // namespace smo

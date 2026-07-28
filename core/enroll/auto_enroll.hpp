@@ -8,29 +8,28 @@
 #include <vector>
 
 namespace smo {
-namespace enroll {
+    namespace enroll {
 
-struct AutoEnrollConfig {
-    std::string data_dir;
-    std::string mesh_dir;
-    std::string node_name;
-    uint16_t port = 5454;
-    bool daemon_mode = true;
-};
+        struct AutoEnrollConfig
+        {
+            std::string data_dir;
+            std::string mesh_dir;
+            std::string node_name;
+            uint16_t port = 5454;
+            bool daemon_mode = true;
+        };
 
-struct JoinResult {
-    std::string mesh_id;
-    std::string role;
-    std::string profile;
-    std::vector<std::string> bootstrap_endpoints;
-    std::string node_name;
-};
+        struct JoinResult
+        {
+            std::string mesh_id;
+            std::string role;
+            std::string profile;
+            std::vector<std::string> bootstrap_endpoints;
+            std::string node_name;
+        };
 
-Result<JoinResult> run_join_command(const std::string& token_str,
-                                     const std::string& data_dir,
-                                     const std::string& node_name,
-                                     uint16_t port,
-                                     const std::string& mesh_dir);
+        Result<JoinResult> run_join_command(const std::string& token_str, const std::string& data_dir,
+                                            const std::string& node_name, uint16_t port, const std::string& mesh_dir);
 
-} // namespace enroll
+    } // namespace enroll
 } // namespace smo

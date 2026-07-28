@@ -7,8 +7,9 @@
 
 namespace smo::network::transport {
 
-struct AddressResolver {
-    AddressResolver() = default;
-};
+    struct AddressResolver
+    {
+        AddressResolver() = default;
+    };
 
 } // namespace smo::network::transport

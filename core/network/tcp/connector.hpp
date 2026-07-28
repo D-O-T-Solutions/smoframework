@@ -4,7 +4,7 @@
 
 namespace smo::network::tcp {
 
-// TCP connector — establishes outbound TCP connections.
-// Full implementation in Sprint 4.
+    // TCP connector — establishes outbound TCP connections.
+    // Full implementation in Sprint 4.
 
 } // namespace smo::network::tcp
