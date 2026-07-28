@@ -89,6 +89,7 @@ enum class ErrorCategory : uint8_t {
     Genesis     = 15,  // genesis/* — bootstrap, slots, recovery package
     Recovery    = 16,  // recovery/* — soft/hard recovery, CRL, revocation
     Bootstrap   = 17,  // bootstrap/* — bootstrap protocol, snapshot
+    Sync        = 18,  // sync/* — version vectors, merkle trees, anti-entropy
 };
 
 // ---------------------------------------------------------------------------

@@ -8,6 +8,10 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/udp/heartbeat_service.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/membership_sync.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/version_vector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/merkle_tree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_backend.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/anti_entropy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/public_ip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/port_check.cpp
@@ -31,6 +35,10 @@ target_sources(smo_core INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/dispatcher.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/membership_sync.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_service.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/version_vector.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/merkle_tree.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_backend.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sync/anti_entropy.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/public_ip.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/port_check.hpp

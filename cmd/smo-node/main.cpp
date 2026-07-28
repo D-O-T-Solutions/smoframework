@@ -59,6 +59,9 @@
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
 #include <core/runtime/structured_logger.hpp>
+#include <core/network/sync/anti_entropy.hpp>
+#include <core/network/sync/sync_backend.hpp>
+// ── Vault setup ──────────────────────────────────────────────
 #include <storage/policy_store/policy_store.h>
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
@@ -1771,6 +1774,43 @@ int main(int argc, char* argv[]) {
     // ── Main loop ──────────────────────────────────────────────
     LOG.info("entering main loop");
 
+    // ── P1: Anti-Entropy Service ────────────────────────────
+    struct DaemonSyncBackend : smo::sync::SyncBackend {
+        smo::MembershipTable* memb_ptr;
+        smo::recovery::CRL* crl_ptr;
+
+        DaemonSyncBackend(smo::MembershipTable& tbl, smo::recovery::CRL* c)
+            : memb_ptr(&tbl), crl_ptr(c) {}
+
+        smo::sync::Delta get_membership_delta(const smo::sync::VersionVector& vv) override {
+            (void)vv; return {};
+        }
+        smo::sync::Delta get_crl_delta(const smo::sync::VersionVector& vv) override {
+            (void)vv; return {};
+        }
+        smo::sync::Delta get_policy_delta(const smo::sync::VersionVector& vv) override {
+            (void)vv; return {};
+        }
+        smo::sync::Delta get_contract_delta(const smo::sync::VersionVector& vv) override {
+            (void)vv; return {};
+        }
+        smo::sync::Delta get_full_snapshot(smo::sync::TreeID id) override {
+            (void)id; return {};
+        }
+        smo::sync::MerkleTree compute_tree(smo::sync::TreeID id) override {
+            auto tree = smo::sync::MerkleTree(id);
+            tree.epoch = 1;
+            tree.rebuild();
+            return tree;
+        }
+    };
+
+    auto sync_backend = std::make_shared<DaemonSyncBackend>(membership, &crl);
+    auto ae_config = smo::sync::AntiEntropyService::default_config();
+    smo::sync::AntiEntropyService anti_entropy(membership, gossip_engine,
+                                                *sync_backend, ae_config);
+    anti_entropy.start();
+
     int64_t last_tick = 0;
     int64_t last_peerstore_sync = 0;
     int64_t daemon_start_ns = 0;
@@ -1795,6 +1835,7 @@ int main(int argc, char* argv[]) {
             heartbeat_service.tick(now_ns);
             session_mgr.tick(now_ns);
             session_mgr.collect_garbage();
+            anti_entropy.tick(now_ns); // P1: 30-min Merkle tree exchange
 
             // ── Readiness check (P2) ─────────────────────────────
             int64_t uptime_ns = now_ns - daemon_start_ns;
@@ -1825,6 +1866,8 @@ int main(int argc, char* argv[]) {
                                 static_cast<double>(membership.count()), "");
             telemetry.set_gauge("smo_membership_epoch",
                                 static_cast<double>(now_ns % 1'000'000), "");
+            telemetry.set_gauge("smo_anti_entropy_repairs_total",
+                                static_cast<double>(anti_entropy.repairs_done()), "");
 
             // Export Prometheus metrics to file for scraping
             {

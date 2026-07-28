@@ -17,6 +17,9 @@
 #include <storage/policy_store/policy_store.h>
 #include <providers/blake3_provider/blake3_provider.hpp>
 #include <runtime/structured_logger.hpp>
+#include <network/sync/version_vector.hpp>
+#include <network/sync/merkle_tree.hpp>
+#include <network/sync/sync_backend.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -840,6 +843,82 @@ static bool test_pct_021() {
     return true;
 }
 
+// PCT-018 — Anti-entropy Merkle tree + version vector
+static bool test_pct_018() {
+    Blake3Provider::register_as_default();
+    auto& hp = HashProvider::default_provider();
+    (void)hp; // ensure hash provider is ready for MerkleTree::rebuild()
+
+    // Test VersionVector
+    smo::sync::VersionVector vv;
+    ASSERT(vv.empty());
+    vv.set("node-a", 1);
+    vv.set("node-b", 5);
+    ASSERT(vv.size() == 2);
+    ASSERT(vv.get("node-a") == 1);
+    ASSERT(vv.get("node-b") == 5);
+    ASSERT(vv.get("node-c") == 0);
+
+    // Test serialization roundtrip
+    auto vv_bytes = vv.serialize();
+    auto vv2_r = smo::sync::VersionVector::deserialize(BytesView(vv_bytes));
+    ASSERT(bool(vv2_r));
+    ASSERT(vv2_r.value() == vv);
+
+    // Test merge
+    smo::sync::VersionVector vv3;
+    vv3.set("node-b", 3);
+    vv3.set("node-c", 10);
+    vv.merge(vv3);
+    ASSERT(vv.get("node-a") == 1); // unchanged
+    ASSERT(vv.get("node-b") == 5); // 5 > 3, keep 5
+    ASSERT(vv.get("node-c") == 10); // new
+
+    // Test dominates
+    smo::sync::VersionVector vv4;
+    vv4.set("node-a", 0);
+    vv4.set("node-b", 5);
+    ASSERT(vv.dominates(vv4)); // vv has node-a=1 >= 0, node-b=5 >= 5
+    ASSERT(!vv4.dominates(vv)); // vv4 has node-a=0 < 1
+
+    // Test MerkleTree
+    auto tree = smo::sync::MerkleTree(smo::sync::TreeID::Membership);
+    ASSERT(tree.buckets.size() == 256);
+    tree.epoch = 42;
+    tree.version_vector.set("node-a", 1);
+    tree.rebuild();
+    bool has_root = false;
+    for (auto b : tree.root_hash) if (b != 0) has_root = true;
+    ASSERT(has_root);
+
+    // Test MerkleTree serialization roundtrip
+    auto tree_bytes = tree.serialize();
+    auto tree2_r = smo::sync::MerkleTree::deserialize(BytesView(tree_bytes));
+    ASSERT(bool(tree2_r));
+    auto& tree2 = tree2_r.value();
+    ASSERT(tree2.id == smo::sync::TreeID::Membership);
+    ASSERT(tree2.epoch == 42);
+    ASSERT(tree2.buckets.size() == 256);
+    ASSERT(tree2.root_hash == tree.root_hash);
+    ASSERT(tree2.version_vector == tree.version_vector);
+
+    // Test Delta serialization
+    smo::sync::Delta delta;
+    delta.tree_id = smo::sync::TreeID::Policy;
+    delta.base_epoch = 10;
+    delta.entry_count = 3;
+    delta.data = {0x01, 0x02, 0x03};
+    auto d_bytes = delta.serialize();
+    auto d2_r = smo::sync::Delta::deserialize(BytesView(d_bytes));
+    ASSERT(bool(d2_r));
+    ASSERT(d2_r.value().tree_id == smo::sync::TreeID::Policy);
+    ASSERT(d2_r.value().base_epoch == 10);
+    ASSERT(d2_r.value().entry_count == 3);
+    ASSERT(d2_r.value().data.size() == 3);
+
+    return true;
+}
+
 // PCT-022 — Structured log format
 static bool test_pct_022() {
     // Verify JSON output has all required fields
@@ -971,7 +1050,10 @@ int main(int, char*[]) {
     printf("\n── §9.8  Forward Compat ──────────────────────────────────────\n");
     TEST("PCT-017  CBOR map key forward compat")                         END_TEST(test_pct_017());
 
-    printf("\n── §9.9  Gossip Readiness ─────────────────────────────────────\n");
+    printf("\n── §9.9  Anti-Entropy ─────────────────────────────────────────\n");
+    TEST("PCT-018  Anti-entropy Merkle + version vector")                END_TEST(test_pct_018());
+
+    printf("\n── §9.10 Gossip Readiness ─────────────────────────────────────\n");
     TEST("PCT-019  Gossip readiness + DEGRADED state")                   END_TEST(test_pct_019());
 
     printf("\n── §9.9  Policy Store ─────────────────────────────────────────\n");
@@ -985,7 +1067,7 @@ int main(int, char*[]) {
 
     printf("\n");
     if (failures == 0) {
-        printf("ALL 21 PCT TESTS PASSED\n");
+        printf("ALL 22 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);
