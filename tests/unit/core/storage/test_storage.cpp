@@ -17,44 +17,53 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%d  RHS=%d\n",                            \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<int>(a), static_cast<int>(b));           \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%d  RHS=%d\n",                                                                           \
+                   __FILE__, __LINE__, #a, #b, static_cast<int>(a), static_cast<int>(b));                              \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // Temporary directory helper
-struct TempDir {
+struct TempDir
+{
     std::string path;
-    TempDir() {
+    TempDir()
+    {
         auto tmp = std::filesystem::temp_directory_path();
         path = (tmp / "smo_test_storage_XXXXXX").string();
         // mkdtemp wants a mutable C string
@@ -72,7 +81,8 @@ struct TempDir {
 // Tests
 // ==========================================================================
 
-static bool test_store_id_constants() {
+static bool test_store_id_constants()
+{
     ASSERT_EQ(static_cast<int>(StoreID::Node), 0);
     ASSERT_EQ(static_cast<int>(StoreID::Mesh), 1);
     ASSERT_EQ(static_cast<int>(StoreID::Session), 2);
@@ -84,8 +94,10 @@ static bool test_store_id_constants() {
     return true;
 }
 
-static bool test_store_info() {
-    for (int i = 0; i < kStoreCount; ++i) {
+static bool test_store_info()
+{
+    for (int i = 0; i < kStoreCount; ++i)
+    {
         const auto& info = kStoreInfos[i];
         ASSERT(info.name != nullptr);
         ASSERT(info.filename != nullptr);
@@ -98,7 +110,8 @@ static bool test_store_info() {
     return true;
 }
 
-static bool test_database_open_close() {
+static bool test_database_open_close()
+{
     TempDir dir;
     DatabaseHandle db;
 
@@ -112,7 +125,8 @@ static bool test_database_open_close() {
     return true;
 }
 
-static bool test_database_double_open() {
+static bool test_database_double_open()
+{
     TempDir dir;
     DatabaseHandle db;
 
@@ -125,7 +139,8 @@ static bool test_database_double_open() {
     return true;
 }
 
-static bool test_database_exec() {
+static bool test_database_exec()
+{
     TempDir dir;
     DatabaseHandle db;
     ASSERT(db.open(dir.file("exec.db")));
@@ -141,7 +156,8 @@ static bool test_database_exec() {
     return true;
 }
 
-static bool test_database_prepare_and_step() {
+static bool test_database_prepare_and_step()
+{
     TempDir dir;
     DatabaseHandle db;
     ASSERT(db.open(dir.file("stmt.db")));
@@ -168,7 +184,8 @@ static bool test_database_prepare_and_step() {
     return true;
 }
 
-static bool test_statement_blob_roundtrip() {
+static bool test_statement_blob_roundtrip()
+{
     TempDir dir;
     DatabaseHandle db;
     ASSERT(db.open(dir.file("blob.db")));
@@ -177,7 +194,7 @@ static bool test_statement_blob_roundtrip() {
     auto stmt = db.prepare("INSERT INTO b VALUES (1, ?1);");
     ASSERT(stmt);
 
-    Bytes data = { 0xDE, 0xAD, 0xBE, 0xEF };
+    Bytes data = {0xDE, 0xAD, 0xBE, 0xEF};
     ASSERT(stmt.value().bind_blob(1, data));
 
     auto rc = stmt.value().step();
@@ -199,7 +216,8 @@ static bool test_statement_blob_roundtrip() {
     return true;
 }
 
-static bool test_migration_current_version() {
+static bool test_migration_current_version()
+{
     TempDir dir;
     DatabaseHandle db;
     ASSERT(db.open(dir.file("mig.db")));
@@ -216,7 +234,8 @@ static bool test_migration_current_version() {
     return true;
 }
 
-static bool test_migration_ensure_schema() {
+static bool test_migration_ensure_schema()
+{
     TempDir dir;
     DatabaseHandle db;
     ASSERT(db.open(dir.file("schema.db")));
@@ -226,9 +245,8 @@ static bool test_migration_ensure_schema() {
     ASSERT(v);
     ASSERT_EQ(v.value(), 0);
 
-    StoreInfo info{ StoreID::Node, "node", "node.db", 1 };
-    auto r = mig.ensure_schema(info,
-        "CREATE TABLE kv (key BLOB PRIMARY KEY, value BLOB) WITHOUT ROWID;");
+    StoreInfo info{StoreID::Node, "node", "node.db", 1};
+    auto r = mig.ensure_schema(info, "CREATE TABLE kv (key BLOB PRIMARY KEY, value BLOB) WITHOUT ROWID;");
     ASSERT(r);
 
     auto v2 = mig.current_version();
@@ -236,8 +254,7 @@ static bool test_migration_ensure_schema() {
     ASSERT_EQ(v2.value(), 1);
 
     // Second call should be no-op
-    r = mig.ensure_schema(info,
-        "CREATE TABLE kv (key BLOB PRIMARY KEY, value BLOB) WITHOUT ROWID;");
+    r = mig.ensure_schema(info, "CREATE TABLE kv (key BLOB PRIMARY KEY, value BLOB) WITHOUT ROWID;");
     ASSERT(r);
 
     auto v3 = mig.current_version();
@@ -246,7 +263,8 @@ static bool test_migration_ensure_schema() {
     return true;
 }
 
-static bool test_sqlite_store_open() {
+static bool test_sqlite_store_open()
+{
     TempDir dir;
     SqliteStore store(StoreID::Node, dir.path);
 
@@ -260,13 +278,14 @@ static bool test_sqlite_store_open() {
     return true;
 }
 
-static bool test_sqlite_store_put_get() {
+static bool test_sqlite_store_put_get()
+{
     TempDir dir;
     SqliteStore store(StoreID::Session, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'k', 'e', 'y', '1' };
-    Bytes val = { 'v', 'a', 'l', 'u', 'e' };
+    Bytes key = {'k', 'e', 'y', '1'};
+    Bytes val = {'v', 'a', 'l', 'u', 'e'};
 
     auto r = store.put(key, val);
     ASSERT(r);
@@ -278,26 +297,28 @@ static bool test_sqlite_store_put_get() {
     return true;
 }
 
-static bool test_sqlite_store_get_missing() {
+static bool test_sqlite_store_get_missing()
+{
     TempDir dir;
     SqliteStore store(StoreID::Trust, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'n', 'o', 'n', 'e' };
+    Bytes key = {'n', 'o', 'n', 'e'};
     auto r = store.get(key);
     ASSERT(!r);
     ASSERT_EQ(r.error().code.code, 902);
     return true;
 }
 
-static bool test_sqlite_store_put_overwrite() {
+static bool test_sqlite_store_put_overwrite()
+{
     TempDir dir;
     SqliteStore store(StoreID::DAG, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'x' };
-    Bytes v1 = { '1' };
-    Bytes v2 = { '2' };
+    Bytes key = {'x'};
+    Bytes v1 = {'1'};
+    Bytes v2 = {'2'};
 
     ASSERT(store.put(key, v1));
     ASSERT(store.put(key, v2));
@@ -309,13 +330,14 @@ static bool test_sqlite_store_put_overwrite() {
     return true;
 }
 
-static bool test_sqlite_store_del() {
+static bool test_sqlite_store_del()
+{
     TempDir dir;
     SqliteStore store(StoreID::Peer, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'd', 'e', 'l' };
-    ASSERT(store.put(key, Bytes{ 'x' }));
+    Bytes key = {'d', 'e', 'l'};
+    ASSERT(store.put(key, Bytes{'x'}));
 
     ASSERT(store.del(key));
 
@@ -325,23 +347,25 @@ static bool test_sqlite_store_del() {
     return true;
 }
 
-static bool test_sqlite_store_list_prefix() {
+static bool test_sqlite_store_list_prefix()
+{
     TempDir dir;
     SqliteStore store(StoreID::Audit, dir.path);
     ASSERT(store.open());
 
-    ASSERT(store.put(Bytes{ 'a', 'a', 'p', 'p', 'l', 'e' }, Bytes{ '1' }));
-    ASSERT(store.put(Bytes{ 'a', 'p', 'r', 'i', 'c', 'o', 't' }, Bytes{ '2' }));
-    ASSERT(store.put(Bytes{ 'b', 'a', 'n', 'a', 'n', 'a' }, Bytes{ '3' }));
-    ASSERT(store.put(Bytes{ 'a', 'p' }, Bytes{ '4' }));
+    ASSERT(store.put(Bytes{'a', 'a', 'p', 'p', 'l', 'e'}, Bytes{'1'}));
+    ASSERT(store.put(Bytes{'a', 'p', 'r', 'i', 'c', 'o', 't'}, Bytes{'2'}));
+    ASSERT(store.put(Bytes{'b', 'a', 'n', 'a', 'n', 'a'}, Bytes{'3'}));
+    ASSERT(store.put(Bytes{'a', 'p'}, Bytes{'4'}));
 
-    Bytes prefix = { 'a', 'p' };
+    Bytes prefix = {'a', 'p'};
     auto keys = store.list(prefix);
     ASSERT(keys);
     ASSERT_EQ(keys.value().size(), 2);
 
     // Check the keys start with "ap"
-    for (const auto& k : keys.value()) {
+    for (const auto& k : keys.value())
+    {
         ASSERT(k.size() >= 2);
         ASSERT(k[0] == 'a');
         ASSERT(k[1] == 'p');
@@ -349,13 +373,14 @@ static bool test_sqlite_store_list_prefix() {
     return true;
 }
 
-static bool test_sqlite_store_transaction() {
+static bool test_sqlite_store_transaction()
+{
     TempDir dir;
     SqliteStore store(StoreID::Governance, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 't', 'x' };
-    Bytes val = { 'd', 'a', 't', 'a' };
+    Bytes key = {'t', 'x'};
+    Bytes val = {'d', 'a', 't', 'a'};
 
     ASSERT(store.begin_transaction());
     ASSERT(store.put(key, val));
@@ -366,16 +391,17 @@ static bool test_sqlite_store_transaction() {
     return true;
 }
 
-static bool test_sqlite_store_transaction_rollback() {
+static bool test_sqlite_store_transaction_rollback()
+{
     TempDir dir;
     SqliteStore store(StoreID::Mesh, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'r', 'b' };
-    ASSERT(store.put(key, Bytes{ 'o', 'k' }));
+    Bytes key = {'r', 'b'};
+    ASSERT(store.put(key, Bytes{'o', 'k'}));
 
     ASSERT(store.begin_transaction());
-    ASSERT(store.put(key, Bytes{ 'n', 'e', 'w' }));
+    ASSERT(store.put(key, Bytes{'n', 'e', 'w'}));
     ASSERT(store.rollback());
 
     auto got = store.get(key);
@@ -385,13 +411,14 @@ static bool test_sqlite_store_transaction_rollback() {
     return true;
 }
 
-static bool test_sqlite_store_backup_restore() {
+static bool test_sqlite_store_backup_restore()
+{
     TempDir dir;
     SqliteStore store(StoreID::Node, dir.path);
     ASSERT(store.open());
 
-    Bytes key = { 'b' };
-    ASSERT(store.put(key, Bytes{ 'a', 'c', 'k', 'u', 'p' }));
+    Bytes key = {'b'};
+    ASSERT(store.put(key, Bytes{'a', 'c', 'k', 'u', 'p'}));
 
     std::string backup_path = dir.file("backup.db");
 
@@ -399,7 +426,7 @@ static bool test_sqlite_store_backup_restore() {
     ASSERT(r);
 
     // Write different data
-    ASSERT(store.put(key, Bytes{ 'o', 'v', 'e', 'r', 'w', 'r', 'i', 't', 'e' }));
+    ASSERT(store.put(key, Bytes{'o', 'v', 'e', 'r', 'w', 'r', 'i', 't', 'e'}));
 
     // Restore
     r = store.restore(backup_path);
@@ -417,34 +444,38 @@ static bool test_sqlite_store_backup_restore() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Storage — Unit Tests\n");
     printf("=========================\n\n");
 
-    TEST("StoreID constants")                    END_TEST(test_store_id_constants());
-    TEST("StoreInfo lookup")                     END_TEST(test_store_info());
-    TEST("DatabaseHandle open/close")            END_TEST(test_database_open_close());
-    TEST("DatabaseHandle double open error")     END_TEST(test_database_double_open());
-    TEST("DatabaseHandle exec SQL")              END_TEST(test_database_exec());
-    TEST("DatabaseHandle prepare + step")        END_TEST(test_database_prepare_and_step());
-    TEST("Statement blob round-trip")            END_TEST(test_statement_blob_roundtrip());
-    TEST("MigrationRunner current_version")      END_TEST(test_migration_current_version());
-    TEST("MigrationRunner ensure_schema")        END_TEST(test_migration_ensure_schema());
-    TEST("SqliteStore open")                     END_TEST(test_sqlite_store_open());
-    TEST("SqliteStore put/get")                  END_TEST(test_sqlite_store_put_get());
-    TEST("SqliteStore get missing key")          END_TEST(test_sqlite_store_get_missing());
-    TEST("SqliteStore put overwrite")            END_TEST(test_sqlite_store_put_overwrite());
-    TEST("SqliteStore del")                      END_TEST(test_sqlite_store_del());
-    TEST("SqliteStore list prefix")              END_TEST(test_sqlite_store_list_prefix());
-    TEST("SqliteStore transaction")              END_TEST(test_sqlite_store_transaction());
-    TEST("SqliteStore transaction rollback")     END_TEST(test_sqlite_store_transaction_rollback());
-    TEST("SqliteStore backup/restore")           END_TEST(test_sqlite_store_backup_restore());
+    TEST("StoreID constants") END_TEST(test_store_id_constants());
+    TEST("StoreInfo lookup") END_TEST(test_store_info());
+    TEST("DatabaseHandle open/close") END_TEST(test_database_open_close());
+    TEST("DatabaseHandle double open error") END_TEST(test_database_double_open());
+    TEST("DatabaseHandle exec SQL") END_TEST(test_database_exec());
+    TEST("DatabaseHandle prepare + step") END_TEST(test_database_prepare_and_step());
+    TEST("Statement blob round-trip") END_TEST(test_statement_blob_roundtrip());
+    TEST("MigrationRunner current_version") END_TEST(test_migration_current_version());
+    TEST("MigrationRunner ensure_schema") END_TEST(test_migration_ensure_schema());
+    TEST("SqliteStore open") END_TEST(test_sqlite_store_open());
+    TEST("SqliteStore put/get") END_TEST(test_sqlite_store_put_get());
+    TEST("SqliteStore get missing key") END_TEST(test_sqlite_store_get_missing());
+    TEST("SqliteStore put overwrite") END_TEST(test_sqlite_store_put_overwrite());
+    TEST("SqliteStore del") END_TEST(test_sqlite_store_del());
+    TEST("SqliteStore list prefix") END_TEST(test_sqlite_store_list_prefix());
+    TEST("SqliteStore transaction") END_TEST(test_sqlite_store_transaction());
+    TEST("SqliteStore transaction rollback") END_TEST(test_sqlite_store_transaction_rollback());
+    TEST("SqliteStore backup/restore") END_TEST(test_sqlite_store_backup_restore());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

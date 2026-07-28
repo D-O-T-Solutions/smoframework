@@ -6,9 +6,10 @@
 
 namespace smo {
 
-class Parser {
-public:
-    Result<ContractAst> parse(const ContractDefinition& def);
-};
+    class Parser
+    {
+    public:
+        Result<ContractAst> parse(const ContractDefinition& def);
+    };
 
 } // namespace smo

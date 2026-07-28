@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
-TEST(RuntimeTest, Placeholder) {
+TEST(RuntimeTest, Placeholder)
+{
     EXPECT_TRUE(true);
 }

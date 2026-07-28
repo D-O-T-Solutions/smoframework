@@ -11,78 +11,92 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Mock crypto for SessionId derivation
 // ==========================================================================
 
-static Result<Bytes> mock_hash(BytesView data) {
+static Result<Bytes> mock_hash(BytesView data)
+{
     Bytes out(16, 0);
     out[0] = static_cast<uint8_t>(data.size());
-    for (size_t i = 0; i < data.size(); ++i) out[(i % 15) + 1] ^= data[i];
+    for (size_t i = 0; i < data.size(); ++i)
+        out[(i % 15) + 1] ^= data[i];
     return out;
 }
 
-static Result<Bytes> mock_hmac(BytesView key, BytesView data) {
+static Result<Bytes> mock_hmac(BytesView key, BytesView data)
+{
     (void)key;
     return mock_hash(data);
 }
 
-static Result<bool> mock_verify(BytesView msg, BytesView sig, BytesView pk) {
-    (void)msg; (void)sig; (void)pk;
+static Result<bool> mock_verify(BytesView msg, BytesView sig, BytesView pk)
+{
+    (void)msg;
+    (void)sig;
+    (void)pk;
     return true;
 }
 
-static Result<Bytes> mock_sign(BytesView msg, BytesView sk, RngRef& rng) {
-    (void)msg; (void)sk;
+static Result<Bytes> mock_sign(BytesView msg, BytesView sk, RngRef& rng)
+{
+    (void)msg;
+    (void)sk;
     Bytes sig(64);
     rng.fill(sig);
     return sig;
@@ -97,7 +111,8 @@ static const SignerImpl kSigner{nullptr, mock_sign, mock_verify};
 
 // ── SessionId ──────────────────────────────────────────────────────────
 
-static bool test_session_id_derive() {
+static bool test_session_id_derive()
+{
     Bytes seed = {0x01, 0x02, 0x03};
     auto id = SessionId::derive(seed, kHash);
     ASSERT(id);
@@ -106,16 +121,18 @@ static bool test_session_id_derive() {
     return true;
 }
 
-static bool test_session_id_null_hash() {
+static bool test_session_id_null_hash()
+{
     HashImpl empty{};
     auto id = SessionId::derive(Bytes{1, 2, 3}, empty);
     ASSERT(!id);
     return true;
 }
 
-static bool test_session_id_to_from_bytes() {
+static bool test_session_id_to_from_bytes()
+{
     SessionId id;
-    id.bytes = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    id.bytes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     auto ser = id.to_bytes();
     auto deser = SessionId::from_bytes(ser);
     ASSERT(deser);
@@ -124,8 +141,9 @@ static bool test_session_id_to_from_bytes() {
     return true;
 }
 
-static bool test_session_id_from_bytes_truncated() {
-    Bytes bad = {1,2,3};
+static bool test_session_id_from_bytes_truncated()
+{
+    Bytes bad = {1, 2, 3};
     auto id = SessionId::from_bytes(bad);
     ASSERT(!id);
     return true;
@@ -133,7 +151,8 @@ static bool test_session_id_from_bytes_truncated() {
 
 // ── FSM transitions ──────────────────────────────────────────────────
 
-static bool test_fsm_valid_transitions() {
+static bool test_fsm_valid_transitions()
+{
     ASSERT(is_valid_transition(SessionState::Closed, SessionEvent::OpenRequest));
 
     ASSERT(is_valid_transition(SessionState::Handshake, SessionEvent::Established));
@@ -159,7 +178,8 @@ static bool test_fsm_valid_transitions() {
     return true;
 }
 
-static bool test_fsm_invalid_transitions() {
+static bool test_fsm_invalid_transitions()
+{
     // Closed → anything except OpenRequest
     ASSERT(!is_valid_transition(SessionState::Closed, SessionEvent::Activate));
     ASSERT(!is_valid_transition(SessionState::Closed, SessionEvent::Established));
@@ -186,42 +206,32 @@ static bool test_fsm_invalid_transitions() {
     return true;
 }
 
-static bool test_fsm_apply_transition() {
-    ASSERT_EQ(apply_transition(SessionState::Closed, SessionEvent::OpenRequest),
-              SessionState::Handshake);
+static bool test_fsm_apply_transition()
+{
+    ASSERT_EQ(apply_transition(SessionState::Closed, SessionEvent::OpenRequest), SessionState::Handshake);
 
-    ASSERT_EQ(apply_transition(SessionState::Handshake, SessionEvent::Established),
-              SessionState::Established);
-    ASSERT_EQ(apply_transition(SessionState::Handshake, SessionEvent::Close),
-              SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Handshake, SessionEvent::Established), SessionState::Established);
+    ASSERT_EQ(apply_transition(SessionState::Handshake, SessionEvent::Close), SessionState::Closed);
 
-    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Activate),
-              SessionState::Active);
-    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Renew),
-              SessionState::Renewing);
-    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Close),
-              SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Activate), SessionState::Active);
+    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Renew), SessionState::Renewing);
+    ASSERT_EQ(apply_transition(SessionState::Established, SessionEvent::Close), SessionState::Closed);
 
-    ASSERT_EQ(apply_transition(SessionState::Active, SessionEvent::CompleteContract),
-              SessionState::Established);
-    ASSERT_EQ(apply_transition(SessionState::Active, SessionEvent::Close),
-              SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Active, SessionEvent::CompleteContract), SessionState::Established);
+    ASSERT_EQ(apply_transition(SessionState::Active, SessionEvent::Close), SessionState::Closed);
 
-    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Established),
-              SessionState::Established);
-    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Close),
-              SessionState::Closed);
-    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Timeout),
-              SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Established), SessionState::Established);
+    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Close), SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Renewing, SessionEvent::Timeout), SessionState::Closed);
 
     // Invalid: should stay in current state
-    ASSERT_EQ(apply_transition(SessionState::Closed, SessionEvent::Activate),
-              SessionState::Closed);
+    ASSERT_EQ(apply_transition(SessionState::Closed, SessionEvent::Activate), SessionState::Closed);
 
     return true;
 }
 
-static bool test_session_state_to_string() {
+static bool test_session_state_to_string()
+{
     ASSERT(std::strcmp(to_string(SessionState::Closed), "Closed") == 0);
     ASSERT(std::strcmp(to_string(SessionState::Handshake), "Handshake") == 0);
     ASSERT(std::strcmp(to_string(SessionState::Established), "Established") == 0);
@@ -233,9 +243,10 @@ static bool test_session_state_to_string() {
 
 // ── Session lifecycle ─────────────────────────────────────────────────
 
-static bool test_session_create() {
+static bool test_session_create()
+{
     SessionId id;
-    id.bytes = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+    id.bytes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 
     NodeID peer_id;
     peer_id.value.fill(0xAB);
@@ -260,7 +271,8 @@ static bool test_session_create() {
     return true;
 }
 
-static bool test_session_full_lifecycle() {
+static bool test_session_full_lifecycle()
+{
     SessionId id;
     id.bytes.fill(0x42);
     NodeID peer_id;
@@ -293,7 +305,8 @@ static bool test_session_full_lifecycle() {
     return true;
 }
 
-static bool test_session_invalid_transition() {
+static bool test_session_invalid_transition()
+{
     SessionId id;
     id.bytes.fill(0x01);
     NodeID peer_id;
@@ -313,7 +326,8 @@ static bool test_session_invalid_transition() {
     return true;
 }
 
-static bool test_session_renew() {
+static bool test_session_renew()
+{
     SessionId id;
     id.bytes.fill(0x03);
     NodeID peer_id;
@@ -336,7 +350,8 @@ static bool test_session_renew() {
     return true;
 }
 
-static bool test_session_is_valid_at() {
+static bool test_session_is_valid_at()
+{
     SessionId id;
     id.bytes.fill(0x05);
     NodeID peer_id;
@@ -354,7 +369,8 @@ static bool test_session_is_valid_at() {
     return true;
 }
 
-static bool test_session_has_capability() {
+static bool test_session_has_capability()
+{
     SessionId id;
     id.bytes.fill(0x07);
     NodeID peer_id;
@@ -377,9 +393,10 @@ static bool test_session_has_capability() {
 
 // ── Session serialization ─────────────────────────────────────────────
 
-static bool test_session_serialization_roundtrip() {
+static bool test_session_serialization_roundtrip()
+{
     SessionId id;
-    id.bytes = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+    id.bytes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     NodeID peer_id;
     peer_id.value.fill(0xAA);
     Certificate cert;
@@ -419,7 +436,8 @@ static bool test_session_serialization_roundtrip() {
 
 // ── SessionManager ─────────────────────────────────────────────────────
 
-static bool test_manager_open_and_lookup() {
+static bool test_manager_open_and_lookup()
+{
     SessionManager mgr;
     SessionId id;
     id.bytes.fill(0x10);
@@ -443,7 +461,8 @@ static bool test_manager_open_and_lookup() {
     return true;
 }
 
-static bool test_manager_close_and_garbage_collect() {
+static bool test_manager_close_and_garbage_collect()
+{
     SessionManager mgr;
     SessionId id;
     id.bytes.fill(0x30);
@@ -469,7 +488,8 @@ static bool test_manager_close_and_garbage_collect() {
     return true;
 }
 
-static bool test_manager_duplicate_open_fails() {
+static bool test_manager_duplicate_open_fails()
+{
     SessionManager mgr;
     SessionId id;
     id.bytes.fill(0x50);
@@ -490,12 +510,15 @@ static bool test_manager_duplicate_open_fails() {
     return true;
 }
 
-static bool test_manager_tick_expires_sessions() {
+static bool test_manager_tick_expires_sessions()
+{
     SessionManager mgr;
 
     // Create two sessions
-    SessionId id1; id1.bytes.fill(0x70);
-    SessionId id2; id2.bytes.fill(0x71);
+    SessionId id1;
+    id1.bytes.fill(0x70);
+    SessionId id2;
+    id2.bytes.fill(0x71);
     NodeID peer_id;
     Certificate cert;
     CapabilitySet caps;
@@ -524,11 +547,14 @@ static bool test_manager_tick_expires_sessions() {
     return true;
 }
 
-static bool test_manager_serialize_all() {
+static bool test_manager_serialize_all()
+{
     SessionManager mgr;
 
-    SessionId id1; id1.bytes.fill(0x80);
-    SessionId id2; id2.bytes.fill(0x81);
+    SessionId id1;
+    id1.bytes.fill(0x80);
+    SessionId id2;
+    id2.bytes.fill(0x81);
     NodeID peer_id;
     Certificate cert;
     CapabilitySet caps;
@@ -549,7 +575,8 @@ static bool test_manager_serialize_all() {
 
 // ── SessionOpenMsg / SessionCloseMsg ───────────────────────────────────
 
-static bool test_session_open_msg_roundtrip() {
+static bool test_session_open_msg_roundtrip()
+{
     SessionOpenMsg msg;
     msg.nonce = Bytes(32, 0xAA);
     msg.signature = Bytes(64, 0xBB);
@@ -568,7 +595,8 @@ static bool test_session_open_msg_roundtrip() {
     return true;
 }
 
-static bool test_session_close_msg_roundtrip() {
+static bool test_session_close_msg_roundtrip()
+{
     SessionCloseMsg msg;
     msg.reason = 1;
     msg.signature = Bytes(64, 0xDD);
@@ -587,38 +615,42 @@ static bool test_session_close_msg_roundtrip() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Session — Unit Tests\n");
     printf("=========================\n\n");
 
-    TEST("SessionId derive")                         END_TEST(test_session_id_derive());
-    TEST("SessionId null hash fails")                END_TEST(test_session_id_null_hash());
-    TEST("SessionId to/from bytes")                  END_TEST(test_session_id_to_from_bytes());
-    TEST("SessionId truncated fails")                END_TEST(test_session_id_from_bytes_truncated());
-    TEST("FSM valid transitions")                    END_TEST(test_fsm_valid_transitions());
-    TEST("FSM invalid transitions")                  END_TEST(test_fsm_invalid_transitions());
-    TEST("FSM apply transition")                     END_TEST(test_fsm_apply_transition());
-    TEST("SessionState to_string")                   END_TEST(test_session_state_to_string());
-    TEST("Session create")                           END_TEST(test_session_create());
-    TEST("Session full lifecycle")                   END_TEST(test_session_full_lifecycle());
-    TEST("Session invalid transition")               END_TEST(test_session_invalid_transition());
-    TEST("Session renew")                            END_TEST(test_session_renew());
-    TEST("Session is_valid_at")                      END_TEST(test_session_is_valid_at());
-    TEST("Session has_capability")                   END_TEST(test_session_has_capability());
-    TEST("Session serialization roundtrip")          END_TEST(test_session_serialization_roundtrip());
-    TEST("Manager open and lookup")                  END_TEST(test_manager_open_and_lookup());
-    TEST("Manager close and garbage collect")        END_TEST(test_manager_close_and_garbage_collect());
-    TEST("Manager duplicate open fails")             END_TEST(test_manager_duplicate_open_fails());
-    TEST("Manager tick expires sessions")            END_TEST(test_manager_tick_expires_sessions());
-    TEST("Manager serialize all")                    END_TEST(test_manager_serialize_all());
-    TEST("SessionOpenMsg roundtrip")                 END_TEST(test_session_open_msg_roundtrip());
-    TEST("SessionCloseMsg roundtrip")                END_TEST(test_session_close_msg_roundtrip());
+    TEST("SessionId derive") END_TEST(test_session_id_derive());
+    TEST("SessionId null hash fails") END_TEST(test_session_id_null_hash());
+    TEST("SessionId to/from bytes") END_TEST(test_session_id_to_from_bytes());
+    TEST("SessionId truncated fails") END_TEST(test_session_id_from_bytes_truncated());
+    TEST("FSM valid transitions") END_TEST(test_fsm_valid_transitions());
+    TEST("FSM invalid transitions") END_TEST(test_fsm_invalid_transitions());
+    TEST("FSM apply transition") END_TEST(test_fsm_apply_transition());
+    TEST("SessionState to_string") END_TEST(test_session_state_to_string());
+    TEST("Session create") END_TEST(test_session_create());
+    TEST("Session full lifecycle") END_TEST(test_session_full_lifecycle());
+    TEST("Session invalid transition") END_TEST(test_session_invalid_transition());
+    TEST("Session renew") END_TEST(test_session_renew());
+    TEST("Session is_valid_at") END_TEST(test_session_is_valid_at());
+    TEST("Session has_capability") END_TEST(test_session_has_capability());
+    TEST("Session serialization roundtrip") END_TEST(test_session_serialization_roundtrip());
+    TEST("Manager open and lookup") END_TEST(test_manager_open_and_lookup());
+    TEST("Manager close and garbage collect") END_TEST(test_manager_close_and_garbage_collect());
+    TEST("Manager duplicate open fails") END_TEST(test_manager_duplicate_open_fails());
+    TEST("Manager tick expires sessions") END_TEST(test_manager_tick_expires_sessions());
+    TEST("Manager serialize all") END_TEST(test_manager_serialize_all());
+    TEST("SessionOpenMsg roundtrip") END_TEST(test_session_open_msg_roundtrip());
+    TEST("SessionCloseMsg roundtrip") END_TEST(test_session_close_msg_roundtrip());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

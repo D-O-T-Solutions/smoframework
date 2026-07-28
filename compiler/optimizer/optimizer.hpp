@@ -5,9 +5,10 @@
 
 namespace smo {
 
-class Optimizer {
-public:
-    Result<ExecutionGraph> optimize(const ExecutionGraph& graph);
-};
+    class Optimizer
+    {
+    public:
+        Result<ExecutionGraph> optimize(const ExecutionGraph& graph);
+    };
 
 } // namespace smo

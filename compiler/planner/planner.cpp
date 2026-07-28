@@ -2,14 +2,15 @@
 
 namespace smo {
 
-Result<ExecutionPlan> Planner::plan(const SmirModule& module, const std::string& contract_id) {
-    ExecutionPlan plan;
-    plan.contract_id = contract_id;
-    plan.smir = module;
+    Result<ExecutionPlan> Planner::plan(const SmirModule& module, const std::string& contract_id)
+    {
+        ExecutionPlan plan;
+        plan.contract_id = contract_id;
+        plan.smir = module;
 
-    plan.target_nodes.push_back("local");
+        plan.target_nodes.push_back("local");
 
-    return plan;
-}
+        return plan;
+    }
 
 } // namespace smo

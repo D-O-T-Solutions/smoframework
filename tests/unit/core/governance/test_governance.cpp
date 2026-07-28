@@ -7,59 +7,66 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Helper: make a NodeID with a given first byte
 // ==========================================================================
-static NodeID make_node_id(uint8_t first_byte) {
+static NodeID make_node_id(uint8_t first_byte)
+{
     NodeID id;
     id.value.fill(0);
     id.value[0] = first_byte;
@@ -69,7 +76,8 @@ static NodeID make_node_id(uint8_t first_byte) {
 // ==========================================================================
 // Tests — to_string helpers
 // ==========================================================================
-static bool test_governance_level_to_string() {
+static bool test_governance_level_to_string()
+{
     ASSERT(std::strcmp(to_string(GovernanceLevel::Local), "Local") == 0);
     ASSERT(std::strcmp(to_string(GovernanceLevel::Authority), "Authority") == 0);
     ASSERT(std::strcmp(to_string(GovernanceLevel::Policy), "Policy") == 0);
@@ -78,7 +86,8 @@ static bool test_governance_level_to_string() {
     return true;
 }
 
-static bool test_proposal_state_to_string() {
+static bool test_proposal_state_to_string()
+{
     ASSERT(std::strcmp(to_string(ProposalState::Draft), "Draft") == 0);
     ASSERT(std::strcmp(to_string(ProposalState::Signing), "Signing") == 0);
     ASSERT(std::strcmp(to_string(ProposalState::Committed), "Committed") == 0);
@@ -87,7 +96,8 @@ static bool test_proposal_state_to_string() {
     return true;
 }
 
-static bool test_governance_action_to_string() {
+static bool test_governance_action_to_string()
+{
     // Aliases test same as canonical names:
     // AuthorityCreate==AddAuthority, AuthorityRevoke==RemoveAuthority, PolicyChange==ChangePolicy
     ASSERT(std::strcmp(to_string(GovernanceAction::PolicyChange), "ChangePolicy") == 0);
@@ -101,7 +111,8 @@ static bool test_governance_action_to_string() {
 // ==========================================================================
 // Tests — GovernanceSignature serialization
 // ==========================================================================
-static bool test_governance_signature_roundtrip() {
+static bool test_governance_signature_roundtrip()
+{
     GovernanceSignature sig;
     sig.authority_id = make_node_id(0xAA);
     sig.signature = {0x01, 0x02, 0x03, 0x04};
@@ -124,7 +135,8 @@ static bool test_governance_signature_roundtrip() {
 // ==========================================================================
 // Tests — GovernanceProposal serialization
 // ==========================================================================
-static bool test_governance_proposal_roundtrip() {
+static bool test_governance_proposal_roundtrip()
+{
     GovernanceProposal prop;
     prop.id = {42};
     prop.level = GovernanceLevel::Policy;
@@ -163,23 +175,25 @@ static bool test_governance_proposal_roundtrip() {
 // ==========================================================================
 // Tests — Proposal helpers
 // ==========================================================================
-static bool test_threshold_met() {
+static bool test_threshold_met()
+{
     GovernanceProposal prop;
     prop.threshold = 2;
-    ASSERT(!prop.threshold_met());  // 0 < 2
+    ASSERT(!prop.threshold_met()); // 0 < 2
 
     GovernanceSignature sig;
     sig.authority_id = make_node_id(0x01);
     prop.signatures.push_back(sig);
-    ASSERT(!prop.threshold_met());  // 1 < 2
+    ASSERT(!prop.threshold_met()); // 1 < 2
 
     prop.signatures.push_back(sig);
-    ASSERT(prop.threshold_met());   // 2 >= 2
+    ASSERT(prop.threshold_met()); // 2 >= 2
 
     return true;
 }
 
-static bool test_is_expired() {
+static bool test_is_expired()
+{
     GovernanceProposal prop;
     prop.expires_at = 1000;
     ASSERT(!prop.is_expired(500));
@@ -196,7 +210,8 @@ static bool test_is_expired() {
 // ==========================================================================
 // Tests — GovernanceEngine
 // ==========================================================================
-static bool test_engine_submit() {
+static bool test_engine_submit()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -205,39 +220,42 @@ static bool test_engine_submit() {
     prop.payload = {'x'};
 
     auto id = engine.submit(prop);
-    ASSERT(id);  // Should succeed
-    ASSERT_EQ(id.value().value, 1U);  // First ID should be 1
+    ASSERT(id);                      // Should succeed
+    ASSERT_EQ(id.value().value, 1U); // First ID should be 1
     ASSERT_EQ(engine.count(), 1U);
 
     return true;
 }
 
-static bool test_engine_submit_invalid_level() {
+static bool test_engine_submit_invalid_level()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
-    prop.level = static_cast<GovernanceLevel>(99);  // invalid
+    prop.level = static_cast<GovernanceLevel>(99); // invalid
     prop.payload = {'x'};
 
     auto id = engine.submit(prop);
-    ASSERT(!id);  // Should fail
+    ASSERT(!id); // Should fail
 
     return true;
 }
 
-static bool test_engine_submit_empty_payload() {
+static bool test_engine_submit_empty_payload()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
     prop.level = GovernanceLevel::Authority;
 
     auto id = engine.submit(prop);
-    ASSERT(!id);  // Should fail — empty payload
+    ASSERT(!id); // Should fail — empty payload
 
     return true;
 }
 
-static bool test_engine_sign_and_commit() {
+static bool test_engine_sign_and_commit()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -264,7 +282,8 @@ static bool test_engine_sign_and_commit() {
     return true;
 }
 
-static bool test_engine_sign_threshold_not_met() {
+static bool test_engine_sign_threshold_not_met()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -288,7 +307,8 @@ static bool test_engine_sign_threshold_not_met() {
     return true;
 }
 
-static bool test_engine_duplicate_signer() {
+static bool test_engine_duplicate_signer()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -307,7 +327,8 @@ static bool test_engine_duplicate_signer() {
     return true;
 }
 
-static bool test_engine_reject() {
+static bool test_engine_reject()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -329,7 +350,8 @@ static bool test_engine_reject() {
     return true;
 }
 
-static bool test_engine_get_not_found() {
+static bool test_engine_get_not_found()
+{
     GovernanceEngine engine;
     auto res = engine.get({999});
     ASSERT(!res);
@@ -338,17 +360,26 @@ static bool test_engine_get_not_found() {
     return true;
 }
 
-static bool test_engine_pending() {
+static bool test_engine_pending()
+{
     GovernanceEngine engine;
 
-    GovernanceProposal p1; p1.level = GovernanceLevel::Authority; p1.payload = {'a'};
-    GovernanceProposal p2; p2.level = GovernanceLevel::Policy;   p2.payload = {'b'};
-    GovernanceProposal p3; p3.level = GovernanceLevel::Local;    p3.payload = {'c'};
+    GovernanceProposal p1;
+    p1.level = GovernanceLevel::Authority;
+    p1.payload = {'a'};
+    GovernanceProposal p2;
+    p2.level = GovernanceLevel::Policy;
+    p2.payload = {'b'};
+    GovernanceProposal p3;
+    p3.level = GovernanceLevel::Local;
+    p3.payload = {'c'};
 
     auto id1 = engine.submit(p1);
     auto id2 = engine.submit(p2);
     auto id3 = engine.submit(p3);
-    ASSERT(id1); ASSERT(id2); ASSERT(id3);
+    ASSERT(id1);
+    ASSERT(id2);
+    ASSERT(id3);
 
     ASSERT_EQ(engine.pending().size(), 3U);
 
@@ -359,7 +390,8 @@ static bool test_engine_pending() {
     return true;
 }
 
-static bool test_engine_tick_expiry() {
+static bool test_engine_tick_expiry()
+{
     GovernanceEngine engine;
 
     GovernanceProposal prop;
@@ -383,11 +415,16 @@ static bool test_engine_tick_expiry() {
     return true;
 }
 
-static bool test_engine_serialize_all() {
+static bool test_engine_serialize_all()
+{
     GovernanceEngine engine;
 
-    GovernanceProposal p1; p1.level = GovernanceLevel::Authority; p1.payload = {'a'};
-    GovernanceProposal p2; p2.level = GovernanceLevel::Policy;   p2.payload = {'b'};
+    GovernanceProposal p1;
+    p1.level = GovernanceLevel::Authority;
+    p1.payload = {'a'};
+    GovernanceProposal p2;
+    p2.level = GovernanceLevel::Policy;
+    p2.payload = {'b'};
     engine.submit(p1);
     engine.submit(p2);
 
@@ -401,7 +438,8 @@ static bool test_engine_serialize_all() {
 // ==========================================================================
 // Tests — Wire messages
 // ==========================================================================
-static bool test_proposal_msg_roundtrip() {
+static bool test_proposal_msg_roundtrip()
+{
     GovernanceProposalMsg msg;
     msg.proposal.level = GovernanceLevel::Authority;
     msg.proposal.action = GovernanceAction::EpochIncrement;
@@ -424,7 +462,8 @@ static bool test_proposal_msg_roundtrip() {
     return true;
 }
 
-static bool test_signature_msg_roundtrip() {
+static bool test_signature_msg_roundtrip()
+{
     GovernanceSignatureMsg msg;
     msg.proposal_id = {42};
     msg.signature.authority_id = make_node_id(0xCC);
@@ -444,7 +483,8 @@ static bool test_signature_msg_roundtrip() {
     return true;
 }
 
-static bool test_commit_msg_roundtrip() {
+static bool test_commit_msg_roundtrip()
+{
     GovernanceCommitMsg msg;
     msg.proposal_id = {17};
     msg.accepted = true;
@@ -460,7 +500,8 @@ static bool test_commit_msg_roundtrip() {
     return true;
 }
 
-static bool test_epoch_increment_msg_roundtrip() {
+static bool test_epoch_increment_msg_roundtrip()
+{
     EpochIncrementMsg msg;
     msg.new_epoch = 5;
 
@@ -486,38 +527,42 @@ static bool test_epoch_increment_msg_roundtrip() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Governance — Unit Tests\n");
     printf("============================\n\n");
 
-    TEST("GovernanceLevel to_string")                       END_TEST(test_governance_level_to_string());
-    TEST("ProposalState to_string")                         END_TEST(test_proposal_state_to_string());
-    TEST("GovernanceAction to_string")                      END_TEST(test_governance_action_to_string());
-    TEST("GovernanceSignature roundtrip")                   END_TEST(test_governance_signature_roundtrip());
-    TEST("GovernanceProposal roundtrip")                    END_TEST(test_governance_proposal_roundtrip());
-    TEST("threshold_met")                                   END_TEST(test_threshold_met());
-    TEST("is_expired")                                      END_TEST(test_is_expired());
-    TEST("Engine submit")                                   END_TEST(test_engine_submit());
-    TEST("Engine submit invalid level")                     END_TEST(test_engine_submit_invalid_level());
-    TEST("Engine submit empty payload")                     END_TEST(test_engine_submit_empty_payload());
-    TEST("Engine sign and commit")                          END_TEST(test_engine_sign_and_commit());
-    TEST("Engine sign threshold not met")                   END_TEST(test_engine_sign_threshold_not_met());
-    TEST("Engine duplicate signer")                         END_TEST(test_engine_duplicate_signer());
-    TEST("Engine reject")                                   END_TEST(test_engine_reject());
-    TEST("Engine get not found")                            END_TEST(test_engine_get_not_found());
-    TEST("Engine pending")                                  END_TEST(test_engine_pending());
-    TEST("Engine tick expiry")                              END_TEST(test_engine_tick_expiry());
-    TEST("Engine serialize_all")                            END_TEST(test_engine_serialize_all());
-    TEST("ProposalMsg roundtrip")                           END_TEST(test_proposal_msg_roundtrip());
-    TEST("SignatureMsg roundtrip")                          END_TEST(test_signature_msg_roundtrip());
-    TEST("CommitMsg roundtrip")                             END_TEST(test_commit_msg_roundtrip());
-    TEST("EpochIncrementMsg roundtrip")                     END_TEST(test_epoch_increment_msg_roundtrip());
+    TEST("GovernanceLevel to_string") END_TEST(test_governance_level_to_string());
+    TEST("ProposalState to_string") END_TEST(test_proposal_state_to_string());
+    TEST("GovernanceAction to_string") END_TEST(test_governance_action_to_string());
+    TEST("GovernanceSignature roundtrip") END_TEST(test_governance_signature_roundtrip());
+    TEST("GovernanceProposal roundtrip") END_TEST(test_governance_proposal_roundtrip());
+    TEST("threshold_met") END_TEST(test_threshold_met());
+    TEST("is_expired") END_TEST(test_is_expired());
+    TEST("Engine submit") END_TEST(test_engine_submit());
+    TEST("Engine submit invalid level") END_TEST(test_engine_submit_invalid_level());
+    TEST("Engine submit empty payload") END_TEST(test_engine_submit_empty_payload());
+    TEST("Engine sign and commit") END_TEST(test_engine_sign_and_commit());
+    TEST("Engine sign threshold not met") END_TEST(test_engine_sign_threshold_not_met());
+    TEST("Engine duplicate signer") END_TEST(test_engine_duplicate_signer());
+    TEST("Engine reject") END_TEST(test_engine_reject());
+    TEST("Engine get not found") END_TEST(test_engine_get_not_found());
+    TEST("Engine pending") END_TEST(test_engine_pending());
+    TEST("Engine tick expiry") END_TEST(test_engine_tick_expiry());
+    TEST("Engine serialize_all") END_TEST(test_engine_serialize_all());
+    TEST("ProposalMsg roundtrip") END_TEST(test_proposal_msg_roundtrip());
+    TEST("SignatureMsg roundtrip") END_TEST(test_signature_msg_roundtrip());
+    TEST("CommitMsg roundtrip") END_TEST(test_commit_msg_roundtrip());
+    TEST("EpochIncrementMsg roundtrip") END_TEST(test_epoch_increment_msg_roundtrip());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

@@ -43,7 +43,8 @@ namespace fs = std::filesystem;
 using smo::Bytes;
 using smo::BytesView;
 
-static void print_usage(const char* prog) {
+static void print_usage(const char* prog)
+{
     std::fprintf(stderr, R"(SMO Admin — Mesh Administration
 
 Usage:
@@ -62,15 +63,17 @@ Options:
   --mesh <name>        Select mesh by name (stored in ~/.smo/meshes/<name>/)
   --mesh-dir <path>    Direct path to mesh directory (overrides --mesh)
 )",
-        prog, prog, prog, prog);
+                 prog, prog, prog, prog);
 }
 
 // ---------------------------------------------------------------------------
 // Load a binary file
 // ---------------------------------------------------------------------------
-static Bytes load_file(const std::string& path) {
+static Bytes load_file(const std::string& path)
+{
     std::ifstream f(path, std::ios::binary | std::ios::ate);
-    if (!f) return {};
+    if (!f)
+        return {};
     auto size = f.tellg();
     f.seekg(0);
     Bytes data(static_cast<size_t>(size));
@@ -81,9 +84,11 @@ static Bytes load_file(const std::string& path) {
 // ---------------------------------------------------------------------------
 // Write a binary file
 // ---------------------------------------------------------------------------
-static bool write_file(const std::string& path, BytesView data) {
+static bool write_file(const std::string& path, BytesView data)
+{
     std::ofstream f(path, std::ios::binary);
-    if (!f) return false;
+    if (!f)
+        return false;
     f.write(reinterpret_cast<const char*>(data.data()), data.size());
     return f.good();
 }
@@ -91,7 +96,8 @@ static bool write_file(const std::string& path, BytesView data) {
 // ---------------------------------------------------------------------------
 // Register all available crypto suites once at startup
 // ---------------------------------------------------------------------------
-static void register_all_suites() {
+static void register_all_suites()
+{
     smo::providers::register_suite1_classical();
     smo::providers::register_suite3_purepqc();
 }
@@ -99,14 +105,13 @@ static void register_all_suites() {
 // ---------------------------------------------------------------------------
 // Get crypto provider for a given cipher_suite_id from the registry
 // ---------------------------------------------------------------------------
-static bool get_crypto(smo::CryptoSuiteID suite_id,
-                        smo::CryptoProvider const*& provider_out,
-                        smo::RngRef& rng_out) {
+static bool get_crypto(smo::CryptoSuiteID suite_id, smo::CryptoProvider const*& provider_out, smo::RngRef& rng_out)
+{
     auto& reg = smo::CryptoRegistry::instance();
     auto prov_result = reg.get_suite(suite_id);
-    if (!prov_result) {
-        std::fprintf(stderr, "Error: cipher suite %u not registered\n",
-                     (unsigned)suite_id);
+    if (!prov_result)
+    {
+        std::fprintf(stderr, "Error: cipher suite %u not registered\n", (unsigned)suite_id);
         return false;
     }
     provider_out = prov_result.value();
@@ -116,49 +121,69 @@ static bool get_crypto(smo::CryptoSuiteID suite_id,
 
 // ---------------------------------------------------------------------------
 // Read a string field from JSON (simple parser — no JSON lib needed)
-static std::string json_read_string(const std::string& json, const std::string& key) {
+static std::string json_read_string(const std::string& json, const std::string& key)
+{
     auto pos = json.find("\"" + key + "\"");
-    if (pos == std::string::npos) return {};
+    if (pos == std::string::npos)
+        return {};
     auto colon = json.find(':', pos);
-    if (colon == std::string::npos) return {};
+    if (colon == std::string::npos)
+        return {};
     auto start = json.find('"', colon + 1);
-    if (start == std::string::npos) return {};
+    if (start == std::string::npos)
+        return {};
     auto end = json.find('"', start + 1);
-    if (end == std::string::npos) return {};
+    if (end == std::string::npos)
+        return {};
     return json.substr(start + 1, end - start - 1);
 }
 
 // Read integer field from JSON
-static int64_t json_read_int(const std::string& json, const std::string& key, int64_t def) {
+static int64_t json_read_int(const std::string& json, const std::string& key, int64_t def)
+{
     auto pos = json.find("\"" + key + "\"");
-    if (pos == std::string::npos) return def;
+    if (pos == std::string::npos)
+        return def;
     auto colon = json.find(':', pos);
-    if (colon == std::string::npos) return def;
+    if (colon == std::string::npos)
+        return def;
     auto start = json.find_first_of("0123456789-", colon);
-    if (start == std::string::npos) return def;
+    if (start == std::string::npos)
+        return def;
     auto end = json.find_first_not_of("0123456789", start);
-    if (end == std::string::npos) return def;
-    try { return std::stoll(json.substr(start, end - start)); } catch (...) { return def; }
+    if (end == std::string::npos)
+        return def;
+    try
+    {
+        return std::stoll(json.substr(start, end - start));
+    }
+    catch (...)
+    {
+        return def;
+    }
 }
 
 // Read cipher_suite_id from mesh.json
 // ---------------------------------------------------------------------------
-static smo::CryptoSuiteID read_suite_from_mesh(const std::string& mesh_dir) {
+static smo::CryptoSuiteID read_suite_from_mesh(const std::string& mesh_dir)
+{
     std::string path = mesh_dir + "/mesh.json";
     std::ifstream f(path);
-    if (!f) {
-        std::fprintf(stderr, "Warning: no mesh.json found at %s, using default suite\n",
-                     path.c_str());
+    if (!f)
+    {
+        std::fprintf(stderr, "Warning: no mesh.json found at %s, using default suite\n", path.c_str());
         return smo::kSuitePurePQC;
     }
-    std::string content((std::istreambuf_iterator<char>(f)),
-                         std::istreambuf_iterator<char>());
+    std::string content((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
     auto pos = content.find("\"cipher_suite_id\"");
-    if (pos == std::string::npos) return smo::kSuitePurePQC;
+    if (pos == std::string::npos)
+        return smo::kSuitePurePQC;
     auto colon = content.find(':', pos);
-    if (colon == std::string::npos) return smo::kSuitePurePQC;
+    if (colon == std::string::npos)
+        return smo::kSuitePurePQC;
     auto val_start = content.find_first_of("0123456789", colon);
-    if (val_start == std::string::npos) return smo::kSuitePurePQC;
+    if (val_start == std::string::npos)
+        return smo::kSuitePurePQC;
     auto val_end = content.find_first_not_of("0123456789", val_start);
     std::string num = content.substr(val_start, val_end - val_start);
     return static_cast<smo::CryptoSuiteID>(std::stoul(num));
@@ -173,21 +198,29 @@ static smo::CryptoSuiteID read_suite_from_mesh(const std::string& mesh_dir) {
 //   smo-admin sign --paste -o <cert-file>      (clipboard in)
 //   smo-admin sign <csr-file>                  (stdout)
 // ---------------------------------------------------------------------------
-static int cmd_sign(const std::vector<std::string>& args,
-                     const std::string& mesh_dir) {
+static int cmd_sign(const std::vector<std::string>& args, const std::string& mesh_dir)
+{
     std::string input_file;
     std::string output_file;
     bool do_copy = false;
     bool do_paste = false;
 
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "-o" && i + 1 < args.size()) {
+    for (size_t i = 1; i < args.size(); ++i)
+    {
+        if (args[i] == "-o" && i + 1 < args.size())
+        {
             output_file = args[++i];
-        } else if (args[i] == "--copy") {
+        }
+        else if (args[i] == "--copy")
+        {
             do_copy = true;
-        } else if (args[i] == "--paste") {
+        }
+        else if (args[i] == "--paste")
+        {
             do_paste = true;
-        } else if (input_file.empty() && !args[i].starts_with("-")) {
+        }
+        else if (input_file.empty() && !args[i].starts_with("-"))
+        {
             input_file = args[i];
         }
     }
@@ -195,26 +228,34 @@ static int cmd_sign(const std::vector<std::string>& args,
     // Load CSR
     smo::Bytes csr_blob;
 
-    if (do_paste) {
+    if (do_paste)
+    {
         // Read CSR from clipboard
         auto clip = smo::clipboard_paste();
-        if (clip.empty()) {
+        if (clip.empty())
+        {
             std::fprintf(stderr, "Error: clipboard is empty or unavailable\n");
             return 1;
         }
         csr_blob = smo::Bytes(clip.begin(), clip.end());
         std::fprintf(stderr, "[smo-admin] Read CSR from clipboard (%zu bytes)\n", csr_blob.size());
-    } else if (!input_file.empty()) {
-        if (!fs::exists(input_file)) {
+    }
+    else if (!input_file.empty())
+    {
+        if (!fs::exists(input_file))
+        {
             std::fprintf(stderr, "Error: CSR file not found: %s\n", input_file.c_str());
             return 1;
         }
         csr_blob = load_file(input_file);
-        if (csr_blob.empty()) {
+        if (csr_blob.empty())
+        {
             std::fprintf(stderr, "Error: cannot read CSR file: %s\n", input_file.c_str());
             return 1;
         }
-    } else {
+    }
+    else
+    {
         std::fprintf(stderr, "Usage:\n"
                              "  smo-admin sign <csr-file> -o <cert-file>\n"
                              "  smo-admin sign <csr-file> --copy\n"
@@ -226,13 +267,14 @@ static int cmd_sign(const std::vector<std::string>& args,
     auto suite_id = read_suite_from_mesh(mesh_dir);
     const smo::CryptoProvider* crypto = nullptr;
     smo::RngRef rng;
-    if (!get_crypto(suite_id, crypto, rng)) return 1;
+    if (!get_crypto(suite_id, crypto, rng))
+        return 1;
 
     // Open mesh authority
     smo::authority::MeshAuthority authority;
-    if (auto r = authority.init(*crypto, rng); !r) {
-        std::fprintf(stderr, "Error: authority init failed: %s\n",
-                     r.error().message.c_str());
+    if (auto r = authority.init(*crypto, rng); !r)
+    {
+        std::fprintf(stderr, "Error: authority init failed: %s\n", r.error().message.c_str());
         return 1;
     }
 
@@ -241,17 +283,18 @@ static int cmd_sign(const std::vector<std::string>& args,
     cfg.data_dir = mesh_dir;
     cfg.registry_path = mesh_dir + "/node_registry.db";
 
-    if (auto r = authority.open(cfg); !r) {
-        std::fprintf(stderr, "Error: cannot open mesh authority at %s: %s\n",
-                     mesh_dir.c_str(), r.error().message.c_str());
+    if (auto r = authority.open(cfg); !r)
+    {
+        std::fprintf(stderr, "Error: cannot open mesh authority at %s: %s\n", mesh_dir.c_str(),
+                     r.error().message.c_str());
         return 1;
     }
 
     // Sign CSR
     auto cert_result = authority.sign_csr(csr_blob, cfg.mesh_id);
-    if (!cert_result) {
-        std::fprintf(stderr, "Error: CSR signing failed: %s\n",
-                     cert_result.error().message.c_str());
+    if (!cert_result)
+    {
+        std::fprintf(stderr, "Error: CSR signing failed: %s\n", cert_result.error().message.c_str());
         return 1;
     }
 
@@ -260,9 +303,11 @@ static int cmd_sign(const std::vector<std::string>& args,
     auto cert_fp = crypto->hash.hash(cert_serialized);
     std::string fp_hex = cert_fp ? smo::bytes_to_hex(cert_fp.value()).substr(0, 16) : "???";
 
-    if (do_copy) {
+    if (do_copy)
+    {
         // Copy to clipboard
-        if (smo::clipboard_copy(std::string(cert_serialized.begin(), cert_serialized.end()))) {
+        if (smo::clipboard_copy(std::string(cert_serialized.begin(), cert_serialized.end())))
+        {
             std::printf("Certificate signed. Fingerprint: %s\n", fp_hex.c_str());
             std::printf("Copied to clipboard.\n");
             return 0;
@@ -271,16 +316,17 @@ static int cmd_sign(const std::vector<std::string>& args,
         return 1;
     }
 
-    if (output_file.empty()) {
+    if (output_file.empty())
+    {
         // Write to stdout
         fwrite(cert_serialized.data(), 1, cert_serialized.size(), stdout);
         return 0;
     }
 
     // Write to file
-    if (!write_file(output_file, cert_serialized)) {
-        std::fprintf(stderr, "Error: cannot write output file: %s\n",
-                     output_file.c_str());
+    if (!write_file(output_file, cert_serialized))
+    {
+        std::fprintf(stderr, "Error: cannot write output file: %s\n", output_file.c_str());
         return 1;
     }
 
@@ -292,23 +338,26 @@ static int cmd_sign(const std::vector<std::string>& args,
 // cmd_create_mesh: Initialize new mesh with root + authority keys
 // The mesh_dir is the target directory for the new mesh.
 // ---------------------------------------------------------------------------
-static int cmd_create_mesh(const std::string& name,
-                            const std::string& mesh_dir) {
+static int cmd_create_mesh(const std::string& name, const std::string& mesh_dir)
+{
     std::fprintf(stderr, "WARNING: 'create-mesh' is deprecated. Use 'smo genesis create' instead.\n");
     fs::create_directories(mesh_dir);
 
     // Use default suite for mesh creation
     const smo::CryptoProvider* crypto = nullptr;
     smo::RngRef rng;
-    if (!get_crypto(smo::kSuitePurePQC, crypto, rng)) return 1;
+    if (!get_crypto(smo::kSuitePurePQC, crypto, rng))
+        return 1;
 
     // Generate a mesh ID from name + timestamp
-    std::string canonical = name + "|" + std::to_string(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count());
+    std::string canonical = name + "|" +
+                            std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(
+                                               std::chrono::system_clock::now().time_since_epoch())
+                                               .count());
 
     auto hash_result = crypto->hash.hash({reinterpret_cast<const uint8_t*>(canonical.data()), canonical.size()});
-    if (!hash_result) {
+    if (!hash_result)
+    {
         std::fprintf(stderr, "Error: hash failed\n");
         return 1;
     }
@@ -319,20 +368,23 @@ static int cmd_create_mesh(const std::string& name,
     {
         std::random_device rd;
         std::array<uint8_t, 32> secret{};
-        for (auto& b : secret) b = static_cast<uint8_t>(rd());
+        for (auto& b : secret)
+            b = static_cast<uint8_t>(rd());
         std::ostringstream oss;
-        for (uint8_t b : secret) oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
+        for (uint8_t b : secret)
+            oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
         hmac_secret = oss.str();
     }
 
-    int64_t created_at = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
+    int64_t created_at =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
 
     // Create authority keys via MeshAuthority
     smo::authority::MeshAuthority authority;
-    if (auto r = authority.init(*crypto, rng); !r) {
-        std::fprintf(stderr, "Error: authority init failed: %s\n",
-                     r.error().message.c_str());
+    if (auto r = authority.init(*crypto, rng); !r)
+    {
+        std::fprintf(stderr, "Error: authority init failed: %s\n", r.error().message.c_str());
         return 1;
     }
 
@@ -342,9 +394,9 @@ static int cmd_create_mesh(const std::string& name,
     auth_cfg.registry_path = mesh_dir + "/node_registry.db";
 
     std::string root_pubkey_hex;
-    if (auto r = authority.create_mesh_keys(auth_cfg, *crypto, rng, root_pubkey_hex); !r) {
-        std::fprintf(stderr, "Error: create mesh keys failed: %s\n",
-                     r.error().message.c_str());
+    if (auto r = authority.create_mesh_keys(auth_cfg, *crypto, rng, root_pubkey_hex); !r)
+    {
+        std::fprintf(stderr, "Error: create mesh keys failed: %s\n", r.error().message.c_str());
         return 1;
     }
 
@@ -352,9 +404,9 @@ static int cmd_create_mesh(const std::string& name,
     std::string auth_pub_hex;
     {
         std::ifstream pkf(mesh_dir + "/authority.pub", std::ios::binary);
-        if (pkf) {
-            smo::Bytes pk_bytes((std::istreambuf_iterator<char>(pkf)),
-                                 std::istreambuf_iterator<char>());
+        if (pkf)
+        {
+            smo::Bytes pk_bytes((std::istreambuf_iterator<char>(pkf)), std::istreambuf_iterator<char>());
             auth_pub_hex = smo::bytes_to_hex(pk_bytes);
         }
     }
@@ -382,8 +434,7 @@ static int cmd_create_mesh(const std::string& name,
     std::printf("Mesh '%s' created at %s\n", name.c_str(), mesh_dir.c_str());
     std::printf("  Mesh ID: %s\n", mesh_id.c_str());
     std::printf("  Root public key: %s/root.pub.hex\n", mesh_dir.c_str());
-    std::printf("  Authority keys:  %s/authority.pub, %s/authority.sec\n",
-                mesh_dir.c_str(), mesh_dir.c_str());
+    std::printf("  Authority keys:  %s/authority.pub, %s/authority.sec\n", mesh_dir.c_str(), mesh_dir.c_str());
     std::printf("  Root cert:       %s/root.cert\n", mesh_dir.c_str());
     std::printf("  Authority cert:  %s/authority.cert\n", mesh_dir.c_str());
     std::printf("  Node registry:   %s/node_registry.db\n", mesh_dir.c_str());
@@ -392,9 +443,9 @@ static int cmd_create_mesh(const std::string& name,
 
     // Auto-set as current mesh in context
     auto ctx_result = smo::mesh::write_current_mesh(name);
-    if (!ctx_result) {
-        std::fprintf(stderr, "Warning: could not update context: %s\n",
-                     ctx_result.error().message.c_str());
+    if (!ctx_result)
+    {
+        std::fprintf(stderr, "Warning: could not update context: %s\n", ctx_result.error().message.c_str());
     }
 
     return 0;
@@ -409,61 +460,79 @@ static int cmd_create_mesh(const std::string& name,
 //   --endpoint <ep>      — bootstrap endpoint (can be repeated)
 //     e.g. authority.company.com:7777
 // ---------------------------------------------------------------------------
-static int cmd_generate_invite(const std::vector<std::string>& args,
-                                const std::string& mesh_dir) {
+static int cmd_generate_invite(const std::vector<std::string>& args, const std::string& mesh_dir)
+{
     std::string role;
     std::string profile;
     std::string expire_dur = "1h";
     std::vector<std::string> endpoints;
 
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "--expire" && i + 1 < args.size()) {
+    for (size_t i = 1; i < args.size(); ++i)
+    {
+        if (args[i] == "--expire" && i + 1 < args.size())
+        {
             expire_dur = args[++i];
-        } else if (args[i] == "--endpoint" && i + 1 < args.size()) {
+        }
+        else if (args[i] == "--endpoint" && i + 1 < args.size())
+        {
             endpoints.push_back(args[++i]);
-        } else if (args[i] == "--profile" && i + 1 < args.size()) {
+        }
+        else if (args[i] == "--profile" && i + 1 < args.size())
+        {
             profile = args[++i];
-        } else if (role.empty() && !args[i].starts_with("-")) {
+        }
+        else if (role.empty() && !args[i].starts_with("-"))
+        {
             role = args[i];
         }
     }
 
-    if (role.empty()) {
-        std::fprintf(stderr, "Usage: smo-admin --mesh-dir <dir> generate-invite <role> [--expire <dur>] [--endpoint <ep>...]\n");
+    if (role.empty())
+    {
+        std::fprintf(
+            stderr, "Usage: smo-admin --mesh-dir <dir> generate-invite <role> [--expire <dur>] [--endpoint <ep>...]\n");
         return 1;
     }
 
     // ── Read mesh.json for metadata ─────────────────────────────────
     std::string json_path = mesh_dir + "/mesh.json";
     std::ifstream f(json_path);
-    if (!f) {
+    if (!f)
+    {
         std::fprintf(stderr, "Error: no mesh.json found at %s\n", json_path.c_str());
         return 1;
     }
-    std::string json((std::istreambuf_iterator<char>(f)),
-                      std::istreambuf_iterator<char>());
+    std::string json((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
-    std::string mesh_id         = json_read_string(json, "mesh_id");
-    if (mesh_id.empty()) mesh_id = fs::path(mesh_dir).filename().string();
-    int64_t mesh_epoch          = json_read_int(json, "epoch", 1);
-    auto suite_id               = read_suite_from_mesh(mesh_dir);
+    std::string mesh_id = json_read_string(json, "mesh_id");
+    if (mesh_id.empty())
+        mesh_id = fs::path(mesh_dir).filename().string();
+    int64_t mesh_epoch = json_read_int(json, "epoch", 1);
+    auto suite_id = read_suite_from_mesh(mesh_dir);
 
     // If no manual endpoints provided, read bootstrap_endpoints from mesh.json
-    if (endpoints.empty()) {
+    if (endpoints.empty())
+    {
         auto boot_start = json.find("\"bootstrap_endpoints\"");
-        if (boot_start != std::string::npos) {
+        if (boot_start != std::string::npos)
+        {
             auto colon = json.find(':', boot_start);
             auto arr_start = json.find('[', colon);
-            if (arr_start != std::string::npos) {
+            if (arr_start != std::string::npos)
+            {
                 auto arr_end = json.find(']', arr_start);
-                if (arr_end != std::string::npos) {
+                if (arr_end != std::string::npos)
+                {
                     std::string arr = json.substr(arr_start + 1, arr_end - arr_start - 1);
                     size_t pos = 0;
-                    while (true) {
+                    while (true)
+                    {
                         auto q1 = arr.find('"', pos);
-                        if (q1 == std::string::npos) break;
+                        if (q1 == std::string::npos)
+                            break;
                         auto q2 = arr.find('"', q1 + 1);
-                        if (q2 == std::string::npos) break;
+                        if (q2 == std::string::npos)
+                            break;
                         endpoints.push_back(arr.substr(q1 + 1, q2 - q1 - 1));
                         pos = q2 + 1;
                     }
@@ -472,7 +541,8 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
         }
     }
 
-    if (endpoints.empty()) {
+    if (endpoints.empty())
+    {
         std::fprintf(stderr, "Error: no bootstrap endpoints configured. Run 'smo-admin mesh publish' first.\n");
         return 1;
     }
@@ -480,19 +550,20 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
     // ── Load recovery package ───────────────────────────────────────
     std::string pkg_path = mesh_dir + "/recovery.pkg";
     std::ifstream pf(pkg_path, std::ios::binary);
-    if (!pf) {
-        std::fprintf(stderr, "Error: no recovery.pkg found at %s\n"
-                             "  Run 'smo genesis create' to generate one.\n",
+    if (!pf)
+    {
+        std::fprintf(stderr,
+                     "Error: no recovery.pkg found at %s\n"
+                     "  Run 'smo genesis create' to generate one.\n",
                      pkg_path.c_str());
         return 1;
     }
-    std::string pkg_json((std::istreambuf_iterator<char>(pf)),
-                          std::istreambuf_iterator<char>());
+    std::string pkg_json((std::istreambuf_iterator<char>(pf)), std::istreambuf_iterator<char>());
     auto pkg_res = smo::genesis::RecoveryPackage::deserialize(
         BytesView(reinterpret_cast<const uint8_t*>(pkg_json.data()), pkg_json.size()));
-    if (!pkg_res) {
-        std::fprintf(stderr, "Error: failed to parse recovery package: %s\n",
-                     pkg_res.error().message.c_str());
+    if (!pkg_res)
+    {
+        std::fprintf(stderr, "Error: failed to parse recovery package: %s\n", pkg_res.error().message.c_str());
         return 1;
     }
     auto recovery_pkg = std::move(pkg_res).value();
@@ -500,9 +571,12 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
     // ── Get passphrase ──────────────────────────────────────────────
     const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
     std::string passphrase;
-    if (env_pw && env_pw[0]) {
+    if (env_pw && env_pw[0])
+    {
         passphrase = env_pw;
-    } else {
+    }
+    else
+    {
         std::fprintf(stderr, "Recovery passphrase: ");
         std::fflush(stderr);
         std::getline(std::cin, passphrase);
@@ -511,49 +585,63 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
     // ── Get crypto provider ─────────────────────────────────────────
     const smo::CryptoProvider* crypto = nullptr;
     smo::RngRef rng;
-    if (!get_crypto(suite_id, crypto, rng)) return 1;
+    if (!get_crypto(suite_id, crypto, rng))
+        return 1;
 
     // ── Unlock recovery package → SoftwareSignerContext ─────────────
-    auto now_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
+    auto now_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
 
-    auto session_res = recovery_pkg.unlock(
-        passphrase, crypto->hash, crypto->aead, crypto->signer, rng);
-    if (!session_res) {
-        std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n",
-                     session_res.error().message.c_str());
+    auto session_res = recovery_pkg.unlock(passphrase, crypto->hash, crypto->aead, crypto->signer, rng);
+    if (!session_res)
+    {
+        std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", session_res.error().message.c_str());
         return 1;
     }
     auto session = std::move(session_res).value();
 
     // ── Activate RootSession ─────────────────────────────────────────
     // activate() with null signer keeps the existing one from unlock()
-    session.activate(
-        "invite-" + std::to_string(now_ns),
-        "root",
-        recovery_pkg.root_public_key,
-        nullptr, // keep signer from unlock()
-        smo::genesis::SessionPolicy::bootstrap(),
-        nullptr, // no-op audit sink
-        now_ns,
-        std::chrono::hours(1).count() * 1'000'000'000ULL // 1h TTL
+    session.activate("invite-" + std::to_string(now_ns), "root", recovery_pkg.root_public_key,
+                     nullptr, // keep signer from unlock()
+                     smo::genesis::SessionPolicy::bootstrap(),
+                     nullptr, // no-op audit sink
+                     now_ns,
+                     std::chrono::hours(1).count() * 1'000'000'000ULL // 1h TTL
     );
 
     // ── Parse expiry ───────────────────────────────────────────────
     int64_t expiry = 0;
-    if (!expire_dur.empty() && expire_dur != "0") {
+    if (!expire_dur.empty() && expire_dur != "0")
+    {
         char unit = expire_dur.back();
         int64_t num = 0;
-        try { num = std::stoll(expire_dur.substr(0, expire_dur.size() - 1)); } catch (...) {}
-        int64_t mult = 3600;
-        switch (unit) {
-            case 's': mult = 1; break;
-            case 'm': mult = 60; break;
-            case 'h': mult = 3600; break;
-            case 'd': mult = 86400; break;
+        try
+        {
+            num = std::stoll(expire_dur.substr(0, expire_dur.size() - 1));
         }
-        auto now = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
+        catch (...)
+        {
+        }
+        int64_t mult = 3600;
+        switch (unit)
+        {
+        case 's':
+            mult = 1;
+            break;
+        case 'm':
+            mult = 60;
+            break;
+        case 'h':
+            mult = 3600;
+            break;
+        case 'd':
+            mult = 86400;
+            break;
+        }
+        auto now = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
+                       .count();
         expiry = now + num * mult;
     }
 
@@ -573,9 +661,11 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
     {
         std::random_device rd;
         std::array<uint8_t, 16> nonce_bytes{};
-        for (auto& b : nonce_bytes) b = static_cast<uint8_t>(rd());
+        for (auto& b : nonce_bytes)
+            b = static_cast<uint8_t>(rd());
         std::ostringstream oss;
-        for (auto b : nonce_bytes) oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+        for (auto b : nonce_bytes)
+            oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
         token.nonce = oss.str();
     }
     token.issuer = "root:" + recovery_pkg.root_public_key.substr(0, 16);
@@ -583,17 +673,17 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
     // Serialize payload and sign
     auto payload = token.serialize_payload();
     smo::genesis::RootRequest req;
-    req.operation    = smo::genesis::RootOperation::SignJoinToken;
-    req.payload      = Bytes(payload.begin(), payload.end());
-    req.mesh_id      = mesh_id;
-    req.requester    = "admin";
-    req.reason       = "generate-invite role=" + role;
+    req.operation = smo::genesis::RootOperation::SignJoinToken;
+    req.payload = Bytes(payload.begin(), payload.end());
+    req.mesh_id = mesh_id;
+    req.requester = "admin";
+    req.reason = "generate-invite role=" + role;
     req.timestamp_ns = now_ns;
 
     auto exec_res = session.execute(req, rng, now_ns);
-    if (!exec_res) {
-        std::fprintf(stderr, "Error: signing failed: %s\n",
-                     exec_res.error().message.c_str());
+    if (!exec_res)
+    {
+        std::fprintf(stderr, "Error: signing failed: %s\n", exec_res.error().message.c_str());
         return 1;
     }
     auto root_res = std::move(exec_res).value();
@@ -605,9 +695,9 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
 
     // ── Consume session ─────────────────────────────────────────────
     auto consume_res = session.consume(now_ns);
-    if (!consume_res) {
-        std::fprintf(stderr, "Warning: session consume failed: %s\n",
-                     consume_res.error().message.c_str());
+    if (!consume_res)
+    {
+        std::fprintf(stderr, "Warning: session consume failed: %s\n", consume_res.error().message.c_str());
     }
     // Session destroyed automatically on scope exit
 
@@ -623,50 +713,65 @@ static int cmd_generate_invite(const std::vector<std::string>& args,
 //   --dns <name>         DNS name to use as advertise address (preferred)
 //   --port <n>           Port [default: 7777]
 // ---------------------------------------------------------------------------
-static int cmd_mesh_publish(const std::vector<std::string>& args,
-                            const std::string& mesh_dir) {
+static int cmd_mesh_publish(const std::vector<std::string>& args, const std::string& mesh_dir)
+{
     std::string listen_addr = "0.0.0.0:7777";
     std::vector<std::string> manual_advertise;
     std::string manual_dns;
     uint16_t port = 7777;
 
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "--listen" && i + 1 < args.size()) {
+    for (size_t i = 1; i < args.size(); ++i)
+    {
+        if (args[i] == "--listen" && i + 1 < args.size())
+        {
             listen_addr = args[++i];
-        } else if (args[i] == "--advertise" && i + 1 < args.size()) {
+        }
+        else if (args[i] == "--advertise" && i + 1 < args.size())
+        {
             manual_advertise.push_back(args[++i]);
-        } else if (args[i] == "--dns" && i + 1 < args.size()) {
+        }
+        else if (args[i] == "--dns" && i + 1 < args.size())
+        {
             manual_dns = args[++i];
-        } else if (args[i] == "--port" && i + 1 < args.size()) {
+        }
+        else if (args[i] == "--port" && i + 1 < args.size())
+        {
             port = static_cast<uint16_t>(std::stoi(args[++i]));
         }
     }
 
     // Load existing mesh config
     auto config_result = smo::MeshManager::load_mesh_config(mesh_dir);
-    if (!config_result) {
+    if (!config_result)
+    {
         std::fprintf(stderr, "Error: %s\n", config_result.error().message.c_str());
         return 1;
     }
     auto config = config_result.value();
 
     // If mesh_id is empty from JSON, use directory name
-    if (config.mesh_id.empty()) {
+    if (config.mesh_id.empty())
+    {
         config.mesh_id = std::filesystem::path(mesh_dir).filename().string();
     }
 
     // Extract port from listen_addr if --port not explicitly provided
     // listen_addr format: "host:port" or just "host" (default port 7777)
-    if (port == 7777) { // default not overridden by --port
+    if (port == 7777)
+    { // default not overridden by --port
         size_t colon_pos = listen_addr.rfind(':');
-        if (colon_pos != std::string::npos && colon_pos + 1 < listen_addr.size()) {
+        if (colon_pos != std::string::npos && colon_pos + 1 < listen_addr.size())
+        {
             std::string port_str = listen_addr.substr(colon_pos + 1);
-            try {
+            try
+            {
                 port = static_cast<uint16_t>(std::stoi(port_str));
                 // Update listen_addr to use the extracted port (in case it was different)
                 std::string host = listen_addr.substr(0, colon_pos);
                 listen_addr = host + ":" + std::to_string(port);
-            } catch (...) {
+            }
+            catch (...)
+            {
                 // Keep default port if parse fails
             }
         }
@@ -686,13 +791,19 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
     std::printf("  Checking port %u...\n", port);
     std::error_code ec;
     bool port_free = smo::net::check_port_available(listen_addr.substr(0, listen_addr.find(':')), port, ec);
-    if (port_free) {
+    if (port_free)
+    {
         std::printf("  ✓ Port %u is available\n", port);
-    } else {
+    }
+    else
+    {
         std::string who = smo::net::who_is_on_port(port);
-        if (who.empty()) {
+        if (who.empty())
+        {
             std::fprintf(stderr, "  ✗ Port %u in use\n", port);
-        } else {
+        }
+        else
+        {
             std::fprintf(stderr, "  ✗ Port %u in use by %s\n", port, who.c_str());
         }
         // Don't exit - just warn
@@ -702,44 +813,56 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
     std::printf("\nStep 3: Interface Detection\n");
     std::error_code ec2;
     auto interfaces = smo::net::enumerate_interfaces(ec2);
-    if (ec2) {
+    if (ec2)
+    {
         std::fprintf(stderr, "  Warning: failed to enumerate interfaces: %s\n", ec2.message().c_str());
     }
 
     std::vector<smo::net::InterfaceInfo> private_ifs;
     std::vector<smo::net::InterfaceInfo> public_ifs;
-    for (const auto& iface : interfaces) {
-        if (iface.is_loopback) continue;
-        if (iface.is_private) private_ifs.push_back(iface);
-        else public_ifs.push_back(iface);
+    for (const auto& iface : interfaces)
+    {
+        if (iface.is_loopback)
+            continue;
+        if (iface.is_private)
+            private_ifs.push_back(iface);
+        else
+            public_ifs.push_back(iface);
     }
 
     std::printf("  Detected interfaces:\n");
     int idx = 1;
-    for (const auto& iface : private_ifs) {
+    for (const auto& iface : private_ifs)
+    {
         std::printf("    %d) %s (%s) [private]\n", idx++, iface.name.c_str(), iface.address.c_str());
     }
-    for (const auto& iface : public_ifs) {
+    for (const auto& iface : public_ifs)
+    {
         std::printf("    %d) %s (%s) [public]\n", idx++, iface.name.c_str(), iface.address.c_str());
     }
 
     // Step 4: Choose advertise address
     std::vector<std::string> advertise_addresses;
 
-    if (!manual_advertise.empty()) {
+    if (!manual_advertise.empty())
+    {
         // Manual override
         advertise_addresses = manual_advertise;
         std::printf("\nStep 4: Advertise Address (manual)\n");
-        for (const auto& addr : advertise_addresses) {
+        for (const auto& addr : advertise_addresses)
+        {
             std::printf("  %s\n", addr.c_str());
         }
-    } else if (!manual_dns.empty()) {
+    }
+    else if (!manual_dns.empty())
+    {
         // DNS name provided - resolve it
         std::printf("\nStep 4: Advertise Address (DNS)\n");
         std::printf("  Resolving %s...\n", manual_dns.c_str());
         std::error_code dns_ec;
         std::string resolved = smo::net::resolve_hostname(manual_dns, dns_ec);
-        if (dns_ec) {
+        if (dns_ec)
+        {
             std::fprintf(stderr, "  ✗ Failed to resolve %s: %s\n", manual_dns.c_str(), dns_ec.message().c_str());
             return 1;
         }
@@ -747,35 +870,44 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
         advertise_addresses.push_back(endpoint);
         // Also add DNS name if it's different
         std::string dns_endpoint = manual_dns + ":" + std::to_string(port);
-        if (dns_endpoint != endpoint) {
+        if (dns_endpoint != endpoint)
+        {
             advertise_addresses.insert(advertise_addresses.begin(), dns_endpoint);
         }
         std::printf("  Resolved to: %s\n", resolved.c_str());
-        for (const auto& addr : advertise_addresses) {
+        for (const auto& addr : advertise_addresses)
+        {
             std::printf("  Will advertise: %s\n", addr.c_str());
         }
-    } else {
+    }
+    else
+    {
         // Auto-detect
         std::printf("\nStep 4: Advertise Address (auto-detect)\n");
 
         // Try public IP detection
         std::string public_ip = smo::net::detect_public_ip(ec2);
-        if (!public_ip.empty() && smo::net::is_public_address(public_ip)) {
+        if (!public_ip.empty() && smo::net::is_public_address(public_ip))
+        {
             std::string endpoint = public_ip + ":" + std::to_string(port);
             advertise_addresses.push_back(endpoint);
             std::printf("  ✓ Public IP detected: %s\n", public_ip.c_str());
-        } else {
+        }
+        else
+        {
             std::printf("  ⚠ No public IP detected\n");
         }
 
         // Add private IPs as fallback
-        for (const auto& iface : private_ifs) {
+        for (const auto& iface : private_ifs)
+        {
             std::string endpoint = iface.address + ":" + std::to_string(port);
             advertise_addresses.push_back(endpoint);
             std::printf("  ✓ Private IP: %s\n", endpoint.c_str());
         }
 
-        if (advertise_addresses.empty()) {
+        if (advertise_addresses.empty())
+        {
             // Last resort: loopback
             advertise_addresses.push_back("127.0.0.1:" + std::to_string(port));
             std::printf("  Using loopback as last resort\n");
@@ -784,7 +916,8 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
 
     // Step 5: NAT detection
     std::printf("\nStep 5: NAT Detection\n");
-    if (!advertise_addresses.empty() && !public_ifs.empty()) {
+    if (!advertise_addresses.empty() && !public_ifs.empty())
+    {
         std::string first_advertise = advertise_addresses[0];
         // Extract IP from endpoint
         size_t colon = first_advertise.rfind(':');
@@ -792,14 +925,18 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
 
         std::string private_ip = private_ifs.empty() ? "" : private_ifs[0].address;
         auto nat = smo::net::detect_nat(private_ip, advertise_ip);
-        if (nat.behind_nat) {
+        if (nat.behind_nat)
+        {
             std::printf("  ⚠ NAT detected:\n");
             std::printf("    Private:  %s\n", nat.private_ip.c_str());
             std::printf("    Public:   %s\n", nat.public_ip.c_str());
-            if (nat.port_forwarding_required) {
+            if (nat.port_forwarding_required)
+            {
                 std::printf("    Port forwarding REQUIRED on your router/firewall\n");
             }
-        } else {
+        }
+        else
+        {
             std::printf("  ✓ No NAT detected (direct connectivity)\n");
         }
     }
@@ -822,8 +959,10 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
     std::printf("\nStep 7: Confirm\n");
     std::printf("  Listen:     %s\n", listen_addr.c_str());
     std::printf("  Advertise:  ");
-    for (size_t i = 0; i < advertise_addresses.size(); ++i) {
-        if (i > 0) std::printf("               ");
+    for (size_t i = 0; i < advertise_addresses.size(); ++i)
+    {
+        if (i > 0)
+            std::printf("               ");
         std::printf("%s\n", advertise_addresses[i].c_str());
     }
     std::printf("  Bootstrap:  YES\n");
@@ -835,14 +974,16 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
     // For now, just proceed
     std::printf("%s\n", confirm.c_str());
 
-    if (confirm.empty() || confirm[0] == 'y' || confirm[0] == 'Y') {
+    if (confirm.empty() || confirm[0] == 'y' || confirm[0] == 'Y')
+    {
         // Write updated config directly to mesh.json
         config.bootstrap_configured = true;
         config.advertise_addresses = advertise_addresses;
         config.bootstrap_endpoints = advertise_addresses;
 
         std::ofstream mf(mesh_dir + "/mesh.json");
-        if (!mf) {
+        if (!mf)
+        {
             std::fprintf(stderr, "Error: cannot write mesh.json at %s\n", mesh_dir.c_str());
             return 1;
         }
@@ -858,14 +999,18 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
         mf << "  \"listen_address\": \"" << listen_addr << "\",\n";
         mf << "  \"bootstrap_configured\": true,\n";
         mf << "  \"advertise_addresses\": [";
-        for (size_t i = 0; i < advertise_addresses.size(); ++i) {
-            if (i > 0) mf << ", ";
+        for (size_t i = 0; i < advertise_addresses.size(); ++i)
+        {
+            if (i > 0)
+                mf << ", ";
             mf << "\"" << advertise_addresses[i] << "\"";
         }
         mf << "],\n";
         mf << "  \"bootstrap_endpoints\": [";
-        for (size_t i = 0; i < advertise_addresses.size(); ++i) {
-            if (i > 0) mf << ", ";
+        for (size_t i = 0; i < advertise_addresses.size(); ++i)
+        {
+            if (i > 0)
+                mf << ", ";
             mf << "\"" << advertise_addresses[i] << "\"";
         }
         mf << "]\n";
@@ -874,7 +1019,9 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
         std::printf("\n✓ Mesh '%s' is now online.\n",
                     config.display_name.empty() ? config.mesh_id.c_str() : config.display_name.c_str());
         return 0;
-    } else {
+    }
+    else
+    {
         std::printf("Cancelled.\n");
         return 1;
     }
@@ -883,24 +1030,28 @@ static int cmd_mesh_publish(const std::vector<std::string>& args,
 // ---------------------------------------------------------------------------
 // Serve command — start enroll HTTP server
 // ---------------------------------------------------------------------------
-static int cmd_serve(const std::vector<std::string>& args, const std::string& mesh_dir) {
-    if (mesh_dir.empty()) {
+static int cmd_serve(const std::vector<std::string>& args, const std::string& mesh_dir)
+{
+    if (mesh_dir.empty())
+    {
         std::fprintf(stderr, "Error: --mesh-dir is required for serve command\n");
         return 1;
     }
 
     uint16_t port = 5454;
-    for (size_t i = 1; i < args.size(); ++i) {
-        if (args[i] == "--port" && i + 1 < args.size()) {
+    for (size_t i = 1; i < args.size(); ++i)
+    {
+        if (args[i] == "--port" && i + 1 < args.size())
+        {
             port = static_cast<uint16_t>(std::stoi(args[++i]));
         }
     }
 
     // Load mesh config
     auto config_result = smo::MeshManager::load_mesh_config(mesh_dir);
-    if (!config_result) {
-        std::fprintf(stderr, "Error: failed to load mesh config: %s\n",
-                     config_result.error().message.c_str());
+    if (!config_result)
+    {
+        std::fprintf(stderr, "Error: failed to load mesh config: %s\n", config_result.error().message.c_str());
         return 1;
     }
 
@@ -909,15 +1060,16 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
     // Get crypto for the mesh's cipher suite
     const smo::CryptoProvider* crypto = nullptr;
     smo::RngRef rng{};
-    if (!get_crypto(mesh_config.cipher_suite_id, crypto, rng)) {
+    if (!get_crypto(mesh_config.cipher_suite_id, crypto, rng))
+    {
         return 1;
     }
 
     // Setup authority
     smo::authority::MeshAuthority authority;
-    if (auto r = authority.init(*crypto, rng); !r) {
-        std::fprintf(stderr, "Error: authority init failed: %s\n",
-                     r.error().message.c_str());
+    if (auto r = authority.init(*crypto, rng); !r)
+    {
+        std::fprintf(stderr, "Error: authority init failed: %s\n", r.error().message.c_str());
         return 1;
     }
 
@@ -926,9 +1078,9 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
     cfg.data_dir = mesh_dir;
     cfg.registry_path = mesh_dir + "/node_registry.db";
 
-    if (auto r = authority.open(cfg); !r) {
-        std::fprintf(stderr, "Error: authority open failed: %s\n",
-                     r.error().message.c_str());
+    if (auto r = authority.open(cfg); !r)
+    {
+        std::fprintf(stderr, "Error: authority open failed: %s\n", r.error().message.c_str());
         return 1;
     }
 
@@ -936,9 +1088,10 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
     std::fprintf(stderr, "Warning: HTTP enroll server is deprecated. Use 'smo-node --join <token>' instead.\n");
     smo::authority::EnrollServer server;
     auto start_result = server.start(port, authority, mesh_config.hmac_secret, crypto->hash);
-    if (!start_result) {
-        std::fprintf(stderr, "Error: failed to start enroll server on port %u: %s\n",
-                     port, start_result.error().message.c_str());
+    if (!start_result)
+    {
+        std::fprintf(stderr, "Error: failed to start enroll server on port %u: %s\n", port,
+                     start_result.error().message.c_str());
         return 1;
     }
 
@@ -951,7 +1104,8 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
     std::signal(SIGTERM, [](int) { std::exit(0); });
 
     // Block main thread
-    while (server.is_running()) {
+    while (server.is_running())
+    {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
@@ -961,15 +1115,18 @@ static int cmd_serve(const std::vector<std::string>& args, const std::string& me
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
+int main(int argc, char* argv[])
+{
+    if (argc < 2)
+    {
         print_usage(argv[0]);
         return 1;
     }
 
-    for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "--help") == 0 ||
-            std::strcmp(argv[i], "-h") == 0) {
+    for (int i = 1; i < argc; ++i)
+    {
+        if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0)
+        {
             print_usage(argv[0]);
             return 0;
         }
@@ -978,18 +1135,24 @@ int main(int argc, char* argv[]) {
     // Parse --mesh <name> and --mesh-dir <path>
     std::string mesh_dir_arg;
     std::string mesh_name_arg;
-    for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "--mesh-dir") == 0 && i + 1 < argc) {
+    for (int i = 1; i < argc; ++i)
+    {
+        if (std::strcmp(argv[i], "--mesh-dir") == 0 && i + 1 < argc)
+        {
             mesh_dir_arg = argv[++i];
-            for (int j = i - 1; j + 2 < argc; ++j) argv[j] = argv[j + 2];
+            for (int j = i - 1; j + 2 < argc; ++j)
+                argv[j] = argv[j + 2];
             argc -= 2;
             break;
         }
     }
-    for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "--mesh") == 0 && i + 1 < argc) {
+    for (int i = 1; i < argc; ++i)
+    {
+        if (std::strcmp(argv[i], "--mesh") == 0 && i + 1 < argc)
+        {
             mesh_name_arg = argv[++i];
-            for (int j = i - 1; j + 2 < argc; ++j) argv[j] = argv[j + 2];
+            for (int j = i - 1; j + 2 < argc; ++j)
+                argv[j] = argv[j + 2];
             argc -= 2;
             break;
         }
@@ -999,7 +1162,8 @@ int main(int argc, char* argv[]) {
     register_all_suites();
 
     std::vector<std::string> args(argv + 1, argv + argc);
-    if (args.empty()) {
+    if (args.empty())
+    {
         print_usage(argv[0]);
         return 1;
     }
@@ -1007,22 +1171,29 @@ int main(int argc, char* argv[]) {
     auto cmd = args[0];
 
     // ── create-mesh: uses name-based resolution ─────────────────────
-    if (cmd == "create-mesh") {
+    if (cmd == "create-mesh")
+    {
         std::string name = (args.size() > 1) ? args[1] : "";
-        if (name.empty()) {
+        if (name.empty())
+        {
             std::fprintf(stderr, "Usage: smo-admin --mesh <name> create-mesh\n");
             return 1;
         }
 
         std::string mesh_dir;
-        if (!mesh_dir_arg.empty()) {
+        if (!mesh_dir_arg.empty())
+        {
             // --mesh-dir <path>: backward compat — path is base_data_dir,
             // mesh is created at <path>/meshes/<name>/
             mesh_dir = (fs::path(mesh_dir_arg) / "meshes" / name).string();
-        } else if (!mesh_name_arg.empty()) {
+        }
+        else if (!mesh_name_arg.empty())
+        {
             // --mesh <name>: create at ~/.smo/meshes/<name>/
             mesh_dir = smo::mesh::mesh_dir_from_name(mesh_name_arg);
-        } else {
+        }
+        else
+        {
             // Fallback: use context mesh name, create at ~/.smo/meshes/<name>/
             mesh_dir = smo::mesh::mesh_dir_from_name(name);
         }
@@ -1033,7 +1204,8 @@ int main(int argc, char* argv[]) {
     // ── All other commands: resolve mesh dir ────────────────────────
     // Resolution order: --mesh-dir > --mesh <name> > context > error
     auto resolution = smo::mesh::resolve_mesh(mesh_dir_arg, mesh_name_arg);
-    if (!resolution) {
+    if (!resolution)
+    {
         // Show helpful error with available meshes
         auto helpful = smo::mesh::require_mesh(mesh_dir_arg, mesh_name_arg);
         std::fprintf(stderr, "Error: %s\n", helpful.error().message.c_str());
@@ -1041,25 +1213,31 @@ int main(int argc, char* argv[]) {
     }
     std::string mesh_dir = resolution.value().dir;
 
-    if (cmd == "sign") {
+    if (cmd == "sign")
+    {
         return cmd_sign(args, mesh_dir);
     }
 
-    if (cmd == "generate-invite") {
+    if (cmd == "generate-invite")
+    {
         return cmd_generate_invite(args, mesh_dir);
     }
 
-    if (cmd == "serve") {
+    if (cmd == "serve")
+    {
         return cmd_serve(args, mesh_dir);
     }
 
-    if (cmd == "mesh") {
-        if (args.size() < 2) {
+    if (cmd == "mesh")
+    {
+        if (args.size() < 2)
+        {
             std::fprintf(stderr, "Usage: smo-admin --mesh <name> mesh publish\n");
             return 1;
         }
         auto subcmd = args[1];
-        if (subcmd == "publish") {
+        if (subcmd == "publish")
+        {
             return cmd_mesh_publish(args, mesh_dir);
         }
         std::fprintf(stderr, "Unknown mesh subcommand: %s\n", subcmd.c_str());

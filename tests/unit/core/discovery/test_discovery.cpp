@@ -7,59 +7,66 @@ using namespace smo;
 
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Helper: make a NodeID with a given first byte
 // ==========================================================================
-static NodeID make_node_id(uint8_t first_byte) {
+static NodeID make_node_id(uint8_t first_byte)
+{
     NodeID id;
     id.value.fill(0);
     id.value[0] = first_byte;
@@ -69,19 +76,23 @@ static NodeID make_node_id(uint8_t first_byte) {
 // ==========================================================================
 // Dummy Transport for testing
 // ==========================================================================
-class DummyTransport : public Transport {
+class DummyTransport : public Transport
+{
 public:
     std::string_view name() const override { return "dummy"; }
 
-    Result<ListenerPtr> listen(const Endpoint&) override {
+    Result<ListenerPtr> listen(const Endpoint&) override
+    {
         return SMO_ERR_TRANSPORT(306, Error, NoRetry, RestartFSM, "dummy");
     }
-    Result<SessionPtr> connect(const Endpoint&) override {
+    Result<SessionPtr> connect(const Endpoint&) override
+    {
         return SMO_ERR_TRANSPORT(300, Error, RetryBackoff, Reconnect, "dummy");
     }
 };
 
-static bool test_peer_state_to_string() {
+static bool test_peer_state_to_string()
+{
     ASSERT(std::strcmp(to_string(PeerState::Unknown), "Unknown") == 0);
     ASSERT(std::strcmp(to_string(PeerState::Online), "Online") == 0);
     ASSERT(std::strcmp(to_string(PeerState::Suspect), "Suspect") == 0);
@@ -92,7 +103,8 @@ static bool test_peer_state_to_string() {
 // ==========================================================================
 // Tests — PeerRecord
 // ==========================================================================
-static bool test_peer_record_serialization() {
+static bool test_peer_record_serialization()
+{
     PeerRecord rec;
     rec.node_id = make_node_id(0xAA);
     rec.endpoint.scheme = "tcp";
@@ -121,7 +133,8 @@ static bool test_peer_record_serialization() {
 // ==========================================================================
 // Tests — MembershipTable
 // ==========================================================================
-static bool test_membership_table_upsert_and_lookup() {
+static bool test_membership_table_upsert_and_lookup()
+{
     MembershipTable table;
 
     PeerRecord rec;
@@ -144,7 +157,8 @@ static bool test_membership_table_upsert_and_lookup() {
     return true;
 }
 
-static bool test_membership_table_upsert_overwrite() {
+static bool test_membership_table_upsert_overwrite()
+{
     MembershipTable table;
 
     PeerRecord rec1;
@@ -167,12 +181,19 @@ static bool test_membership_table_upsert_overwrite() {
     return true;
 }
 
-static bool test_membership_table_peers() {
+static bool test_membership_table_peers()
+{
     MembershipTable table;
 
-    PeerRecord r1; r1.node_id = make_node_id(0x01); table.upsert(r1);
-    PeerRecord r2; r2.node_id = make_node_id(0x02); table.upsert(r2);
-    PeerRecord r3; r3.node_id = make_node_id(0x03); table.upsert(r3);
+    PeerRecord r1;
+    r1.node_id = make_node_id(0x01);
+    table.upsert(r1);
+    PeerRecord r2;
+    r2.node_id = make_node_id(0x02);
+    table.upsert(r2);
+    PeerRecord r3;
+    r3.node_id = make_node_id(0x03);
+    table.upsert(r3);
 
     auto all = table.peers();
     ASSERT_EQ(all.size(), 3U);
@@ -180,12 +201,22 @@ static bool test_membership_table_peers() {
     return true;
 }
 
-static bool test_membership_table_peers_by_state() {
+static bool test_membership_table_peers_by_state()
+{
     MembershipTable table;
 
-    PeerRecord r1; r1.node_id = make_node_id(0x01); r1.state = PeerState::Online;  table.upsert(r1);
-    PeerRecord r2; r2.node_id = make_node_id(0x02); r2.state = PeerState::Suspect; table.upsert(r2);
-    PeerRecord r3; r3.node_id = make_node_id(0x03); r3.state = PeerState::Online;  table.upsert(r3);
+    PeerRecord r1;
+    r1.node_id = make_node_id(0x01);
+    r1.state = PeerState::Online;
+    table.upsert(r1);
+    PeerRecord r2;
+    r2.node_id = make_node_id(0x02);
+    r2.state = PeerState::Suspect;
+    table.upsert(r2);
+    PeerRecord r3;
+    r3.node_id = make_node_id(0x03);
+    r3.state = PeerState::Online;
+    table.upsert(r3);
 
     auto online = table.peers_with_state(PeerState::Online);
     ASSERT_EQ(online.size(), 2U);
@@ -196,9 +227,11 @@ static bool test_membership_table_peers_by_state() {
     return true;
 }
 
-static bool test_membership_table_remove() {
+static bool test_membership_table_remove()
+{
     MembershipTable table;
-    PeerRecord rec; rec.node_id = make_node_id(0x01);
+    PeerRecord rec;
+    rec.node_id = make_node_id(0x01);
     ASSERT(table.upsert(rec));
     ASSERT_EQ(table.count(), 1U);
 
@@ -211,13 +244,19 @@ static bool test_membership_table_remove() {
     return true;
 }
 
-static bool test_membership_table_capacity() {
+static bool test_membership_table_capacity()
+{
     MembershipTable table(2);
     ASSERT_EQ(table.capacity(), 2U);
 
-    PeerRecord r1; r1.node_id = make_node_id(0x01); ASSERT(table.upsert(r1));
-    PeerRecord r2; r2.node_id = make_node_id(0x02); ASSERT(table.upsert(r2));
-    PeerRecord r3; r3.node_id = make_node_id(0x03);
+    PeerRecord r1;
+    r1.node_id = make_node_id(0x01);
+    ASSERT(table.upsert(r1));
+    PeerRecord r2;
+    r2.node_id = make_node_id(0x02);
+    ASSERT(table.upsert(r2));
+    PeerRecord r3;
+    r3.node_id = make_node_id(0x03);
     ASSERT(!table.upsert(r3)); // should fail
 
     ASSERT_EQ(table.count(), 2U);
@@ -225,10 +264,17 @@ static bool test_membership_table_capacity() {
     return true;
 }
 
-static bool test_membership_table_serialization() {
+static bool test_membership_table_serialization()
+{
     MembershipTable t1;
-    PeerRecord r1; r1.node_id = make_node_id(0xAA); r1.state = PeerState::Online;  t1.upsert(r1);
-    PeerRecord r2; r2.node_id = make_node_id(0xBB); r2.state = PeerState::Suspect; t1.upsert(r2);
+    PeerRecord r1;
+    r1.node_id = make_node_id(0xAA);
+    r1.state = PeerState::Online;
+    t1.upsert(r1);
+    PeerRecord r2;
+    r2.node_id = make_node_id(0xBB);
+    r2.state = PeerState::Suspect;
+    t1.upsert(r2);
 
     auto ser = t1.serialize();
     ASSERT(!ser.empty());
@@ -250,7 +296,8 @@ static bool test_membership_table_serialization() {
 // ==========================================================================
 // Tests — HealthMonitor
 // ==========================================================================
-static bool test_health_monitor_record_ping() {
+static bool test_health_monitor_record_ping()
+{
     HealthMonitor hm;
 
     hm.record_ping(make_node_id(0x01), 1000);
@@ -263,7 +310,8 @@ static bool test_health_monitor_record_ping() {
     return true;
 }
 
-static bool test_health_monitor_pong_clears_misses() {
+static bool test_health_monitor_pong_clears_misses()
+{
     HealthMonitor hm;
 
     hm.record_ping(make_node_id(0x01), 1000);
@@ -276,7 +324,8 @@ static bool test_health_monitor_pong_clears_misses() {
     return true;
 }
 
-static bool test_health_monitor_tick_marks_suspect() {
+static bool test_health_monitor_tick_marks_suspect()
+{
     HealthMonitor hm;
     MembershipTable table;
 
@@ -301,7 +350,8 @@ static bool test_health_monitor_tick_marks_suspect() {
     return true;
 }
 
-static bool test_health_monitor_tick_marks_offline() {
+static bool test_health_monitor_tick_marks_offline()
+{
     HealthMonitor hm;
     MembershipTable table;
 
@@ -326,7 +376,8 @@ static bool test_health_monitor_tick_marks_offline() {
 // ==========================================================================
 // Tests — Message serialization
 // ==========================================================================
-static bool test_hello_msg_roundtrip() {
+static bool test_hello_msg_roundtrip()
+{
     HelloMsg msg;
     msg.node_id = make_node_id(0x42);
     msg.pubkey_fingerprint = 0xDEADBEEF;
@@ -342,7 +393,8 @@ static bool test_hello_msg_roundtrip() {
     return true;
 }
 
-static bool test_welcome_msg_roundtrip() {
+static bool test_welcome_msg_roundtrip()
+{
     WelcomeMsg msg;
     msg.node_id = make_node_id(0x43);
     msg.peer_record.node_id = make_node_id(0x44);
@@ -360,7 +412,8 @@ static bool test_welcome_msg_roundtrip() {
     return true;
 }
 
-static bool test_ping_msg_roundtrip() {
+static bool test_ping_msg_roundtrip()
+{
     PingMsg msg;
     msg.timestamp = 1234567890;
 
@@ -372,7 +425,8 @@ static bool test_ping_msg_roundtrip() {
     return true;
 }
 
-static bool test_pong_msg_roundtrip() {
+static bool test_pong_msg_roundtrip()
+{
     PongMsg msg;
     msg.timestamp = 987654321;
 
@@ -384,7 +438,8 @@ static bool test_pong_msg_roundtrip() {
     return true;
 }
 
-static bool test_discover_msg_roundtrip() {
+static bool test_discover_msg_roundtrip()
+{
     DiscoverMsg msg;
     auto ser = msg.serialize();
     auto deser = DiscoverMsg::deserialize(ser);
@@ -393,7 +448,8 @@ static bool test_discover_msg_roundtrip() {
     return true;
 }
 
-static bool test_node_info_msg_roundtrip() {
+static bool test_node_info_msg_roundtrip()
+{
     NodeInfoMsg msg;
     msg.peer_record.node_id = make_node_id(0x45);
     msg.peer_record.state = PeerState::Online;
@@ -408,7 +464,8 @@ static bool test_node_info_msg_roundtrip() {
     return true;
 }
 
-static bool test_offline_msg_roundtrip() {
+static bool test_offline_msg_roundtrip()
+{
     OfflineMsg msg;
     msg.node_id = make_node_id(0x46);
     msg.reason = 2;
@@ -425,7 +482,8 @@ static bool test_offline_msg_roundtrip() {
 // ==========================================================================
 // Tests — DiscoveryEngine
 // ==========================================================================
-static bool test_discovery_engine_handle_hello() {
+static bool test_discovery_engine_handle_hello()
+{
     MembershipTable table;
     HealthMonitor monitor;
     DummyTransport transport;
@@ -453,7 +511,8 @@ static bool test_discovery_engine_handle_hello() {
     return true;
 }
 
-static bool test_discovery_engine_handle_welcome() {
+static bool test_discovery_engine_handle_welcome()
+{
     MembershipTable table;
     HealthMonitor monitor;
     DummyTransport transport;
@@ -469,13 +528,14 @@ static bool test_discovery_engine_handle_welcome() {
 
     auto found = table.lookup(make_node_id(0x60));
     ASSERT(found);
-    ASSERT_EQ(found.value().last_seen, 2000);  // updated by handle_welcome
+    ASSERT_EQ(found.value().last_seen, 2000); // updated by handle_welcome
     ASSERT_EQ(found.value().state, PeerState::Online);
 
     return true;
 }
 
-static bool test_discovery_engine_handle_offline() {
+static bool test_discovery_engine_handle_offline()
+{
     MembershipTable table;
     HealthMonitor monitor;
     DummyTransport transport;
@@ -501,7 +561,8 @@ static bool test_discovery_engine_handle_offline() {
     return true;
 }
 
-static bool test_discovery_engine_handle_node_info() {
+static bool test_discovery_engine_handle_node_info()
+{
     MembershipTable table;
     HealthMonitor monitor;
     DummyTransport transport;
@@ -515,13 +576,14 @@ static bool test_discovery_engine_handle_node_info() {
 
     auto found = table.lookup(make_node_id(0x80));
     ASSERT(found);
-    ASSERT_EQ(found.value().last_seen, 400);  // updated
-    ASSERT_EQ(found.value().state, PeerState::Online);  // set from Unknown
+    ASSERT_EQ(found.value().last_seen, 400);           // updated
+    ASSERT_EQ(found.value().state, PeerState::Online); // set from Unknown
 
     return true;
 }
 
-static bool test_discovery_engine_tick() {
+static bool test_discovery_engine_tick()
+{
     MembershipTable table;
     HealthMonitor monitor;
     DummyTransport transport;
@@ -540,7 +602,7 @@ static bool test_discovery_engine_tick() {
     auto peer = table.lookup(peer_id);
     ASSERT(peer);
     ASSERT(peer.value().state == PeerState::Suspect ||
-           peer.value().state == PeerState::Online);  // may be suspect after tick
+           peer.value().state == PeerState::Online); // may be suspect after tick
 
     return true;
 }
@@ -549,41 +611,45 @@ static bool test_discovery_engine_tick() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Discovery — Unit Tests\n");
     printf("===========================\n\n");
 
-    TEST("PeerState to_string")                             END_TEST(test_peer_state_to_string());
-    TEST("PeerRecord serialization")                        END_TEST(test_peer_record_serialization());
-    TEST("MembershipTable upsert and lookup")               END_TEST(test_membership_table_upsert_and_lookup());
-    TEST("MembershipTable upsert overwrite")                END_TEST(test_membership_table_upsert_overwrite());
-    TEST("MembershipTable peers")                           END_TEST(test_membership_table_peers());
-    TEST("MembershipTable peers by state")                  END_TEST(test_membership_table_peers_by_state());
-    TEST("MembershipTable remove")                          END_TEST(test_membership_table_remove());
-    TEST("MembershipTable capacity")                        END_TEST(test_membership_table_capacity());
-    TEST("MembershipTable serialization")                   END_TEST(test_membership_table_serialization());
-    TEST("HealthMonitor record_ping")                       END_TEST(test_health_monitor_record_ping());
-    TEST("HealthMonitor pong clears misses")                END_TEST(test_health_monitor_pong_clears_misses());
-    TEST("HealthMonitor tick marks suspect")                END_TEST(test_health_monitor_tick_marks_suspect());
-    TEST("HealthMonitor tick marks offline")                END_TEST(test_health_monitor_tick_marks_offline());
-    TEST("HelloMsg roundtrip")                              END_TEST(test_hello_msg_roundtrip());
-    TEST("WelcomeMsg roundtrip")                            END_TEST(test_welcome_msg_roundtrip());
-    TEST("PingMsg roundtrip")                               END_TEST(test_ping_msg_roundtrip());
-    TEST("PongMsg roundtrip")                               END_TEST(test_pong_msg_roundtrip());
-    TEST("DiscoverMsg roundtrip")                           END_TEST(test_discover_msg_roundtrip());
-    TEST("NodeInfoMsg roundtrip")                           END_TEST(test_node_info_msg_roundtrip());
-    TEST("OfflineMsg roundtrip")                            END_TEST(test_offline_msg_roundtrip());
-    TEST("DiscoveryEngine handle_hello")                    END_TEST(test_discovery_engine_handle_hello());
-    TEST("DiscoveryEngine handle_welcome")                  END_TEST(test_discovery_engine_handle_welcome());
-    TEST("DiscoveryEngine handle_offline")                  END_TEST(test_discovery_engine_handle_offline());
-    TEST("DiscoveryEngine handle_node_info")                END_TEST(test_discovery_engine_handle_node_info());
-    TEST("DiscoveryEngine tick")                            END_TEST(test_discovery_engine_tick());
+    TEST("PeerState to_string") END_TEST(test_peer_state_to_string());
+    TEST("PeerRecord serialization") END_TEST(test_peer_record_serialization());
+    TEST("MembershipTable upsert and lookup") END_TEST(test_membership_table_upsert_and_lookup());
+    TEST("MembershipTable upsert overwrite") END_TEST(test_membership_table_upsert_overwrite());
+    TEST("MembershipTable peers") END_TEST(test_membership_table_peers());
+    TEST("MembershipTable peers by state") END_TEST(test_membership_table_peers_by_state());
+    TEST("MembershipTable remove") END_TEST(test_membership_table_remove());
+    TEST("MembershipTable capacity") END_TEST(test_membership_table_capacity());
+    TEST("MembershipTable serialization") END_TEST(test_membership_table_serialization());
+    TEST("HealthMonitor record_ping") END_TEST(test_health_monitor_record_ping());
+    TEST("HealthMonitor pong clears misses") END_TEST(test_health_monitor_pong_clears_misses());
+    TEST("HealthMonitor tick marks suspect") END_TEST(test_health_monitor_tick_marks_suspect());
+    TEST("HealthMonitor tick marks offline") END_TEST(test_health_monitor_tick_marks_offline());
+    TEST("HelloMsg roundtrip") END_TEST(test_hello_msg_roundtrip());
+    TEST("WelcomeMsg roundtrip") END_TEST(test_welcome_msg_roundtrip());
+    TEST("PingMsg roundtrip") END_TEST(test_ping_msg_roundtrip());
+    TEST("PongMsg roundtrip") END_TEST(test_pong_msg_roundtrip());
+    TEST("DiscoverMsg roundtrip") END_TEST(test_discover_msg_roundtrip());
+    TEST("NodeInfoMsg roundtrip") END_TEST(test_node_info_msg_roundtrip());
+    TEST("OfflineMsg roundtrip") END_TEST(test_offline_msg_roundtrip());
+    TEST("DiscoveryEngine handle_hello") END_TEST(test_discovery_engine_handle_hello());
+    TEST("DiscoveryEngine handle_welcome") END_TEST(test_discovery_engine_handle_welcome());
+    TEST("DiscoveryEngine handle_offline") END_TEST(test_discovery_engine_handle_offline());
+    TEST("DiscoveryEngine handle_node_info") END_TEST(test_discovery_engine_handle_node_info());
+    TEST("DiscoveryEngine tick") END_TEST(test_discovery_engine_tick());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

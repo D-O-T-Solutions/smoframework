@@ -32,59 +32,66 @@ using namespace smo;
 
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-54s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-54s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // PCT-001: JoinRequest CBOR encode/decode roundtrip
 // ==========================================================================
-static bool test_pct_001() {
+static bool test_pct_001()
+{
     join::JoinRequest req;
     req.version = 1;
     req.protocol_version = 1;
@@ -110,8 +117,7 @@ static bool test_pct_001() {
     ASSERT(decoded.value().nonce[7] == 0x08);
     ASSERT_EQ(decoded.value().csr_hash.size(), 4U);
     ASSERT_EQ(decoded.value().request_signature.size(), 4U);
-    ASSERT_EQ(decoded.value().capability_bitmap,
-              join::CAP_DELTA_SYNC | join::CAP_CRT | join::CAP_RUNTIME_NEGOTIATE);
+    ASSERT_EQ(decoded.value().capability_bitmap, join::CAP_DELTA_SYNC | join::CAP_CRT | join::CAP_RUNTIME_NEGOTIATE);
 
     return true;
 }
@@ -119,7 +125,8 @@ static bool test_pct_001() {
 // ==========================================================================
 // PCT-002: JoinResponse CBOR encode/decode roundtrip
 // ==========================================================================
-static bool test_pct_002() {
+static bool test_pct_002()
+{
     join::JoinResponse resp;
     resp.version = 1;
     resp.nonce = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11};
@@ -139,8 +146,7 @@ static bool test_pct_002() {
     ASSERT_EQ(decoded.value().bootstrap_ticket.size(), 4U);
     ASSERT_EQ(decoded.value().nonce[0], 0xAA);
     ASSERT_EQ(decoded.value().server_time, 1700001000);
-    ASSERT_EQ(decoded.value().capability_bitmap,
-              join::CAP_DELTA_SYNC | join::CAP_COMPRESSION);
+    ASSERT_EQ(decoded.value().capability_bitmap, join::CAP_DELTA_SYNC | join::CAP_COMPRESSION);
 
     return true;
 }
@@ -148,7 +154,8 @@ static bool test_pct_002() {
 // ==========================================================================
 // PCT-003: BootstrapSyncRequest CBOR encode/decode roundtrip
 // ==========================================================================
-static bool test_pct_003() {
+static bool test_pct_003()
+{
     join::BootstrapSyncRequest req;
     req.version = 1;
     req.protocol_version = 1;
@@ -180,7 +187,8 @@ static bool test_pct_003() {
 // ==========================================================================
 // PCT-004: BootstrapSyncResponse CBOR encode/decode roundtrip
 // ==========================================================================
-static bool test_pct_004() {
+static bool test_pct_004()
+{
     join::BootstrapSyncResponse resp;
     resp.version = 1;
     resp.nonce = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11};
@@ -226,7 +234,8 @@ static bool test_pct_004() {
 // ==========================================================================
 // PCT-005: Join FSM full flow NEW → READY
 // ==========================================================================
-static bool test_pct_005() {
+static bool test_pct_005()
+{
     auto rules = join::join_transition_table();
     auto timeouts = join::join_timeout_table();
 
@@ -279,7 +288,8 @@ static bool test_pct_005() {
 // ==========================================================================
 // PCT-006: Join FSM every FAIL transition
 // ==========================================================================
-static bool test_pct_006() {
+static bool test_pct_006()
+{
     auto rules = join::join_transition_table();
     FsmInstance fsm;
     fsm.set_transitions(rules);
@@ -323,7 +333,8 @@ static bool test_pct_006() {
 // ==========================================================================
 // PCT-007: Join FSM every TIMEOUT transition
 // ==========================================================================
-static bool test_pct_007() {
+static bool test_pct_007()
+{
     auto rules = join::join_transition_table();
     FsmInstance fsm;
     fsm.set_transitions(rules);
@@ -358,7 +369,8 @@ static bool test_pct_007() {
 // ==========================================================================
 // PCT-008: Join FSM persist + resume (serialize/deserialize)
 // ==========================================================================
-static bool test_pct_008() {
+static bool test_pct_008()
+{
     auto rules = join::join_transition_table();
     FsmInstance fsm;
     fsm.set_transitions(rules);
@@ -378,19 +390,14 @@ static bool test_pct_008() {
     ASSERT(serialized);
 
     // Deserialize into new FSM
-    auto restored = FsmInstance::deserialize(
-        BytesView(serialized.value()),
-        rules.data(), rules.size(),
-        nullptr, 0);
+    auto restored = FsmInstance::deserialize(BytesView(serialized.value()), rules.data(), rules.size(), nullptr, 0);
     ASSERT(restored);
-    ASSERT_EQ(restored.value().current_state(),
-              static_cast<int64_t>(join::JoinState::CERT_RECEIVED));
+    ASSERT_EQ(restored.value().current_state(), static_cast<int64_t>(join::JoinState::CERT_RECEIVED));
     ASSERT_EQ(restored.value().transition_count(), 5U);
 
     // Resume: CERT_VERIFIED → CERT_VERIFY
     ASSERT(restored.value().on_event(static_cast<int64_t>(join::JoinEvent::CERT_VERIFIED)));
-    ASSERT_EQ(restored.value().current_state(),
-              static_cast<int64_t>(join::JoinState::CERT_VERIFY));
+    ASSERT_EQ(restored.value().current_state(), static_cast<int64_t>(join::JoinState::CERT_VERIFY));
     ASSERT_EQ(restored.value().transition_count(), 6U);
 
     return true;
@@ -399,7 +406,8 @@ static bool test_pct_008() {
 // ==========================================================================
 // PCT-009: BootstrapRequest/Response CBOR roundtrip
 // ==========================================================================
-static bool test_pct_009() {
+static bool test_pct_009()
+{
     bootstrap::BootstrapRequest req;
     req.version = 1;
     req.nonce = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
@@ -441,7 +449,8 @@ static bool test_pct_009() {
 // ==========================================================================
 // PCT-010: GossipEngine basic operation
 // ==========================================================================
-static bool test_pct_010() {
+static bool test_pct_010()
+{
     MembershipTable table;
     GossipEngine::Config cfg;
     cfg.interval_ms = 5000;
@@ -458,22 +467,21 @@ static bool test_pct_010() {
 
     // Register a delta handler
     bool handler_called = false;
-    engine.set_delta_handler(DeltaType::Membership,
-        [&](BytesView data) -> Result<void> {
-            handler_called = true;
-            if (data.size() != 4) {
-                return Error{};
-            }
-            return Result<void>{};
-        });
+    engine.set_delta_handler(DeltaType::Membership, [&](BytesView data) -> Result<void> {
+        handler_called = true;
+        if (data.size() != 4)
+        {
+            return Error{};
+        }
+        return Result<void>{};
+    });
 
     // Register a delta provider
     bool provider_called = false;
-    engine.set_delta_provider(DeltaType::CRL,
-        [&]() -> Bytes {
-            provider_called = true;
-            return Bytes{0x0a, 0x0b};
-        });
+    engine.set_delta_provider(DeltaType::CRL, [&]() -> Bytes {
+        provider_called = true;
+        return Bytes{0x0a, 0x0b};
+    });
 
     ASSERT(!handler_called);
     ASSERT(!provider_called);
@@ -487,27 +495,28 @@ static bool test_pct_010() {
 // ==========================================================================
 // PCT-011: JoinToken parsing and validation
 // ==========================================================================
-static bool test_pct_011() {
+static bool test_pct_011()
+{
     // Test with a minimal wire-format token
     // SMO-JOIN-<base64url( payload || signature )>
     // The payload is CBOR-encoded JoinToken fields
 
     auto parsed = enroll::parse_token("SMO-JOIN-invalid");
-    ASSERT(!parsed);  // should fail on invalid base64
+    ASSERT(!parsed); // should fail on invalid base64
 
     // Test token v1 detection (v1 = empty issuer + non-empty signature)
     enroll::JoinToken token;
     token.version = 2;
     token.issuer = "root:abc123";
     token.signature = {0x01, 0x02, 0x03};
-    ASSERT(!enroll::token_is_v1(token));  // has issuer → v2
+    ASSERT(!enroll::token_is_v1(token)); // has issuer → v2
 
     token.issuer.clear();
     token.signature = {0x01, 0x02, 0x03};
-    ASSERT(enroll::token_is_v1(token));   // empty issuer + has signature → v1
+    ASSERT(enroll::token_is_v1(token)); // empty issuer + has signature → v1
 
     token.signature.clear();
-    ASSERT(!enroll::token_is_v1(token));  // empty issuer + empty sig → not v1
+    ASSERT(!enroll::token_is_v1(token)); // empty issuer + empty sig → not v1
 
     return true;
 }
@@ -515,7 +524,8 @@ static bool test_pct_011() {
 // ==========================================================================
 // PCT-012: Certificate encode/decode roundtrip
 // ==========================================================================
-static bool test_pct_012() {
+static bool test_pct_012()
+{
     // Create a minimal certificate
     Certificate cert;
     cert.subject_pubkey = {0x01, 0x02, 0x03, 0x04};
@@ -555,11 +565,13 @@ static bool test_pct_012() {
 // ==========================================================================
 // PCT-013: ReplayProtector nonce detection
 // ==========================================================================
-static bool test_pct_013() {
+static bool test_pct_013()
+{
     ReplayProtector rp({10000, 50});
 
     // Fresh nonces should be accepted
-    for (uint8_t i = 0; i < 10; ++i) {
+    for (uint8_t i = 0; i < 10; ++i)
+    {
         std::array<uint8_t, 8> nonce = {0, 0, 0, 0, 0, 0, 0, i};
         ASSERT(rp.accept(nonce, 1000 + i * 100, 1500));
     }
@@ -590,28 +602,29 @@ static bool test_pct_013() {
 // ==========================================================================
 // PCT-014: Timestamp window validation
 // ==========================================================================
-static bool test_pct_014() {
+static bool test_pct_014()
+{
     // Test the ±30s timestamp window logic used by process_join_request
     // The check is: std::llabs(now_sec - req.timestamp) > 30
 
     int64_t now = 1700000000;
 
     // Within window: exactly at boundary
-    ASSERT(std::llabs(now - (now - 30)) <= 30);   // exactly 30s ago
-    ASSERT(std::llabs(now - (now + 30)) <= 30);   // exactly 30s ahead
+    ASSERT(std::llabs(now - (now - 30)) <= 30); // exactly 30s ago
+    ASSERT(std::llabs(now - (now + 30)) <= 30); // exactly 30s ahead
 
     // Within window: within range
-    ASSERT(std::llabs(now - (now - 15)) <= 30);   // 15s ago
-    ASSERT(std::llabs(now - (now + 15)) <= 30);   // 15s ahead
-    ASSERT(std::llabs(now - now) <= 30);           // exact now
+    ASSERT(std::llabs(now - (now - 15)) <= 30); // 15s ago
+    ASSERT(std::llabs(now - (now + 15)) <= 30); // 15s ahead
+    ASSERT(std::llabs(now - now) <= 30);        // exact now
 
     // Outside window: beyond boundary
-    ASSERT(std::llabs(now - (now - 31)) > 30);    // 31s ago
-    ASSERT(std::llabs(now - (now + 31)) > 30);    // 31s ahead
+    ASSERT(std::llabs(now - (now - 31)) > 30); // 31s ago
+    ASSERT(std::llabs(now - (now + 31)) > 30); // 31s ahead
 
     // Edge cases
-    ASSERT(std::llabs(now - (now - 0)) <= 30);     // 0s (exact same)
-    ASSERT(std::llabs(now - (now - 300)) > 30);    // 5 min ago
+    ASSERT(std::llabs(now - (now - 0)) <= 30);  // 0s (exact same)
+    ASSERT(std::llabs(now - (now - 300)) > 30); // 5 min ago
 
     return true;
 }
@@ -619,7 +632,8 @@ static bool test_pct_014() {
 // ==========================================================================
 // PCT-015: MembershipSync serialization roundtrip
 // ==========================================================================
-static bool test_pct_015() {
+static bool test_pct_015()
+{
     using namespace network::sync;
 
     // Create membership events
@@ -651,7 +665,8 @@ static bool test_pct_015() {
 // ==========================================================================
 // PCT-016: CRL serialize/deserialize roundtrip
 // ==========================================================================
-static bool test_pct_016() {
+static bool test_pct_016()
+{
     using namespace recovery;
 
     CRL crl;
@@ -665,7 +680,7 @@ static bool test_pct_016() {
     ASSERT(crl.revoke("fp-003", "node-003", "revoked", 3, 3000));
 
     ASSERT_EQ(crl.entries_since(0).size(), 3U);
-    ASSERT_EQ(crl.entries_since(2).size(), 2U);  // entries with epoch >= 2
+    ASSERT_EQ(crl.entries_since(2).size(), 2U); // entries with epoch >= 2
 
     // Test CRLEntry serialize/deserialize
     auto entry1 = crl.entries_since(0)[0];
@@ -696,10 +711,11 @@ static bool test_pct_016() {
 // ==========================================================================
 // PCT-017: CBOR map key forward compat (unknown key skip)
 // ==========================================================================
-static bool test_pct_017() {
+static bool test_pct_017()
+{
     // Create CBOR data with unknown keys that the decoder should skip
     cbor::Encoder enc;
-    enc.encode_map(3);  // 3 keys
+    enc.encode_map(3); // 3 keys
     // Known key
     cbor::encode_uint_key(enc, 1);
     enc.encode_string("hello");
@@ -720,9 +736,9 @@ static bool test_pct_017() {
     // Create JoinResponse with extra unknown fields
     cbor::Encoder enc2;
     enc2.encode_map(5);
-    cbor::encode_uint_key(enc2, 1);  // certificate
+    cbor::encode_uint_key(enc2, 1); // certificate
     enc2.encode_string("mock-cert");
-    cbor::encode_uint_key(enc2, 2);  // mesh_id
+    cbor::encode_uint_key(enc2, 2); // mesh_id
     enc2.encode_string("test-mesh");
     cbor::encode_uint_key(enc2, 99); // unknown
     enc2.encode_uint(99999);
@@ -742,9 +758,9 @@ static bool test_pct_017() {
     // BootstrapSyncRequest with unknown key
     cbor::Encoder enc3;
     enc3.encode_map(3);
-    cbor::encode_uint_key(enc3, 1);  // mesh_id
+    cbor::encode_uint_key(enc3, 1); // mesh_id
     enc3.encode_string("mesh-x");
-    cbor::encode_uint_key(enc3, 2);  // node_id
+    cbor::encode_uint_key(enc3, 2); // node_id
     enc3.encode_string("node-y");
     cbor::encode_uint_key(enc3, 99); // unknown
     enc3.encode_string("should-be-skipped");
@@ -759,14 +775,17 @@ static bool test_pct_017() {
 }
 
 // PCT-020 — PolicyStore CRUD operations
-static bool test_pct_020() {
+static bool test_pct_020()
+{
     // Use a temp directory
     char tmp[] = "/tmp/smo_pct_020_XXXXXX";
-    if (!mkdtemp(tmp)) return false;
+    if (!mkdtemp(tmp))
+        return false;
     std::string dir(tmp);
 
     PolicyStore store(dir);
-    if (store.open()) return false;
+    if (store.open())
+        return false;
 
     // Put
     PolicyStore::Record rec;
@@ -777,11 +796,13 @@ static bool test_pct_020() {
     rec.created_at = 1000;
     rec.created_by = "test";
     rec.updated_at = 1000;
-    if (store.put(rec)) return false;
+    if (store.put(rec))
+        return false;
 
     // Get + verify fields
     auto got = store.get("test-pol");
-    if (!got) return false;
+    if (!got)
+        return false;
     ASSERT(got->name == "test-pol");
     ASSERT(got->description == "test policy");
     ASSERT(got->version == "1.0");
@@ -800,7 +821,8 @@ static bool test_pct_020() {
     ASSERT(deser->version == "1.0");
 
     // Remove
-    if (store.remove("test-pol")) return false;
+    if (store.remove("test-pol"))
+        return false;
     auto after_rm = store.get("test-pol");
     ASSERT(!after_rm.has_value());
 
@@ -811,15 +833,16 @@ static bool test_pct_020() {
 }
 
 // PCT-021 — JOIN_REQUEST nonce dedup
-static bool test_pct_021() {
+static bool test_pct_021()
+{
     join::clear_nonce_cache();
     Blake3Provider::register_as_default();
 
     auto& hp = HashProvider::default_provider();
 
-    std::array<uint8_t, 8> nonce_a = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-    std::array<uint8_t, 8> nonce_b = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-    std::array<uint8_t, 8> nonce_c = {0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x00,0x11};
+    std::array<uint8_t, 8> nonce_a = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+    std::array<uint8_t, 8> nonce_b = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+    std::array<uint8_t, 8> nonce_c = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11};
 
     Bytes key_a;
     key_a.insert(key_a.end(), "mesh-x", "mesh-x" + 6);
@@ -845,7 +868,8 @@ static bool test_pct_021() {
 }
 
 // PCT-018 — Anti-entropy Merkle tree + version vector
-static bool test_pct_018() {
+static bool test_pct_018()
+{
     Blake3Provider::register_as_default();
     auto& hp = HashProvider::default_provider();
     (void)hp; // ensure hash provider is ready for MerkleTree::rebuild()
@@ -871,15 +895,15 @@ static bool test_pct_018() {
     vv3.set("node-b", 3);
     vv3.set("node-c", 10);
     vv.merge(vv3);
-    ASSERT(vv.get("node-a") == 1); // unchanged
-    ASSERT(vv.get("node-b") == 5); // 5 > 3, keep 5
+    ASSERT(vv.get("node-a") == 1);  // unchanged
+    ASSERT(vv.get("node-b") == 5);  // 5 > 3, keep 5
     ASSERT(vv.get("node-c") == 10); // new
 
     // Test dominates
     smo::sync::VersionVector vv4;
     vv4.set("node-a", 0);
     vv4.set("node-b", 5);
-    ASSERT(vv.dominates(vv4)); // vv has node-a=1 >= 0, node-b=5 >= 5
+    ASSERT(vv.dominates(vv4));  // vv has node-a=1 >= 0, node-b=5 >= 5
     ASSERT(!vv4.dominates(vv)); // vv4 has node-a=0 < 1
 
     // Test MerkleTree
@@ -889,7 +913,9 @@ static bool test_pct_018() {
     tree.version_vector.set("node-a", 1);
     tree.rebuild();
     bool has_root = false;
-    for (auto b : tree.root_hash) if (b != 0) has_root = true;
+    for (auto b : tree.root_hash)
+        if (b != 0)
+            has_root = true;
     ASSERT(has_root);
 
     // Test MerkleTree serialization roundtrip
@@ -921,11 +947,11 @@ static bool test_pct_018() {
 }
 
 // PCT-022 — Structured log format
-static bool test_pct_022() {
+static bool test_pct_022()
+{
     // Verify JSON output has all required fields
-    auto entry = smo::runtime::LogEntry::make(
-        "test", smo::runtime::LogLevel::Info, "hello world",
-        "trace-abc", "span-def");
+    auto entry =
+        smo::runtime::LogEntry::make("test", smo::runtime::LogLevel::Info, "hello world", "trace-abc", "span-def");
     entry.node_id = "node-123";
     entry.mesh_id = "mesh-test";
     entry.session_id = "sess-456";
@@ -966,7 +992,8 @@ static bool test_pct_022() {
 }
 
 // PCT-024 — Fault injection / chaos: VersionVector partition + heal
-static bool test_pct_024() {
+static bool test_pct_024()
+{
     Blake3Provider::register_as_default();
 
     // Simulate partition: two nodes diverge independently
@@ -1012,7 +1039,8 @@ static bool test_pct_024() {
 
     return true;
 }
-static bool test_pct_019() {
+static bool test_pct_019()
+{
     auto rules = join::join_transition_table();
     auto timeouts = join::join_timeout_table();
 
@@ -1062,66 +1090,70 @@ static bool test_pct_019() {
 // ==========================================================================
 // Main
 // ==========================================================================
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Protocol Compliance Tests (PCT-001 to PCT-017)\n");
     printf("===================================================\n\n");
 
     printf("── §9.1  CBOR Encode/Decode ──────────────────────────────────\n");
-    TEST("PCT-001  JoinRequest CBOR roundtrip")                          END_TEST(test_pct_001());
-    TEST("PCT-002  JoinResponse CBOR roundtrip")                         END_TEST(test_pct_002());
-    TEST("PCT-003  BootstrapSyncRequest CBOR roundtrip")                 END_TEST(test_pct_003());
-    TEST("PCT-004  BootstrapSyncResponse CBOR roundtrip")                END_TEST(test_pct_004());
+    TEST("PCT-001  JoinRequest CBOR roundtrip") END_TEST(test_pct_001());
+    TEST("PCT-002  JoinResponse CBOR roundtrip") END_TEST(test_pct_002());
+    TEST("PCT-003  BootstrapSyncRequest CBOR roundtrip") END_TEST(test_pct_003());
+    TEST("PCT-004  BootstrapSyncResponse CBOR roundtrip") END_TEST(test_pct_004());
 
     printf("\n── §9.2  Join FSM ────────────────────────────────────────────\n");
-    TEST("PCT-005  Join FSM full flow NEW → READY")                      END_TEST(test_pct_005());
-    TEST("PCT-006  Join FSM FAIL transitions")                           END_TEST(test_pct_006());
-    TEST("PCT-007  Join FSM TIMEOUT transitions")                        END_TEST(test_pct_007());
-    TEST("PCT-008  Join FSM persist + resume")                           END_TEST(test_pct_008());
+    TEST("PCT-005  Join FSM full flow NEW → READY") END_TEST(test_pct_005());
+    TEST("PCT-006  Join FSM FAIL transitions") END_TEST(test_pct_006());
+    TEST("PCT-007  Join FSM TIMEOUT transitions") END_TEST(test_pct_007());
+    TEST("PCT-008  Join FSM persist + resume") END_TEST(test_pct_008());
 
     printf("\n── §9.3  Bootstrap ───────────────────────────────────────────\n");
-    TEST("PCT-009  BootstrapRequest/Response CBOR")                      END_TEST(test_pct_009());
+    TEST("PCT-009  BootstrapRequest/Response CBOR") END_TEST(test_pct_009());
 
     printf("\n── §9.4  Gossip ──────────────────────────────────────────────\n");
-    TEST("PCT-010  GossipEngine basic operation")                        END_TEST(test_pct_010());
+    TEST("PCT-010  GossipEngine basic operation") END_TEST(test_pct_010());
 
     printf("\n── §9.5  Token & Certificate ─────────────────────────────────\n");
-    TEST("PCT-011  JoinToken parse/validate")                            END_TEST(test_pct_011());
-    TEST("PCT-012  Certificate encode/decode roundtrip")                 END_TEST(test_pct_012());
+    TEST("PCT-011  JoinToken parse/validate") END_TEST(test_pct_011());
+    TEST("PCT-012  Certificate encode/decode roundtrip") END_TEST(test_pct_012());
 
     printf("\n── §9.6  Replay & Time ───────────────────────────────────────\n");
-    TEST("PCT-013  ReplayProtector nonce detection")                     END_TEST(test_pct_013());
-    TEST("PCT-014  Timestamp ±30s window")                               END_TEST(test_pct_014());
+    TEST("PCT-013  ReplayProtector nonce detection") END_TEST(test_pct_013());
+    TEST("PCT-014  Timestamp ±30s window") END_TEST(test_pct_014());
 
     printf("\n── §9.7  Delta Sync ──────────────────────────────────────────\n");
-    TEST("PCT-015  MembershipEvent serialization")                       END_TEST(test_pct_015());
-    TEST("PCT-016  CRL serialize/deserialize roundtrip")                 END_TEST(test_pct_016());
+    TEST("PCT-015  MembershipEvent serialization") END_TEST(test_pct_015());
+    TEST("PCT-016  CRL serialize/deserialize roundtrip") END_TEST(test_pct_016());
 
     printf("\n── §9.8  Forward Compat ──────────────────────────────────────\n");
-    TEST("PCT-017  CBOR map key forward compat")                         END_TEST(test_pct_017());
+    TEST("PCT-017  CBOR map key forward compat") END_TEST(test_pct_017());
 
     printf("\n── §9.9  Anti-Entropy ─────────────────────────────────────────\n");
-    TEST("PCT-018  Anti-entropy Merkle + version vector")                END_TEST(test_pct_018());
+    TEST("PCT-018  Anti-entropy Merkle + version vector") END_TEST(test_pct_018());
 
     printf("\n── §9.10 Gossip Readiness ─────────────────────────────────────\n");
-    TEST("PCT-019  Gossip readiness + DEGRADED state")                   END_TEST(test_pct_019());
+    TEST("PCT-019  Gossip readiness + DEGRADED state") END_TEST(test_pct_019());
 
     printf("\n── §9.9  Policy Store ─────────────────────────────────────────\n");
-    TEST("PCT-020  PolicyStore CRUD")                                     END_TEST(test_pct_020());
+    TEST("PCT-020  PolicyStore CRUD") END_TEST(test_pct_020());
 
     printf("\n── §9.10 Nonce Dedup ───────────────────────────────────────────\n");
-    TEST("PCT-021  JOIN_REQUEST nonce dedup")                             END_TEST(test_pct_021());
+    TEST("PCT-021  JOIN_REQUEST nonce dedup") END_TEST(test_pct_021());
 
     printf("\n── §9.11 Structured Logging ──────────────────────────────────────\n");
-    TEST("PCT-022  Structured log format")                                 END_TEST(test_pct_022());
+    TEST("PCT-022  Structured log format") END_TEST(test_pct_022());
 
     printf("\n── §9.12 Fault Injection / Chaos ─────────────────────────────────\n");
-    TEST("PCT-024  VersionVector partition + heal")                        END_TEST(test_pct_024());
+    TEST("PCT-024  VersionVector partition + heal") END_TEST(test_pct_024());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL 23 PCT TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d PCT TEST(S) FAILED\n", failures);
         return 1;
     }

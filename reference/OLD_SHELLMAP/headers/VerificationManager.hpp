@@ -10,40 +10,43 @@
 /**
  * @class VerificationManager
  * @brief 3-step server verification system
- * 
+ *
  * Flow:
  * 1. Node sends VERIFY_REQ with declared IP:Port
  * 2. SuperNode sends PROBE to that address
  * 3. Node responds with PROBE_ACK if reachable
- * 
+ *
  * Trách nhiệ:
  * - Lưu trữ verification state
  * - Track pending verifications
  * - Mark nodes as server/client based on reachability
  * - Manage probe timeouts
  */
-class VerificationManager {
+class VerificationManager
+{
 public:
-    enum class VerificationState {
-        PENDING,    // Waiting for PROBE response
-        VERIFIED,   // PROBE_ACK received, node is reachable
-        FAILED,     // Timeout or no response
-        TIMEOUT     // Verification timed out
+    enum class VerificationState
+    {
+        PENDING,  // Waiting for PROBE response
+        VERIFIED, // PROBE_ACK received, node is reachable
+        FAILED,   // Timeout or no response
+        TIMEOUT   // Verification timed out
     };
 
-    struct VerificationRequest {
-        std::string node_id;            // 32-byte hex string
-        std::string declared_ip;        // IP mà node khai báo
-        uint16_t declared_port;         // Port mà node khai báo
-        
-        uint64_t probe_id;              // Unique ID cho probe packet
-        uint32_t probe_checksum;        // Checksum để verify integrity
-        
+    struct VerificationRequest
+    {
+        std::string node_id;     // 32-byte hex string
+        std::string declared_ip; // IP mà node khai báo
+        uint16_t declared_port;  // Port mà node khai báo
+
+        uint64_t probe_id;       // Unique ID cho probe packet
+        uint32_t probe_checksum; // Checksum để verify integrity
+
         VerificationState state = VerificationState::PENDING;
-        uint64_t sent_time;             // Timestamp khi PROBE được gửi
-        uint64_t attempts = 0;          // Số lần retry
-        
-        bool is_server = false;         // true nếu verified reachable
+        uint64_t sent_time;    // Timestamp khi PROBE được gửi
+        uint64_t attempts = 0; // Số lần retry
+
+        bool is_server = false; // true nếu verified reachable
     };
 
     /**
@@ -53,11 +56,7 @@ public:
      * @param declared_port Port node khai báo
      * @return probe_id để tracking
      */
-    uint64_t initiate_verification(
-        const std::string& node_id,
-        const std::string& declared_ip,
-        uint16_t declared_port
-    );
+    uint64_t initiate_verification(const std::string& node_id, const std::string& declared_ip, uint16_t declared_port);
 
     /**
      * @brief Nhận PROBE_ACK từ node
@@ -66,11 +65,7 @@ public:
      * @param checksum Echo của checksum
      * @return true nếu match, false nếu invalid
      */
-    bool handle_probe_ack(
-        const std::string& node_id,
-        uint64_t probe_id,
-        uint32_t checksum
-    );
+    bool handle_probe_ack(const std::string& node_id, uint64_t probe_id, uint32_t checksum);
 
     /**
      * @brief Lấy verification status

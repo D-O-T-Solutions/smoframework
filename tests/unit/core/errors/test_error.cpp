@@ -13,45 +13,53 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%d  RHS=%d\n",                            \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<int>(a), static_cast<int>(b));           \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%d  RHS=%d\n",                                                                           \
+                   __FILE__, __LINE__, #a, #b, static_cast<int>(a), static_cast<int>(b));                              \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Tests
 // ==========================================================================
 
-static bool test_error_code_default_constructor() {
+static bool test_error_code_default_constructor()
+{
     ErrorCode ec;
     ASSERT_EQ(ec.category, ErrorCategory::Internal);
     ASSERT_EQ(ec.code, 0);
@@ -61,13 +69,15 @@ static bool test_error_code_default_constructor() {
     return true;
 }
 
-static bool test_error_code_packed_size() {
+static bool test_error_code_packed_size()
+{
     // Verify the bitfield packing doesn't exceed 4 bytes
     ASSERT_EQ(sizeof(ErrorCode), 4);
     return true;
 }
 
-static bool test_error_code_is_retryable() {
+static bool test_error_code_is_retryable()
+{
     ErrorCode safe(ErrorCategory::Transport, 1, Severity::Warn, RetryClass::RetrySafe, Recovery::Reconnect);
     ASSERT(safe.is_retryable());
 
@@ -82,7 +92,8 @@ static bool test_error_code_is_retryable() {
     return true;
 }
 
-static bool test_error_code_is_fatal() {
+static bool test_error_code_is_fatal()
+{
     ErrorCode info(ErrorCategory::Session, 0, Severity::Info, RetryClass::NoRetry, Recovery::None);
     ASSERT(!info.is_fatal());
 
@@ -92,12 +103,14 @@ static bool test_error_code_is_fatal() {
     ErrorCode critical(ErrorCategory::Identity, 0, Severity::Critical, RetryClass::NoRetry, Recovery::RebootNode);
     ASSERT(critical.is_fatal());
 
-    ErrorCode alert(ErrorCategory::Certificate, 0, Severity::Alert, RetryClass::RetryNever, Recovery::ManualIntervention);
+    ErrorCode alert(ErrorCategory::Certificate, 0, Severity::Alert, RetryClass::RetryNever,
+                    Recovery::ManualIntervention);
     ASSERT(alert.is_fatal());
     return true;
 }
 
-static bool test_error_constructor() {
+static bool test_error_constructor()
+{
     Error err(ErrorCode(ErrorCategory::Crypto, 42, Severity::Error, RetryClass::NoRetry, Recovery::RetryOperation),
               "key generation failed", __FILE__, __LINE__);
     ASSERT_EQ(err.code.category, ErrorCategory::Crypto);
@@ -109,7 +122,8 @@ static bool test_error_constructor() {
     return true;
 }
 
-static bool test_error_to_string() {
+static bool test_error_to_string()
+{
     Error err(ErrorCode(ErrorCategory::Storage, 7, Severity::Critical, RetryClass::RetrySafe, Recovery::None),
               "disk full", __FILE__, __LINE__);
     std::string s = err.to_string();
@@ -119,7 +133,8 @@ static bool test_error_to_string() {
     return true;
 }
 
-static bool test_smo_err_macro() {
+static bool test_smo_err_macro()
+{
     Error err = SMO_ERR(Crypto, 1, Error, NoRetry, RetryOperation, "keygen failed");
     ASSERT_EQ(err.code.category, ErrorCategory::Crypto);
     ASSERT_EQ(err.code.code, 1);
@@ -128,14 +143,16 @@ static bool test_smo_err_macro() {
     return true;
 }
 
-static bool test_result_ok() {
+static bool test_result_ok()
+{
     Result<int> r(42);
     ASSERT(r);
     ASSERT(r.value() == 42);
     return true;
 }
 
-static bool test_result_error() {
+static bool test_result_error()
+{
     Result<int> r = SMO_ERR(Protocol, 99, Error, NoRetry, None, "bad packet");
     ASSERT(!r);
     ASSERT(r.error().code.category == ErrorCategory::Protocol);
@@ -143,14 +160,16 @@ static bool test_result_error() {
     return true;
 }
 
-static bool test_result_void_ok() {
+static bool test_result_void_ok()
+{
     Result<void> r;
     ASSERT(r);
     ASSERT(!r.has_error());
     return true;
 }
 
-static bool test_result_void_error() {
+static bool test_result_void_error()
+{
     Result<void> r = SMO_ERR(Session, 5, Error, RetrySafe, Reconnect, "session expired");
     ASSERT(!r);
     ASSERT(r.has_error());
@@ -158,7 +177,8 @@ static bool test_result_void_error() {
     return true;
 }
 
-static bool test_result_move_semantics() {
+static bool test_result_move_semantics()
+{
     Result<std::string> r1(std::string("hello"));
     ASSERT(r1);
     ASSERT(r1.value() == "hello");
@@ -169,7 +189,8 @@ static bool test_result_move_semantics() {
     return true;
 }
 
-static bool test_smo_try_void() {
+static bool test_smo_try_void()
+{
     // SMO_TRY on a void Result should not return if ok
     auto fn = []() -> Result<void> {
         SMO_TRY(Result<void>());
@@ -180,7 +201,8 @@ static bool test_smo_try_void() {
     return true;
 }
 
-static bool test_smo_try_propagates_error() {
+static bool test_smo_try_propagates_error()
+{
     // SMO_TRY on a void Result should propagate error
     auto fn = []() -> Result<void> {
         SMO_TRY(Result<void>(SMO_ERR(Internal, 1, Error, NoRetry, None, "nested fail")));
@@ -192,7 +214,8 @@ static bool test_smo_try_propagates_error() {
     return true;
 }
 
-static bool test_smo_try_val() {
+static bool test_smo_try_val()
+{
     // SMO_TRY_VAL on a value Result
     auto fn = []() -> Result<int> {
         SMO_TRY_VAL(auto val, Result<int>(42));
@@ -204,7 +227,8 @@ static bool test_smo_try_val() {
     return true;
 }
 
-static bool test_smo_try_val_propagates() {
+static bool test_smo_try_val_propagates()
+{
     auto fn = []() -> Result<int> {
         SMO_TRY_VAL(auto val, Result<int>(SMO_ERR(Storage, 2, Error, NoRetry, None, "no space")));
         (void)val;
@@ -220,32 +244,36 @@ static bool test_smo_try_val_propagates() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Error Model — Unit Tests\n");
     printf("============================\n\n");
 
-    TEST("ErrorCode default constructor")        END_TEST(test_error_code_default_constructor());
-    TEST("ErrorCode packed size == 4")           END_TEST(test_error_code_packed_size());
-    TEST("ErrorCode is_retryable")               END_TEST(test_error_code_is_retryable());
-    TEST("ErrorCode is_fatal")                   END_TEST(test_error_code_is_fatal());
-    TEST("Error constructor")                    END_TEST(test_error_constructor());
-    TEST("Error to_string")                      END_TEST(test_error_to_string());
-    TEST("SMO_ERR macro")                        END_TEST(test_smo_err_macro());
-    TEST("Result<int> ok")                       END_TEST(test_result_ok());
-    TEST("Result<int> error")                    END_TEST(test_result_error());
-    TEST("Result<void> ok")                      END_TEST(test_result_void_ok());
-    TEST("Result<void> error")                   END_TEST(test_result_void_error());
-    TEST("Result move semantics")                END_TEST(test_result_move_semantics());
-    TEST("SMO_TRY void ok")                      END_TEST(test_smo_try_void());
-    TEST("SMO_TRY propagates error")             END_TEST(test_smo_try_propagates_error());
-    TEST("SMO_TRY_VAL ok")                       END_TEST(test_smo_try_val());
-    TEST("SMO_TRY_VAL propagates error")         END_TEST(test_smo_try_val_propagates());
+    TEST("ErrorCode default constructor") END_TEST(test_error_code_default_constructor());
+    TEST("ErrorCode packed size == 4") END_TEST(test_error_code_packed_size());
+    TEST("ErrorCode is_retryable") END_TEST(test_error_code_is_retryable());
+    TEST("ErrorCode is_fatal") END_TEST(test_error_code_is_fatal());
+    TEST("Error constructor") END_TEST(test_error_constructor());
+    TEST("Error to_string") END_TEST(test_error_to_string());
+    TEST("SMO_ERR macro") END_TEST(test_smo_err_macro());
+    TEST("Result<int> ok") END_TEST(test_result_ok());
+    TEST("Result<int> error") END_TEST(test_result_error());
+    TEST("Result<void> ok") END_TEST(test_result_void_ok());
+    TEST("Result<void> error") END_TEST(test_result_void_error());
+    TEST("Result move semantics") END_TEST(test_result_move_semantics());
+    TEST("SMO_TRY void ok") END_TEST(test_smo_try_void());
+    TEST("SMO_TRY propagates error") END_TEST(test_smo_try_propagates_error());
+    TEST("SMO_TRY_VAL ok") END_TEST(test_smo_try_val());
+    TEST("SMO_TRY_VAL propagates error") END_TEST(test_smo_try_val_propagates());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

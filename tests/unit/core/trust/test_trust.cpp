@@ -8,72 +8,81 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_NEAR(a, b, eps)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        auto _diff_ = (a) - (b);                                                                                       \
+        if (_diff_ < 0)                                                                                                \
+            _diff_ = -_diff_;                                                                                          \
+        if (_diff_ > (eps))                                                                                            \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: |%s - %s| < %g\n"                                                 \
+                   "      diff=%g\n",                                                                                  \
+                   __FILE__, __LINE__, #a, #b, (double)(eps), (double)_diff_);                                         \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_NEAR(a, b, eps)                                          \
-    do {                                                                \
-        auto _diff_ = (a) - (b);                                        \
-        if (_diff_ < 0) _diff_ = -_diff_;                              \
-        if (_diff_ > (eps)) {                                           \
-            printf("\n    ASSERTION FAILED at %s:%d: |%s - %s| < %g\n" \
-                   "      diff=%g\n",                                   \
-                   __FILE__, __LINE__, #a, #b, (double)(eps),           \
-                   (double)_diff_);                                     \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Helper: make a NodeID with a given first byte
 // ==========================================================================
-static NodeID make_node_id(uint8_t first_byte) {
+static NodeID make_node_id(uint8_t first_byte)
+{
     NodeID id;
     id.value.fill(0);
     id.value[0] = first_byte;
@@ -83,7 +92,8 @@ static NodeID make_node_id(uint8_t first_byte) {
 // ==========================================================================
 // Tests — TrustLevel
 // ==========================================================================
-static bool test_trust_level_to_string() {
+static bool test_trust_level_to_string()
+{
     ASSERT(std::strcmp(to_string(TrustLevel::None), "None") == 0);
     ASSERT(std::strcmp(to_string(TrustLevel::Low), "Low") == 0);
     ASSERT(std::strcmp(to_string(TrustLevel::Medium), "Medium") == 0);
@@ -92,7 +102,8 @@ static bool test_trust_level_to_string() {
     return true;
 }
 
-static bool test_compute_trust_level() {
+static bool test_compute_trust_level()
+{
     ASSERT_EQ(static_cast<int>(TrustManager::compute_trust_level(0.0)), 0);
     ASSERT_EQ(static_cast<int>(TrustManager::compute_trust_level(0.19)), 0);
     ASSERT_EQ(static_cast<int>(TrustManager::compute_trust_level(0.2)), 1);
@@ -109,26 +120,30 @@ static bool test_compute_trust_level() {
 // ==========================================================================
 // Tests — compute_composite
 // ==========================================================================
-static bool test_compute_composite_zero() {
+static bool test_compute_composite_zero()
+{
     TrustComponents c;
     ASSERT_NEAR(compute_composite(c), 0.0, 0.0001);
     return true;
 }
 
-static bool test_compute_composite_full() {
+static bool test_compute_composite_full()
+{
     TrustComponents c{1.0, 1.0, 1.0, 1.0};
     ASSERT_NEAR(compute_composite(c), 1.0, 0.0001);
     return true;
 }
 
-static bool test_compute_composite_partial() {
+static bool test_compute_composite_partial()
+{
     TrustComponents c{0.5, 0.5, 0.5, 0.5};
     double expected = 0.5 * 0.2 + 0.5 * 0.5 + 0.5 * 0.2 + 0.5 * 0.1;
     ASSERT_NEAR(compute_composite(c), expected, 0.0001);
     return true;
 }
 
-static bool test_compute_composite_clamp() {
+static bool test_compute_composite_clamp()
+{
     TrustComponents c{2.0, 2.0, 2.0, 2.0};
     ASSERT_NEAR(compute_composite(c), 1.0, 0.0001);
     return true;
@@ -137,7 +152,8 @@ static bool test_compute_composite_clamp() {
 // ==========================================================================
 // Tests — TrustScore serialization
 // ==========================================================================
-static bool test_trust_score_roundtrip() {
+static bool test_trust_score_roundtrip()
+{
     TrustScore ts;
     ts.node_id = make_node_id(0xAA);
     ts.components.citizen = 0.8;
@@ -165,7 +181,8 @@ static bool test_trust_score_roundtrip() {
 // ==========================================================================
 // Tests — Attestation serialization
 // ==========================================================================
-static bool test_attestation_roundtrip() {
+static bool test_attestation_roundtrip()
+{
     Attestation att;
     att.witness_id = make_node_id(0x01);
     att.subject_id = make_node_id(0x02);
@@ -190,7 +207,8 @@ static bool test_attestation_roundtrip() {
 // ==========================================================================
 // Tests — TrustDigest serialization
 // ==========================================================================
-static bool test_trust_digest_roundtrip() {
+static bool test_trust_digest_roundtrip()
+{
     TrustDigest d;
     d.origin = make_node_id(0xAA);
     d.sequence = 7;
@@ -219,44 +237,47 @@ static bool test_trust_digest_roundtrip() {
 // ==========================================================================
 // Tests — TrustManager
 // ==========================================================================
-static bool test_trust_manager_record_success() {
+static bool test_trust_manager_record_success()
+{
     TrustManager tm;
     NodeID n = make_node_id(0x01);
 
     tm.record_success(n, 1.0, 100);
     auto score = tm.get_score(n);
     ASSERT(score);
-    ASSERT_NEAR(score.value(), 0.01 * 0.5, 0.0001);  // execution +0.01 * 0.5
+    ASSERT_NEAR(score.value(), 0.01 * 0.5, 0.0001); // execution +0.01 * 0.5
 
     return true;
 }
 
-static bool test_trust_manager_record_failure() {
+static bool test_trust_manager_record_failure()
+{
     TrustManager tm;
     NodeID n = make_node_id(0x01);
 
     tm.record_failure(n, 1.0, 100);
     auto score = tm.get_score(n);
     ASSERT(score);
-    ASSERT_NEAR(score.value(), 0.0, 0.0001);  // execution -0.02 → clamped to 0
+    ASSERT_NEAR(score.value(), 0.0, 0.0001); // execution -0.02 → clamped to 0
 
     return true;
 }
 
-static bool test_trust_manager_record_offline() {
+static bool test_trust_manager_record_offline()
+{
     TrustManager tm;
     NodeID n = make_node_id(0x01);
 
     tm.record_offline(n, 100);
     auto score = tm.get_score(n);
     ASSERT(score);
-    ASSERT_NEAR(score.value(), 0.0, 0.0001);  // citizen -= 0.001 → 0
+    ASSERT_NEAR(score.value(), 0.0, 0.0001); // citizen -= 0.001 → 0
 
     // Set up a non-zero citizen via direct component access via success+time
     // To give citizen non-zero, we use a custom TrustManager that mocks it:
     // We'll verify penalty via the score delta after multiple offline records
     tm.record_success(n, 1.0, 200);
-    tm.record_offline(n, 300);  // citizen 0 - 0.001 = 0 (clamped)
+    tm.record_offline(n, 300); // citizen 0 - 0.001 = 0 (clamped)
     // After success: execution=0.01, composite=0.005
     // Offline on zero citizen: no change
     auto score2 = tm.get_score(n);
@@ -266,7 +287,8 @@ static bool test_trust_manager_record_offline() {
     return true;
 }
 
-static bool test_trust_manager_get_score_not_found() {
+static bool test_trust_manager_get_score_not_found()
+{
     TrustManager tm;
     auto score = tm.get_score(make_node_id(0xFF));
     ASSERT(!score);
@@ -275,7 +297,8 @@ static bool test_trust_manager_get_score_not_found() {
     return true;
 }
 
-static bool test_trust_manager_trust_anchor() {
+static bool test_trust_manager_trust_anchor()
+{
     TrustManager tm;
     NodeID n = make_node_id(0xAA);
 
@@ -301,7 +324,8 @@ static bool test_trust_manager_trust_anchor() {
     return true;
 }
 
-static bool test_trust_manager_all_scores() {
+static bool test_trust_manager_all_scores()
+{
     TrustManager tm;
     tm.record_success(make_node_id(0x01), 1.0, 100);
     tm.record_success(make_node_id(0x02), 1.0, 200);
@@ -311,7 +335,8 @@ static bool test_trust_manager_all_scores() {
     return true;
 }
 
-static bool test_trust_manager_verify_attestation() {
+static bool test_trust_manager_verify_attestation()
+{
     TrustManager tm;
     Attestation att;
     att.witness_id = make_node_id(0x01);
@@ -345,7 +370,8 @@ static bool test_trust_manager_verify_attestation() {
     return true;
 }
 
-static bool test_trust_manager_apply_attestation() {
+static bool test_trust_manager_apply_attestation()
+{
     TrustManager tm;
     NodeID subject = make_node_id(0xAA);
 
@@ -371,7 +397,8 @@ static bool test_trust_manager_apply_attestation() {
     return true;
 }
 
-static bool test_trust_manager_produce_and_apply_digest() {
+static bool test_trust_manager_produce_and_apply_digest()
+{
     TrustManager tm1;
     NodeID n1 = make_node_id(0x01);
     NodeID n2 = make_node_id(0x02);
@@ -396,7 +423,8 @@ static bool test_trust_manager_produce_and_apply_digest() {
     return true;
 }
 
-static bool test_trust_manager_apply_empty_digest() {
+static bool test_trust_manager_apply_empty_digest()
+{
     TrustManager tm;
     TrustDigest d;
     d.origin = make_node_id(0xFF);
@@ -406,7 +434,8 @@ static bool test_trust_manager_apply_empty_digest() {
     return true;
 }
 
-static bool test_trust_manager_tick_decay() {
+static bool test_trust_manager_tick_decay()
+{
     TrustManager tm;
     NodeID n = make_node_id(0x01);
 
@@ -426,7 +455,8 @@ static bool test_trust_manager_tick_decay() {
     return true;
 }
 
-static bool test_trust_manager_serialization() {
+static bool test_trust_manager_serialization()
+{
     TrustManager tm1;
     NodeID n1 = make_node_id(0x01);
 
@@ -452,7 +482,8 @@ static bool test_trust_manager_serialization() {
     return true;
 }
 
-static bool test_trust_manager_config() {
+static bool test_trust_manager_config()
+{
     TrustConfig cfg;
     cfg.weight_citizen = 0.5;
     cfg.weight_execution = 0.3;
@@ -469,38 +500,42 @@ static bool test_trust_manager_config() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Trust — Unit Tests\n");
     printf("======================\n\n");
 
-    TEST("TrustLevel to_string")                            END_TEST(test_trust_level_to_string());
-    TEST("compute_trust_level")                             END_TEST(test_compute_trust_level());
-    TEST("compute_composite zero")                          END_TEST(test_compute_composite_zero());
-    TEST("compute_composite full")                          END_TEST(test_compute_composite_full());
-    TEST("compute_composite partial")                       END_TEST(test_compute_composite_partial());
-    TEST("compute_composite clamp")                         END_TEST(test_compute_composite_clamp());
-    TEST("TrustScore roundtrip")                            END_TEST(test_trust_score_roundtrip());
-    TEST("Attestation roundtrip")                           END_TEST(test_attestation_roundtrip());
-    TEST("TrustDigest roundtrip")                           END_TEST(test_trust_digest_roundtrip());
-    TEST("TM record_success")                               END_TEST(test_trust_manager_record_success());
-    TEST("TM record_failure")                               END_TEST(test_trust_manager_record_failure());
-    TEST("TM record_offline")                               END_TEST(test_trust_manager_record_offline());
-    TEST("TM get_score not found")                          END_TEST(test_trust_manager_get_score_not_found());
-    TEST("TM trust anchor")                                 END_TEST(test_trust_manager_trust_anchor());
-    TEST("TM all_scores")                                   END_TEST(test_trust_manager_all_scores());
-    TEST("TM verify_attestation")                           END_TEST(test_trust_manager_verify_attestation());
-    TEST("TM apply_attestation")                            END_TEST(test_trust_manager_apply_attestation());
-    TEST("TM produce and apply digest")                     END_TEST(test_trust_manager_produce_and_apply_digest());
-    TEST("TM apply empty digest")                           END_TEST(test_trust_manager_apply_empty_digest());
-    TEST("TM tick decay")                                   END_TEST(test_trust_manager_tick_decay());
-    TEST("TM serialization")                                END_TEST(test_trust_manager_serialization());
-    TEST("TM config")                                       END_TEST(test_trust_manager_config());
+    TEST("TrustLevel to_string") END_TEST(test_trust_level_to_string());
+    TEST("compute_trust_level") END_TEST(test_compute_trust_level());
+    TEST("compute_composite zero") END_TEST(test_compute_composite_zero());
+    TEST("compute_composite full") END_TEST(test_compute_composite_full());
+    TEST("compute_composite partial") END_TEST(test_compute_composite_partial());
+    TEST("compute_composite clamp") END_TEST(test_compute_composite_clamp());
+    TEST("TrustScore roundtrip") END_TEST(test_trust_score_roundtrip());
+    TEST("Attestation roundtrip") END_TEST(test_attestation_roundtrip());
+    TEST("TrustDigest roundtrip") END_TEST(test_trust_digest_roundtrip());
+    TEST("TM record_success") END_TEST(test_trust_manager_record_success());
+    TEST("TM record_failure") END_TEST(test_trust_manager_record_failure());
+    TEST("TM record_offline") END_TEST(test_trust_manager_record_offline());
+    TEST("TM get_score not found") END_TEST(test_trust_manager_get_score_not_found());
+    TEST("TM trust anchor") END_TEST(test_trust_manager_trust_anchor());
+    TEST("TM all_scores") END_TEST(test_trust_manager_all_scores());
+    TEST("TM verify_attestation") END_TEST(test_trust_manager_verify_attestation());
+    TEST("TM apply_attestation") END_TEST(test_trust_manager_apply_attestation());
+    TEST("TM produce and apply digest") END_TEST(test_trust_manager_produce_and_apply_digest());
+    TEST("TM apply empty digest") END_TEST(test_trust_manager_apply_empty_digest());
+    TEST("TM tick decay") END_TEST(test_trust_manager_tick_decay());
+    TEST("TM serialization") END_TEST(test_trust_manager_serialization());
+    TEST("TM config") END_TEST(test_trust_manager_config());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

@@ -12,60 +12,67 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Tests
 // ==========================================================================
 
-static bool test_endpoint_to_string() {
+static bool test_endpoint_to_string()
+{
     Endpoint ep;
     ep.scheme = "tcp";
     ep.host = "127.0.0.1";
@@ -80,7 +87,8 @@ static bool test_endpoint_to_string() {
     return true;
 }
 
-static bool test_endpoint_from_string() {
+static bool test_endpoint_from_string()
+{
     auto ep = Endpoint::from_string("tcp://127.0.0.1:7777");
     ASSERT(ep);
     ASSERT_STREQ(ep.value().scheme, "tcp");
@@ -96,7 +104,8 @@ static bool test_endpoint_from_string() {
     return true;
 }
 
-static bool test_endpoint_from_string_unix() {
+static bool test_endpoint_from_string_unix()
+{
     auto ep = Endpoint::from_string("unix:///var/run/smo.sock");
     ASSERT(ep);
     ASSERT_STREQ(ep.value().scheme, "unix");
@@ -104,7 +113,8 @@ static bool test_endpoint_from_string_unix() {
     return true;
 }
 
-static bool test_endpoint_from_string_host_only() {
+static bool test_endpoint_from_string_host_only()
+{
     auto ep = Endpoint::from_string("127.0.0.1");
     ASSERT(ep);
     ASSERT(ep.value().scheme.empty());
@@ -113,7 +123,8 @@ static bool test_endpoint_from_string_host_only() {
     return true;
 }
 
-static bool test_frame_write_read() {
+static bool test_frame_write_read()
+{
     Bytes payload = {0x01, 0x02, 0x03, 0x04};
     Bytes framed;
     frame_write(payload, kFrameFlagNone, framed);
@@ -136,7 +147,8 @@ static bool test_frame_write_read() {
     return true;
 }
 
-static bool test_frame_read_incomplete() {
+static bool test_frame_read_incomplete()
+{
     Bytes buf(4, 0);
     FrameHeader hdr;
     BytesView payload;
@@ -145,7 +157,8 @@ static bool test_frame_read_incomplete() {
     return true;
 }
 
-static bool test_frame_write_close() {
+static bool test_frame_write_close()
+{
     Bytes framed;
     frame_write(BytesView{}, kFrameFlagClose, framed);
 
@@ -161,7 +174,8 @@ static bool test_frame_write_close() {
     return true;
 }
 
-static bool test_registry_register_and_get() {
+static bool test_registry_register_and_get()
+{
     TransportRegistry reg;
     auto transport = std::make_unique<TcpTransport>();
     reg.register_transport(std::move(transport), "tcp");
@@ -176,7 +190,8 @@ static bool test_registry_register_and_get() {
     return true;
 }
 
-static bool test_registry_singleton() {
+static bool test_registry_singleton()
+{
     auto& inst1 = TransportRegistry::instance();
     auto& inst2 = TransportRegistry::instance();
     ASSERT(&inst1 == &inst2);
@@ -185,7 +200,8 @@ static bool test_registry_singleton() {
 
 // ── Loopback TCP test ──────────────────────────────────────────────────
 
-static bool test_tcp_connect_and_send() {
+static bool test_tcp_connect_and_send()
+{
     bool ok = true;
 
     TcpTransport transport;
@@ -195,16 +211,29 @@ static bool test_tcp_connect_and_send() {
     listen_ep.port = 0;
 
     auto listener = transport.listen(listen_ep);
-    if (!listener) return false;
+    if (!listener)
+        return false;
 
     auto local = listener.value()->local_endpoint();
 
     std::thread acceptor([&listener, &ok]() {
         auto session = listener.value()->accept();
-        if (!session) { ok = false; return; }
+        if (!session)
+        {
+            ok = false;
+            return;
+        }
         auto data = session.value()->recv(4096);
-        if (!data) { ok = false; return; }
-        if (data.value().size() != 5 || data.value()[0] != 0x48) { ok = false; return; }
+        if (!data)
+        {
+            ok = false;
+            return;
+        }
+        if (data.value().size() != 5 || data.value()[0] != 0x48)
+        {
+            ok = false;
+            return;
+        }
         session.value()->close();
     });
 
@@ -216,14 +245,16 @@ static bool test_tcp_connect_and_send() {
     remote.port = local.port;
 
     auto session = transport.connect(remote);
-    if (!session) {
+    if (!session)
+    {
         listener.value()->close();
         acceptor.join();
         return false;
     }
 
     Bytes data = {'H', 'e', 'l', 'l', 'o'};
-    if (!session.value()->send(data)) {
+    if (!session.value()->send(data))
+    {
         listener.value()->close();
         acceptor.join();
         return false;
@@ -235,7 +266,8 @@ static bool test_tcp_connect_and_send() {
     return ok;
 }
 
-static bool test_tcp_connect_refused() {
+static bool test_tcp_connect_refused()
+{
     TcpTransport transport;
 
     Endpoint remote;
@@ -251,27 +283,31 @@ static bool test_tcp_connect_refused() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Transport — Unit Tests\n");
     printf("===========================\n\n");
 
-    TEST("Endpoint to_string")                    END_TEST(test_endpoint_to_string());
-    TEST("Endpoint from_string")                  END_TEST(test_endpoint_from_string());
-    TEST("Endpoint from_string unix")             END_TEST(test_endpoint_from_string_unix());
-    TEST("Endpoint from_string host only")        END_TEST(test_endpoint_from_string_host_only());
-    TEST("Frame write/read")                      END_TEST(test_frame_write_read());
-    TEST("Frame read incomplete")                 END_TEST(test_frame_read_incomplete());
-    TEST("Frame write close")                     END_TEST(test_frame_write_close());
-    TEST("Registry register and get")             END_TEST(test_registry_register_and_get());
-    TEST("Registry singleton")                    END_TEST(test_registry_singleton());
-    TEST("TCP connect and send")                  END_TEST(test_tcp_connect_and_send());
-    TEST("TCP connect refused")                   END_TEST(test_tcp_connect_refused());
+    TEST("Endpoint to_string") END_TEST(test_endpoint_to_string());
+    TEST("Endpoint from_string") END_TEST(test_endpoint_from_string());
+    TEST("Endpoint from_string unix") END_TEST(test_endpoint_from_string_unix());
+    TEST("Endpoint from_string host only") END_TEST(test_endpoint_from_string_host_only());
+    TEST("Frame write/read") END_TEST(test_frame_write_read());
+    TEST("Frame read incomplete") END_TEST(test_frame_read_incomplete());
+    TEST("Frame write close") END_TEST(test_frame_write_close());
+    TEST("Registry register and get") END_TEST(test_registry_register_and_get());
+    TEST("Registry singleton") END_TEST(test_registry_singleton());
+    TEST("TCP connect and send") END_TEST(test_tcp_connect_and_send());
+    TEST("TCP connect refused") END_TEST(test_tcp_connect_refused());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

@@ -5,13 +5,14 @@
 
 namespace smo {
 
-class Blake3Provider : public HashProvider {
-public:
-    Blake3Provider();
+    class Blake3Provider : public HashProvider
+    {
+    public:
+        Blake3Provider();
 
-    Bytes hash(BytesView data) override;
+        Bytes hash(BytesView data) override;
 
-    static Result<void> register_as_default();
-};
+        static Result<void> register_as_default();
+    };
 
 } // namespace smo

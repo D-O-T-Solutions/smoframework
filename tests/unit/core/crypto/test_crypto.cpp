@@ -23,42 +23,51 @@ using namespace smo;
 
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
-    } while (false)
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // Secure utilities
 // ==========================================================================
 
-static bool test_zeroize() {
+static bool test_zeroize()
+{
     uint8_t buf[16];
     memset(buf, 0xFF, sizeof(buf));
     secure::zeroize(buf, sizeof(buf));
-    for (auto b : buf) ASSERT(b == 0);
+    for (auto b : buf)
+        ASSERT(b == 0);
     return true;
 }
 
-static bool test_secure_buffer() {
+static bool test_secure_buffer()
+{
     {
         secure::SecureBuffer sb(32);
         ASSERT(sb.size() == 32);
@@ -68,17 +77,19 @@ static bool test_secure_buffer() {
     return true;
 }
 
-static bool test_constant_time_compare() {
-    uint8_t a[8] = {1,2,3,4,5,6,7,8};
-    uint8_t b[8] = {1,2,3,4,5,6,7,8};
-    uint8_t c[8] = {1,2,3,4,5,6,7,9};
+static bool test_constant_time_compare()
+{
+    uint8_t a[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    uint8_t b[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    uint8_t c[8] = {1, 2, 3, 4, 5, 6, 7, 9};
     ASSERT(secure::constant_time_compare(a, b, 8));
     ASSERT(!secure::constant_time_compare(a, c, 8));
     ASSERT(secure::constant_time_compare(a, b, 0)); // empty
     return true;
 }
 
-static bool test_getrandom() {
+static bool test_getrandom()
+{
     uint8_t buf1[32], buf2[32];
     random::fill(BytesMutView{buf1, 32});
     random::fill(BytesMutView{buf2, 32});
@@ -91,7 +102,8 @@ static bool test_getrandom() {
 // SHA-256
 // ==========================================================================
 
-static bool test_sha256_known() {
+static bool test_sha256_known()
+{
     hash::Sha256Provider h;
     auto result = h.hash(BytesView{});
     // SHA-256("") = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -103,7 +115,8 @@ static bool test_sha256_known() {
     return true;
 }
 
-static bool test_sha256_hello() {
+static bool test_sha256_hello()
+{
     hash::Sha256Provider h;
     auto data = BytesView(reinterpret_cast<const uint8_t*>("hello"), 5);
     auto result = h.hash(data);
@@ -119,10 +132,9 @@ static bool test_sha256_hello() {
 // Ed25519
 // ==========================================================================
 
-static bool test_ed25519_sign_verify() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_ed25519_sign_verify()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto kp = signer::Ed25519Provider::generate_keypair(rng);
     Bytes msg = {0x01, 0x02, 0x03, 0x04};
@@ -135,10 +147,9 @@ static bool test_ed25519_sign_verify() {
     return true;
 }
 
-static bool test_ed25519_reject_bad_sig() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_ed25519_reject_bad_sig()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto kp = signer::Ed25519Provider::generate_keypair(rng);
     Bytes msg = {0x01, 0x02, 0x03, 0x04};
@@ -154,10 +165,9 @@ static bool test_ed25519_reject_bad_sig() {
 // X25519
 // ==========================================================================
 
-static bool test_x25519_encap_decap() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_x25519_encap_decap()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto alice = kem::X25519Provider::generate_keypair(rng);
     auto bob = kem::X25519Provider::generate_keypair(rng);
@@ -177,7 +187,8 @@ static bool test_x25519_encap_decap() {
 // XChaCha20-Poly1305
 // ==========================================================================
 
-static bool test_xchacha20_encrypt_decrypt() {
+static bool test_xchacha20_encrypt_decrypt()
+{
     Bytes key(32, 0xAB);
     Bytes nonce(24, 0xCD);
     Bytes plaintext = {0x01, 0x02, 0x03, 0x04, 0x05};
@@ -191,7 +202,8 @@ static bool test_xchacha20_encrypt_decrypt() {
     return true;
 }
 
-static bool test_xchacha20_reject_tampered() {
+static bool test_xchacha20_reject_tampered()
+{
     Bytes key(32, 0xAB);
     Bytes nonce(24, 0xCD);
     Bytes plaintext = {0x01, 0x02, 0x03, 0x04, 0x05};
@@ -201,9 +213,12 @@ static bool test_xchacha20_reject_tampered() {
     ct[0] ^= 0x01; // tamper
 
     bool threw = false;
-    try {
+    try
+    {
         aead::XChaCha20Provider::decrypt(ct, aad, key, nonce);
-    } catch (...) {
+    }
+    catch (...)
+    {
         threw = true;
     }
     ASSERT(threw);
@@ -214,7 +229,8 @@ static bool test_xchacha20_reject_tampered() {
 // HKDF
 // ==========================================================================
 
-static bool test_hkdf_basic() {
+static bool test_hkdf_basic()
+{
     Bytes salt = {0x01, 0x02, 0x03, 0x04};
     Bytes ikm = {0x05, 0x06, 0x07, 0x08};
     Bytes info = {0x09, 0x0A};
@@ -230,10 +246,9 @@ static bool test_hkdf_basic() {
 
 #ifdef SMO_WITH_PQC
 
-static bool test_mldsa_sign_verify() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_mldsa_sign_verify()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto kp = signer::MLDSAProvider::generate_keypair(rng);
     Bytes msg = {0x01, 0x02, 0x03, 0x04};
@@ -246,10 +261,9 @@ static bool test_mldsa_sign_verify() {
     return true;
 }
 
-static bool test_mldsa_reject_bad_sig() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_mldsa_reject_bad_sig()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto kp = signer::MLDSAProvider::generate_keypair(rng);
     Bytes msg = {0x01, 0x02, 0x03, 0x04};
@@ -265,10 +279,9 @@ static bool test_mldsa_reject_bad_sig() {
 // ML-KEM (PQC KEM)
 // ==========================================================================
 
-static bool test_mlkem_encap_decap() {
-    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) {
-        random::fill(BytesMutView{buf, len});
-    });
+static bool test_mlkem_encap_decap()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
 
     auto alice = kem::MLKEMProvider::generate_keypair(rng);
     auto bob = kem::MLKEMProvider::generate_keypair(rng);
@@ -288,7 +301,8 @@ static bool test_mlkem_encap_decap() {
 // CryptoRegistry suite tests
 // ==========================================================================
 
-static bool test_crypto_suite_constants() {
+static bool test_crypto_suite_constants()
+{
     ASSERT(kSuiteClassical == 1);
     ASSERT(kSuiteHybridPQC == 2);
     ASSERT(kSuitePurePQC == 3);
@@ -297,7 +311,8 @@ static bool test_crypto_suite_constants() {
     return true;
 }
 
-static bool test_hash_suite_classification() {
+static bool test_hash_suite_classification()
+{
     ASSERT(is_crypto_hash(HashSuite::Blake3));
     ASSERT(is_crypto_hash(HashSuite::Sha256));
     ASSERT(is_crypto_hash(HashSuite::Sha3_256));
@@ -315,48 +330,66 @@ static bool test_hash_suite_classification() {
 // Main
 // ==========================================================================
 
-int main() {
+int main()
+{
     printf("=== SMO Crypto Architecture Tests ===\n\n");
 
     printf("[Secure Utilities]\n");
-    TEST("Zeroize memory");             END_TEST(test_zeroize());
-    TEST("SecureBuffer RAII");          END_TEST(test_secure_buffer());
-    TEST("Constant-time compare");      END_TEST(test_constant_time_compare());
-    TEST("getrandom CSPRNG");           END_TEST(test_getrandom());
+    TEST("Zeroize memory");
+    END_TEST(test_zeroize());
+    TEST("SecureBuffer RAII");
+    END_TEST(test_secure_buffer());
+    TEST("Constant-time compare");
+    END_TEST(test_constant_time_compare());
+    TEST("getrandom CSPRNG");
+    END_TEST(test_getrandom());
 
     printf("\n[SHA-256]\n");
-    TEST("Empty hash known vector");    END_TEST(test_sha256_known());
-    TEST("Hello hash known vector");    END_TEST(test_sha256_hello());
+    TEST("Empty hash known vector");
+    END_TEST(test_sha256_known());
+    TEST("Hello hash known vector");
+    END_TEST(test_sha256_hello());
 
     printf("\n[Ed25519]\n");
-    TEST("Sign and verify");            END_TEST(test_ed25519_sign_verify());
-    TEST("Reject bad signature");       END_TEST(test_ed25519_reject_bad_sig());
+    TEST("Sign and verify");
+    END_TEST(test_ed25519_sign_verify());
+    TEST("Reject bad signature");
+    END_TEST(test_ed25519_reject_bad_sig());
 
     printf("\n[X25519]\n");
-    TEST("Encapsulate/Decapsulate");    END_TEST(test_x25519_encap_decap());
+    TEST("Encapsulate/Decapsulate");
+    END_TEST(test_x25519_encap_decap());
 
     printf("\n[XChaCha20-Poly1305]\n");
-    TEST("Encrypt and decrypt");        END_TEST(test_xchacha20_encrypt_decrypt());
-    TEST("Reject tampered ciphertext"); END_TEST(test_xchacha20_reject_tampered());
+    TEST("Encrypt and decrypt");
+    END_TEST(test_xchacha20_encrypt_decrypt());
+    TEST("Reject tampered ciphertext");
+    END_TEST(test_xchacha20_reject_tampered());
 
     printf("\n[HKDF]\n");
-    TEST("Basic derive");               END_TEST(test_hkdf_basic());
+    TEST("Basic derive");
+    END_TEST(test_hkdf_basic());
 
 #ifdef SMO_WITH_PQC
     printf("\n[ML-DSA (PQC)]\n");
-    TEST("Sign and verify");            END_TEST(test_mldsa_sign_verify());
-    TEST("Reject bad signature");       END_TEST(test_mldsa_reject_bad_sig());
+    TEST("Sign and verify");
+    END_TEST(test_mldsa_sign_verify());
+    TEST("Reject bad signature");
+    END_TEST(test_mldsa_reject_bad_sig());
 
     printf("\n[ML-KEM (PQC)]\n");
-    TEST("Encapsulate/Decapsulate");    END_TEST(test_mlkem_encap_decap());
+    TEST("Encapsulate/Decapsulate");
+    END_TEST(test_mlkem_encap_decap());
 #else
     printf("\n[PQC]\n");
     printf("  SKIPPED (WITH_PQC=OFF)\n");
 #endif
 
     printf("\n[Suite Constants]\n");
-    TEST("CryptoSuiteID values");       END_TEST(test_crypto_suite_constants());
-    TEST("HashSuite classification");   END_TEST(test_hash_suite_classification());
+    TEST("CryptoSuiteID values");
+    END_TEST(test_crypto_suite_constants());
+    TEST("HashSuite classification");
+    END_TEST(test_hash_suite_classification());
 
     printf("\n=== %s ===\n", failures ? "FAILURES" : "ALL PASS");
     return failures ? 1 : 0;

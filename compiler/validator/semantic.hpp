@@ -6,9 +6,10 @@
 
 namespace smo {
 
-class SemanticValidator {
-public:
-    Result<SmirModule> validate(const SmirModule& module, const ContractAst& ast);
-};
+    class SemanticValidator
+    {
+    public:
+        Result<SmirModule> validate(const SmirModule& module, const ContractAst& ast);
+    };
 
 } // namespace smo

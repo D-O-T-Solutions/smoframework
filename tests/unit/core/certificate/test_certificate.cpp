@@ -13,38 +13,45 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%d  RHS=%d\n",                            \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<int>(a), static_cast<int>(b));           \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%d  RHS=%d\n",                                                                           \
+                   __FILE__, __LINE__, #a, #b, static_cast<int>(a), static_cast<int>(b));                              \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
@@ -53,86 +60,117 @@ static int failures = 0;
 
 static uint8_t g_counter = 0;
 
-static void mock_fill(void*, uint8_t* buf, size_t len) {
-    for (size_t i = 0; i < len; ++i) buf[i] = g_counter++;
+static void mock_fill(void*, uint8_t* buf, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+        buf[i] = g_counter++;
 }
 
-static Result<Bytes> mock_hash(BytesView data) {
+static Result<Bytes> mock_hash(BytesView data)
+{
     Bytes out(32, 0);
     out[0] = static_cast<uint8_t>(data.size() & 0xFF);
-    for (size_t i = 0; i < data.size(); ++i) out[(i % 31) + 1] ^= data[i];
+    for (size_t i = 0; i < data.size(); ++i)
+        out[(i % 31) + 1] ^= data[i];
     return out;
 }
 
-static Result<Bytes> mock_hmac(BytesView key, BytesView data) {
+static Result<Bytes> mock_hmac(BytesView key, BytesView data)
+{
     (void)key;
     return mock_hash(data);
 }
 
-static Result<Bytes> mock_encrypt(BytesView pt, BytesView aad, BytesView key, BytesView nonce) {
-    (void)aad; (void)key; (void)nonce;
+static Result<Bytes> mock_encrypt(BytesView pt, BytesView aad, BytesView key, BytesView nonce)
+{
+    (void)aad;
+    (void)key;
+    (void)nonce;
     Bytes out(pt.size());
-    for (size_t i = 0; i < pt.size(); ++i) out[i] = static_cast<uint8_t>(pt[i] ^ 0xAA);
+    for (size_t i = 0; i < pt.size(); ++i)
+        out[i] = static_cast<uint8_t>(pt[i] ^ 0xAA);
     return out;
 }
 
-static Result<Bytes> mock_decrypt(BytesView ct, BytesView aad, BytesView key, BytesView nonce) {
-    (void)aad; (void)key; (void)nonce;
+static Result<Bytes> mock_decrypt(BytesView ct, BytesView aad, BytesView key, BytesView nonce)
+{
+    (void)aad;
+    (void)key;
+    (void)nonce;
     Bytes out(ct.size());
-    for (size_t i = 0; i < ct.size(); ++i) out[i] = static_cast<uint8_t>(ct[i] ^ 0xAA);
+    for (size_t i = 0; i < ct.size(); ++i)
+        out[i] = static_cast<uint8_t>(ct[i] ^ 0xAA);
     return out;
 }
 
-static Result<EncapsResult> mock_encaps(BytesView pubkey, RngRef& rng) {
+static Result<EncapsResult> mock_encaps(BytesView pubkey, RngRef& rng)
+{
     (void)pubkey;
-    Bytes ct(32); rng.fill(ct);
-    Bytes ss(32); rng.fill(ss);
+    Bytes ct(32);
+    rng.fill(ct);
+    Bytes ss(32);
+    rng.fill(ss);
     return EncapsResult{std::move(ct), std::move(ss)};
 }
 
-static Result<Bytes> mock_decaps(BytesView privkey, BytesView ciphertext) {
-    (void)privkey; (void)ciphertext;
+static Result<Bytes> mock_decaps(BytesView privkey, BytesView ciphertext)
+{
+    (void)privkey;
+    (void)ciphertext;
     return Bytes(32, 0x42);
 }
 
-static Result<KeypairResult> mock_keygen(RngRef& rng) {
-    Bytes pk(32); rng.fill(pk);
-    Bytes sk(32); rng.fill(sk);
+static Result<KeypairResult> mock_keygen(RngRef& rng)
+{
+    Bytes pk(32);
+    rng.fill(pk);
+    Bytes sk(32);
+    rng.fill(sk);
     return KeypairResult{std::move(pk), std::move(sk)};
 }
 
 static const uint8_t kMockKey = 0x42;
 
-static Result<Bytes> mock_sign(BytesView msg, BytesView sk, RngRef& rng) {
-    (void)sk; (void)rng;
+static Result<Bytes> mock_sign(BytesView msg, BytesView sk, RngRef& rng)
+{
+    (void)sk;
+    (void)rng;
     Bytes sig(msg.size());
-    for (size_t i = 0; i < msg.size(); ++i) sig[i] = static_cast<uint8_t>(msg[i] ^ kMockKey);
+    for (size_t i = 0; i < msg.size(); ++i)
+        sig[i] = static_cast<uint8_t>(msg[i] ^ kMockKey);
     return sig;
 }
 
-static Result<bool> mock_verify(BytesView msg, BytesView sig, BytesView pk) {
+static Result<bool> mock_verify(BytesView msg, BytesView sig, BytesView pk)
+{
     (void)pk;
-    if (sig.size() != msg.size()) return false;
-    for (size_t i = 0; i < msg.size(); ++i) {
-        if (sig[i] != static_cast<uint8_t>(msg[i] ^ kMockKey)) return false;
+    if (sig.size() != msg.size())
+        return false;
+    for (size_t i = 0; i < msg.size(); ++i)
+    {
+        if (sig[i] != static_cast<uint8_t>(msg[i] ^ kMockKey))
+            return false;
     }
     return true;
 }
 
-static const CryptoProvider kMockSuite1{
-    1, "Classical", nullptr, mock_fill,
-    { mock_hash, mock_hmac },
-    { nullptr, nullptr },  // perf_hash — not used
-    { mock_encrypt, mock_decrypt },
-    { mock_keygen, mock_encaps, mock_decaps },
-    { mock_keygen, mock_sign, mock_verify }
-};
+static const CryptoProvider kMockSuite1{1,
+                                        "Classical",
+                                        nullptr,
+                                        mock_fill,
+                                        {mock_hash, mock_hmac},
+                                        {nullptr, nullptr}, // perf_hash — not used
+                                        {mock_encrypt, mock_decrypt},
+                                        {mock_keygen, mock_encaps, mock_decaps},
+                                        {mock_keygen, mock_sign, mock_verify}};
 
 // Generate a deterministic keypair from the mock
-static bool make_keypair(Bytes& pk, Bytes& sk) {
+static bool make_keypair(Bytes& pk, Bytes& sk)
+{
     RngRef rng(nullptr, mock_fill);
     auto kp = mock_keygen(rng);
-    if (!kp) return false;
+    if (!kp)
+        return false;
     pk = std::move(kp.value().public_key);
     sk = std::move(kp.value().secret_key);
     return true;
@@ -142,7 +180,8 @@ static bool make_keypair(Bytes& pk, Bytes& sk) {
 // Tests
 // ==========================================================================
 
-static bool test_role_to_string() {
+static bool test_role_to_string()
+{
     ASSERT(std::strcmp(to_string(Role::Root), "Root") == 0);
     ASSERT(std::strcmp(to_string(Role::Authority), "Authority") == 0);
     ASSERT(std::strcmp(to_string(Role::Contributor), "Contributor") == 0);
@@ -152,7 +191,8 @@ static bool test_role_to_string() {
     return true;
 }
 
-static bool test_certificate_serialize_roundtrip() {
+static bool test_certificate_serialize_roundtrip()
+{
     Certificate cert;
     cert.mesh_id = Bytes(32, 0xAA);
     cert.subject_pubkey = Bytes(32, 0xBB);
@@ -177,15 +217,17 @@ static bool test_certificate_serialize_roundtrip() {
     return true;
 }
 
-static bool test_certificate_deserialize_truncated_fails() {
-    Bytes bad = { 0, 0, 0, 1, 0xAA };  // truncated
+static bool test_certificate_deserialize_truncated_fails()
+{
+    Bytes bad = {0, 0, 0, 1, 0xAA}; // truncated
     auto r = Certificate::deserialize(bad);
     ASSERT(!r);
     ASSERT_EQ(r.error().code.category, ErrorCategory::Certificate);
     return true;
 }
 
-static bool test_certificate_cert_hash() {
+static bool test_certificate_cert_hash()
+{
     Certificate cert;
     cert.mesh_id = Bytes(32, 0x01);
     cert.subject_pubkey = Bytes(32, 0x02);
@@ -198,7 +240,8 @@ static bool test_certificate_cert_hash() {
     return true;
 }
 
-static bool test_certificate_sign_and_verify() {
+static bool test_certificate_sign_and_verify()
+{
     Bytes issuer_pk, issuer_sk;
     ASSERT(make_keypair(issuer_pk, issuer_sk));
 
@@ -227,21 +270,23 @@ static bool test_certificate_sign_and_verify() {
     return true;
 }
 
-static bool test_certificate_verify_bad_signature() {
+static bool test_certificate_verify_bad_signature()
+{
     Certificate cert;
     cert.mesh_id = Bytes(32, 0xBB);
     cert.subject_pubkey = Bytes(32, 0x01);
     cert.issuer_pubkey = Bytes(32, 0x02);
     cert.role = Role::Reader;
-    cert.signature = Bytes{1, 2, 3};  // garbage
+    cert.signature = Bytes{1, 2, 3}; // garbage
 
     auto ok = cert.verify(kMockSuite1.signer);
     ASSERT(ok);
-    ASSERT(!ok.value());  // should verify to false (not error)
+    ASSERT(!ok.value()); // should verify to false (not error)
     return true;
 }
 
-static bool test_certificate_verify_empty_sig_fails() {
+static bool test_certificate_verify_empty_sig_fails()
+{
     Certificate cert;
     cert.issuer_pubkey = Bytes(32, 0x01);
     // signature is empty by default
@@ -251,7 +296,8 @@ static bool test_certificate_verify_empty_sig_fails() {
     return true;
 }
 
-static bool test_certificate_is_valid_at() {
+static bool test_certificate_is_valid_at()
+{
     Certificate cert;
     cert.not_before = 100;
     cert.not_after = 200;
@@ -264,7 +310,8 @@ static bool test_certificate_is_valid_at() {
     return true;
 }
 
-static bool test_certificate_chain_verify() {
+static bool test_certificate_chain_verify()
+{
     Bytes root_pk, root_sk;
     ASSERT(make_keypair(root_pk, root_sk));
     Bytes auth_pk, auth_sk;
@@ -278,7 +325,7 @@ static bool test_certificate_chain_verify() {
     Certificate root_cert;
     root_cert.mesh_id = Bytes(32, 0xAA);
     root_cert.subject_pubkey = root_pk;
-    root_cert.issuer_pubkey = root_pk;  // self-signed
+    root_cert.issuer_pubkey = root_pk; // self-signed
     root_cert.role = Role::Root;
     root_cert.not_after = 9999999999;
     {
@@ -327,7 +374,8 @@ static bool test_certificate_chain_verify() {
     return true;
 }
 
-static bool test_certificate_chain_bad_linkage() {
+static bool test_certificate_chain_bad_linkage()
+{
     Bytes pk_a, sk_a;
     ASSERT(make_keypair(pk_a, sk_a));
     Bytes pk_b, sk_b;
@@ -350,7 +398,7 @@ static bool test_certificate_chain_bad_linkage() {
     // Node cert — issuer_pubkey doesn't match root's subject_pubkey
     Certificate node;
     node.subject_pubkey = pk_b;
-    node.issuer_pubkey = pk_b;  // wrong — should be pk_a
+    node.issuer_pubkey = pk_b; // wrong — should be pk_a
     node.role = Role::Reader;
     node.not_after = 9999999999;
     {
@@ -370,7 +418,8 @@ static bool test_certificate_chain_bad_linkage() {
     return true;
 }
 
-static bool test_certificate_chain_empty_fails() {
+static bool test_certificate_chain_empty_fails()
+{
     CertificateChain chain;
     auto r = chain.verify(kMockSuite1, Bytes{});
     ASSERT(!r);
@@ -378,11 +427,14 @@ static bool test_certificate_chain_empty_fails() {
     return true;
 }
 
-static bool test_certificate_chain_valid_at() {
+static bool test_certificate_chain_valid_at()
+{
     CertificateChain chain;
     Certificate c1, c2;
-    c1.not_before = 0; c1.not_after = 100;
-    c2.not_before = 50; c2.not_after = 150;
+    c1.not_before = 0;
+    c1.not_after = 100;
+    c2.not_before = 50;
+    c2.not_after = 150;
     chain.push_back(std::move(c1));
     chain.push_back(std::move(c2));
 
@@ -392,7 +444,8 @@ static bool test_certificate_chain_valid_at() {
     return true;
 }
 
-static bool test_csr_serialize_roundtrip() {
+static bool test_csr_serialize_roundtrip()
+{
     CertificateSigningRequest csr;
     csr.new_public_key = Bytes(32, 0x01);
     csr.mesh_id = Bytes(32, 0x02);
@@ -415,7 +468,8 @@ static bool test_csr_serialize_roundtrip() {
     return true;
 }
 
-static bool test_csr_sign_and_verify() {
+static bool test_csr_sign_and_verify()
+{
     Bytes pk, sk;
     ASSERT(make_keypair(pk, sk));
 
@@ -438,7 +492,8 @@ static bool test_csr_sign_and_verify() {
     return true;
 }
 
-static bool test_csr_verify_bad_signature() {
+static bool test_csr_verify_bad_signature()
+{
     Bytes pk, sk;
     ASSERT(make_keypair(pk, sk));
 
@@ -449,11 +504,11 @@ static bool test_csr_verify_bad_signature() {
     csr.platform = "linux";
     csr.version = "3.2.1";
     csr.timestamp = 1000;
-    csr.signature = Bytes{0, 1, 2, 3};  // garbage
+    csr.signature = Bytes{0, 1, 2, 3}; // garbage
 
     auto ok = csr.verify(kMockSuite1.signer, pk);
     ASSERT(ok);
-    ASSERT(!ok.value());  // should return false, not error
+    ASSERT(!ok.value()); // should return false, not error
     return true;
 }
 
@@ -461,31 +516,35 @@ static bool test_csr_verify_bad_signature() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Certificate — Unit Tests\n");
     printf("=============================\n\n");
 
-    TEST("Role to_string")                          END_TEST(test_role_to_string());
-    TEST("Certificate serialize roundtrip")         END_TEST(test_certificate_serialize_roundtrip());
+    TEST("Role to_string") END_TEST(test_role_to_string());
+    TEST("Certificate serialize roundtrip") END_TEST(test_certificate_serialize_roundtrip());
     TEST("Certificate deserialize truncated fails") END_TEST(test_certificate_deserialize_truncated_fails());
-    TEST("Certificate cert_hash")                   END_TEST(test_certificate_cert_hash());
-    TEST("Certificate sign + verify")               END_TEST(test_certificate_sign_and_verify());
-    TEST("Certificate verify bad signature")        END_TEST(test_certificate_verify_bad_signature());
-    TEST("Certificate verify empty sig fails")      END_TEST(test_certificate_verify_empty_sig_fails());
-    TEST("Certificate is_valid_at")                 END_TEST(test_certificate_is_valid_at());
-    TEST("CertificateChain verify")                 END_TEST(test_certificate_chain_verify());
-    TEST("CertificateChain bad linkage")            END_TEST(test_certificate_chain_bad_linkage());
-    TEST("CertificateChain empty fails")            END_TEST(test_certificate_chain_empty_fails());
-    TEST("CertificateChain is_valid_at")            END_TEST(test_certificate_chain_valid_at());
-    TEST("CSR serialize roundtrip")                 END_TEST(test_csr_serialize_roundtrip());
-    TEST("CSR sign + verify")                       END_TEST(test_csr_sign_and_verify());
-    TEST("CSR verify bad signature")                END_TEST(test_csr_verify_bad_signature());
+    TEST("Certificate cert_hash") END_TEST(test_certificate_cert_hash());
+    TEST("Certificate sign + verify") END_TEST(test_certificate_sign_and_verify());
+    TEST("Certificate verify bad signature") END_TEST(test_certificate_verify_bad_signature());
+    TEST("Certificate verify empty sig fails") END_TEST(test_certificate_verify_empty_sig_fails());
+    TEST("Certificate is_valid_at") END_TEST(test_certificate_is_valid_at());
+    TEST("CertificateChain verify") END_TEST(test_certificate_chain_verify());
+    TEST("CertificateChain bad linkage") END_TEST(test_certificate_chain_bad_linkage());
+    TEST("CertificateChain empty fails") END_TEST(test_certificate_chain_empty_fails());
+    TEST("CertificateChain is_valid_at") END_TEST(test_certificate_chain_valid_at());
+    TEST("CSR serialize roundtrip") END_TEST(test_csr_serialize_roundtrip());
+    TEST("CSR sign + verify") END_TEST(test_csr_sign_and_verify());
+    TEST("CSR verify bad signature") END_TEST(test_csr_verify_bad_signature());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

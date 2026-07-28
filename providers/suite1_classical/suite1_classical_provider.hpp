@@ -4,10 +4,10 @@
 #include "core/crypto/fwd.hpp"
 
 namespace smo {
-namespace providers {
+    namespace providers {
 
-const CryptoProvider& get_suite1_classical_provider() noexcept;
-void register_suite1_classical();
+        const CryptoProvider& get_suite1_classical_provider() noexcept;
+        void register_suite1_classical();
 
-} // namespace providers
+    } // namespace providers
 } // namespace smo

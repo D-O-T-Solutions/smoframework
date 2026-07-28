@@ -9,60 +9,77 @@ using namespace smo;
 // ---------------------------------------------------------------------------
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // FSM test: simple 3-state machine
 // ==========================================================================
 
-enum : FsmState { S_IDLE = 0, S_RUNNING = 1, S_STOPPED = 2 };
-enum : FsmEvent { E_START = 10, E_STOP = 11, E_RESET = 12 };
+enum : FsmState
+{
+    S_IDLE = 0,
+    S_RUNNING = 1,
+    S_STOPPED = 2
+};
+enum : FsmEvent
+{
+    E_START = 10,
+    E_STOP = 11,
+    E_RESET = 12
+};
 
 static const TransitionRule kRules[] = {
-    { S_IDLE,    E_START, S_RUNNING },
-    { S_RUNNING, E_STOP,  S_STOPPED },
-    { S_RUNNING, E_RESET, S_IDLE    },
-    { S_STOPPED, E_RESET, S_IDLE    },
+    {S_IDLE, E_START, S_RUNNING},
+    {S_RUNNING, E_STOP, S_STOPPED},
+    {S_RUNNING, E_RESET, S_IDLE},
+    {S_STOPPED, E_RESET, S_IDLE},
 };
 
 // ==========================================================================
 // Tests
 // ==========================================================================
 
-static bool test_basic_transition() {
+static bool test_basic_transition()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -88,7 +105,8 @@ static bool test_basic_transition() {
     return true;
 }
 
-static bool test_invalid_event() {
+static bool test_invalid_event()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -103,7 +121,8 @@ static bool test_invalid_event() {
     return true;
 }
 
-static bool test_no_transitions_configured() {
+static bool test_no_transitions_configured()
+{
     FsmInstance fsm;
     fsm.reset(42);
 
@@ -113,15 +132,16 @@ static bool test_no_transitions_configured() {
     return true;
 }
 
-static bool test_history_audit_trail() {
+static bool test_history_audit_trail()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
 
-    fsm.on_event(E_START);  // idle → running
-    fsm.on_event(E_RESET);  // running → idle
-    fsm.on_event(E_START);  // idle → running
-    fsm.on_event(E_STOP);   // running → stopped
+    fsm.on_event(E_START); // idle → running
+    fsm.on_event(E_RESET); // running → idle
+    fsm.on_event(E_START); // idle → running
+    fsm.on_event(E_STOP);  // running → stopped
 
     const auto& hist = fsm.history();
     ASSERT_EQ(hist.size(), 4U);
@@ -147,19 +167,21 @@ static bool test_history_audit_trail() {
     ASSERT_EQ(hist[3].to_state, S_STOPPED);
 
     // Each record should have a non-empty state_hash
-    for (const auto& rec : hist) {
+    for (const auto& rec : hist)
+    {
         ASSERT(!rec.state_hash.empty());
     }
 
     return true;
 }
 
-static bool test_timeout_config() {
+static bool test_timeout_config()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
 
     const StateTimeout timeouts[] = {
-        { S_RUNNING, 5000000, S_STOPPED }  // 5ms → fallback to stopped
+        {S_RUNNING, 5000000, S_STOPPED} // 5ms → fallback to stopped
     };
     fsm.set_timeouts(timeouts, 1);
     fsm.reset(S_IDLE);
@@ -176,7 +198,8 @@ static bool test_timeout_config() {
     return true;
 }
 
-static bool test_timeout_no_config() {
+static bool test_timeout_no_config()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -190,22 +213,21 @@ static bool test_timeout_no_config() {
     return true;
 }
 
-static bool test_timeout_transition() {
+static bool test_timeout_transition()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
 
     // To handle timeout, we need a rule for the TIMEOUT event
     const TransitionRule rules_with_timeout[] = {
-        { S_IDLE,    E_START, S_RUNNING },
-        { S_RUNNING, E_STOP,  S_STOPPED },
-        { S_RUNNING, static_cast<FsmEvent>(-1), S_STOPPED },  // TIMEOUT → stopped
-        { S_STOPPED, E_RESET, S_IDLE    },
+        {S_IDLE, E_START, S_RUNNING},
+        {S_RUNNING, E_STOP, S_STOPPED},
+        {S_RUNNING, static_cast<FsmEvent>(-1), S_STOPPED}, // TIMEOUT → stopped
+        {S_STOPPED, E_RESET, S_IDLE},
     };
     fsm.set_transitions(rules_with_timeout, 4);
 
-    const StateTimeout timeouts[] = {
-        { S_RUNNING, 5000000, S_STOPPED }
-    };
+    const StateTimeout timeouts[] = {{S_RUNNING, 5000000, S_STOPPED}};
     fsm.set_timeouts(timeouts, 1);
     fsm.reset(S_IDLE);
     fsm.on_event(E_START);
@@ -219,7 +241,8 @@ static bool test_timeout_transition() {
     return true;
 }
 
-static bool test_serialization_roundtrip() {
+static bool test_serialization_roundtrip()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -232,10 +255,7 @@ static bool test_serialization_roundtrip() {
     auto ser = fsm.serialize();
     ASSERT(ser);
 
-    auto restored = FsmInstance::deserialize(
-        ser.value(),
-        kRules, sizeof(kRules) / sizeof(kRules[0]),
-        nullptr, 0);
+    auto restored = FsmInstance::deserialize(ser.value(), kRules, sizeof(kRules) / sizeof(kRules[0]), nullptr, 0);
 
     ASSERT(restored);
     ASSERT_EQ(restored.value().current_state(), fsm.current_state());
@@ -243,7 +263,8 @@ static bool test_serialization_roundtrip() {
 
     const auto& orig_hist = fsm.history();
     const auto& rest_hist = restored.value().history();
-    for (size_t i = 0; i < orig_hist.size(); ++i) {
+    for (size_t i = 0; i < orig_hist.size(); ++i)
+    {
         ASSERT_EQ(rest_hist[i].from_state, orig_hist[i].from_state);
         ASSERT_EQ(rest_hist[i].event, orig_hist[i].event);
         ASSERT_EQ(rest_hist[i].to_state, orig_hist[i].to_state);
@@ -253,7 +274,8 @@ static bool test_serialization_roundtrip() {
     return true;
 }
 
-static bool test_serialization_truncated_data() {
+static bool test_serialization_truncated_data()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -264,17 +286,15 @@ static bool test_serialization_truncated_data() {
 
     // Truncate the serialized data
     Bytes truncated(ser.value().begin(), ser.value().begin() + 5);
-    auto restored = FsmInstance::deserialize(
-        truncated,
-        kRules, sizeof(kRules) / sizeof(kRules[0]),
-        nullptr, 0);
+    auto restored = FsmInstance::deserialize(truncated, kRules, sizeof(kRules) / sizeof(kRules[0]), nullptr, 0);
     ASSERT(!restored);
     ASSERT_EQ(restored.error().code.code, 702);
 
     return true;
 }
 
-static bool test_reset_clears_history() {
+static bool test_reset_clears_history()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
@@ -290,13 +310,15 @@ static bool test_reset_clears_history() {
     return true;
 }
 
-static bool test_multiple_transitions_audit() {
+static bool test_multiple_transitions_audit()
+{
     FsmInstance fsm;
     fsm.set_transitions(kRules, sizeof(kRules) / sizeof(kRules[0]));
     fsm.reset(S_IDLE);
 
     // Run through many transitions to stress-history
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 100; ++i)
+    {
         fsm.on_event(E_START);
         fsm.on_event(E_STOP);
         fsm.on_event(E_RESET);
@@ -312,27 +334,31 @@ static bool test_multiple_transitions_audit() {
 // Main
 // ==========================================================================
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO FSM — Unit Tests\n");
     printf("====================\n\n");
 
-    TEST("Basic transition")                    END_TEST(test_basic_transition());
-    TEST("Invalid event fails")                 END_TEST(test_invalid_event());
-    TEST("No transitions configured")           END_TEST(test_no_transitions_configured());
-    TEST("History audit trail")                 END_TEST(test_history_audit_trail());
-    TEST("Timeout configuration")               END_TEST(test_timeout_config());
-    TEST("Timeout with no config")              END_TEST(test_timeout_no_config());
-    TEST("Timeout transition")                  END_TEST(test_timeout_transition());
-    TEST("Serialization roundtrip")             END_TEST(test_serialization_roundtrip());
-    TEST("Deserialize truncated fails")         END_TEST(test_serialization_truncated_data());
-    TEST("Reset clears history")                END_TEST(test_reset_clears_history());
-    TEST("Multiple transitions audit")          END_TEST(test_multiple_transitions_audit());
+    TEST("Basic transition") END_TEST(test_basic_transition());
+    TEST("Invalid event fails") END_TEST(test_invalid_event());
+    TEST("No transitions configured") END_TEST(test_no_transitions_configured());
+    TEST("History audit trail") END_TEST(test_history_audit_trail());
+    TEST("Timeout configuration") END_TEST(test_timeout_config());
+    TEST("Timeout with no config") END_TEST(test_timeout_no_config());
+    TEST("Timeout transition") END_TEST(test_timeout_transition());
+    TEST("Serialization roundtrip") END_TEST(test_serialization_roundtrip());
+    TEST("Deserialize truncated fails") END_TEST(test_serialization_truncated_data());
+    TEST("Reset clears history") END_TEST(test_reset_clears_history());
+    TEST("Multiple transitions audit") END_TEST(test_multiple_transitions_audit());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }

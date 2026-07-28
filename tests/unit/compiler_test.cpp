@@ -1,2 +1,5 @@
 // Compiler pipeline tests — placeholder.
-int main() { return 0; }
+int main()
+{
+    return 0;
+}

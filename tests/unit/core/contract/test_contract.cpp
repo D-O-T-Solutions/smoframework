@@ -12,57 +12,67 @@ using namespace smo;
 
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n",       \
-                   __FILE__, __LINE__, #a, #b);                         \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n", __FILE__, __LINE__, #a, #b);                         \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
 // ==========================================================================
 // HashProvider tests
 // ==========================================================================
 
-static bool test_hash_hex() {
+static bool test_hash_hex()
+{
     auto h = HashProvider::default_provider().hash_hex("");
     ASSERT(h.size() == 64);
     ASSERT(h.find("af1349b9") == 0);
     return true;
 }
 
-static bool test_hash_known() {
+static bool test_hash_known()
+{
     auto h = HashProvider::default_provider().hash_hex("hello");
     ASSERT(h.size() == 64);
     ASSERT(h.find("ea8f163d") == 0);
     return true;
 }
 
-static bool test_hex_roundtrip() {
+static bool test_hex_roundtrip()
+{
     auto h = HashProvider::default_provider().hash_hex("test data");
     auto raw = HashProvider::hex_to_bytes(h);
     auto h2 = HashProvider::bytes_to_hex(raw);
@@ -74,7 +84,8 @@ static bool test_hex_roundtrip() {
 // ContractID tests
 // ==========================================================================
 
-static bool test_contract_id_from_json() {
+static bool test_contract_id_from_json()
+{
     std::string json = R"({"key":"value","contract_version":"1.0"})";
     auto cid = ContractID::compute(json);
     ASSERT(cid.to_hex().size() == 64);
@@ -83,7 +94,8 @@ static bool test_contract_id_from_json() {
     return true;
 }
 
-static bool test_contract_id_deterministic() {
+static bool test_contract_id_deterministic()
+{
     std::string json = R"({"a":1,"b":2})";
     auto cid1 = ContractID::compute(json);
     auto cid2 = ContractID::compute(json);
@@ -91,7 +103,8 @@ static bool test_contract_id_deterministic() {
     return true;
 }
 
-static bool test_contract_id_different() {
+static bool test_contract_id_different()
+{
     auto a = ContractID::compute(R"({"x":1})");
     auto b = ContractID::compute(R"({"x":2})");
     ASSERT(a.to_hex() != b.to_hex());
@@ -102,7 +115,8 @@ static bool test_contract_id_different() {
 // ContractDefinition tests
 // ==========================================================================
 
-static bool test_definition_minimal() {
+static bool test_definition_minimal()
+{
     auto res = ContractDefinition::from_canonical_json(R"({
         "contract_version":"1.0",
         "category":"native",
@@ -125,7 +139,8 @@ static bool test_definition_minimal() {
     return true;
 }
 
-static bool test_definition_roundtrip() {
+static bool test_definition_roundtrip()
+{
     auto res = ContractDefinition::from_canonical_json(R"({
         "contract_version":"1.0",
         "category":"user_defined",
@@ -160,7 +175,8 @@ static bool test_definition_roundtrip() {
 // OpcodeRegistry tests
 // ==========================================================================
 
-static bool test_opcode_registry_ls() {
+static bool test_opcode_registry_ls()
+{
     auto& reg = OpcodeRegistry::instance();
     auto res = reg.resolve(Opcode::LS);
     ASSERT(res);
@@ -169,14 +185,16 @@ static bool test_opcode_registry_ls() {
     return true;
 }
 
-static bool test_opcode_registry_all() {
+static bool test_opcode_registry_all()
+{
     auto& reg = OpcodeRegistry::instance();
     auto all = reg.all();
     ASSERT(all.size() >= 5);
     return true;
 }
 
-static bool test_opcode_registry_by_name() {
+static bool test_opcode_registry_by_name()
+{
     auto& reg = OpcodeRegistry::instance();
     auto res = reg.resolve_by_name("exec");
     ASSERT(res);
@@ -185,7 +203,8 @@ static bool test_opcode_registry_by_name() {
     return true;
 }
 
-static bool test_opcode_registry_unknown() {
+static bool test_opcode_registry_unknown()
+{
     auto& reg = OpcodeRegistry::instance();
     auto res = reg.resolve(Opcode(0xFF));
     ASSERT(!res);
@@ -196,7 +215,8 @@ static bool test_opcode_registry_unknown() {
 // Intent extension tests
 // ==========================================================================
 
-static bool test_intent_contract_hint() {
+static bool test_intent_contract_hint()
+{
     Intent intent;
     intent.opcode = Opcode::GET;
     intent.contract_hint = "abc123...";
@@ -204,7 +224,8 @@ static bool test_intent_contract_hint() {
     return true;
 }
 
-static bool test_intent_empty_hint() {
+static bool test_intent_empty_hint()
+{
     Intent intent;
     intent.opcode = Opcode::PUT;
     ASSERT(intent.contract_hint.empty());
@@ -215,34 +236,49 @@ static bool test_intent_empty_hint() {
 // Main
 // ==========================================================================
 
-int main() {
+int main()
+{
     Blake3Provider::register_as_default();
 
     printf("=== Contract Architecture Tests ===\n\n");
 
     printf("[HashProvider]\n");
-    TEST("Blake3 empty hash");   END_TEST(test_hash_hex());
-    TEST("Blake3 known input");  END_TEST(test_hash_known());
-    TEST("Hex round-trip");      END_TEST(test_hex_roundtrip());
+    TEST("Blake3 empty hash");
+    END_TEST(test_hash_hex());
+    TEST("Blake3 known input");
+    END_TEST(test_hash_known());
+    TEST("Hex round-trip");
+    END_TEST(test_hex_roundtrip());
 
     printf("\n[ContractID]\n");
-    TEST("Compute from JSON");       END_TEST(test_contract_id_from_json());
-    TEST("Deterministic hash");     END_TEST(test_contract_id_deterministic());
-    TEST("Different inputs differ"); END_TEST(test_contract_id_different());
+    TEST("Compute from JSON");
+    END_TEST(test_contract_id_from_json());
+    TEST("Deterministic hash");
+    END_TEST(test_contract_id_deterministic());
+    TEST("Different inputs differ");
+    END_TEST(test_contract_id_different());
 
     printf("\n[ContractDefinition]\n");
-    TEST("Parse minimal");        END_TEST(test_definition_minimal());
-    TEST("Serialize roundtrip");  END_TEST(test_definition_roundtrip());
+    TEST("Parse minimal");
+    END_TEST(test_definition_minimal());
+    TEST("Serialize roundtrip");
+    END_TEST(test_definition_roundtrip());
 
     printf("\n[OpcodeRegistry]\n");
-    TEST("Resolve LS");           END_TEST(test_opcode_registry_ls());
-    TEST("List all opcodes");     END_TEST(test_opcode_registry_all());
-    TEST("Resolve by name");      END_TEST(test_opcode_registry_by_name());
-    TEST("Unknown opcode");       END_TEST(test_opcode_registry_unknown());
+    TEST("Resolve LS");
+    END_TEST(test_opcode_registry_ls());
+    TEST("List all opcodes");
+    END_TEST(test_opcode_registry_all());
+    TEST("Resolve by name");
+    END_TEST(test_opcode_registry_by_name());
+    TEST("Unknown opcode");
+    END_TEST(test_opcode_registry_unknown());
 
     printf("\n[Intent]\n");
-    TEST("Contract hint present");   END_TEST(test_intent_contract_hint());
-    TEST("Contract hint empty");     END_TEST(test_intent_empty_hint());
+    TEST("Contract hint present");
+    END_TEST(test_intent_contract_hint());
+    TEST("Contract hint empty");
+    END_TEST(test_intent_empty_hint());
 
     printf("\n=== %s ===\n", failures ? "FAILURES" : "ALL PASS");
     return failures ? 1 : 0;

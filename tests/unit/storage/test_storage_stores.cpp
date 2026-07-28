@@ -12,58 +12,66 @@ using namespace smo;
 
 static int failures = 0;
 
-#define TEST(name)                                                      \
-    do {                                                                \
-        printf("  TEST %-50s ... ", name);                              \
+#define TEST(name)                                                                                                     \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        printf("  TEST %-50s ... ", name);                                                                             \
         fflush(stdout);
 
-#define END_TEST(result)                                                \
-        if (result) {                                                   \
-            printf("PASS\n");                                           \
-        } else {                                                        \
-            printf("FAIL\n");                                           \
-            ++failures;                                                 \
-        }                                                               \
+#define END_TEST(result)                                                                                               \
+    if (result)                                                                                                        \
+    {                                                                                                                  \
+        printf("PASS\n");                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        printf("FAIL\n");                                                                                              \
+        ++failures;                                                                                                    \
+    }                                                                                                                  \
+    }                                                                                                                  \
+    while (false)
+
+#define ASSERT(cond)                                                                                                   \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!(cond))                                                                                                   \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s\n", __FILE__, __LINE__, #cond);                                \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT(cond)                                                    \
-    do {                                                                \
-        if (!(cond)) {                                                  \
-            printf("\n    ASSERTION FAILED at %s:%d: %s\n",             \
-                   __FILE__, __LINE__, #cond);                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_EQ(a, b)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((a) != (b))                                                                                                \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=%lld  RHS=%lld\n",                                                                       \
+                   __FILE__, __LINE__, #a, #b, static_cast<long long>(a), static_cast<long long>(b));                  \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_EQ(a, b)                                                 \
-    do {                                                                \
-        if ((a) != (b)) {                                               \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=%lld  RHS=%lld\n",                        \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   static_cast<long long>(a),                           \
-                   static_cast<long long>(b));                          \
-            return false;                                               \
-        }                                                               \
+#define ASSERT_STREQ(a, b)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        const auto& _a = (a);                                                                                          \
+        const auto& _b = (b);                                                                                          \
+        if (_a != _b)                                                                                                  \
+        {                                                                                                              \
+            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"                                                       \
+                   "      LHS=\"%s\"  RHS=\"%s\"\n",                                                                   \
+                   __FILE__, __LINE__, #a, #b, std::string(_a).c_str(), std::string(_b).c_str());                      \
+            return false;                                                                                              \
+        }                                                                                                              \
     } while (false)
 
-#define ASSERT_STREQ(a, b)                                              \
-    do {                                                                \
-        const auto& _a = (a);                                           \
-        const auto& _b = (b);                                           \
-        if (_a != _b) {                                                 \
-            printf("\n    ASSERTION FAILED at %s:%d: %s == %s\n"        \
-                   "      LHS=\"%s\"  RHS=\"%s\"\n",                     \
-                   __FILE__, __LINE__, #a, #b,                          \
-                   std::string(_a).c_str(),                             \
-                   std::string(_b).c_str());                            \
-            return false;                                               \
-        }                                                               \
-    } while (false)
-
-struct TempDir {
+struct TempDir
+{
     std::string path;
-    TempDir() {
+    TempDir()
+    {
         auto tmp = std::filesystem::temp_directory_path();
         path = (tmp / "smo_stores_XXXXXX").string();
         char buf[256];
@@ -77,7 +85,8 @@ struct TempDir {
 
 // ── SessionStore ───────────────────────────────────────────────────────
 
-static bool test_session_store_put_get() {
+static bool test_session_store_put_get()
+{
     TempDir dir;
     SessionStore store(dir.path);
     ASSERT(!store.open());
@@ -106,7 +115,8 @@ static bool test_session_store_put_get() {
     return true;
 }
 
-static bool test_session_store_get_missing() {
+static bool test_session_store_get_missing()
+{
     TempDir dir;
     SessionStore store(dir.path);
     ASSERT(!store.open());
@@ -120,7 +130,8 @@ static bool test_session_store_get_missing() {
     return true;
 }
 
-static bool test_session_store_remove() {
+static bool test_session_store_remove()
+{
     TempDir dir;
     SessionStore store(dir.path);
     ASSERT(!store.open());
@@ -139,7 +150,8 @@ static bool test_session_store_remove() {
 
 // ── AuditStore ─────────────────────────────────────────────────────────
 
-static bool test_audit_store_append_query() {
+static bool test_audit_store_append_query()
+{
     TempDir dir;
     AuditStore store(dir.path);
     ASSERT(!store.open());
@@ -171,7 +183,8 @@ static bool test_audit_store_append_query() {
     return true;
 }
 
-static bool test_audit_store_query_empty() {
+static bool test_audit_store_query_empty()
+{
     TempDir dir;
     AuditStore store(dir.path);
     ASSERT(!store.open());
@@ -183,7 +196,8 @@ static bool test_audit_store_query_empty() {
     return true;
 }
 
-static bool test_audit_store_last() {
+static bool test_audit_store_last()
+{
     TempDir dir;
     AuditStore store(dir.path);
     ASSERT(!store.open());
@@ -213,7 +227,8 @@ static bool test_audit_store_last() {
 
 // ── NodeStore ──────────────────────────────────────────────────────────
 
-static bool test_node_store_identity() {
+static bool test_node_store_identity()
+{
     TempDir dir;
     NodeStore store(dir.path);
     ASSERT(!store.open());
@@ -238,7 +253,8 @@ static bool test_node_store_identity() {
     return true;
 }
 
-static bool test_node_store_route() {
+static bool test_node_store_route()
+{
     TempDir dir;
     NodeStore store(dir.path);
     ASSERT(!store.open());
@@ -260,17 +276,22 @@ static bool test_node_store_route() {
     return true;
 }
 
-static bool test_node_store_all_routes() {
+static bool test_node_store_all_routes()
+{
     TempDir dir;
     NodeStore store(dir.path);
     ASSERT(!store.open());
 
     NodeStore::RouteEntry r1;
-    r1.node_id = "n1"; r1.address = "a1"; r1.port = 1;
+    r1.node_id = "n1";
+    r1.address = "a1";
+    r1.port = 1;
     ASSERT(!store.put_route(r1));
 
     NodeStore::RouteEntry r2;
-    r2.node_id = "n2"; r2.address = "a2"; r2.port = 2;
+    r2.node_id = "n2";
+    r2.address = "a2";
+    r2.port = 2;
     ASSERT(!store.put_route(r2));
 
     auto all = store.all_routes();
@@ -282,7 +303,8 @@ static bool test_node_store_all_routes() {
 
 // ── DagStore ───────────────────────────────────────────────────────────
 
-static bool test_dag_store_put_get() {
+static bool test_dag_store_put_get()
+{
     TempDir dir;
     DagStore store(dir.path);
     ASSERT(!store.open());
@@ -305,7 +327,8 @@ static bool test_dag_store_put_get() {
     return true;
 }
 
-static bool test_dag_store_get_missing() {
+static bool test_dag_store_get_missing()
+{
     TempDir dir;
     DagStore store(dir.path);
     ASSERT(!store.open());
@@ -319,7 +342,8 @@ static bool test_dag_store_get_missing() {
 
 // ── TrustStore ─────────────────────────────────────────────────────────
 
-static bool test_trust_store_put_get() {
+static bool test_trust_store_put_get()
+{
     TempDir dir;
     TrustStore store(dir.path);
     ASSERT(!store.open());
@@ -344,7 +368,8 @@ static bool test_trust_store_put_get() {
     return true;
 }
 
-static bool test_trust_store_get_missing() {
+static bool test_trust_store_get_missing()
+{
     TempDir dir;
     TrustStore store(dir.path);
     ASSERT(!store.open());
@@ -356,7 +381,8 @@ static bool test_trust_store_get_missing() {
     return true;
 }
 
-static bool test_trust_store_remove() {
+static bool test_trust_store_remove()
+{
     TempDir dir;
     TrustStore store(dir.path);
     ASSERT(!store.open());
@@ -374,30 +400,34 @@ static bool test_trust_store_remove() {
 
 // ── Main ───────────────────────────────────────────────────────────────
 
-int main(int, char*[]) {
+int main(int, char*[])
+{
     printf("SMO Storage Stores — Unit Tests\n");
     printf("================================\n\n");
 
-    TEST("SessionStore put/get")                       END_TEST(test_session_store_put_get());
-    TEST("SessionStore get missing")                   END_TEST(test_session_store_get_missing());
-    TEST("SessionStore remove")                        END_TEST(test_session_store_remove());
-    TEST("AuditStore append/query")                    END_TEST(test_audit_store_append_query());
-    TEST("AuditStore query empty")                     END_TEST(test_audit_store_query_empty());
-    TEST("AuditStore last")                            END_TEST(test_audit_store_last());
-    TEST("NodeStore identity")                         END_TEST(test_node_store_identity());
-    TEST("NodeStore route")                            END_TEST(test_node_store_route());
-    TEST("NodeStore all routes")                       END_TEST(test_node_store_all_routes());
-    TEST("DagStore put/get")                           END_TEST(test_dag_store_put_get());
-    TEST("DagStore get missing")                       END_TEST(test_dag_store_get_missing());
-    TEST("TrustStore put/get")                         END_TEST(test_trust_store_put_get());
-    TEST("TrustStore get missing")                     END_TEST(test_trust_store_get_missing());
-    TEST("TrustStore remove")                          END_TEST(test_trust_store_remove());
+    TEST("SessionStore put/get") END_TEST(test_session_store_put_get());
+    TEST("SessionStore get missing") END_TEST(test_session_store_get_missing());
+    TEST("SessionStore remove") END_TEST(test_session_store_remove());
+    TEST("AuditStore append/query") END_TEST(test_audit_store_append_query());
+    TEST("AuditStore query empty") END_TEST(test_audit_store_query_empty());
+    TEST("AuditStore last") END_TEST(test_audit_store_last());
+    TEST("NodeStore identity") END_TEST(test_node_store_identity());
+    TEST("NodeStore route") END_TEST(test_node_store_route());
+    TEST("NodeStore all routes") END_TEST(test_node_store_all_routes());
+    TEST("DagStore put/get") END_TEST(test_dag_store_put_get());
+    TEST("DagStore get missing") END_TEST(test_dag_store_get_missing());
+    TEST("TrustStore put/get") END_TEST(test_trust_store_put_get());
+    TEST("TrustStore get missing") END_TEST(test_trust_store_get_missing());
+    TEST("TrustStore remove") END_TEST(test_trust_store_remove());
 
     printf("\n");
-    if (failures == 0) {
+    if (failures == 0)
+    {
         printf("ALL TESTS PASSED\n");
         return 0;
-    } else {
+    }
+    else
+    {
         printf("%d TEST(S) FAILED\n", failures);
         return 1;
     }
