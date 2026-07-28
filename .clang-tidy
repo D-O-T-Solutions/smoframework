@@ -24,6 +24,10 @@ Checks: >
   -readability-implicit-bool-conversion,
   -readability-function-cognitive-complexity,
   -bugprone-easily-swappable-parameters,
+  -modernize-use-trailing-return-type,
+  -modernize-use-nodiscard,
+  -readability-identifier-length,
+  -clang-analyzer-optin.performance.Padding,
 CheckOptions:
   - key: modernize-use-trailing-return-type.IgnoredExceptionMacros
     value: SMO_ERR
