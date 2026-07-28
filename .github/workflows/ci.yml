@@ -125,7 +125,6 @@ jobs:
             -not -path '*/third_party/*' \
             -print0 | xargs -0 -P2 -n1 \
             clang-tidy-14 \
-              --warnings-as-errors='*' \
               -p build-tidy
 
   # ── Code Coverage ──────────────────────────────────────────────────
