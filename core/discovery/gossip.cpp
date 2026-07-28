@@ -104,6 +104,7 @@ Bytes GossipEngine::assemble_gossip_payload() {
 // ── apply_gossip ─────────────────────────────────────────────────────
 // Read typed segments: [delta_type:1][payload_len:4 LE][payload]
 Result<void> GossipEngine::apply_gossip(BytesView data) {
+    gossip_received_++;
     if (data.empty()) return {};
 
     while (data.size() >= 5) {
@@ -177,6 +178,7 @@ void GossipEngine::set_crl(recovery::CRL* crl) {
 // ── send_gossip_to_peer ──────────────────────────────────────────────
 
 void GossipEngine::send_gossip_to_peer(const Endpoint& target) {
+    gossip_sent_++;
     if (target.host.empty() || target.port == 0) return;
 
     auto fd = tcp_connect_to(target);

@@ -839,6 +839,54 @@ static bool test_pct_021() {
     return true;
 }
 
+// PCT-019 — Gossip readiness + DEGRADED state
+static bool test_pct_019() {
+    auto rules = join::join_transition_table();
+    auto timeouts = join::join_timeout_table();
+
+    FsmInstance fsm;
+    fsm.set_transitions(rules);
+    fsm.set_timeouts(timeouts);
+    fsm.reset(static_cast<int64_t>(join::JoinState::WAIT_GOSSIP));
+
+    // Verify WAIT_GOSSIP → GOSSIP_TIMEOUT → DEGRADED
+    auto r1 = fsm.on_event(static_cast<int64_t>(join::JoinEvent::GOSSIP_TIMEOUT));
+    ASSERT(r1);
+    ASSERT(fsm.current_state() == static_cast<int64_t>(join::JoinState::DEGRADED));
+
+    // Verify DEGRADED → GOSSIP_COMPLETE → READY
+    auto r2 = fsm.on_event(static_cast<int64_t>(join::JoinEvent::GOSSIP_COMPLETE));
+    ASSERT(r2);
+    ASSERT(fsm.current_state() == static_cast<int64_t>(join::JoinState::READY));
+
+    // Verify DEGRADED → TIMEOUT → FAILED
+    fsm.reset(static_cast<int64_t>(join::JoinState::DEGRADED));
+    auto r3 = fsm.on_event(static_cast<int64_t>(join::JoinEvent::TIMEOUT));
+    ASSERT(r3);
+    ASSERT(fsm.current_state() == static_cast<int64_t>(join::JoinState::FAILED));
+
+    // Verify DEGRADED → FAIL → FAILED
+    fsm.reset(static_cast<int64_t>(join::JoinState::DEGRADED));
+    auto r4 = fsm.on_event(static_cast<int64_t>(join::JoinEvent::FAIL));
+    ASSERT(r4);
+    ASSERT(fsm.current_state() == static_cast<int64_t>(join::JoinState::FAILED));
+
+    // Verify timeout table: WAIT_GOSSIP → DEGRADED (60s)
+    ASSERT(fsm.max_dwell_ns() == 0); // after reset to DEGRADED, default timeout
+    fsm.reset(static_cast<int64_t>(join::JoinState::WAIT_GOSSIP));
+    ASSERT(fsm.max_dwell_ns() == 60'000'000'000ULL);
+    ASSERT(fsm.fallback_state() == static_cast<int64_t>(join::JoinState::DEGRADED));
+
+    // Verify GossipEngine counters
+    GossipEngine::Config cfg;
+    MembershipTable table;
+    GossipEngine engine(table, cfg);
+    ASSERT(engine.gossip_sent_count() == 0);
+    ASSERT(engine.gossip_received_count() == 0);
+
+    return true;
+}
+
 // ==========================================================================
 // Main
 // ==========================================================================
@@ -879,6 +927,9 @@ int main(int, char*[]) {
     printf("\n── §9.8  Forward Compat ──────────────────────────────────────\n");
     TEST("PCT-017  CBOR map key forward compat")                         END_TEST(test_pct_017());
 
+    printf("\n── §9.9  Gossip Readiness ─────────────────────────────────────\n");
+    TEST("PCT-019  Gossip readiness + DEGRADED state")                   END_TEST(test_pct_019());
+
     printf("\n── §9.9  Policy Store ─────────────────────────────────────────\n");
     TEST("PCT-020  PolicyStore CRUD")                                     END_TEST(test_pct_020());
 
@@ -887,7 +938,7 @@ int main(int, char*[]) {
 
     printf("\n");
     if (failures == 0) {
-        printf("ALL 19 PCT TESTS PASSED\n");
+        printf("ALL 20 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);

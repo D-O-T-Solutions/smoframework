@@ -1746,8 +1746,13 @@ int main(int argc, char* argv[]) {
 
     int64_t last_tick = 0;
     int64_t last_peerstore_sync = 0;
+    int64_t daemon_start_ns = 0;
 
     sync_service.start();
+    daemon_start_ns = std::chrono::system_clock::now().time_since_epoch().count();
+
+    bool daemon_ready_logged = false;
+    bool daemon_degraded_logged = false;
 
     while (g_running) {
         int64_t now_ns = static_cast<int64_t>(
@@ -1763,6 +1768,34 @@ int main(int argc, char* argv[]) {
             heartbeat_service.tick(now_ns);
             session_mgr.tick(now_ns);
             session_mgr.collect_garbage();
+
+            // ── Readiness check (P2) ─────────────────────────────
+            int64_t uptime_ns = now_ns - daemon_start_ns;
+            if (!daemon_ready_logged && uptime_ns > 30'000'000'000LL) {
+                bool hb_active = membership.count() > 0;
+                bool gossip_tx = gossip_engine.gossip_sent_count() > 0;
+                bool gossip_rx = gossip_engine.gossip_received_count() > 0;
+
+                if (hb_active && gossip_tx && gossip_rx) {
+                    std::printf("[smo-node] Node READY — mesh %s | %zu peer(s) | "
+                                "gossip tx=%lu rx=%lu\n",
+                                node_fsm.state_name().c_str(),
+                                membership.count(),
+                                (unsigned long)gossip_engine.gossip_sent_count(),
+                                (unsigned long)gossip_engine.gossip_received_count());
+                    daemon_ready_logged = true;
+                } else if (!daemon_degraded_logged) {
+                    std::printf("[smo-node] Node DEGRADED — waiting for peers. "
+                                "heartbeat=%s gossip_tx=%s gossip_rx=%s "
+                                "(uptime=%.0fs)\n",
+                                hb_active ? "yes" : "no",
+                                gossip_tx ? "yes" : "no",
+                                gossip_rx ? "yes" : "no",
+                                uptime_ns / 1.0e9);
+                    daemon_degraded_logged = true;
+                }
+            }
+
             last_tick = now_ns;
         }
 

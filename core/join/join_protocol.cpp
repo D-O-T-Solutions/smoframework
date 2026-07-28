@@ -428,6 +428,12 @@ std::vector<smo::TransitionRule> join_transition_table() {
         {static_cast<int64_t>(GOSSIP_SYNC),     static_cast<int64_t>(GOSSIP_COMPLETE), static_cast<int64_t>(WAIT_GOSSIP)},
         {static_cast<int64_t>(WAIT_GOSSIP),     static_cast<int64_t>(GOSSIP_COMPLETE), static_cast<int64_t>(READY)},
 
+        // DEGRADED state (P2): timeout from WAIT_GOSSIP if no peers
+        {static_cast<int64_t>(WAIT_GOSSIP),     static_cast<int64_t>(GOSSIP_TIMEOUT),  static_cast<int64_t>(DEGRADED)},
+        {static_cast<int64_t>(DEGRADED),        static_cast<int64_t>(GOSSIP_COMPLETE), static_cast<int64_t>(READY)},
+        {static_cast<int64_t>(DEGRADED),        static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(FAILED)},
+        {static_cast<int64_t>(DEGRADED),        static_cast<int64_t>(FAIL),            static_cast<int64_t>(FAILED)},
+
         // Retry / failure
         {static_cast<int64_t>(WAIT_RESPONSE),   static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(JOIN_SENT)},
         {static_cast<int64_t>(WAIT_SYNC),       static_cast<int64_t>(TIMEOUT),         static_cast<int64_t>(BOOTSTRAP_SYNC)},
@@ -442,9 +448,10 @@ std::vector<smo::TransitionRule> join_transition_table() {
 std::vector<smo::StateTimeout> join_timeout_table() {
     using enum JoinState;
     return {
-        {static_cast<int64_t>(WAIT_RESPONSE),  30'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 30s
-        {static_cast<int64_t>(WAIT_SYNC),      30'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 30s
-        {static_cast<int64_t>(WAIT_GOSSIP),    60'000'000'000ULL,  static_cast<int64_t>(FAILED)},  // 60s
+        {static_cast<int64_t>(WAIT_RESPONSE),  30'000'000'000ULL,  static_cast<int64_t>(FAILED)},    // 30s → FAILED
+        {static_cast<int64_t>(WAIT_SYNC),      30'000'000'000ULL,  static_cast<int64_t>(FAILED)},    // 30s → FAILED
+        {static_cast<int64_t>(WAIT_GOSSIP),    60'000'000'000ULL,  static_cast<int64_t>(DEGRADED)},  // 60s → DEGRADED
+        {static_cast<int64_t>(DEGRADED),       120'000'000'000ULL, static_cast<int64_t>(FAILED)},    // 120s → FAILED
     };
 }
 

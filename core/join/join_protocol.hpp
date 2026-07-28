@@ -167,6 +167,7 @@ enum class JoinState : int64_t {
     GOSSIP_SYNC     = 9,
     WAIT_GOSSIP     = 10,
     READY           = 11,
+    DEGRADED        = 12,
     FAILED          = -1,
 };
 
@@ -181,6 +182,7 @@ enum class JoinEvent : int64_t {
     SYNC_COMPLETE   = 107,
     GOSSIP_STARTED  = 108,
     GOSSIP_COMPLETE = 109,
+    GOSSIP_TIMEOUT  = 113,
     TIMEOUT         = 110,
     RETRY           = 111,
     FAIL            = 112,

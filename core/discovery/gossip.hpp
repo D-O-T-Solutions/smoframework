@@ -93,6 +93,11 @@ public:
 
     void set_gossip_interval(int64_t ns) { gossip_interval_ns_ = ns; }
 
+    // ── Readiness counters (P2) ───────────────────────────────────
+    uint64_t gossip_sent_count() const noexcept { return gossip_sent_; }
+    uint64_t gossip_received_count() const noexcept { return gossip_received_; }
+    void clear_counts() noexcept { gossip_sent_ = 0; gossip_received_ = 0; }
+
 private:
     void send_gossip_to_peer(const Endpoint& target);
     std::vector<Endpoint> select_fanout_peers();
@@ -116,6 +121,10 @@ private:
     std::unordered_map<uint8_t, Bytes> pending_deltas_;
     std::unordered_map<uint8_t, DeltaHandler> delta_handlers_;
     std::unordered_map<uint8_t, DeltaProvider> delta_providers_;
+
+    // Readiness counters (P2)
+    std::atomic<uint64_t> gossip_sent_{0};
+    std::atomic<uint64_t> gossip_received_{0};
 
     // TCP connect helper
     Result<int> tcp_connect_to(const Endpoint& ep) const;
