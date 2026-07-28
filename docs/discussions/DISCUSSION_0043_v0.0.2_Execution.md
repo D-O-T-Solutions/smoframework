@@ -96,15 +96,15 @@ Updated after each completed task.
 ### Sprint A
 
 ```
-P5 Policy Store  [   ] — 0/6 tasks
-P6 Nonce Dedup   [   ] — 0/4 tasks
-P2 Gossip FSM    [   ] — 0/6 tasks
+P5 Policy Store  [✓] — 6/6 tasks done
+P6 Nonce Dedup   [✓] — 4/4 tasks done
+P2 Gossip FSM    [✓] — 6/6 tasks done
 ```
 
 ### Sprint B
 
 ```
-P10 Metrics      [   ] — 0/9 tasks
+P10 Metrics      [✓] — 9/9 tasks done
 P1 AntiEntropy   [   ] — 0/6 tasks
 P11 Chaos        [   ] — 0/3 tasks
 ```

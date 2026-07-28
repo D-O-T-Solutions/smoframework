@@ -168,7 +168,7 @@ add_executable(smo_pct
     unit/protocol/test_pct.cpp
 )
 target_link_libraries(smo_pct PRIVATE
-    smo_core smo_protocol smo_storage fmt::fmt
+    smo_runtime smo_core smo_contract smo_protocol smo_storage fmt::fmt
 )
 smo_set_warnings(smo_pct)
 smo_set_optimisation(smo_pct)

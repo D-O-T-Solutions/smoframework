@@ -12,6 +12,7 @@ add_library(smo_runtime STATIC
     plan_executor.cpp
     contract_registry.cpp
     telemetry.cpp
+    structured_logger.cpp
     contracts/join_contract.cpp
     contracts/bootstrap_contract.cpp
     contracts/governance_contract.cpp

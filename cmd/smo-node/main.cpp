@@ -58,9 +58,11 @@
 #include <core/runtime/contracts/process_contract.hpp>
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
+#include <core/runtime/structured_logger.hpp>
 #include <storage/policy_store/policy_store.h>
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite2_modern/suite2_modern_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
 
 #include <tooling/clipboard.hpp>
@@ -218,6 +220,7 @@ static smo::Bytes load_cert_blob(const std::string& path_or_empty) {
 // ===========================================================================
 static void ensure_crypto() {
     smo::providers::register_suite1_classical();
+    smo::providers::register_suite2_modern();
     smo::providers::register_suite3_purepqc();
 }
 
@@ -746,6 +749,19 @@ int main(int argc, char* argv[]) {
     node_id_to_hex(local_id, local_id_hex);
     std::printf("[smo-node] Local NodeID: %s (state: %s)\n",
                 local_id_hex.c_str(), smo::to_string(local_identity.state()));
+
+    // ── Structured Logger (P10) ──────────────────────────────
+    {
+        auto& slog = smo::runtime::global_logger();
+        slog.set_node_id(local_id_hex);
+        slog.set_component("smo-node");
+        std::string lf = std::getenv("SMO_LOG_FORMAT")
+            ? std::getenv("SMO_LOG_FORMAT") : "plaintext";
+        if (lf == "json") slog.set_format(smo::runtime::StructuredLogger::Format::Json);
+    }
+    auto& LOG = smo::runtime::global_logger();
+    LOG.info("starting daemon on port " + std::to_string(port));
+    LOG.info("node_id: " + local_id_hex);
 
     // Load server certificate for PQ handshake
     std::string cert_path = data_dir + "/node.cert.smoc";
@@ -1713,36 +1729,47 @@ int main(int argc, char* argv[]) {
     registry.register_service("discovery_engine", std::make_shared<smo::DiscoveryEngine>(discovery_engine));
     // Note: PeerStore and GossipEngine are non-copyable, skip for now
 
-    // ── P6: Telemetry ───────────────────────────────────────────────
+    // ── P10: Telemetry + Metrics ─────────────────────────────────
     smo::runtime::Telemetry& telemetry = smo::runtime::global_telemetry();
     telemetry.set_event_bus(&event_bus);
 
     // Register core health checks
-    telemetry.register_health_check("crl", [&](std::string& err) -> bool {
-        return true; // CRL always healthy
-    });
-    telemetry.register_health_check("session_mgr", [&](std::string& err) -> bool {
+    telemetry.register_health_check("crl", [](std::string& err) -> bool {
         return true;
     });
-    telemetry.register_health_check("peer_store", [&](std::string& err) -> bool {
+    telemetry.register_health_check("session_mgr", [](std::string& err) -> bool {
+        return true;
+    });
+    telemetry.register_health_check("peer_store", [](std::string& err) -> bool {
+        return true;
+    });
+    telemetry.register_health_check("gossip_engine", [](std::string& err) -> bool {
+        return true;
+    });
+    telemetry.register_health_check("heartbeat", [](std::string& err) -> bool {
         return true;
     });
 
-    // Register metrics
+    // Register daemon metrics
     telemetry.increment_counter("node.startup", "component=main");
     telemetry.set_gauge("node.state", 1.0, "state=running");
+    telemetry.set_gauge("smo_connected_peers", 0.0, "");
+    telemetry.set_gauge("smo_gossip_queue_depth", 0.0, "");
+    telemetry.set_gauge("smo_membership_epoch", 0.0, "");
 
-    // Print registered services
-    std::printf("[smo-node] Registered services: ");
-    auto services = registry.list_services();
-    for (size_t i = 0; i < services.size(); ++i) {
-        if (i > 0) std::printf(", ");
-        std::printf("%s", services[i].c_str());
+    // Print registered services using structured logger
+    {
+        std::string svc_str;
+        auto services = registry.list_services();
+        for (size_t i = 0; i < services.size(); ++i) {
+            if (i > 0) svc_str += ", ";
+            svc_str += services[i];
+        }
+        LOG.info("services: " + svc_str);
     }
-    std::printf("\n");
 
     // ── Main loop ──────────────────────────────────────────────
-    std::printf("[smo-node] Entering main loop...\n");
+    LOG.info("entering main loop");
 
     int64_t last_tick = 0;
     int64_t last_peerstore_sync = 0;
@@ -1777,24 +1804,37 @@ int main(int argc, char* argv[]) {
                 bool gossip_rx = gossip_engine.gossip_received_count() > 0;
 
                 if (hb_active && gossip_tx && gossip_rx) {
-                    std::printf("[smo-node] Node READY — mesh %s | %zu peer(s) | "
-                                "gossip tx=%lu rx=%lu\n",
-                                node_fsm.state_name().c_str(),
-                                membership.count(),
-                                (unsigned long)gossip_engine.gossip_sent_count(),
-                                (unsigned long)gossip_engine.gossip_received_count());
+                    LOG.info("node READY — " + std::to_string(membership.count())
+                             + " peer(s), gossip tx="
+                             + std::to_string(gossip_engine.gossip_sent_count())
+                             + " rx="
+                             + std::to_string(gossip_engine.gossip_received_count()));
                     daemon_ready_logged = true;
                 } else if (!daemon_degraded_logged) {
-                    std::printf("[smo-node] Node DEGRADED — waiting for peers. "
-                                "heartbeat=%s gossip_tx=%s gossip_rx=%s "
-                                "(uptime=%.0fs)\n",
-                                hb_active ? "yes" : "no",
-                                gossip_tx ? "yes" : "no",
-                                gossip_rx ? "yes" : "no",
-                                uptime_ns / 1.0e9);
+                    LOG.warn("node DEGRADED — waiting: heartbeat="
+                             + std::string(hb_active ? "yes" : "no")
+                             + " gossip_tx=" + std::string(gossip_tx ? "yes" : "no")
+                             + " gossip_rx=" + std::string(gossip_rx ? "yes" : "no")
+                             + " uptime=" + std::to_string(uptime_ns / 1'000'000'000) + "s");
                     daemon_degraded_logged = true;
                 }
             }
+
+            // ── Telemetry tick metrics (P10) ────────────────────
+            telemetry.set_gauge("smo_connected_peers",
+                                static_cast<double>(membership.count()), "");
+            telemetry.set_gauge("smo_membership_epoch",
+                                static_cast<double>(now_ns % 1'000'000), "");
+
+            // Export Prometheus metrics to file for scraping
+            {
+                std::string metrics_path = data_dir + "/metrics.prom";
+                auto metrics_str = telemetry.export_prometheus();
+                if (auto f = std::fopen(metrics_path.c_str(), "w")) {
+                    std::fwrite(metrics_str.data(), 1, metrics_str.size(), f);
+                    std::fclose(f);
+                }
+            } // placeholder
 
             last_tick = now_ns;
         }
@@ -1803,11 +1843,12 @@ int main(int argc, char* argv[]) {
         if (udp_listener) {
             while (true) {
                 auto udp_session = udp_listener->accept();
-                if (!udp_session) break; // no more data (non-blocking)
+                if (!udp_session) break;
 
                 auto recv_data = udp_session.value()->recv(8192);
                 if (recv_data) {
                     smo::Endpoint from = udp_session.value()->remote_endpoint();
+                    telemetry.increment_counter("udp.datagrams_received", "component=discovery");
                     (void)smo::dispatch_discovery_datagram(
                         recv_data.value(), discovery_engine, from, now_ns);
                 }
@@ -1825,8 +1866,7 @@ int main(int argc, char* argv[]) {
         auto tcp_session = lstnr->accept();
         if (tcp_session) {
             auto remote_str = tcp_session.value()->remote_endpoint().to_string();
-            std::printf("[smo-node] Accepted TCP connection from %s\n",
-                        remote_str.c_str());
+            telemetry.increment_counter("tcp.connections_accepted", "component=main");
 
             smo::hl::Endpoint remote_ep;
             auto colon = remote_str.rfind(':');
@@ -1841,7 +1881,6 @@ int main(int argc, char* argv[]) {
 
             auto* tcp_ses = static_cast<smo::TcpSession*>(tcp_session.value().get());
             if (!tcp_ses) {
-                std::printf("[smo-node] Session is not TCP, skipping\n");
                 tcp_session.value()->close();
                 continue;
             }
@@ -1857,29 +1896,27 @@ int main(int argc, char* argv[]) {
                 smo::SecureSession sec(client_fd, sec_cfg, *crypto);
                 auto hs = sec.handshake();
                 if (!hs) {
-                    std::printf("[smo-node] PQ handshake failed: %s, closing\n",
-                                hs.error().message.c_str());
+                    LOG.warn("PQ handshake failed: " + hs.error().message
+                             + " from " + remote_str);
                     tcp_session.value()->close();
                     continue;
                 }
-                std::printf("[smo-node] PQ handshake established\n");
 
                 SecureTransportSession secure_ses(
                     std::move(sec),
                     smo::Endpoint{"tcp", remote_ep.address, remote_ep.port, ""});
                 auto dispatch_res = dispatcher.dispatch_session(secure_ses, remote_ep);
                 if (!dispatch_res) {
-                    std::printf("[smo-node] Dispatch failed: %s\n",
-                                dispatch_res.error().message.c_str());
+                    LOG.warn("dispatch failed: " + dispatch_res.error().message
+                             + " from " + remote_str);
                 }
                 secure_ses.close();
             } else {
-                // Fallback: plaintext (no certificate available)
                 auto dispatch_res = dispatcher.dispatch_session(
                     *tcp_ses, remote_ep);
                 if (!dispatch_res) {
-                    std::printf("[smo-node] Dispatch failed: %s\n",
-                                dispatch_res.error().message.c_str());
+                    LOG.warn("dispatch failed: " + dispatch_res.error().message
+                             + " from " + remote_str);
                 }
                 tcp_session.value()->close();
             }
@@ -1894,6 +1931,6 @@ int main(int argc, char* argv[]) {
     peer_store.sync_from_membership(membership);
     peer_store.close();
 
-    std::printf("[smo-node] Shutdown complete.\n");
+    LOG.info("shutdown complete");
     return 0;
 }

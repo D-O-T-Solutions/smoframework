@@ -16,6 +16,7 @@
 #include <crypto/hash_provider.hpp>
 #include <storage/policy_store/policy_store.h>
 #include <providers/blake3_provider/blake3_provider.hpp>
+#include <runtime/structured_logger.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -839,7 +840,50 @@ static bool test_pct_021() {
     return true;
 }
 
-// PCT-019 — Gossip readiness + DEGRADED state
+// PCT-022 — Structured log format
+static bool test_pct_022() {
+    // Verify JSON output has all required fields
+    auto entry = smo::runtime::LogEntry::make(
+        "test", smo::runtime::LogLevel::Info, "hello world",
+        "trace-abc", "span-def");
+    entry.node_id = "node-123";
+    entry.mesh_id = "mesh-test";
+    entry.session_id = "sess-456";
+
+    auto json = entry.to_json();
+    // Must contain: timestamp, node_id, mesh_id, trace_id, span_id, session_id, component, level, message
+    ASSERT(json.find("\"timestamp\"") != std::string::npos);
+    ASSERT(json.find("\"node_id\"") != std::string::npos);
+    ASSERT(json.find("\"node-123\"") != std::string::npos);
+    ASSERT(json.find("\"mesh_id\"") != std::string::npos);
+    ASSERT(json.find("\"trace_id\"") != std::string::npos);
+    ASSERT(json.find("\"trace-abc\"") != std::string::npos);
+    ASSERT(json.find("\"span_id\"") != std::string::npos);
+    ASSERT(json.find("\"span-def\"") != std::string::npos);
+    ASSERT(json.find("\"session_id\"") != std::string::npos);
+    ASSERT(json.find("\"sess-456\"") != std::string::npos);
+    ASSERT(json.find("\"component\"") != std::string::npos);
+    ASSERT(json.find("\"component\":\"test\"") != std::string::npos);
+    ASSERT(json.find("\"level\"") != std::string::npos);
+    ASSERT(json.find("\"level\":\"info\"") != std::string::npos);
+    ASSERT(json.find("\"message\"") != std::string::npos);
+    ASSERT(json.find("\"hello world\"") != std::string::npos);
+
+    // Verify plaintext output
+    auto plain = entry.to_plaintext();
+    ASSERT(plain.find("info") != std::string::npos);
+    ASSERT(plain.find("hello world") != std::string::npos);
+    ASSERT(plain.find("trace-abc") != std::string::npos);
+
+    // Verify custom fields in JSON
+    entry.fields["peer_count"] = "5";
+    entry.fields["rtt_ms"] = "42";
+    json = entry.to_json();
+    ASSERT(json.find("\"peer_count\":\"5\"") != std::string::npos);
+    ASSERT(json.find("\"rtt_ms\":\"42\"") != std::string::npos);
+
+    return true;
+}
 static bool test_pct_019() {
     auto rules = join::join_transition_table();
     auto timeouts = join::join_timeout_table();
@@ -936,9 +980,12 @@ int main(int, char*[]) {
     printf("\n── §9.10 Nonce Dedup ───────────────────────────────────────────\n");
     TEST("PCT-021  JOIN_REQUEST nonce dedup")                             END_TEST(test_pct_021());
 
+    printf("\n── §9.11 Structured Logging ──────────────────────────────────────\n");
+    TEST("PCT-022  Structured log format")                                 END_TEST(test_pct_022());
+
     printf("\n");
     if (failures == 0) {
-        printf("ALL 20 PCT TESTS PASSED\n");
+        printf("ALL 21 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);
