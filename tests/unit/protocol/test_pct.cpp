@@ -13,9 +13,11 @@
 #include <discovery/gossip.hpp>
 #include <discovery/discovery.hpp>
 #include <bootstrap/cbor.hpp>
+#include <storage/policy_store/policy_store.h>
 
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
 #include <vector>
 #include <string>
 
@@ -749,6 +751,58 @@ static bool test_pct_017() {
     return true;
 }
 
+// PCT-020 — PolicyStore CRUD operations
+static bool test_pct_020() {
+    // Use a temp directory
+    char tmp[] = "/tmp/smo_pct_020_XXXXXX";
+    if (!mkdtemp(tmp)) return false;
+    std::string dir(tmp);
+
+    PolicyStore store(dir);
+    if (store.open()) return false;
+
+    // Put
+    PolicyStore::Record rec;
+    rec.name = "test-pol";
+    rec.description = "test policy";
+    rec.version = "1.0";
+    rec.yaml_content = "name: test-pol\nrules: []";
+    rec.created_at = 1000;
+    rec.created_by = "test";
+    rec.updated_at = 1000;
+    if (store.put(rec)) return false;
+
+    // Get + verify fields
+    auto got = store.get("test-pol");
+    if (!got) return false;
+    ASSERT(got->name == "test-pol");
+    ASSERT(got->description == "test policy");
+    ASSERT(got->version == "1.0");
+    ASSERT(got->created_at == 1000);
+
+    // List
+    auto names = store.list();
+    ASSERT(names.size() == 1);
+    ASSERT(names[0] == "test-pol");
+
+    // serialize/deserialize roundtrip
+    auto ser = PolicyStore::serialize_record(rec);
+    auto deser = PolicyStore::deserialize_record(ser);
+    ASSERT(deser.has_value());
+    ASSERT(deser->name == "test-pol");
+    ASSERT(deser->version == "1.0");
+
+    // Remove
+    if (store.remove("test-pol")) return false;
+    auto after_rm = store.get("test-pol");
+    ASSERT(!after_rm.has_value());
+
+    // Cleanup
+    store.close();
+    std::filesystem::remove_all(dir);
+    return true;
+}
+
 // ==========================================================================
 // Main
 // ==========================================================================
@@ -789,9 +843,12 @@ int main(int, char*[]) {
     printf("\n── §9.8  Forward Compat ──────────────────────────────────────\n");
     TEST("PCT-017  CBOR map key forward compat")                         END_TEST(test_pct_017());
 
+    printf("\n── §9.9  Policy Store ─────────────────────────────────────────\n");
+    TEST("PCT-020  PolicyStore CRUD")                                     END_TEST(test_pct_020());
+
     printf("\n");
     if (failures == 0) {
-        printf("ALL 17 PCT TESTS PASSED\n");
+        printf("ALL 18 PCT TESTS PASSED\n");
         return 0;
     } else {
         printf("%d PCT TEST(S) FAILED\n", failures);

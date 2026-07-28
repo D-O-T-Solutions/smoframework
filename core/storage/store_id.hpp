@@ -13,9 +13,10 @@ enum class StoreID : uint8_t {
     DAG         = 5,
     Peer        = 6,
     Governance  = 7,
+    Policy      = 8,
 };
 
-inline constexpr int kStoreCount = 8;
+inline constexpr int kStoreCount = 9;
 
 struct StoreInfo {
     StoreID     id;
@@ -33,6 +34,7 @@ inline constexpr StoreInfo kStoreInfos[kStoreCount] = {
     { StoreID::DAG,        "dag",        "dag.db",        1 },
     { StoreID::Peer,       "peer",       "peer.db",       1 },
     { StoreID::Governance, "governance", "governance.db", 1 },
+    { StoreID::Policy,     "policy",     "policy.db",     1 },
 };
 
 inline const StoreInfo& store_info(StoreID id) {

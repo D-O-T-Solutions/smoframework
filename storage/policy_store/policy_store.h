@@ -6,6 +6,7 @@
 #include <vector>
 #include "storage/storage.h"
 #include "core/acl/policy_engine.hpp"
+#include "core/storage/sqlite_store.hpp"
 
 namespace smo {
 
@@ -43,6 +44,10 @@ public:
 
     // Version for hot-reload detection
     int64_t store_version() const { return store_version_; }
+
+    // Serialize a Record to wire format for gossip delta
+    static std::string serialize_record(const Record& r);
+    static std::optional<Record> deserialize_record(const std::string& data);
 
 private:
     std::string base_path_;

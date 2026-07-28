@@ -1,6 +1,5 @@
 #include "policy_store.h"
 
-#include "../../core/storage/sqlite_store.hpp"
 #include "../../core/types.hpp"
 #include <sstream>
 
@@ -45,8 +44,18 @@ static bool record_deserialize(const std::string& data, PolicyStore::Record& r) 
     return true;
 }
 
+std::string PolicyStore::serialize_record(const Record& r) {
+    return record_serialize(r);
+}
+
+std::optional<PolicyStore::Record> PolicyStore::deserialize_record(const std::string& data) {
+    Record r;
+    if (!record_deserialize(data, r)) return std::nullopt;
+    return r;
+}
+
 std::error_code PolicyStore::open() noexcept {
-    store_ = std::make_unique<SqliteStore>(StoreID::Trust, base_path_);
+    store_ = std::make_unique<SqliteStore>(StoreID::Policy, base_path_);
     auto res = store_->open();
     if (!res) return std::error_code(Errc::STORE_UNAVAILABLE);
     return {};
@@ -75,17 +84,18 @@ std::optional<PolicyStore::Record> PolicyStore::get(const std::string& name) {
 
 std::error_code PolicyStore::remove(const std::string& name) {
     if (!store_) return std::error_code(Errc::STORE_UNAVAILABLE);
-    bool ok = store_->remove(to_bytes(policy_key(name)));
-    if (!ok) return std::error_code(Errc::STORE_CORRUPTION);
+    auto res = store_->del(to_bytes(policy_key(name)));
+    if (!res) return std::error_code(Errc::STORE_CORRUPTION);
     store_version_++;
     return {};
 }
 
 std::vector<std::string> PolicyStore::list() {
     if (!store_) return {};
-    auto keys = store_->list_by_prefix(to_bytes("pol:"));
+    auto keys = store_->list(to_bytes("pol:"));
+    if (!keys) return {};
     std::vector<std::string> names;
-    for (auto& k : keys) {
+    for (auto& k : keys.value()) {
         auto s = to_str(k);
         if (s.size() > 4) names.push_back(s.substr(4));
     }

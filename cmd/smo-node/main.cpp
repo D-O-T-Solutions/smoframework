@@ -58,6 +58,7 @@
 #include <core/runtime/contracts/process_contract.hpp>
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
+#include <storage/policy_store/policy_store.h>
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
@@ -1054,8 +1055,38 @@ int main(int argc, char* argv[]) {
         return {};
     });
 
-    // Policy delta: stub (PolicyStore needs SqliteStore cleanup — tracked in Phase 8b)
-    sync_service.on_delta("policy", [](const std::string&) -> smo::Result<void> {
+    // PolicyStore for policy rule persistence
+    smo::PolicyStore policy_store(data_dir);
+    if (auto ec = policy_store.open(); ec) {
+        std::printf("[smo-node] Warning: failed to open PolicyStore: %s\n",
+                    ec.message().c_str());
+    }
+
+    // Policy delta: send policy records since last known version
+    uint64_t last_policy_version = 0;
+    sync_service.on_delta("policy", [&](const std::string&) -> smo::Result<void> {
+        auto current = policy_store.store_version();
+        if (current <= last_policy_version) return {};
+        last_policy_version = current;
+        auto names = policy_store.list();
+        if (names.empty()) return {};
+        // Serialize each record with length prefix
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(names.size());
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto& name : names) {
+            auto rec = policy_store.get(name);
+            if (!rec) continue;
+            auto ser = smo::PolicyStore::serialize_record(rec.value());
+            uint32_t len = static_cast<uint32_t>(ser.size());
+            for (int i = 3; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+            buf.insert(buf.end(), ser.begin(), ser.end());
+        }
+        if (!buf.empty()) {
+            gossip_engine.queue_delta(smo::DeltaType::Policy, std::move(buf));
+        }
         return {};
     });
 
@@ -1098,14 +1129,35 @@ int main(int argc, char* argv[]) {
         return {};
     });
 
-    // Register receive-side delta handlers in GossipEngine
+// Register receive-side delta handlers in GossipEngine
     gossip_engine.set_delta_handler(smo::DeltaType::Manifest, [&](smo::BytesView payload) -> smo::Result<void> {
         if (payload.size() < 4) return {};
         uint32_t count = 0;
         for (int i = 0; i < 4; ++i)
             count = (count << 8) | payload[i];
         std::printf("[smo-node] Gossip: received manifest delta with %u epochs\n", count);
-        // Manifest fetch would go here (Phase 8b)
+        return {};
+    });
+
+    gossip_engine.set_delta_handler(smo::DeltaType::Policy, [&](smo::BytesView payload) -> smo::Result<void> {
+        if (payload.size() < 4) return {};
+        uint32_t count = 0;
+        for (int i = 0; i < 4; ++i)
+            count = (count << 8) | payload[i];
+        size_t off = 4;
+        for (uint32_t j = 0; j < count && off < payload.size(); ++j) {
+            if (off + 4 > payload.size()) break;
+            uint32_t len = 0;
+            for (int i = 0; i < 4; ++i)
+                len = (len << 8) | payload[off++];
+            if (off + len > payload.size()) break;
+            std::string data(payload.begin() + off, payload.begin() + off + len);
+            off += len;
+            auto rec = smo::PolicyStore::deserialize_record(data);
+            if (rec) {
+                policy_store.put(rec.value());
+            }
+        }
         return {};
     });
 

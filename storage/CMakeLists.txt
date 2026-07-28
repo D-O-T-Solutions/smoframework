@@ -11,5 +11,4 @@ add_subdirectory(trust_store)
 add_subdirectory(audit_store)
 add_subdirectory(dag_store)
 add_subdirectory(node_store)
-# policy_store excluded — SqliteStore API mismatch, needs cleanup
-# add_subdirectory(policy_store)
+add_subdirectory(policy_store)
