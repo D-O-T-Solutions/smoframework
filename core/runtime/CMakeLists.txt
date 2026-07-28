@@ -37,9 +37,12 @@ target_compile_features(smo_runtime PUBLIC cxx_std_20)
 
 # ── Tests ───────────────────────────────────────────────────────────────
 if(BUILD_TESTING)
-    add_executable(test_runtime test/test_runtime.cpp)
-    target_link_libraries(test_runtime PRIVATE smo_runtime gtest_main)
-    add_test(NAME runtime_tests COMMAND test_runtime)
+    find_package(GTest QUIET)
+    if(GTest_FOUND)
+        add_executable(test_runtime test/test_runtime.cpp)
+        target_link_libraries(test_runtime PRIVATE smo_runtime GTest::gtest_main GTest::gtest)
+        add_test(NAME runtime_tests COMMAND test_runtime)
+    endif()
 endif()
 
 # Install
