@@ -142,6 +142,7 @@ jobs:
           sudo apt-get install -y -qq \
             cmake ninja-build \
             g++-11 \
+            libgtest-dev \
             lcov
 
       - name: Configure (Coverage)
