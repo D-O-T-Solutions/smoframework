@@ -177,8 +177,9 @@ namespace smo {
         std::string compute_event_hash(const EventRecord& event)
         {
             std::stringstream ss;
-            ss << event.sequence << static_cast<int>(event.type) << event.timestamp_ns << event.contract_id << event.execution_id
-               << event.trace_id << event.node_id << event.actor_id << event.payload << event.prev_hash;
+            ss << event.sequence << static_cast<int>(event.type) << event.timestamp_ns << event.contract_id
+               << event.execution_id << event.trace_id << event.node_id << event.actor_id << event.payload
+               << event.prev_hash;
             std::string data = ss.str();
 
             std::array<uint8_t, 32> hash;
@@ -227,7 +228,6 @@ namespace smo {
     EventStore::EventStore(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
 
     EventStore::~EventStore() = default;
-
 
     Result<void> EventStore::open()
     {

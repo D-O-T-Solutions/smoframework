@@ -189,9 +189,7 @@ namespace smo {
             rl_redisplay();
         }
 
-        static void handle_sigterm(int)
-        {
-        }
+        static void handle_sigterm(int) {}
 
         Result<int> execute_intent(const Intent& intent)
         {
