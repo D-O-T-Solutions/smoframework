@@ -44,7 +44,15 @@ Silenced ~30 noisy checks: macro-usage, braces, special-member-functions, sign-c
 ### 2.4 Build / Lint Verification
 
 - Full project build: 100% OK (all targets: `smo`, `smo-cli`, `smo-node`, `smo-admin`, `smo_runtime`, libraries)
-- clang-tidy-14: zero `clang-diagnostic-error` from our code (only pre-existing GCC 13 libstdc++ `<chrono>` incompatibility in `storage/policy_store/`)
+- clang-tidy-14: zero `clang-diagnostic-error` from our code
+
+  **Known toolchain issue (false positive, not from SMO source):**
+  ```
+  clang-tidy-14 + GCC 13 libstdc++ <chrono>
+    → hh_mm_ss::_S_fractional_width consteval error
+  ```
+  This is a compiler version incompatibility (GCC 13 headers + clang-14 static analyzer).
+  CI runs Ubuntu 22.04 with GCC 12 — unaffected. Tracked separately; zero impact on pipeline.
 
 ## 3. Files Changed
 
