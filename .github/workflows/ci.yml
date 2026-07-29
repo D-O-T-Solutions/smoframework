@@ -123,6 +123,7 @@ jobs:
           find . \( -name '*.cpp' -o -name '*.hpp' \) \
             -not -path '*/build*' \
             -not -path '*/third_party/*' \
+            -not -path '*/reference/*' \
             -print0 | xargs -0 -P2 -n1 \
             clang-tidy-14 \
               -p build-tidy
