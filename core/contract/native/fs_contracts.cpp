@@ -73,9 +73,7 @@ namespace smo::contract::native {
         }
     }
 
-    namespace smo::contract::native {
-
-        // ===========================================================================
+    // ===========================================================================
         // Filesystem List Contract
         // ===========================================================================
 
@@ -94,22 +92,22 @@ namespace smo::contract::native {
 
             if (req.recursive)
             {
-                for (const auto& entry : std::filesystem::recursive_directory_iterator(req.path, ec))
+                for (const auto& dir_entry : std::filesystem::recursive_directory_iterator(req.path, ec))
                 {
                     if (ec)
                         break;
 
                     FSListResponse::Entry entry;
-                    entry.name = entry.path().filename().string();
-                    entry.path = entry.path().string();
-                    entry.is_directory = entry.is_directory(ec);
-                    entry.is_symlink = entry.is_symlink(ec);
+                    entry.name = dir_entry.path().filename().string();
+                    entry.path = dir_entry.path().string();
+                    entry.is_directory = dir_entry.is_directory(ec);
+                    entry.is_symlink = dir_entry.is_symlink(ec);
                     entry.modified_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                            std::filesystem::last_write_time(entry, ec).time_since_epoch())
+                                            std::filesystem::last_write_time(dir_entry, ec).time_since_epoch())
                                             .count();
 
                     struct stat st;
-                    if (lstat(entry.path().c_str(), &st) == 0)
+                    if (lstat(entry.path.c_str(), &st) == 0)
                     {
                         entry.size = st.st_size;
                         entry.permissions = get_permissions(st.st_mode);
@@ -118,7 +116,7 @@ namespace smo::contract::native {
 
                         if (entry.is_symlink)
                         {
-                            entry.symlink_target = read_symlink(entry.path().string());
+                            entry.symlink_target = read_symlink(entry.path);
                         }
                     }
 
@@ -127,27 +125,27 @@ namespace smo::contract::native {
             }
             else
             {
-                for (const auto& entry : std::filesystem::directory_iterator(req.path, ec))
+                for (const auto& dir_entry : std::filesystem::directory_iterator(req.path, ec))
                 {
                     if (ec)
                         break;
 
-                    if (!req.show_hidden && entry.path().filename().string().starts_with('.'))
+                    if (!req.show_hidden && dir_entry.path().filename().string().starts_with('.'))
                     {
                         continue;
                     }
 
                     FSListResponse::Entry entry;
-                    entry.name = entry.path().filename().string();
-                    entry.path = entry.path().string();
-                    entry.is_directory = entry.is_directory(ec);
-                    entry.is_symlink = entry.is_symlink(ec);
+                    entry.name = dir_entry.path().filename().string();
+                    entry.path = dir_entry.path().string();
+                    entry.is_directory = dir_entry.is_directory(ec);
+                    entry.is_symlink = dir_entry.is_symlink(ec);
                     entry.modified_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                            std::filesystem::last_write_time(entry, ec).time_since_epoch())
+                                            std::filesystem::last_write_time(dir_entry, ec).time_since_epoch())
                                             .count();
 
                     struct stat st;
-                    if (lstat(entry.path().c_str(), &st) == 0)
+                    if (lstat(entry.path.c_str(), &st) == 0)
                     {
                         entry.size = st.st_size;
                         entry.permissions = get_permissions(st.st_mode);
@@ -156,7 +154,7 @@ namespace smo::contract::native {
 
                         if (entry.is_symlink)
                         {
-                            entry.symlink_target = read_symlink(entry.path().string());
+                            entry.symlink_target = read_symlink(entry.path);
                         }
                     }
 

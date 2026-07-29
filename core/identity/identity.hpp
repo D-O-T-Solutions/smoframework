@@ -29,9 +29,9 @@ namespace smo {
             char buf[65];
             for (size_t i = 0; i < 32; ++i)
             {
-                std::snprintf(&buf[i * 2], 3, "%02x", value[i]);
+                std::snprintf(&buf[i * 2], 3, "%02x", value[i]); // NOLINT
             }
-            return std::string(buf, 64);
+            return {buf, 64};
         }
     };
 

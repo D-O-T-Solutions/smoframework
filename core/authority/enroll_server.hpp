@@ -14,6 +14,9 @@ namespace smo::authority {
         EnrollServer();
         ~EnrollServer();
 
+        EnrollServer(EnrollServer&&) = default;
+        EnrollServer& operator=(EnrollServer&&) = default;
+
         EnrollServer(const EnrollServer&) = delete;
         EnrollServer& operator=(const EnrollServer&) = delete;
 

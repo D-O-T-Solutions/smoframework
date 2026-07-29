@@ -23,7 +23,7 @@ namespace smo::contract::native {
         MOVE = 0x05,
         STAT = 0x06,
         READ = 0x07,
-        WRITE = 0x07,
+        WRITE = 0x10,
         CREATE = 0x08,
         CHMOD = 0x09,
         CHOWN = 0x0A,

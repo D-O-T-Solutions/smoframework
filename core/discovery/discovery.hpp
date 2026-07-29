@@ -160,6 +160,7 @@ namespace smo {
     struct PingMsg
     {
         int64_t timestamp = 0;
+        uint64_t sequence = 0;
 
         Bytes serialize() const;
         static Result<PingMsg> deserialize(BytesView data);

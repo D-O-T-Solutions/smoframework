@@ -22,8 +22,6 @@ namespace smo {
 
         ~Impl() { close(); }
 
-        ~Impl() { close(); }
-
         Result<void> open()
         {
             namespace fs = std::filesystem;
@@ -44,7 +42,7 @@ namespace smo {
 
             // WAL mode
             char* err = nullptr;
-            int rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", nullptr, nullptr, &err);
+            rc = sqlite3_exec(db, "PRAGMA journal_mode = WAL;", nullptr, nullptr, &err);
             if (rc != SQLITE_OK)
             {
                 std::string msg = err ? err : "unknown";
@@ -86,8 +84,7 @@ namespace smo {
                 priority INTEGER NOT NULL DEFAULT 0,
                 status TEXT NOT NULL,
                 result_hash TEXT,
-                error_message TEXT,
-                created_ns INTEGER NOT NULL
+                error_message TEXT
             );
 
             CREATE INDEX IF NOT EXISTS idx_exec_contract ON execution_history(contract_id);
@@ -157,8 +154,8 @@ namespace smo {
             CREATE INDEX IF NOT EXISTS idx_mesh_timestamp ON mesh_history(timestamp_ns);
         )";
 
-            char* err = nullptr;
-            int rc = sqlite3_exec(db, schema, nullptr, nullptr, &err);
+            err = nullptr;
+            rc = sqlite3_exec(db, schema, nullptr, nullptr, &err);
             if (rc != SQLITE_OK)
             {
                 std::string msg = err ? err : "unknown";

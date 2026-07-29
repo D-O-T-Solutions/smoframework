@@ -51,15 +51,16 @@ namespace smo {
         std::string canonical = "CONTRACT|" + def.publisher + "|" + def.name + "|" + def.version + "|" + def.abi_hash +
                                 "|" + def.semantic_hash;
 
-        auto hash_result =
-            hash.hash(std::string_view(reinterpret_cast<const char*>(canonical.data()), canonical.size()));
+        BytesView data(
+            reinterpret_cast<const uint8_t*>(canonical.data()), canonical.size());
+        auto hash_result = hash.hash(data);
         if (!hash_result)
             return hash_result.error();
 
         ContractID id;
         if (hash_result.value().size() >= 32)
         {
-            std::copy(hash_result.value().begin(), hash_result.value().begin() + 32, id.value.begin());
+            std::copy(hash_result.value().begin(), hash_result.value().begin() + 32, id.value().begin());
         }
         return id;
     }

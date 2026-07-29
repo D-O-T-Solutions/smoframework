@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <unordered_map>
+#include <signal.h>
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 

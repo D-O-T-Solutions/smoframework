@@ -24,6 +24,7 @@ namespace smo {
 
         SqliteStore(SqliteStore&&) = default;
         SqliteStore& operator=(SqliteStore&&) = default;
+        ~SqliteStore() = default;
 
         SqliteStore(const SqliteStore&) = delete;
         SqliteStore& operator=(const SqliteStore&) = delete;

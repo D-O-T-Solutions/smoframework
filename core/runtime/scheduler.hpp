@@ -8,6 +8,7 @@
 #include <functional>
 #include <chrono>
 #include <memory>
+#include <thread>
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 #include "core/contract/contract.hpp"

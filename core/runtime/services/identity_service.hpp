@@ -4,10 +4,13 @@
 #include "core/errors/error.hpp"
 
 #include <string>
+#include <vector>
 
 namespace smo::runtime {
 
     // ── IdentityService ──────────────────────────────────────────────────
+        using PublicKey = std::vector<uint8_t>;
+
     class IdentityService
     {
     public:

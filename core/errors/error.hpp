@@ -141,7 +141,7 @@ namespace smo {
         int source_line;         // __LINE__ where error originated
         uint64_t timestamp_ns;   // Monotonic timestamp at error creation
 
-        Error() noexcept : code(), message(), source_file(nullptr), source_line(0), timestamp_ns(monotonic_ns()) {}
+        Error() noexcept : source_file(nullptr), source_line(0), timestamp_ns(monotonic_ns()) {}
 
         Error(ErrorCode ec, std::string msg, const char* file = nullptr, int line = 0) noexcept
             : code(ec), message(std::move(msg)), source_file(file), source_line(line), timestamp_ns(monotonic_ns())
@@ -178,7 +178,7 @@ namespace smo {
     public:
         Result(T val) noexcept(std::is_nothrow_move_constructible_v<T>) : value_(std::move(val)), has_value_(true) {}
 
-        Result(Error err) noexcept : error_(std::move(err)), has_value_(false) {}
+        Result(Error err) noexcept : error_(std::move(err)) {}
 
         ~Result() noexcept { destroy(); }
 
@@ -222,7 +222,7 @@ namespace smo {
         bool has_error_ = false;
 
     public:
-        Result() noexcept : has_error_(false) {}
+        Result() noexcept {}
         Result(Error err) noexcept : error_(std::move(err)), has_error_(true) {}
 
         explicit operator bool() const noexcept { return !has_error_; }

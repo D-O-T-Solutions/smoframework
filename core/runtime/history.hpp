@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include <chrono>
+#include <memory>
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 
@@ -170,7 +171,6 @@ namespace smo {
 
         // Trace API
         Result<std::vector<ExecutionHistoryEntry>> get_trace_executions(const std::string& trace_id) const;
-        Result<std::vector<ExecutionEventEntry>> get_trace_events(const std::string& trace_id) const;
 
     private:
         class Impl;

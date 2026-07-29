@@ -5,10 +5,10 @@
 #include <vector>
 #include <optional>
 #include <chrono>
+#include <memory>
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 #include "core/crypto/impl.hpp"
-#include "core/runtime/event_bus.hpp"
 #include "core/runtime/event_bus.hpp"
 
 namespace smo {
@@ -26,14 +26,14 @@ namespace smo {
         ExecutionCompleted = 5,
         ExecutionFailed = 6,
         ExecutionCancelled = 7,
-        PolicyEvaluated = 6,
-        WitnessAttested = 7,
+        PolicyEvaluated = 8,
+        WitnessAttested = 9,
         PolicyChanged = 8,
         MeshJoined = 9,
         MeshLeft = 10,
         CertificateIssued = 11,
-        CertificateRevoked = 11,
-        EpochIncremented = 12,
+        CertificateRevoked = 12,
+        EpochIncremented = 13,
     };
 
     struct AuditRecord

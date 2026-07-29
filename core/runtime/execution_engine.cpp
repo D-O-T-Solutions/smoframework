@@ -134,7 +134,6 @@ namespace smo {
             }
 
             std::string execution_id = task->execution_id;
-            task->promise.set_value(ExecutionResult{});
 
             pending_queue_.push(std::move(task));
             cv_.notify_one();
@@ -165,12 +164,6 @@ namespace smo {
 
         auto task_ptr = std::make_unique<Impl::Task>(std::move(*task));
         std::string exec_id = task_ptr->execution_id;
-
-        auto promise = std::make_shared<std::promise<ExecutionResult>>();
-        auto future = promise->get_future();
-
-        auto task_ptr = std::make_unique<Impl::Task>(std::move(*task));
-        task_ptr->promise = std::move(*promise);
 
         return impl_->submit_task(std::move(task_ptr));
     }

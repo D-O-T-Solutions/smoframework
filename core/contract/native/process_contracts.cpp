@@ -6,6 +6,7 @@
 #include <thread>
 #include <random>
 #include <signal.h>
+#include <pwd.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -47,9 +48,7 @@ namespace smo::contract::native {
         }
     }
 
-    namespace smo::contract::native {
-
-        Result<ProcExecResponse> proc_exec(const ProcExecRequest& req)
+    Result<ProcExecResponse> proc_exec(const ProcExecRequest& req)
         {
             ProcExecResponse resp;
             auto start = std::chrono::steady_clock::now();
@@ -60,7 +59,7 @@ namespace smo::contract::native {
             int stdin_pipe[2] = {-1, -1};
 
             if (pipe(stdout_pipe) != 0 || pipe(stderr_pipe) != 0 ||
-                (req.stdin_data.size() > 0 && pipe(stdin_pipe) != 0))
+                (!req.stdin_data.empty() && pipe(stdin_pipe) != 0))
             {
                 return SMO_ERR(Contract, 220, Error, NoRetry, None, "Failed to create pipes");
             }
@@ -83,7 +82,7 @@ namespace smo::contract::native {
             if (pid == 0)
             { // Child process
                 // Set up stdin
-                if (req.stdin_data.size() > 0)
+                if (!req.stdin_data.empty())
                 {
                     dup2(stdin_pipe[0], STDIN_FILENO);
                     close(stdin_pipe[0]);

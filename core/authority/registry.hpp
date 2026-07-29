@@ -142,6 +142,9 @@ namespace smo::authority {
         NodeRegistry() = default;
         ~NodeRegistry();
 
+        NodeRegistry(NodeRegistry&&) = default;
+        NodeRegistry& operator=(NodeRegistry&&) = default;
+
         NodeRegistry(const NodeRegistry&) = delete;
         NodeRegistry& operator=(const NodeRegistry&) = delete;
 

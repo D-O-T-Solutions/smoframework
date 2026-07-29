@@ -21,7 +21,9 @@ namespace smo {
     {
         std::ostringstream oss;
         for (uint8_t b : data)
-            oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+        {
+            oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b);
+        }
         return oss.str();
     }
 
@@ -35,11 +37,15 @@ namespace smo {
         std::string out;
         for (size_t i = 0; i < data.size(); i += 3)
         {
-            uint32_t v = (uint32_t)data[i] << 16;
+            uint32_t v = static_cast<uint32_t>(data[i]) << 16;
             if (i + 1 < data.size())
-                v |= (uint32_t)data[i + 1] << 8;
+            {
+                v |= static_cast<uint32_t>(data[i + 1]) << 8;
+            }
             if (i + 2 < data.size())
-                v |= (uint32_t)data[i + 2];
+            {
+                v |= static_cast<uint32_t>(data[i + 2]);
+            }
             out += kEnc[(v >> 18) & 0x3f];
             out += kEnc[(v >> 12) & 0x3f];
             out += kEnc[(v >> 6) & 0x3f];
@@ -48,7 +54,9 @@ namespace smo {
         // Padding
         size_t pad = (3 - data.size() % 3) % 3;
         for (size_t i = 0; i < pad; ++i)
+        {
             out[out.size() - 1 - i] = '=';
+        }
         return out;
     }
 

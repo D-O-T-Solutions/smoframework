@@ -11,6 +11,11 @@ namespace smo {
     {
     public:
         virtual ~HashProvider() = default;
+        HashProvider() = default;
+        HashProvider(const HashProvider&) = delete;
+        HashProvider& operator=(const HashProvider&) = delete;
+        HashProvider(HashProvider&&) = delete;
+        HashProvider& operator=(HashProvider&&) = delete;
 
         virtual Bytes hash(BytesView data) = 0;
 

@@ -40,9 +40,9 @@ namespace smo {
             char buf[65];
             for (size_t i = 0; i < 32; ++i)
             {
-                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]);
+                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]); // NOLINT
             }
-            return std::string(buf, 64);
+            return {buf, 64};
         }
 
         const uint8_t* data() const noexcept { return bytes.data(); }
@@ -86,10 +86,10 @@ namespace smo {
         static ContractID from_hex(std::string_view hex)
         {
             ContractID id;
-            if (hex.size() != 64)
+            if (hex.size() != 64) {
                 return id;
-            for (size_t i = 0; i < 32; ++i)
-            {
+            }
+            for (size_t i = 0; i < 32; ++i) {
                 std::string byte_str(hex.substr(i * 2, 2));
                 id.bytes[i] = static_cast<uint8_t>(std::stoul(byte_str, nullptr, 16));
             }
@@ -149,9 +149,9 @@ namespace smo {
             char buf[65];
             for (size_t i = 0; i < 32; ++i)
             {
-                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]);
+                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]); // NOLINT
             }
-            return std::string(buf, 64);
+            return {buf, 64};
         }
 
         static ExecutionID generate(const ContractID& contract_id, const std::string& requester_id,
@@ -195,9 +195,9 @@ namespace smo {
             char buf[65];
             for (size_t i = 0; i < 32; ++i)
             {
-                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]);
+                std::snprintf(&buf[i * 2], 3, "%02x", bytes[i]); // NOLINT
             }
-            return std::string(buf, 64);
+            return {buf, 64};
         }
 
         static TraceID generate()

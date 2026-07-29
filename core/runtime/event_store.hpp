@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 #include <chrono>
-#include <cbor/cbor.h>
+#include <memory>
+#include "core/bootstrap/cbor.hpp"
 #include "core/types.hpp"
 #include "core/errors/error.hpp"
 #include "core/contract/contract.hpp"
@@ -29,7 +30,7 @@ namespace smo {
         QueuedRetry = 13,    // Queued for retry
         PolicyChecked = 14,  // Policy validation
         Witnessed = 15,      // Witness attestation
-        Dispatched = 16,     // Dispatched to node
+        DispatchedToNode = 16, // Dispatched to node
         AcceptedByNode = 17, // Accepted by target node
         ProgressUpdate = 18, // Progress percentage
         PartialResult = 19,  // Partial result available

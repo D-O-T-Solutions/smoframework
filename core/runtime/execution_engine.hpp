@@ -33,8 +33,6 @@ namespace smo {
         std::vector<std::string> witness_ids;
         ExecutionConfig config;
         std::string policy_name;
-        std::vector<std::string> selected_nodes;
-        std::vector<std::string> witness_ids;
     };
 
     struct ExecutionResult
@@ -90,7 +88,7 @@ namespace smo {
 
     private:
         class Impl;
-        std::unique_ptr<class Impl> impl_;
+        std::unique_ptr<Impl> impl_;
     };
 
     // Trace context for distributed tracing

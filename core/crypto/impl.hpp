@@ -80,14 +80,14 @@ namespace smo {
     // ---------------------------------------------------------------------------
     struct CryptoProvider
     {
-        CryptoSuiteID suite_id;
-        const char* name;
+        CryptoSuiteID suite_id = 0;
+        const char* name = nullptr;
 
         // RNG (stateful: context pointer + fill function)
-        void* rng_ctx;
-        void (*rng_fill)(void* ctx, uint8_t* buf, size_t len);
+        void* rng_ctx = nullptr;
+        void (*rng_fill)(void* ctx, uint8_t* buf, size_t len) = nullptr;
 
-        RngRef default_rng() const { return RngRef(rng_ctx, rng_fill); }
+        RngRef default_rng() const { return {rng_ctx, rng_fill}; }
 
         HashImpl hash;
         PerformanceHashImpl perf_hash; // non-cryptographic hash (may be null)

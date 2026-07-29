@@ -30,6 +30,7 @@ namespace smo::authority {
 
         AuthorityStore(AuthorityStore&&) = default;
         AuthorityStore& operator=(AuthorityStore&&) = default;
+        ~AuthorityStore() = default;
 
         AuthorityStore(const AuthorityStore&) = delete;
         AuthorityStore& operator=(const AuthorityStore&) = delete;
