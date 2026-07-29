@@ -88,8 +88,8 @@ namespace smo {
 
         AuditStore(const AuditStore&) = delete;
         AuditStore& operator=(const AuditStore&) = delete;
-        AuditStore(AuditStore&&) = default;
-        AuditStore& operator=(AuditStore&&) = default;
+        AuditStore(AuditStore&&) noexcept;
+        AuditStore& operator=(AuditStore&&) noexcept;
 
         Result<void> open();
         void close();

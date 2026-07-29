@@ -257,8 +257,7 @@ namespace smo {
     AuditStore::AuditStore() : AuditStore(Config{}) {}
     AuditStore::AuditStore(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
     AuditStore::~AuditStore() = default;
-    AuditStore::AuditStore(AuditStore&&) noexcept = default;
-    AuditStore& AuditStore::operator=(AuditStore&&) noexcept = default;
+
 
     Result<void> AuditStore::open()
     {

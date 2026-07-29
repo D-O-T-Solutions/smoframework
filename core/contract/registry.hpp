@@ -59,7 +59,7 @@ namespace smo {
         ContractID id;
         if (hash_result.value().size() >= 32)
         {
-            std::copy(hash_result.value().begin(), hash_result.value().begin() + 32, id.value().begin());
+            std::copy(hash_result.value().begin(), hash_result.value().begin() + 32, id.bytes.begin());
         }
         return id;
     }

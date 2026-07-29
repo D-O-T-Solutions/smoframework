@@ -19,8 +19,18 @@ namespace smo::runtime {
     bool RetryEngine::is_retryable(const std::string& error_code, const std::string& error_msg) const
     {
         // Check explicit retryable errors
-        if (std::find(policy_.retryable_errors.begin(), policy_.retryable_errors.end(), error_code) !=
-            policy_.retryable_errors.end())
+        try
+        {
+            int code = std::stoi(error_code);
+            if (std::find(policy_.retryable_errors.begin(), policy_.retryable_errors.end(), code) !=
+                policy_.retryable_errors.end())
+            {
+                return true;
+            }
+        }
+        catch (...)
+        {
+        }
         {
             return true;
         }
@@ -79,8 +89,12 @@ namespace smo::runtime {
         return static_cast<int64_t>(delay);
     }
 
+    struct Scheduler::Impl {};
+
     Scheduler::Scheduler() : impl_(nullptr) {}
     Scheduler::Scheduler(const Config&) : impl_(nullptr) {}
     Scheduler::~Scheduler() = default;
+    Scheduler::Scheduler(Scheduler&&) noexcept = default;
+    Scheduler& Scheduler::operator=(Scheduler&&) noexcept = default;
 
 } // namespace smo::runtime

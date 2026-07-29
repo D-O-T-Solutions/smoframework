@@ -90,7 +90,7 @@ namespace smo {
             }
 
             auto& hp = HashProvider::default_provider();
-            auto serialized = std::to_string(fin_result->nodes.size());
+            auto serialized = std::to_string(fin_result.value().nodes.size());
             Compiler::Result result;
             result.graph = std::move(fin_result).value();
             result.graph_hash = hp.hash_hex(serialized);

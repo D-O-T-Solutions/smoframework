@@ -97,8 +97,8 @@ namespace smo::runtime {
 
         Scheduler(const Scheduler&) = delete;
         Scheduler& operator=(const Scheduler&) = delete;
-        Scheduler(Scheduler&&) = default;
-        Scheduler& operator=(Scheduler&&) = default;
+        Scheduler(Scheduler&&) noexcept;
+        Scheduler& operator=(Scheduler&&) noexcept;
 
         // Submit a task for scheduling
         Result<std::string> submit(const Task& task);

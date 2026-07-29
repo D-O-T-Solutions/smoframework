@@ -219,8 +219,7 @@ namespace smo {
 
     HistoryService::~HistoryService() = default;
 
-    HistoryService::HistoryService(HistoryService&&) noexcept = default;
-    HistoryService& HistoryService::operator=(HistoryService&&) noexcept = default;
+
 
     Result<void> HistoryService::open()
     {

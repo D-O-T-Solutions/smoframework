@@ -123,8 +123,8 @@ namespace smo {
 
         HistoryService(const HistoryService&) = delete;
         HistoryService& operator=(const HistoryService&) = delete;
-        HistoryService(HistoryService&&) = default;
-        HistoryService& operator=(HistoryService&&) = default;
+        HistoryService(HistoryService&&) noexcept;
+        HistoryService& operator=(HistoryService&&) noexcept;
 
         Result<void> open();
         void close();

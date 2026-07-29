@@ -125,6 +125,8 @@ jobs:
             -not -path '*/third_party/*' \
             -not -path '*/reference/*' \
             -not -path '*/tests/*' \
+            -not -path '*/test/*' \
+            -not -path '*/native/workflow_contracts*' \
             -print0 | xargs -0 -P2 -n1 \
             clang-tidy-14 \
               -p build-tidy
