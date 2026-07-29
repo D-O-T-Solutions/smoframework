@@ -9,7 +9,7 @@
 namespace smo::runtime {
 
     // ── IdentityService ──────────────────────────────────────────────────
-        using PublicKey = std::vector<uint8_t>;
+    using PublicKey = std::vector<uint8_t>;
 
     class IdentityService
     {

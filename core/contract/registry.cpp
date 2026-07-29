@@ -125,136 +125,135 @@ namespace smo {
         impl_->close();
     }
 
-    Result<void> ContractRegistry::register_contract(const ContractDefinition& def,
-                                                      const std::string& registered_by, const HashImpl& hash)
+    Result<void> ContractRegistry::register_contract(const ContractDefinition& def, const std::string& registered_by,
+                                                     const HashImpl& hash)
     {
-            // Compute contract ID
-            auto cid_result = compute_contract_id(def, hash);
-            if (!cid_result)
-                return cid_result.error();
-            ContractID id = cid_result.value();
+        // Compute contract ID
+        auto cid_result = compute_contract_id(def, hash);
+        if (!cid_result)
+            return cid_result.error();
+        ContractID id = cid_result.value();
 
-            // Check if already exists
-            auto existing = get_contract(id);
-            if (existing)
-            {
-                return SMO_ERR_STORAGE(902, Warn, NoRetry, None, "Contract already registered");
-            }
-
-            // Serialize required capabilities as JSON
-            std::string caps_json = "[";
-            for (size_t i = 0; i < def.required_capabilities.size(); ++i)
-            {
-                if (i > 0)
-                    caps_json += ",";
-                caps_json += "\"" + def.required_capabilities[i] + "\"";
-            }
-            caps_json += "]";
-
-            std::string def_json = "{"
-                                   "\"name\":\"" +
-                                   def.name +
-                                   "\","
-                                   "\"version\":\"" +
-                                   def.version +
-                                   "\","
-                                   "\"publisher\":\"" +
-                                   def.publisher +
-                                   "\","
-                                   "\"description\":\"" +
-                                   def.description +
-                                   "\","
-                                   "\"abi_hash\":\"" +
-                                   def.abi_hash +
-                                   "\","
-                                   "\"semantic_hash\":\"" +
-                                   def.semantic_hash +
-                                   "\","
-                                   "\"required_caps\":" +
-                                   caps_json +
-                                   ","
-                                   "\"max_cpu_millis\":" +
-                                   std::to_string(def.resources.max_cpu_millis) +
-                                   ","
-                                   "\"max_memory_bytes\":" +
-                                   std::to_string(def.resources.max_memory_bytes) +
-                                   ","
-                                   "\"max_disk_bytes\":" +
-                                   std::to_string(def.resources.max_disk_bytes) +
-                                   ","
-                                   "\"timeout_ns\":" +
-                                   std::to_string(def.resources.timeout_ns) +
-                                   ","
-                                   "\"publisher_id\":\"" +
-                                   def.publisher_id +
-                                   "\","
-                                   "\"published_at\":" +
-                                   std::to_string(def.published_at) +
-                                   ","
-                                   "\"signature\":\"" +
-                                   def.signature +
-                                   "\""
-                                   "}";
-
-            sqlite3_stmt* stmt = nullptr;
-            sqlite3* db = impl_->db();
-            int rc =
-                sqlite3_prepare_v2(db,
-                                   "INSERT INTO contracts "
-                                   "(contract_id, name, version, publisher, description, abi_hash, semantic_hash, "
-                                   "required_caps, max_cpu_millis, max_memory_bytes, max_disk_bytes, timeout_ns, "
-                                   "publisher_id, published_at, signature, registered_at, registered_by) "
-                                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                   -1, &stmt, nullptr);
-
-            if (rc != SQLITE_OK)
-            {
-                return SMO_ERR_STORAGE(904, Error, RetrySafe, RetryOperation, "Failed to prepare statement");
-            }
-
-            sqlite3_bind_blob(stmt, 1, id.value().data(), 32, SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 2, def.name.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 3, def.version.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 4, def.publisher.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 5, def.description.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 6, def.abi_hash.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 7, def.semantic_hash.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 8, "[\"cap1\",\"cap2\"]", -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int64(stmt, 9, 0);
-            sqlite3_bind_int64(stmt, 10, 0);
-            sqlite3_bind_int64(stmt, 11, 0);
-            sqlite3_bind_int64(stmt, 12, 30000000000);
-            sqlite3_bind_text(stmt, 13, def.publisher_id.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int64(stmt, 14, std::chrono::system_clock::now().time_since_epoch().count());
-            sqlite3_bind_text(stmt, 15, def.signature.c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int64(stmt, 16, std::chrono::system_clock::now().time_since_epoch().count());
-            sqlite3_bind_text(stmt, 17, registered_by.c_str(), -1, SQLITE_TRANSIENT);
-
-            rc = sqlite3_step(stmt);
-            sqlite3_finalize(stmt);
-
-            if (rc != SQLITE_DONE)
-            {
-                return SMO_ERR_STORAGE(904, Error, RetrySafe, RetryOperation, "Failed to insert contract");
-            }
-
-            return {};
-        }
-
-        Result<ContractEntry> ContractRegistry::get_contract(const ContractID& id) const
+        // Check if already exists
+        auto existing = get_contract(id);
+        if (existing)
         {
-            // Implementation would query the database
-            return SMO_ERR_STORAGE(404, Info, RetrySafe, None, "Not implemented");
+            return SMO_ERR_STORAGE(902, Warn, NoRetry, None, "Contract already registered");
         }
 
-        Result<std::vector<ContractEntry>> ContractRegistry::list_contracts() const
+        // Serialize required capabilities as JSON
+        std::string caps_json = "[";
+        for (size_t i = 0; i < def.required_capabilities.size(); ++i)
         {
-            return {};
+            if (i > 0)
+                caps_json += ",";
+            caps_json += "\"" + def.required_capabilities[i] + "\"";
         }
+        caps_json += "]";
 
-        Result<void> ContractRegistry::unregister_contract(const ContractID& id, const std::string& unregistered_by)
+        std::string def_json = "{"
+                               "\"name\":\"" +
+                               def.name +
+                               "\","
+                               "\"version\":\"" +
+                               def.version +
+                               "\","
+                               "\"publisher\":\"" +
+                               def.publisher +
+                               "\","
+                               "\"description\":\"" +
+                               def.description +
+                               "\","
+                               "\"abi_hash\":\"" +
+                               def.abi_hash +
+                               "\","
+                               "\"semantic_hash\":\"" +
+                               def.semantic_hash +
+                               "\","
+                               "\"required_caps\":" +
+                               caps_json +
+                               ","
+                               "\"max_cpu_millis\":" +
+                               std::to_string(def.resources.max_cpu_millis) +
+                               ","
+                               "\"max_memory_bytes\":" +
+                               std::to_string(def.resources.max_memory_bytes) +
+                               ","
+                               "\"max_disk_bytes\":" +
+                               std::to_string(def.resources.max_disk_bytes) +
+                               ","
+                               "\"timeout_ns\":" +
+                               std::to_string(def.resources.timeout_ns) +
+                               ","
+                               "\"publisher_id\":\"" +
+                               def.publisher_id +
+                               "\","
+                               "\"published_at\":" +
+                               std::to_string(def.published_at) +
+                               ","
+                               "\"signature\":\"" +
+                               def.signature +
+                               "\""
+                               "}";
+
+        sqlite3_stmt* stmt = nullptr;
+        sqlite3* db = impl_->db();
+        int rc = sqlite3_prepare_v2(db,
+                                    "INSERT INTO contracts "
+                                    "(contract_id, name, version, publisher, description, abi_hash, semantic_hash, "
+                                    "required_caps, max_cpu_millis, max_memory_bytes, max_disk_bytes, timeout_ns, "
+                                    "publisher_id, published_at, signature, registered_at, registered_by) "
+                                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                    -1, &stmt, nullptr);
+
+        if (rc != SQLITE_OK)
         {
-            return SMO_ERR_STORAGE(905, Error, NoRetry, None, "Not implemented");
+            return SMO_ERR_STORAGE(904, Error, RetrySafe, RetryOperation, "Failed to prepare statement");
         }
 
-    } // namespace smo
+        sqlite3_bind_blob(stmt, 1, id.value().data(), 32, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, def.name.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, def.version.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, def.publisher.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 5, def.description.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 6, def.abi_hash.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 7, def.semantic_hash.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 8, "[\"cap1\",\"cap2\"]", -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(stmt, 9, 0);
+        sqlite3_bind_int64(stmt, 10, 0);
+        sqlite3_bind_int64(stmt, 11, 0);
+        sqlite3_bind_int64(stmt, 12, 30000000000);
+        sqlite3_bind_text(stmt, 13, def.publisher_id.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(stmt, 14, std::chrono::system_clock::now().time_since_epoch().count());
+        sqlite3_bind_text(stmt, 15, def.signature.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(stmt, 16, std::chrono::system_clock::now().time_since_epoch().count());
+        sqlite3_bind_text(stmt, 17, registered_by.c_str(), -1, SQLITE_TRANSIENT);
+
+        rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        if (rc != SQLITE_DONE)
+        {
+            return SMO_ERR_STORAGE(904, Error, RetrySafe, RetryOperation, "Failed to insert contract");
+        }
+
+        return {};
+    }
+
+    Result<ContractEntry> ContractRegistry::get_contract(const ContractID& id) const
+    {
+        // Implementation would query the database
+        return SMO_ERR_STORAGE(404, Info, RetrySafe, None, "Not implemented");
+    }
+
+    Result<std::vector<ContractEntry>> ContractRegistry::list_contracts() const
+    {
+        return {};
+    }
+
+    Result<void> ContractRegistry::unregister_contract(const ContractID& id, const std::string& unregistered_by)
+    {
+        return SMO_ERR_STORAGE(905, Error, NoRetry, None, "Not implemented");
+    }
+
+} // namespace smo

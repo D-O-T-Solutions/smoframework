@@ -47,12 +47,14 @@ namespace smo::authority {
         out.reserve(name.size());
         // Trim leading
         size_t start = 0;
-        while (start < name.size() && std::isspace(static_cast<unsigned char>(name[start]))) {
+        while (start < name.size() && std::isspace(static_cast<unsigned char>(name[start])))
+        {
             ++start;
         }
         // Trim trailing
         size_t end = name.size();
-        while (end > start && std::isspace(static_cast<unsigned char>(name[end - 1]))) {
+        while (end > start && std::isspace(static_cast<unsigned char>(name[end - 1])))
+        {
             --end;
         }
         // Lowercase
@@ -686,7 +688,8 @@ namespace smo::authority {
                           "issuer_pubkey_hex, subject_pubkey_hex, role, status, epoch, "
                           "issued_at, expires_at, revoked_at, revocation_reason "
                           "FROM certificates";
-        if (!node_id_hex.empty()) {
+        if (!node_id_hex.empty())
+        {
             sql += " WHERE node_id_hex = ?";
         }
         sql += " ORDER BY issued_at DESC";
@@ -695,10 +698,12 @@ namespace smo::authority {
         {
             return map_sqlite_error<std::vector<CertificateRecord>>(SQLITE_ERROR, db_, "prepare list_certificates");
         }
-        if (!node_id_hex.empty()) {
+        if (!node_id_hex.empty())
+        {
             sqlite3_bind_text(stmt, 1, node_id_hex.c_str(), -1, SQLITE_STATIC);
         }
-        while (sqlite3_step(stmt) == SQLITE_ROW) {
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
             CertificateRecord rec;
             rec.id = sqlite3_column_int64(stmt, 0);
             rec.node_id_hex = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));

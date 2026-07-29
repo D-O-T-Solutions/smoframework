@@ -16,7 +16,6 @@ namespace smo::runtime {
 
     RetryEngine::RetryEngine(const RetryPolicy& policy) : policy_(policy) {}
 
-
     bool RetryEngine::is_retryable(const std::string& error_code, const std::string& error_msg) const
     {
         // Check explicit retryable errors

@@ -15,25 +15,25 @@ namespace smo {
     // Event types for full lifecycle tracing
     enum class EventType : uint8_t
     {
-        Created = 1,         // Contract/Execution created
-        Validated = 2,       // Validation passed
-        Queued = 3,          // Queued for execution
-        Scheduled = 4,       // Scheduled on nodes
-        Selected = 5,        // Nodes selected
-        Dispatched = 6,      // Dispatched to nodes
-        Accepted = 7,        // Accepted by responder
-        Started = 8,         // Execution started
-        Progress = 9,        // Progress update
-        Completed = 10,      // Completed successfully
-        Failed = 11,         // Failed
-        Cancelled = 12,      // Cancelled by user
-        QueuedRetry = 13,    // Queued for retry
-        PolicyChecked = 14,  // Policy validation
-        Witnessed = 15,      // Witness attestation
+        Created = 1,           // Contract/Execution created
+        Validated = 2,         // Validation passed
+        Queued = 3,            // Queued for execution
+        Scheduled = 4,         // Scheduled on nodes
+        Selected = 5,          // Nodes selected
+        Dispatched = 6,        // Dispatched to nodes
+        Accepted = 7,          // Accepted by responder
+        Started = 8,           // Execution started
+        Progress = 9,          // Progress update
+        Completed = 10,        // Completed successfully
+        Failed = 11,           // Failed
+        Cancelled = 12,        // Cancelled by user
+        QueuedRetry = 13,      // Queued for retry
+        PolicyChecked = 14,    // Policy validation
+        Witnessed = 15,        // Witness attestation
         DispatchedToNode = 16, // Dispatched to node
-        AcceptedByNode = 17, // Accepted by target node
-        ProgressUpdate = 18, // Progress percentage
-        PartialResult = 19,  // Partial result available
+        AcceptedByNode = 17,   // Accepted by target node
+        ProgressUpdate = 18,   // Progress percentage
+        PartialResult = 19,    // Partial result available
     };
 
     struct EventRecord

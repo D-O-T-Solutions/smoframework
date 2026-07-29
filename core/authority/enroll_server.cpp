@@ -35,17 +35,17 @@ namespace smo::authority {
             std::string content_type = "application/json";
             std::string body;
 
-        std::string to_string() const
-        {
-            std::ostringstream resp;
-            resp << "HTTP/1.1 " << status_code << " " << status_text << "\r\n"
-                 << "Content-Type: " << content_type << "\r\n"
-                 << "Content-Length: " << body.size() << "\r\n"
-                 << "Connection: close\r\n"
-                 << "\r\n"
-                 << body;
-            return resp.str();
-        } // NOLINT
+            std::string to_string() const
+            {
+                std::ostringstream resp;
+                resp << "HTTP/1.1 " << status_code << " " << status_text << "\r\n"
+                     << "Content-Type: " << content_type << "\r\n"
+                     << "Content-Length: " << body.size() << "\r\n"
+                     << "Connection: close\r\n"
+                     << "\r\n"
+                     << body;
+                return resp.str();
+            } // NOLINT
         };
 
         static bool recv_all(int fd, std::string& buf, size_t max_len)

@@ -86,10 +86,12 @@ namespace smo {
         static ContractID from_hex(std::string_view hex)
         {
             ContractID id;
-            if (hex.size() != 64) {
+            if (hex.size() != 64)
+            {
                 return id;
             }
-            for (size_t i = 0; i < 32; ++i) {
+            for (size_t i = 0; i < 32; ++i)
+            {
                 std::string byte_str(hex.substr(i * 2, 2));
                 id.bytes[i] = static_cast<uint8_t>(std::stoul(byte_str, nullptr, 16));
             }

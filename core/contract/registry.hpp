@@ -51,8 +51,7 @@ namespace smo {
         std::string canonical = "CONTRACT|" + def.publisher + "|" + def.name + "|" + def.version + "|" + def.abi_hash +
                                 "|" + def.semantic_hash;
 
-        BytesView data(
-            reinterpret_cast<const uint8_t*>(canonical.data()), canonical.size());
+        BytesView data(reinterpret_cast<const uint8_t*>(canonical.data()), canonical.size());
         auto hash_result = hash.hash(data);
         if (!hash_result)
             return hash_result.error();
