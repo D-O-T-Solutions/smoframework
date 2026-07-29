@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <algorithm>
 #include <signal.h>
 #include <dirent.h>
 #include <sys/sysinfo.h>
@@ -319,7 +320,7 @@ namespace smo::contract::native {
             proc.cpu_percent = std::stod(parts[13]) + std::stod(parts[14]); // utime + stime
             proc.vsz = std::stoull(parts[22]) * 4096;                       // pages to bytes
             proc.rss = std::stoull(parts[23]) * 4096;
-            proc.state = parts[2][0];
+            proc.stat = parts[2][0];
 
             // Command
             std::string cmdline = read_file("/proc/" + std::to_string(pid) + "/cmdline");

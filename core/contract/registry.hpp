@@ -86,7 +86,8 @@ namespace smo {
             size_t max_contracts = 10000;
         };
 
-        explicit ContractRegistry(const Config& config = {});
+        ContractRegistry();
+        explicit ContractRegistry(const Config& config);
         ~ContractRegistry();
 
         ContractRegistry(const ContractRegistry&) = delete;

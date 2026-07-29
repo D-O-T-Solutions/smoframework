@@ -7,6 +7,10 @@
 #include <random>
 #include <openssl/sha.h>
 #include <openssl/evp.h>
+#include <blake3.h>
+#include <sstream>
+#include <iomanip>
+#include <array>
 
 namespace smo::contract::native {
 
@@ -25,7 +29,6 @@ namespace smo::contract::native {
             EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
 
             char buffer[8192];
-            std::ifstream file(path, std::ios::binary);
             while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0)
             {
                 EVP_DigestUpdate(ctx, buffer, file.gcount());
@@ -55,7 +58,6 @@ namespace smo::contract::native {
             blake3_hasher_init(&hasher);
 
             char buffer[8192];
-            std::ifstream file(path, std::ios::binary);
             while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0)
             {
                 blake3_hasher_update(&hasher, buffer, file.gcount());
@@ -74,9 +76,7 @@ namespace smo::contract::native {
         }
     }
 
-    namespace smo::contract::native {
-
-        Result<FilePutResponse> file_put(const FilePutRequest& req)
+    Result<FilePutResponse> file_put(const FilePutRequest& req)
         {
             FilePutResponse resp;
             resp.remote_path = req.remote_path;
@@ -183,4 +183,4 @@ namespace smo::contract::native {
             return resp;
         }
 
-    } // namespace smo::contract::native
+} // namespace smo::contract::native

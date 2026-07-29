@@ -60,7 +60,8 @@ namespace smo {
             size_t max_retry_attempts = 3;
         };
 
-        explicit ExecutionEngine(const Config& config = {});
+        ExecutionEngine();
+        explicit ExecutionEngine(const Config& config);
         ~ExecutionEngine();
 
         ExecutionEngine(const ExecutionEngine&) = delete;

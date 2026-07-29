@@ -40,7 +40,7 @@ namespace smo {
             return fail;
         }
 
-        return std::move(*exec_result);
+        return std::move(exec_result.value());
     }
 
 } // namespace smo

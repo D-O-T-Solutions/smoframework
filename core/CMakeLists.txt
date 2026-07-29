@@ -4,7 +4,7 @@ target_include_directories(smo_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include/smo>
 )
-target_include_directories(smo_core PRIVATE
+target_include_directories(smo_core PUBLIC
     ${CMAKE_SOURCE_DIR}/third_party/blake3
 )
 target_link_libraries(smo_core PUBLIC fmt::fmt)

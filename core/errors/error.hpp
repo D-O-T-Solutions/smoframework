@@ -176,6 +176,8 @@ namespace smo {
         }
 
     public:
+        Result() noexcept(std::is_nothrow_default_constructible_v<T>) : value_(), has_value_(true) {}
+
         Result(T val) noexcept(std::is_nothrow_move_constructible_v<T>) : value_(std::move(val)), has_value_(true) {}
 
         Result(Error err) noexcept : error_(std::move(err)) {}
@@ -222,7 +224,7 @@ namespace smo {
         bool has_error_ = false;
 
     public:
-        Result() noexcept {}
+        Result() noexcept = default;
         Result(Error err) noexcept : error_(std::move(err)), has_error_(true) {}
 
         explicit operator bool() const noexcept { return !has_error_; }
@@ -281,7 +283,7 @@ namespace smo {
     {                                                                                                                  \
         return std::move(_smo_r_).error();                                                                             \
     }                                                                                                                  \
-    var = std::move(_smo_r_).value()
+    var = std::move(_smo_r_).value() // NOLINT(bugprone-macro-parentheses) — parens break `auto val` declarations
 
     // ---------------------------------------------------------------------------
     // std::error_code integration (for compatibility with std::expected in C++23)

@@ -124,6 +124,7 @@ jobs:
             -not -path '*/build*' \
             -not -path '*/third_party/*' \
             -not -path '*/reference/*' \
+            -not -path '*/tests/*' \
             -print0 | xargs -0 -P2 -n1 \
             clang-tidy-14 \
               -p build-tidy

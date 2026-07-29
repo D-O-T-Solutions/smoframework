@@ -295,7 +295,8 @@ namespace smo {
 
     Result<ListenerPtr> TcpTransport::listen(const Endpoint& ep)
     {
-        SMO_TRY_VAL(int fd, create_tcp_socket());
+        int fd;
+        SMO_TRY_VAL(fd, create_tcp_socket());
 
         // Reuse address
         int opt = 1;
@@ -338,7 +339,8 @@ namespace smo {
 
     Result<SessionPtr> TcpTransport::connect(const Endpoint& ep)
     {
-        SMO_TRY_VAL(int fd, create_tcp_socket());
+        int fd;
+        SMO_TRY_VAL(fd, create_tcp_socket());
 
         auto addr = resolve_endpoint(ep);
         if (!addr)

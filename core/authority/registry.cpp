@@ -264,7 +264,9 @@ namespace smo::authority {
 
         auto tx = begin_transaction();
         if (!tx)
+        {
             return tx.error();
+        }
 
         // 1. Insert node (UNIQUE on display_name → catches duplicates)
         {
@@ -532,7 +534,9 @@ namespace smo::authority {
         // Check node exists first
         auto exists = node_exists(node_id_hex);
         if (!exists)
+        {
             return exists.error();
+        }
         if (!exists.value())
         {
             return SMO_ERR_STORAGE(404, Error, NoRetry, None, "node not found: " + node_id_hex);

@@ -34,7 +34,7 @@ namespace smo {
                 ec = std::make_error_code(std::errc::invalid_argument);
                 return {ExecutionGraph{}, ""};
             }
-            auto ast = std::move(*ast_result);
+            auto ast = std::move(ast_result).value();
 
             SmirModule smir;
             smir.name = def.opcode;
@@ -54,10 +54,10 @@ namespace smo {
                 ec = std::make_error_code(std::errc::invalid_argument);
                 return {ExecutionGraph{}, ""};
             }
-            smir = std::move(*sem_result);
+            smir = std::move(sem_result).value();
 
             Planner planner;
-            auto plan_result = planner.plan(smir, def.contract_id.to_string());
+            auto plan_result = planner.plan(smir, def.contract_id.to_hex());
             if (!plan_result)
             {
                 ec = std::make_error_code(std::errc::invalid_argument);
@@ -65,7 +65,7 @@ namespace smo {
             }
 
             GraphBuilder builder;
-            auto dag_result = builder.build(*plan_result);
+            auto dag_result = builder.build(plan_result.value());
             if (!dag_result)
             {
                 ec = std::make_error_code(std::errc::invalid_argument);
@@ -73,7 +73,7 @@ namespace smo {
             }
 
             Optimizer optimizer;
-            auto opt_result = optimizer.optimize(*dag_result);
+            auto opt_result = optimizer.optimize(dag_result.value());
             if (!opt_result)
             {
                 ec = std::make_error_code(std::errc::invalid_argument);
@@ -82,7 +82,7 @@ namespace smo {
 
             FinalValidator fin_val;
             FinalValidator::Config fin_cfg;
-            auto fin_result = fin_val.validate(*opt_result, fin_cfg);
+            auto fin_result = fin_val.validate(opt_result.value(), fin_cfg);
             if (!fin_result)
             {
                 ec = std::make_error_code(std::errc::invalid_argument);
@@ -92,7 +92,7 @@ namespace smo {
             auto& hp = HashProvider::default_provider();
             auto serialized = std::to_string(fin_result->nodes.size());
             Compiler::Result result;
-            result.graph = std::move(*fin_result);
+            result.graph = std::move(fin_result).value();
             result.graph_hash = hp.hash_hex(serialized);
             return result;
         }

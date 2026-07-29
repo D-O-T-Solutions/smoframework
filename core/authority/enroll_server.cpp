@@ -48,7 +48,7 @@ namespace smo::authority {
             } // NOLINT
         };
 
-        static bool recv_all(int fd, std::string& buf, size_t max_len)
+        bool recv_all(int fd, std::string& buf, size_t max_len)
         {
             char tmp[4096];
             while (buf.size() < max_len)
@@ -74,19 +74,25 @@ namespace smo::authority {
             return true;
         }
 
-        static bool parse_http_request(const std::string& raw, HttpRequest& req)
+        bool parse_http_request(const std::string& raw, HttpRequest& req)
         {
             // Parse request line: "METHOD /path HTTP/1.1\r\n"
             auto line_end = raw.find("\r\n");
             if (line_end == std::string::npos)
+            {
                 return false;
+            }
 
             auto first_space = raw.find(' ');
             if (first_space == std::string::npos || first_space >= line_end)
+            {
                 return false;
+            }
             auto second_space = raw.find(' ', first_space + 1);
             if (second_space == std::string::npos || second_space >= line_end)
+            {
                 return false;
+            }
 
             req.method = raw.substr(0, first_space);
             req.path = raw.substr(first_space + 1, second_space - first_space - 1); // NOLINT

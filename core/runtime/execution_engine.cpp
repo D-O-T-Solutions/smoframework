@@ -142,6 +142,7 @@ namespace smo {
         }
     };
 
+    ExecutionEngine::ExecutionEngine() : ExecutionEngine(Config{}) {}
     ExecutionEngine::ExecutionEngine(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
 
     ExecutionEngine::~ExecutionEngine() = default;
@@ -150,7 +151,7 @@ namespace smo {
     {
         auto task = std::make_unique<Impl::Task>();
         task->execution_id = "exec_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
-        task->contract_id = context.contract_id;
+        task->contract_id = context.contract_id.to_hex();
         task->trace_id = context.trace_id.empty()
                              ? "trace_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())
                              : context.trace_id;
@@ -170,7 +171,7 @@ namespace smo {
 
     Result<std::string> ExecutionEngine::get_status(const std::string& execution_id) const
     {
-        return "not_implemented";
+        return std::string("not_implemented");
     }
 
     Result<void> ExecutionEngine::cancel(const std::string& execution_id)

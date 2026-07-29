@@ -10,6 +10,8 @@
 #include <cstring>
 #include <iomanip>
 #include <sstream>
+#include <blake3.h>
+#include "core/storage/database.hpp"
 
 namespace smo {
 
@@ -126,8 +128,8 @@ namespace smo {
         )";
 
             char* err = nullptr;
-            int rc = sqlite3_exec(db, schema, nullptr, nullptr, nullptr);
-            if (rc != SQLITE_OK)
+            int rc4 = sqlite3_exec(db, schema, nullptr, nullptr, nullptr);
+            if (rc4 != SQLITE_OK)
             {
                 std::string msg = sqlite3_errmsg(db);
                 sqlite3_close(db);
@@ -175,7 +177,7 @@ namespace smo {
         std::string compute_event_hash(const EventRecord& event)
         {
             std::stringstream ss;
-            ss << event.sequence << event.type << event.timestamp_ns << event.contract_id << event.execution_id
+            ss << event.sequence << static_cast<int>(event.type) << event.timestamp_ns << event.contract_id << event.execution_id
                << event.trace_id << event.node_id << event.actor_id << event.payload << event.prev_hash;
             std::string data = ss.str();
 
@@ -185,12 +187,12 @@ namespace smo {
             blake3_hasher_update(&hasher, data.c_str(), data.size());
             blake3_hasher_finalize(&hasher, hash.data(), 32);
 
-            std::stringstream ss;
+            std::stringstream hex_ss;
             for (uint8_t b : hash)
             {
-                ss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+                hex_ss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
             }
-            return ss.str();
+            return hex_ss.str();
         }
 
         Result<void> execute(const char* sql)
@@ -206,7 +208,7 @@ namespace smo {
             return {};
         }
 
-        Result<sqlite3_stmt*> prepare(const char* sql)
+        Result<Statement> prepare(const char* sql)
         {
             sqlite3_stmt* stmt = nullptr;
             int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
@@ -226,8 +228,6 @@ namespace smo {
 
     EventStore::~EventStore() = default;
 
-    EventStore::EventStore(EventStore&& other) noexcept = default;
-    EventStore& EventStore::operator=(EventStore&& other) noexcept = default;
 
     Result<void> EventStore::open()
     {

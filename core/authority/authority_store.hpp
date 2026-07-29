@@ -29,7 +29,7 @@ namespace smo::authority {
         explicit AuthorityStore(const NodeRegistry& registry) : registry_(registry) {}
 
         AuthorityStore(AuthorityStore&&) = default;
-        AuthorityStore& operator=(AuthorityStore&&) = default;
+        AuthorityStore& operator=(AuthorityStore&&) = delete;
         ~AuthorityStore() = default;
 
         AuthorityStore(const AuthorityStore&) = delete;

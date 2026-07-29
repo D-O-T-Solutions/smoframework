@@ -4,3 +4,4 @@ build_release/
 *.so
 *.a
 .DS_Store
+build-tidy/

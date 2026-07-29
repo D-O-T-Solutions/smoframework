@@ -59,6 +59,7 @@ add_subdirectory(sdk)
 add_subdirectory(providers)
 add_subdirectory(tooling)
 add_subdirectory(cmd)
+add_subdirectory(runtime)
 add_subdirectory(tests)
 
 # ── Aliases ──────────────────────────────────────────────────────────
@@ -121,7 +122,7 @@ if(WITH_PQC)
 endif()
 
 # ── Export targets (only binaries for find_package) ───────────────────
-set(SMO_EXPORT_TARGETS smo-node smo-cli smo-admin)
+set(SMO_EXPORT_TARGETS smo smo-node smo-cli smo-admin)
 
 install(TARGETS ${SMO_EXPORT_TARGETS} EXPORT SMO
     RUNTIME DESTINATION bin

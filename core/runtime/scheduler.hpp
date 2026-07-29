@@ -91,7 +91,8 @@ namespace smo::runtime {
             bool enable_priority_boost = true;
         };
 
-        explicit Scheduler(const Config& config = {});
+        Scheduler();
+        explicit Scheduler(const Config& config);
         ~Scheduler();
 
         Scheduler(const Scheduler&) = delete;

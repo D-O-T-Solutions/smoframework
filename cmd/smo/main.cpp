@@ -30,5 +30,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    return app.run(argc, argv);
+    auto result = app.run(argc, argv);
+    if (!result)
+        return 1;
+    return result.value();
 }

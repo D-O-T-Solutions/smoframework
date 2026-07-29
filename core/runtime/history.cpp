@@ -20,6 +20,19 @@ namespace smo {
 
         Impl(const Config& config) : config(config) {}
 
+        Impl(Impl&& other) noexcept : db(other.db), config(std::move(other.config)) { other.db = nullptr; }
+        Impl& operator=(Impl&& other) noexcept
+        {
+            if (this != &other)
+            {
+                close();
+                db = other.db;
+                config = std::move(other.config);
+                other.db = nullptr;
+            }
+            return *this;
+        }
+
         ~Impl() { close(); }
 
         Result<void> open()
@@ -309,11 +322,6 @@ namespace smo {
     Result<std::vector<ExecutionHistoryEntry>> HistoryService::get_trace_executions(const std::string& trace_id) const
     {
         return std::vector<ExecutionHistoryEntry>{};
-    }
-
-    Result<std::vector<ExecutionEventEntry>> HistoryService::get_trace_events(const std::string& trace_id) const
-    {
-        return std::vector<ExecutionEventEntry>{};
     }
 
 } // namespace smo

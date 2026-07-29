@@ -108,6 +108,7 @@ namespace smo {
         sqlite3* db_ = nullptr;
     };
 
+    ContractRegistry::ContractRegistry() : ContractRegistry(Config{}) {}
     ContractRegistry::ContractRegistry(const Config& config) : impl_(std::make_unique<Impl>(config)) {}
 
     ContractRegistry::~ContractRegistry()

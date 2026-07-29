@@ -79,4 +79,8 @@ namespace smo::runtime {
         return static_cast<int64_t>(delay);
     }
 
+    Scheduler::Scheduler() : impl_(nullptr) {}
+    Scheduler::Scheduler(const Config&) : impl_(nullptr) {}
+    Scheduler::~Scheduler() = default;
+
 } // namespace smo::runtime

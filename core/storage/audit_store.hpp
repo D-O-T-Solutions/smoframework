@@ -82,7 +82,8 @@ namespace smo {
             bool enable_wal = true;
         };
 
-        explicit AuditStore(const Config& config = {});
+        AuditStore();
+        explicit AuditStore(const Config& config);
         ~AuditStore();
 
         AuditStore(const AuditStore&) = delete;
