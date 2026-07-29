@@ -219,8 +219,6 @@ namespace smo {
 
     HistoryService::~HistoryService() = default;
 
-
-
     Result<void> HistoryService::open()
     {
         return impl_->open();

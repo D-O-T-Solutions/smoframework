@@ -89,7 +89,9 @@ namespace smo::runtime {
         return static_cast<int64_t>(delay);
     }
 
-    struct Scheduler::Impl {};
+    struct Scheduler::Impl
+    {
+    };
 
     Scheduler::Scheduler() : impl_(nullptr) {}
     Scheduler::Scheduler(const Config&) : impl_(nullptr) {}
