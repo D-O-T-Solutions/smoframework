@@ -86,7 +86,7 @@ fi
 step "3/5  Building SMO from source"
 cd /root
 if [ ! -d smoframework ]; then
-    git clone https://github.com/shellmap-project/smoframework.git
+    git clone https://github.com/D-O-T-Solutions/smoframework.git
 fi
 cd smoframework
 git pull

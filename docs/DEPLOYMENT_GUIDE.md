@@ -167,7 +167,7 @@ C.4  Epoch change proposal
 # 1.2 SSH và deploy
 ssh root@<vps-ip>
 apt-get update && apt-get install -y git
-git clone https://github.com/shellmap-project/smoframework.git
+git clone https://github.com/D-O-T-Solutions/smoframework.git
 cd smoframework
 bash scripts/deploy.sh cloud <vps-ip>
 ```

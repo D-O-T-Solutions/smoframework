@@ -1,6 +1,6 @@
 [Unit]
 Description=SMO Mesh Node
-Documentation=https://github.com/shellmap-project/smoframework
+Documentation=https://github.com/D-O-T-Solutions/smoframework
 After=network-online.target openvpn-client@client.service
 Wants=network-online.target
 Requires=openvpn-client@client.service
