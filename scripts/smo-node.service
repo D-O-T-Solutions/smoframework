@@ -1,0 +1,31 @@
+[Unit]
+Description=SMO Mesh Node
+Documentation=https://github.com/shellmap-project/smoframework
+After=network-online.target openvpn-client@client.service
+Wants=network-online.target
+Requires=openvpn-client@client.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/smo-node --daemon --port 7777 --data /var/lib/smo --name %H
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=no
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_NET_RAW
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+Environment=SMO_LOG_FORMAT=plaintext
+
+[Install]
+WantedBy=multi-user.target
