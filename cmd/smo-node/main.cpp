@@ -914,6 +914,8 @@ int main(int argc, char* argv[])
     smo::DiscoveryEngine discovery_engine(membership, health_monitor, *udp_transport);
     auto gossip_cfg = smo::GossipEngine::default_config();
     smo::GossipEngine gossip_engine(membership, gossip_cfg);
+    std::printf("[smo-node] Gossip engine initialized (fanout=%zu, interval=%llums)\n",
+                gossip_cfg.fanout, (unsigned long long)gossip_cfg.interval_ms);
     smo::network::sync::MembershipSync membership_sync(membership, health_monitor);
 
     // Wire MembershipSync to GossipEngine for rich event-based gossip

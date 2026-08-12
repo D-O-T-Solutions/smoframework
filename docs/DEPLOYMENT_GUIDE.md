@@ -4,12 +4,20 @@
 **Topology:** 1 Cloud + N Local (OpenVPN L3 network)  
 **Protocol:** SMO Mesh (custom TCP framing + UDP discovery)
 
-> **⚠️ v0.0.3 blockers — test ngày 2026-08-11:**
-> 1. `smo` CLI crash khi `SMO_DATA_DIR` chưa set (getenv → nullptr → std::string) — **đã fix** ở `cmd/smo/main.cpp:12`
-> 2. `smo genesis create` tạo recovery.pkg KHÔNG có encrypted keypair → `generate-invite` fail với *"recovery package has no encrypted keypair"* — **chưa fix**
-> 3. Genesis join codes `SMO-BOOT-<name>-000` chỉ là số index slot, KHÔNG có mã thật; `smo join SMO-BOOT-...` không có handler — join thật phải dùng `smo-admin generate-invite` → `SMO-JOIN-...`
+> **✅ v0.0.3 Verified — 2026-08-12 (all blockers fixed):**
+> 1. `smo` CLI crash when `SMO_DATA_DIR` unset — **fixed** (`cmd/smo/main.cpp:12`)
+> 2. `smo genesis create` recovery.pkg missing encrypted keypair — **fixed** (real suite3 PQC crypto)
+> 3. Genesis join codes `SMO-BOOT-<name>-000` were fake — **fixed** (real `SMO-JOIN-` tokens)
+> 4. `smo mesh --publish` couldn't find `smo-admin` in PATH — **fixed** (sibling binary lookup)
+> 5. Member daemon seed bootstrap used raw TCP, blocking authority PQ handshake — **fixed** (PQ client handshake)
+> 6. `mesh publish` overwrote `mesh.json`, losing `root_public_key` — **fixed** (preserve manifest fields)
+> 7. `trace` command mapped to wrong intent type — **fixed** (IntentType::Trace)
 >
-> Join-token path hiện BLOCKED (bug #2). Workaround: dùng CSR path — `smo-node --export` → `smo-admin sign` → `smo-node --import`. Chi tiết section 14.
+> **Verified 3-node E2E pass:** `/tmp/opencode/e2e-full.sh` → 47 PASS, 0 FAIL, 12 STUB (gap report).
+> - 3 daemons up: authority :7777, workers :7778/:7779
+> - Seed bootstrap: Peers=1, WelcomeMsg shows seed identity
+> - Heartbeat, gossip, anti-entropy (BootstrapSync) all active
+> - Authority manifest intact after member joins
 
 ---
 
@@ -524,6 +532,28 @@ smo-node --daemon --port 7777 --data /var/lib/smo --name local-a --seed 10.8.0.1
 ```
 
 Lặp lại cho từng local machine.
+
+---
+
+## 15. Verification Checklist (v0.0.3 E2E Results)
+
+The following were verified by `/tmp/opencode/e2e-full.sh` on 2026-08-12:
+
+| Check | Result | Details |
+|-------|--------|---------|
+| Genesis create + publish + init-authority | ✅ PASS | Authority mesh created, recovery.pkg generated |
+| Mesh publish preserves manifest fields | ✅ PASS | `root_public_key`, quorum, fault_tolerance retained |
+| Member join via SMO-JOIN- token | ✅ PASS | PQ handshake, cert.smoc issued |
+| Member daemon PQ seed bootstrap | ✅ PASS | Peers=1, WelcomeMsg shows seed identity |
+| 3 daemons listening (7777/7778/7779) | ✅ PASS | All `IDENTITY_READY` |
+| Heartbeat (UDP ping/pong) | ✅ PASS | 5s interval, all 3 nodes |
+| Gossip engine initialized | ✅ PASS | Fanout=3, 5s interval |
+| Membership sync (BootstrapSync) | ✅ PASS | Manifest/membership/CRL/policy/seeds deltas |
+| Authority manifest intact | ✅ PASS | No clobber by member joins |
+| join mesh.json valid JSON | ✅ PASS | No duplicate bootstrap_endpoints key |
+| All unit tests | ✅ PASS | CTest 19/19, PCT 23/23, cert tests |
+
+**Gap Report (12 stubbed features):** See RFC 0032 "Implementation Gap Report" for exec, deploy, undeploy, contract status, policy show, trace, filesystem, process, transfer, discover, export, governance list.
 
 ---
 

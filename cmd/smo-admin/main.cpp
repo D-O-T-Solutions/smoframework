@@ -1035,6 +1035,21 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
 
     if (confirm.empty() || confirm[0] == 'y' || confirm[0] == 'Y')
     {
+        // Preserve genesis-manifest fields when rewriting mesh.json so that
+        // `smo genesis status` / `mesh health` keep working after publish.
+        std::string old_json;
+        {
+            std::ifstream old_f(mesh_dir + "/mesh.json", std::ios::binary);
+            if (old_f)
+            {
+                old_json.assign(std::istreambuf_iterator<char>(old_f), std::istreambuf_iterator<char>());
+            }
+        }
+        auto old_str = [&](const std::string& key, const std::string& def) {
+            auto v = json_read_string(old_json, key);
+            return v.empty() ? def : v;
+        };
+
         // Write updated config directly to mesh.json
         config.bootstrap_configured = true;
         config.advertise_addresses = advertise_addresses;
@@ -1047,14 +1062,32 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
             return 1;
         }
         mf << "{\n";
+        mf << "  \"schema_version\": " << json_read_int(old_json, "schema_version", 1) << ",\n";
         mf << "  \"mesh_id\": \"" << config.mesh_id << "\",\n";
         mf << "  \"display_name\": \"" << config.display_name << "\",\n";
+        mf << "  \"root_public_key\": \"" << old_str("root_public_key", config.root_pubkey) << "\",\n";
         mf << "  \"authority_pubkey\": \"" << config.authority_pubkey << "\",\n";
         mf << "  \"root_pubkey\": \"" << config.root_pubkey << "\",\n";
         mf << "  \"hmac_secret\": \"" << config.hmac_secret << "\",\n";
         mf << "  \"cipher_suite_id\": " << static_cast<int>(config.cipher_suite_id) << ",\n";
         mf << "  \"epoch\": " << config.epoch << ",\n";
         mf << "  \"created_at\": " << config.created_at << ",\n";
+        mf << "  \"manifest_schema\": " << json_read_int(old_json, "manifest_schema", 1) << ",\n";
+        mf << "  \"manifest_revision\": " << json_read_int(old_json, "manifest_revision", 1) << ",\n";
+        mf << "  \"state\": \"" << old_str("state", "Bootstrap") << "\",\n";
+        mf << "  \"profile\": \"" << old_str("profile", "enterprise") << "\",\n";
+        mf << "  \"minimum\": " << json_read_int(old_json, "minimum", 1) << ",\n";
+        mf << "  \"preferred\": " << json_read_int(old_json, "preferred", 3) << ",\n";
+        mf << "  \"maximum\": " << json_read_int(old_json, "maximum", 5) << ",\n";
+        mf << "  \"authority_create\": \"" << old_str("authority_create", "quorum") << "\",\n";
+        mf << "  \"authority_revoke\": \"" << old_str("authority_revoke", "quorum") << "\",\n";
+        mf << "  \"policy_update\": \"" << old_str("policy_update", "quorum") << "\",\n";
+        mf << "  \"emergency_lockdown\": \"" << old_str("emergency_lockdown", "unanimous") << "\",\n";
+        mf << "  \"epoch_rotate\": \"" << old_str("epoch_rotate", "quorum") << "\",\n";
+        mf << "  \"recovery\": \"" << old_str("recovery", "quorum") << "\",\n";
+        mf << "  \"max_authority_failures\": " << json_read_int(old_json, "max_authority_failures", 1) << ",\n";
+        mf << "  \"max_compromised\": " << json_read_int(old_json, "max_compromised", 1) << ",\n";
+        mf << "  \"wizard_version\": " << json_read_int(old_json, "wizard_version", 1) << ",\n";
         mf << "  \"listen_address\": \"" << listen_addr << "\",\n";
         mf << "  \"bootstrap_configured\": true,\n";
         mf << "  \"advertise_addresses\": [";

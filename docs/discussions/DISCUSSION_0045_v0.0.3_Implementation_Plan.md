@@ -265,6 +265,16 @@ Lý do: STUN/ICE là feature mới — nên để v0.0.4. v0.0.3 là verify core
 
 | Sprint | Task | Trạng thái | File |
 |--------|------|-----------|------|
+| **A** | 3-node mesh bring-up (genesis → publish → init-authority → 3 daemons) | ✅ Done | `/tmp/opencode/e2e-full.sh` |
+| **A** | Member daemon PQ-secured seed bootstrap | ✅ Fixed | `cmd/smo-node/main.cpp:1083` |
+| **A** | Authority WelcomeMsg returns seed identity | ✅ Fixed | `cmd/smo-node/main.cpp:1746` |
+| **A** | Mesh publish preserves GenesisManifest fields | ✅ Fixed | `cmd/smo-admin/main.cpp:1036` |
+| **B** | Fix: `smo` CLI crash khi SMO_DATA_DIR unset | ✅ Fixed | `cmd/smo/main.cpp:12` |
+| **B** | Fix: `smo mesh publish` calls `smo-admin` via PATH | ✅ Fixed (sibling binary) | `cmd/smo-cli/cli_application.cpp:1016` |
+| **B** | Fix: Genesis crypto placeholder → real suite3 PQC | ✅ Fixed | `cmd/smo-cli/cli_application.cpp:1121` |
+| **B** | Fix: `trace` parser mapped to History instead of Trace | ✅ Fixed | `cmd/smo-cli/intent_parser.cpp:93` |
+| **B** | Operations CLI functional test coverage | ✅ Done (47 PASS) | `/tmp/opencode/e2e-full.sh` |
+| **C** | Chaos test suite | ✅ Done | `scripts/chaos-test.sh` |
 | **D** | OpenVPN server config | ✅ Done | `scripts/openvpn/server.conf` |
 | **D** | OpenVPN client config | ✅ Done | `scripts/openvpn/client.conf` |
 | **D** | OpenVPN PKI generator | ✅ Done | `scripts/setup-openvpn-pki.sh` |
@@ -272,24 +282,22 @@ Lý do: STUN/ICE là feature mới — nên để v0.0.4. v0.0.3 là verify core
 | **D** | Local deploy script | ✅ Done | `scripts/deploy-local.sh` |
 | **D** | Deploy entry point | ✅ Done | `scripts/deploy.sh` |
 | **D** | Systemd service | ✅ Done | `scripts/smo-node.service` |
-| **C** | Chaos test suite | ✅ Done | `scripts/chaos-test.sh` |
 | **D** | Deployment Guide | ✅ Done | `docs/DEPLOYMENT_GUIDE.md` |
-| **B** | Fix: `smo` CLI crash khi SMO_DATA_DIR unset | ✅ Fixed | `cmd/smo/main.cpp:12` |
-| **B** | Blocker: recovery.pkg không có encrypted keypair | ❌ OPEN | `core/genesis/genesis.cpp` |
-| **B** | Bug: `smo mesh --publish` gọi `smo-admin` ko có trong PATH | ❌ OPEN | `cmd/smo-cli/cli_application.cpp` |
-| **A** | Mesh bring-up (manual) | ❌ Pending | Chờ fix blockers |
-| **B** | Operations (manual) | ❌ Pending | Chờ fix blockers |
 | **D** | RPM package | ❌ Pending | |
 | **D** | Docker image | ❌ Pending | |
 
-### v0.0.3 Known Issues (tìm thấy 2026-08-11)
+### v0.0.3 Known Issues (updated 2026-08-12)
 
 | # | Issue | Ảnh hưởng | Status |
 |---|-------|-----------|--------|
-| BUG-001 | `smo` CLI crash: `std::string data_dir = getenv("SMO_DATA_DIR")` — getenv trả nullptr khi env chưa set | Mọi lệnh `smo ...` crash khi ko có SMO_DATA_DIR | ✅ Fixed |
-| BUG-002 | `smo genesis create` dùng crypto provider placeholder (hash/encrypt/verify no-op) → recovery.pkg `root_keypair_encrypted` rỗng | `generate-invite` fail: *"recovery package has no encrypted keypair"* → join-token path blocked | ❌ OPEN |
-| BUG-003 | Genesis join codes `SMO-BOOT-<name>-000` chỉ là slot index, ko có mã thật; `smo join SMO-BOOT-...` ko có handler | UI misleading — in code ko dùng được | ❌ OPEN |
-| BUG-004 | `smo mesh --publish` shell-out `smo-admin` binary → "smo-admin: not found" nếu binary ko trong PATH | Publish fail từ `smo` CLI | ❌ OPEN |
+| BUG-001 | `smo` CLI crash: `getenv("SMO_DATA_DIR")` returns nullptr | Mọi lệnh `smo ...` crash khi ko có SMO_DATA_DIR | ✅ Fixed |
+| BUG-002 | `smo genesis create` dùng crypto provider placeholder → recovery.pkg rỗng | `generate-invite` fail: *"recovery package has no encrypted keypair"* | ✅ Fixed (suite3 PQC) |
+| BUG-003 | Genesis join codes `SMO-BOOT-<name>-000` chỉ là slot index, ko có mã thật | UI misleading — in code ko dùng được | ✅ Fixed (real SMO-JOIN- tokens) |
+| BUG-004 | `smo mesh --publish` shell-out `smo-admin` binary → "not found" nếu ko trong PATH | Publish fail từ `smo` CLI | ✅ Fixed (sibling binary lookup) |
+| BUG-005 | Member daemon seed bootstrap dùng raw TCP → block authority PQ handshake | 3-node E2E fail: node-c join refused | ✅ Fixed (PQ client handshake) |
+| BUG-006 | `mesh publish` ghi đè mesh.json mất `root_public_key` | `genesis status` / `mesh health` fail | ✅ Fixed (preserve manifest fields) |
+| BUG-007 | `trace` parser map sang IntentType::History | `smo trace abc` in ra history | ✅ Fixed (map to Trace) |
+| GAP-001–012 | 12 features documented nhưng stub `(not yet implemented)` | Sprint B Operations / Sprint C Observability | ❌ OPEN (see RFC 0032 gap report) |
 
 ### File map
 

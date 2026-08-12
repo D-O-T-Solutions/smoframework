@@ -922,7 +922,6 @@ namespace smo {
                             f << "  \"role\": \"" << jr.role << "\",\n";
                             f << "  \"profile\": \"" << jr.profile << "\",\n";
                             f << "  \"bootstrap_endpoints\": [\n";
-                            f << "  \"bootstrap_endpoints\": [\n";
                             for (size_t i = 0; i < jr.bootstrap_endpoints.size(); ++i)
                             {
                                 if (i > 0)

@@ -90,7 +90,7 @@ namespace smo {
                  {"from", "From timestamp"},
                  {"to", "To timestamp"},
                  {"limit", "Limit results"}});
-            add("trace", "Show trace", IntentType::History, {"trace_id"}, {{"detail", "Show details"}});
+            add("trace", "Show trace", IntentType::Trace, {"trace_id"}, {{"detail", "Show details"}});
             add("select", "Select nodes", IntentType::Select, {},
                 {{"name", "Selection name"},
                  {"role", "Role filter"},
