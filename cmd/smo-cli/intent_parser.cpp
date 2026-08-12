@@ -281,7 +281,17 @@ namespace smo {
         // Assign all positional args to intent.args
         for (size_t i = 0; i < positional.size(); ++i)
         {
-            intent.args.push_back(positional[i]);
+            const std::string& p = positional[i];
+            // Check for key=value format for kwargs
+            size_t eq_pos = p.find('=');
+            if (eq_pos != std::string::npos && eq_pos > 0 && eq_pos < p.size() - 1)
+            {
+                intent.kwargs[p.substr(0, eq_pos)] = p.substr(eq_pos + 1);
+            }
+            else
+            {
+                intent.args.push_back(p);
+            }
         }
 
         // Two-level commands: promote the first positional word into a flag

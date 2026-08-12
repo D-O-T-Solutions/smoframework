@@ -142,6 +142,11 @@ namespace smo {
         // Initialize
         Result<void> initialize(const std::string& data_dir);
 
+        // Network execute (send command to daemon via TCP+PQ)
+        Result<std::string> network_execute(const std::string& node_address, uint32_t opcode,
+                                            const std::string& method,
+                                            const std::unordered_map<std::string, std::string>& args);
+
     private:
         class Impl;
         std::unique_ptr<Impl> impl_;

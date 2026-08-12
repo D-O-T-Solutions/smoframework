@@ -74,6 +74,9 @@ namespace smo {
         int retry_count = 0;
         bool dry_run = false;
 
+        // Key-value arguments for contract calls (file/process ops)
+        std::unordered_map<std::string, std::string> kwargs;
+
         // Selection context (persists across commands)
         std::string selection_name;
         bool save_selection = false;

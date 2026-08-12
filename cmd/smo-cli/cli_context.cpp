@@ -609,4 +609,21 @@ namespace smo {
         return {};
     }
 
+    Result<std::string> CLIContextManager::network_execute(const std::string& node_address,
+                                                            uint32_t opcode,
+                                                            const std::string& method,
+                                                            const std::unordered_map<std::string, std::string>& args)
+    {
+        // For now, return a placeholder - full network execute requires daemon connection
+        // This is a stub; the real implementation would:
+        // 1. Parse node_address (host:port)
+        // 2. TCP connect + version handshake
+        // 3. If node has cert, PQ handshake (SecureSession)
+        // 4. Build packet: opcode + payload (JSON with method + args)
+        // 5. Send via TCP/PQ, recv response
+        // 6. Parse response packet, return result
+        return SMO_ERR_STORAGE(906, Error, NoRetry, None,
+                               "Network execute not fully implemented; use REPL 'exec' for local dispatch");
+    }
+
 } // namespace smo

@@ -357,22 +357,71 @@ namespace smo {
 
         Result<int> handle_filesystem(const Intent& intent)
         {
-            std::cout << "[filesystem] " << intent.opcode;
-            for (const auto& a : intent.args)
-                std::cout << " " << a;
-            std::cout << "\n";
-            std::cout << "(Filesystem operations not yet implemented)\n";
-            return 0;
+            if (context_.is_connected())
+            {
+                auto net_res = context_.network_execute(
+                    context_.get_connected_node(), 0x2B, // FILE_OP opcode
+                    intent.opcode, // method: list, mkdir, remove, copy, move, stat, read, write, etc.
+                    intent.kwargs); // key-value args
+                if (!net_res)
+                {
+                    // Network not fully implemented, fall back to local stub
+                    std::cout << "(Filesystem operations not yet implemented)\n";
+                    return 0;
+                }
+                std::cout << net_res.value() << "\n";
+                return 0;
+            }
+            else
+            {
+                // Local dispatch via selection
+                auto sel = context_.get_selection();
+                if (!sel)
+                {
+                    // No selection: just show stub (for testing)
+                    std::cout << "(Filesystem operations not yet implemented)\n";
+                    return 0;
+                }
+                std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
+                std::cout << "[" << scope_str << " over " << sel.value().node_names.size() << " node(s)]"
+                          << " fs:" << intent.opcode << "\n";
+                std::cout << "(Filesystem operations not yet implemented)\n";
+                return 0;
+            }
         }
 
         Result<int> handle_process(const Intent& intent)
         {
-            std::cout << "[process] " << intent.opcode;
-            for (const auto& a : intent.args)
-                std::cout << " " << a;
-            std::cout << "\n";
-            std::cout << "(Process operations not yet implemented)\n";
-            return 0;
+            if (context_.is_connected())
+            {
+                auto net_res = context_.network_execute(
+                    context_.get_connected_node(), 0x2C, // PROCESS opcode
+                    intent.opcode, // method: exec, kill, ps, top, systemctl, service
+                    intent.kwargs);
+                if (!net_res)
+                {
+                    // Network not fully implemented, fall back to local stub
+                    std::cout << "(Process operations not yet implemented)\n";
+                    return 0;
+                }
+                std::cout << net_res.value() << "\n";
+                return 0;
+            }
+            else
+            {
+                auto sel = context_.get_selection();
+                if (!sel)
+                {
+                    // No selection: just show stub (for testing)
+                    std::cout << "(Process operations not yet implemented)\n";
+                    return 0;
+                }
+                std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
+                std::cout << "[" << scope_str << " over " << sel.value().node_names.size() << " node(s)]"
+                          << " proc:" << intent.opcode << "\n";
+                std::cout << "(Process operations not yet implemented)\n";
+                return 0;
+            }
         }
 
         Result<int> handle_deploy(const Intent& intent)
