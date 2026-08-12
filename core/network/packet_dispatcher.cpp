@@ -96,7 +96,8 @@ namespace smo::network {
         auto data = session.recv(65536);
         if (!data)
         {
-            return SMO_ERR_TRANSPORT(304, Error, RetrySafe, None, "Failed to read from session");
+            return SMO_ERR_TRANSPORT(304, Error, RetrySafe, None,
+                                     "Failed to read from session: " + data.error().message);
         }
         Bytes raw = std::move(data.value());
 

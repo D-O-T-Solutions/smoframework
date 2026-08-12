@@ -590,6 +590,241 @@ target_link_libraries(smo-cli PRIVATE smo_sdk smo_tooling)
 
 ---
 
+## Known Issues & Fix Log (v0.0.2 → v0.0.3)
+
+> Policy: every bug found and fixed during implementation is recorded here so the spec
+> stays the source of truth for the intended behavior.
+
+### BUG-004 — `smo` shell-outs could not locate `smo-admin` (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** `mesh publish`/`serve`/`invite` invoked `smo-admin` by bare name, which failed
+when `smo-admin` was not on `PATH` (typical after a staged/relocated install).
+
+**Fix applied:** added `find_smo_admin()` — resolves `/proc/self/exe`, looks for a sibling
+`smo-admin` binary next to the running `smo`, and falls back to `PATH` lookup.
+
+### PARSER — bare subcommands (`mesh invite`, `mesh use <name>`) silently no-op'd (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** `smo mesh invite ...` / `smo mesh use <name>` returned nothing. The parser placed
+the subcommand word into positional `intent.args` while `handle_mesh` dispatched on
+`intent.flags`, so the bare form never matched.
+
+**Fix applied:** `CommandDef` gained a `two_level` marker; the first positional subcommand word
+is promoted to a flag (with an optional following value) after positional args are collected.
+
+### JOIN — `smo mesh join --token SMO-JOIN-...` failed even with a valid token (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:**
+1. `Invalid Join Token: missing SMO-JOIN- prefix` — the handler read the token from the
+   `--join` flag value instead of `--token`.
+2. `unsupported crypto suite` — the join path used `CryptoRegistry` directly but suites were
+   only lazily registered by `get_crypto()`; a plain `mesh join` never triggered registration.
+3. `invalid transition for current state` — the CSR step re-fired `CSR_BUILT` after the identity
+   step had already advanced the join FSM `TOKEN_RECEIVED → CSR_CREATED`.
+
+**Fix applied:**
+1. `handle_mesh` reads token from `--token` (falls back to `--join <value>` legacy form).
+2. `mesh join` calls `get_crypto(kSuiteClassical)` before `run_join_command` so suites are
+   registered.
+3. `auto_enroll.cpp`: the CSR build step only fires `CSR_BUILT` when state is still
+   `TOKEN_RECEIVED`; otherwise it proceeds to send without re-firing the event.
+
+**Note:** join currently requires the authority's `smo-node --daemon` (with signed server cert)
+to be listening on the token's bootstrap endpoint (TCP/CBOR + PQ handshake). The HTTP
+`enroll_server` path is deprecated.
+
+---
+
+### CRYPTO — `HashProvider::default_provider()` threw "no HashProvider registered" (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** The nonce cache in `join_protocol.cpp` uses `HashProvider::default_provider()` to
+compute Blake3(mesh_id || nonce). The daemon (`smo-node --daemon`) never registered a default
+hash provider, causing `std::runtime_error` on first JoinRequest.
+
+**Fix applied:** Added `Blake3Provider::register_as_default()` to `ensure_crypto()` in
+`cmd/smo-node/main.cpp` (also in `cmd/smo/main.cpp` for consistency).
+
+---
+
+### AUTH — MeshAuthority not initialized in daemon, `sign_csr` returned "crypto not configured" (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** After HashProvider fix, JoinRequest signature verification passed but
+`authority.sign_csr()` failed with "crypto not configured" — the daemon called `authority.open()`
+but never `authority.init(*crypto, rng)` to attach the crypto provider.
+
+**Fix applied:** In daemon startup, call `authority.init(*crypto, auth_rng)` before `authority.open()`
+using the suite3 (`kSuitePurePQC`) crypto provider.
+
+---
+
+### JOIN — JoinRequest signature verification failed (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** Server verified `request_signature` against the token issuer's truncated root
+fingerprint (`root:<fingerprint>`), but the client signed with its own identity secret key.
+Signature never matched.
+
+**Fix applied:** `process_join_request()` now deserializes the CSR first, then verifies
+`request_signature` against `csr.new_public_key` (the joining node's key), matching the
+client's signing logic in `auto_enroll.cpp`.
+
+---
+
+### FSM — Join resume from JOIN_SENT state re-fired MSG_SENT (invalid transition) and skipped CSR rebuild (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:**
+1. Resume from state 3 (`JOIN_SENT`) re-fired `MSG_SENT` event, but transition table only allows
+   `CSR_CREATED → MSG_SENT → JOIN_SENT`. Re-firing from `JOIN_SENT` is invalid.
+2. CSR build block skipped for `JOIN_SENT` state, leaving `csr_pem` empty.
+
+**Fix applied:**
+1. `MSG_SENT` only fired when `current_state() == CSR_CREATED`; resume at `JOIN_SENT` skips it.
+2. CSR build condition changed to `current_state() <= JOIN_SENT` so CSR is rebuilt on resume
+   (but `CSR_BUILT` event only fires from `TOKEN_RECEIVED`).
+
+---
+
+### SYNC — BootstrapSync failed "No active mesh" despite mesh_dir provided (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** `process_bootstrap_sync()` calls `mesh_mgr.get_current_mesh()` which returns empty.
+The daemon opened the mesh with `open_mesh()` but didn't register it in the catalog or set it as
+current.
+
+**Fix applied:**
+1. `mesh_manager.initialize()` to load catalog from `base_data_dir`.
+2. Insert existing mesh into `catalog.db` (SQL `INSERT OR IGNORE INTO meshes`).
+3. Call `mesh_manager.switch_mesh(mesh_id)` to set as active mesh.
+
+---
+
+### CERT — authority cert signature covered CSR body, not cert body; cert file omitted signature (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** During join, client CERT_VERIFY printed `Warning: bootstrap server cert signature
+invalid` while its own freshly-issued cert verified fine. The authority's own cert (sent by the
+daemon as the PQ handshake server cert) failed `Certificate::verify()`.
+
+**Root cause:**
+1. `cmd_mesh_init_authority` built the authority cert and set `authority_cert.signature =
+   root_res.output`, but that output was the Root's signature over the **CSR payload** — while
+   `Certificate::verify()` (certificate.cpp) checks the signature over the certificate **body**
+   (`serialize()`). Mismatched signed bytes → always invalid.
+2. The cert was persisted with `serialize()` (body only, signature dropped), so even a correctly
+   signed cert would be written without its signature.
+
+**Fix applied:**
+1. `cmd/smo-admin/main.cpp`: the Root session now signs the serialized certificate body
+   (`cert_req.payload = authority_cert.serialize()`) via a second `execute(SignBootstrapCSR)`,
+   and that signature is stored in `authority_cert.signature`. The CSR signature is retained as a
+   key-ownership proof.
+2. Persist the cert with `serialize_full()` (body + signature).
+
+---
+
+### JOIN — client used unseeded `rand()` nonce: every join process reused the same nonce (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** Second and later `smo mesh join` attempts (even with a fresh identity/token) failed
+with `JoinRequest nonce replay detected`, and first-time joins that retried a second endpoint also
+hit replay. Nonce dedup cache keyed `Blake3(mesh_id || nonce)` correctly rejected the duplicates.
+
+**Root cause:** `auto_enroll.cpp` filled the 8-byte JoinRequest nonce from `rand()` without ever
+calling `srand()`. All `smo` processes therefore produced the identical nonce sequence, and the
+server's replay cache (TTL = token lifetime) blocked every subsequent join.
+
+**Fix applied:** `core/enroll/auto_enroll.cpp` — nonce is now filled from the crypto RNG
+(`rng.fill()`), and nonce+signature are regenerated **per endpoint attempt** inside the retry loop
+so a failed first endpoint does not poison the retry against the second.
+
+---
+
+### CLI — `SMO_DATA_DIR` was ignored by the join path (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** `smo mesh join` always wrote its node data (`identity.json`, `cert.smoc`, …) to
+`~/.smo/node` even when `SMO_DATA_DIR` was set, making it impossible to run concurrent clients.
+
+**Root cause:** `CLIContextManager::initialize(data_dir)` discarded the argument
+(`(void)data_dir`), so `context_.get_data_dir()` stayed empty and `mesh join` fell back to
+`<HOME>/.smo/node`.
+
+**Fix applied:** `cmd/smo-cli/cli_context.cpp` — `initialize()` now calls `set_data_dir(data_dir)`
+when non-empty; `mesh join` uses it for the node data directory.
+
+---
+
+### DAEMON — member daemon's seed bootstrap used raw TCP, blocking the authority (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** In the 3-node E2E, node-b's `smo-node --daemon --seed` connected to the authority
+over raw TCP (version handshake only, PQ disabled — "Warning: no certificate at .../node.cert.smoc").
+The authority serves every accepted TCP connection with a PQ handshake (it presents its signed
+`node.cert.smoc`), so it blocked forever in `SecureSession::read_field()` waiting for a PQ
+ClientHello that never came. Because the daemon's main loop is single-threaded
+(accept → dispatch → blocking `dispatch_session`), the whole authority stalled: node-c's
+`mesh join` was never accepted and failed with "version handshake: read failed".
+
+**Spec intent (authoritative):**
+- The mesh authority MUST perform a PQ handshake on every TCP connection (it presents a signed
+  server certificate). The old bootstrap flow in RFC 0034 (raw HelloMsg/WelcomeMsg over a bare
+  TCP connection) is therefore not usable against a certed authority.
+- A member daemon connecting to a seed MUST use the same client handshake as `smo mesh join`:
+  TCP connect → version handshake → PQ `SecureSession{role=Client}.handshake()` → then send
+  `HelloMsg` / read `WelcomeMsg` inside the secure session.
+
+**Fix applied:** `cmd/smo-node/main.cpp` — the seed bootstrap block no longer uses
+`Bootstrap::find_seed` (raw). It now opens the TCP session, takes the raw fd via
+`TcpSession::release_fd()`, performs the PQ client handshake, then exchanges
+HelloMsg/WelcomeMsg over the secure session before calling `discovery_engine.handle_welcome`.
+
+**Verification:** 3-node E2E (`/tmp/opencode/e2e-3node.sh`) now passes: node-a (authority :7777),
+node-b (:7778) and node-c (:7779) all reach `IDENTITY_READY`; node-a's log shows
+`Raw handler: HelloMsg` from each member; both members log `Seed responded` and
+`Bootstrap complete. Peers: 1`.
+
+---
+
+### DISCOVERY — WelcomeMsg echoed the requester's ephemeral record instead of the seed's (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** Members reported `Seed responded:  (tcp://tcp://127.0.0.1:52920)` — empty display
+name and the requester's own ephemeral source port. The authority answered a `HelloMsg` with
+`WelcomeMsg.peer_record = membership.lookup(hello.node_id)`, i.e. the *requester's* record, so the
+member only re-upserted itself and never learned the seed's identity/endpoint. The `tcp://tcp://`
+double scheme came from `remote.address` already carrying the scheme.
+
+**Spec intent (authoritative):** On `HelloMsg`, the seed MUST reply with a `WelcomeMsg` carrying the
+**seed's own** `PeerRecord` (its node_id, display name, and reachable endpoint), so the joining
+member can add the seed to its membership table.
+
+**Fix applied:** `cmd/smo-node/main.cpp` — daemon builds a `self_record` (local node_id, display
+name, `tcp://127.0.0.1:<port>` endpoint) at startup; the `HelloMsg` handler now sends that record.
+
+**Verification:** members log `Seed responded: node-a (tcp://127.0.0.1:7777)` and reach
+`Bootstrap complete. Peers: 1`.
+
+---
+
 ## References
 
 - [RFC 0028] Contract Runtime

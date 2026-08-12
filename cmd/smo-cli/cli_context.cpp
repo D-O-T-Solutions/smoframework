@@ -602,7 +602,10 @@ namespace smo {
 
     Result<void> CLIContextManager::initialize(const std::string& data_dir)
     {
-        (void)data_dir;
+        if (!data_dir.empty())
+        {
+            set_data_dir(data_dir);
+        }
         return {};
     }
 

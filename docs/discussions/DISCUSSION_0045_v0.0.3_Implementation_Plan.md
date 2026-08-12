@@ -274,10 +274,22 @@ Lý do: STUN/ICE là feature mới — nên để v0.0.4. v0.0.3 là verify core
 | **D** | Systemd service | ✅ Done | `scripts/smo-node.service` |
 | **C** | Chaos test suite | ✅ Done | `scripts/chaos-test.sh` |
 | **D** | Deployment Guide | ✅ Done | `docs/DEPLOYMENT_GUIDE.md` |
-| **A** | Mesh bring-up (manual) | ❌ Pending | Chờ user test |
-| **B** | Operations (manual) | ❌ Pending | Chờ user test |
+| **B** | Fix: `smo` CLI crash khi SMO_DATA_DIR unset | ✅ Fixed | `cmd/smo/main.cpp:12` |
+| **B** | Blocker: recovery.pkg không có encrypted keypair | ❌ OPEN | `core/genesis/genesis.cpp` |
+| **B** | Bug: `smo mesh --publish` gọi `smo-admin` ko có trong PATH | ❌ OPEN | `cmd/smo-cli/cli_application.cpp` |
+| **A** | Mesh bring-up (manual) | ❌ Pending | Chờ fix blockers |
+| **B** | Operations (manual) | ❌ Pending | Chờ fix blockers |
 | **D** | RPM package | ❌ Pending | |
 | **D** | Docker image | ❌ Pending | |
+
+### v0.0.3 Known Issues (tìm thấy 2026-08-11)
+
+| # | Issue | Ảnh hưởng | Status |
+|---|-------|-----------|--------|
+| BUG-001 | `smo` CLI crash: `std::string data_dir = getenv("SMO_DATA_DIR")` — getenv trả nullptr khi env chưa set | Mọi lệnh `smo ...` crash khi ko có SMO_DATA_DIR | ✅ Fixed |
+| BUG-002 | `smo genesis create` dùng crypto provider placeholder (hash/encrypt/verify no-op) → recovery.pkg `root_keypair_encrypted` rỗng | `generate-invite` fail: *"recovery package has no encrypted keypair"* → join-token path blocked | ❌ OPEN |
+| BUG-003 | Genesis join codes `SMO-BOOT-<name>-000` chỉ là slot index, ko có mã thật; `smo join SMO-BOOT-...` ko có handler | UI misleading — in code ko dùng được | ❌ OPEN |
+| BUG-004 | `smo mesh --publish` shell-out `smo-admin` binary → "smo-admin: not found" nếu binary ko trong PATH | Publish fail từ `smo` CLI | ❌ OPEN |
 
 ### File map
 

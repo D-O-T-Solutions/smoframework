@@ -18,6 +18,7 @@ namespace smo {
             std::vector<std::string> aliases;
             std::vector<std::string> required_args;
             std::vector<std::pair<std::string, std::string>> optional_flags;
+            bool two_level = false; // first positional is a subcommand word
         };
 
         Impl()
@@ -42,6 +43,7 @@ namespace smo {
                 def.aliases = std::move(aliases);
                 def.required_args = std::move(required);
                 def.optional_flags = std::move(flags);
+                def.two_level = true;
                 commands_[name] = std::move(def);
             };
             add("ls", "List directory contents", IntentType::Filesystem, {"path"},
@@ -280,6 +282,32 @@ namespace smo {
         for (size_t i = 0; i < positional.size(); ++i)
         {
             intent.args.push_back(positional[i]);
+        }
+
+        // Two-level commands: promote the first positional word into a flag
+        // so both `mesh invite` and `mesh --invite` work.  If a value follows
+        // the subcommand (e.g. `mesh use SOC-Production`), attach it to the flag.
+        if (def.two_level && !intent.args.empty())
+        {
+            const std::string& sub = intent.args[0];
+            for (const auto& [flag, desc] : def.optional_flags)
+            {
+                (void)desc;
+                if (flag == sub)
+                {
+                    if (intent.args.size() >= 2)
+                    {
+                        intent.flags[flag] = intent.args[1];
+                        intent.args.erase(intent.args.begin(), intent.args.begin() + 2);
+                    }
+                    else
+                    {
+                        intent.flags[flag] = "true";
+                        intent.args.erase(intent.args.begin());
+                    }
+                    break;
+                }
+            }
         }
 
         // Validate required args count

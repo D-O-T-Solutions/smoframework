@@ -4,6 +4,13 @@
 **Topology:** 1 Cloud + N Local (OpenVPN L3 network)  
 **Protocol:** SMO Mesh (custom TCP framing + UDP discovery)
 
+> **⚠️ v0.0.3 blockers — test ngày 2026-08-11:**
+> 1. `smo` CLI crash khi `SMO_DATA_DIR` chưa set (getenv → nullptr → std::string) — **đã fix** ở `cmd/smo/main.cpp:12`
+> 2. `smo genesis create` tạo recovery.pkg KHÔNG có encrypted keypair → `generate-invite` fail với *"recovery package has no encrypted keypair"* — **chưa fix**
+> 3. Genesis join codes `SMO-BOOT-<name>-000` chỉ là số index slot, KHÔNG có mã thật; `smo join SMO-BOOT-...` không có handler — join thật phải dùng `smo-admin generate-invite` → `SMO-JOIN-...`
+>
+> Join-token path hiện BLOCKED (bug #2). Workaround: dùng CSR path — `smo-node --export` → `smo-admin sign` → `smo-node --import`. Chi tiết section 14.
+
 ---
 
 ## 1. Kiến Trúc Mạng
@@ -488,6 +495,35 @@ smo-node --join "$(cat join-token-new.txt)" --data /var/lib/smo --name $(hostnam
 | Chaos test | Shell script | Ansible/Python | No dependency, run anywhere |
 | Deploy script | Shell | Ansible/Chef/Puppet | Zero dependencies, readable |
 | Package | DEB (CPack) | Custom build | Tận dụng CMake build system |
+
+---
+
+## 14. Workaround: CSR Path (khi join-token bị block)
+
+Cho tới khi bug recovery.pkg được fix, dùng CSR path:
+
+```bash
+# Trên node worker (local machine)
+smo-node --init --name local-a --data /var/lib/smo          # tạo identity + CSR
+smo-node --export /var/lib/smo/node.csr.smor --data /var/lib/smo
+
+# Chuyển CSR sang cloud node (scp / copy)
+scp /var/lib/smo/node.csr.smor root@<vps-ip>:/tmp/
+
+# Trên cloud node (authority) — sign CSR
+smo-admin --mesh SOC-Production sign /tmp/node.csr.smor -o /tmp/node.cert.smoc
+
+# Chuyển cert ngược về worker
+scp root@<vps-ip>:/tmp/node.cert.smoc /var/lib/smo/
+
+# Trên worker — import cert
+smo-node --import /var/lib/smo/node.cert.smoc --data /var/lib/smo
+
+# Chạy daemon
+smo-node --daemon --port 7777 --data /var/lib/smo --name local-a --seed 10.8.0.1:7777
+```
+
+Lặp lại cho từng local machine.
 
 ---
 

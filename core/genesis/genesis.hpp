@@ -52,7 +52,8 @@ namespace smo::genesis {
                                           const std::string& root_public_key,
                                           std::unique_ptr<smo::crypto::SignerContext> root_signer,
                                           DeploymentProfile profile, uint32_t authority_count,
-                                          const std::string& recovery_passphrase, uint64_t now_ns);
+                                          const std::string& recovery_passphrase, BytesView root_public_key_raw,
+                                          BytesView root_secret_key, uint32_t cipher_suite_id, uint64_t now_ns);
 
         // Run Stage 1: claim a slot and get signed CSR for a joining authority
         Result<Bytes> run_stage_1_claim_slot(GenesisResult& result, const std::string& role,

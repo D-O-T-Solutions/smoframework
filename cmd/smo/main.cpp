@@ -9,7 +9,11 @@ int main(int argc, char* argv[])
     smo::CLIApplication app;
 
     // Determine data directory
-    std::string data_dir = std::getenv("SMO_DATA_DIR");
+    std::string data_dir;
+    if (const char* env = std::getenv("SMO_DATA_DIR"))
+    {
+        data_dir = env;
+    }
     if (data_dir.empty())
     {
         const char* home = std::getenv("HOME");
@@ -23,7 +27,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    auto init_result = app.initialize(std::getenv("SMO_DATA_DIR") ? std::string(std::getenv("SMO_DATA_DIR")) : "");
+    auto init_result = app.initialize(data_dir);
     if (!init_result)
     {
         std::cerr << "Initialization failed: " << init_result.error().message << "\n";

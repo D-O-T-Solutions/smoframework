@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../crypto/suite.hpp"
 #include "../errors/error.hpp"
 #include "../types.hpp"
 
@@ -98,6 +99,7 @@ namespace smo::genesis {
 
         uint64_t created_at = 0;
         uint32_t wizard_version = 1;
+        uint32_t cipher_suite_id = smo::kSuiteClassical;
 
         Result<Bytes> serialize() const;
         static Result<GenesisManifest> deserialize(BytesView data);

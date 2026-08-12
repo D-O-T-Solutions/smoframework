@@ -110,23 +110,21 @@ namespace smo::genesis {
         return pkg;
     }
 
-    bool RecoveryPackage::verify_passphrase(const std::string& passphrase) const
+    bool RecoveryPackage::verify_passphrase(const std::string& passphrase, const HashImpl& hash) const
     {
         if (recovery_passphrase_hash.empty())
             return false;
-        // Hash the passphrase using Blake3 (handled externally via HashImpl).
-        // For now the recovery_passphrase_hash is stored as a hex string of the
-        // Blake3 output.  Comparison is done in hex space.
-        // Real implementation will use the caller-supplied HashImpl.
-        // This is a placeholder that returns true for any non-empty passphrase.
-        (void)passphrase;
-        return true;
+        auto hash_res = hash.hash(BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
+        if (!hash_res)
+            return false;
+        auto hashed = std::move(hash_res).value();
+        return bytes_to_hex(hashed) == recovery_passphrase_hash;
     }
 
     Result<RootSession> RecoveryPackage::unlock(const std::string& passphrase, const HashImpl& hash,
                                                 const AeadImpl& aead, const SignerImpl& signer, RngRef& rng) const
     {
-        if (!verify_passphrase(passphrase))
+        if (!verify_passphrase(passphrase, hash))
         {
             return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "incorrect recovery passphrase");
         }
@@ -157,8 +155,8 @@ namespace smo::genesis {
         size_t copy_n = (std::min)(key.size(), aead_key.size());
         std::memcpy(aead_key.data(), key.data(), copy_n);
 
-        // ── 2. Parse encrypted blob: nonce(12) || ciphertext ───────────
-        const size_t nonce_size = 12;
+        // ── 2. Parse encrypted blob: nonce(24) || ciphertext ───────────
+        const size_t nonce_size = 24;
         if (root_keypair_encrypted.size() < nonce_size + 1)
         {
             return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
@@ -218,6 +216,72 @@ namespace smo::genesis {
         // policy and audit_sink left as defaults (full access, no-op sink)
 
         return session;
+    }
+
+    Result<UnlockedKeypair> RecoveryPackage::unlock_keypair(const std::string& passphrase, const HashImpl& hash,
+                                                            const AeadImpl& aead) const
+    {
+        if (!verify_passphrase(passphrase, hash))
+        {
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "incorrect recovery passphrase");
+        }
+
+        if (manifest_schema < 1 || manifest_schema > 1)
+        {
+            return SMO_ERR_GENESIS(1408, Error, NoRetry, ManualIntervention,
+                                   "recovery package schema " + std::to_string(manifest_schema) +
+                                       " is not supported (expected 1)");
+        }
+
+        if (root_keypair_encrypted.empty())
+        {
+            return SMO_ERR_GENESIS(1404, Critical, NoRetry, ManualIntervention,
+                                   "recovery package has no encrypted keypair");
+        }
+
+        auto key_result = hash.hash(BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
+        if (!key_result)
+        {
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to derive key from passphrase");
+        }
+        auto key = std::move(key_result).value();
+        Bytes aead_key(32, 0);
+        size_t copy_n = (std::min)(key.size(), aead_key.size());
+        std::memcpy(aead_key.data(), key.data(), copy_n);
+
+        const size_t nonce_size = 24;
+        if (root_keypair_encrypted.size() < nonce_size + 1)
+        {
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
+                                   "recovery package encrypted blob too small");
+        }
+        BytesView nonce(root_keypair_encrypted.data(), nonce_size);
+        BytesView ciphertext(root_keypair_encrypted.data() + nonce_size, root_keypair_encrypted.size() - nonce_size);
+        BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+
+        auto plaintext_res = aead.decrypt(ciphertext, aad, BytesView(aead_key), nonce);
+        if (!plaintext_res)
+        {
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to decrypt recovery keypair");
+        }
+        auto plaintext = std::move(plaintext_res).value();
+
+        UnlockedKeypair kp;
+        if (plaintext.size() >= 3)
+        {
+            uint16_t pubkey_len = (static_cast<uint16_t>(plaintext[0]) << 8) | static_cast<uint16_t>(plaintext[1]);
+            size_t expected = static_cast<size_t>(pubkey_len) + 2;
+            if (pubkey_len > 0 && plaintext.size() > expected)
+            {
+                kp.public_key.assign(plaintext.begin() + 2, plaintext.begin() + 2 + pubkey_len);
+                kp.secret_key.assign(plaintext.begin() + 2 + pubkey_len, plaintext.end());
+            }
+        }
+        if (kp.secret_key.empty())
+        {
+            kp.secret_key = plaintext;
+        }
+        return kp;
     }
 
 } // namespace smo::genesis

@@ -56,6 +56,7 @@ Commands:
   sign <csr-file> -o <output-file>   Sign a CSR and issue a certificate
   create-mesh <name>                  Initialize a new mesh
   mesh publish [options]              Configure network endpoints
+  mesh init-authority                 Initialize authority keys (completes genesis Stage 1)
   generate-invite <role> [options]    Generate a Join Token
   serve [--port <port>]               Start enroll HTTP server
 
@@ -271,6 +272,62 @@ static int cmd_sign(const std::vector<std::string>& args, const std::string& mes
     smo::RngRef rng;
     if (!get_crypto(suite_id, crypto, rng))
         return 1;
+
+    // Open mesh authority. Genesis-created meshes have no legacy authority.pub/.sec —
+    // unlock recovery.pkg and materialize the keypair first (Root-as-Node).
+    if (!fs::exists(mesh_dir + "/authority.pub") || !fs::exists(mesh_dir + "/authority.sec"))
+    {
+        std::string pkg_path = mesh_dir + "/recovery.pkg";
+        std::ifstream pf(pkg_path, std::ios::binary);
+        if (!pf)
+        {
+            std::fprintf(stderr, "Error: no recovery.pkg found at %s (authority keys missing).\n",
+                         pkg_path.c_str());
+            return 1;
+        }
+        std::string pkg_json((std::istreambuf_iterator<char>(pf)), std::istreambuf_iterator<char>());
+        auto pkg_res = smo::genesis::RecoveryPackage::deserialize(
+            BytesView(reinterpret_cast<const uint8_t*>(pkg_json.data()), pkg_json.size()));
+        if (!pkg_res)
+        {
+            std::fprintf(stderr, "Error: failed to parse recovery package: %s\n", pkg_res.error().message.c_str());
+            return 1;
+        }
+
+        const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
+        std::string passphrase;
+        if (env_pw && env_pw[0])
+        {
+            passphrase = env_pw;
+        }
+        else
+        {
+            std::fprintf(stderr, "Recovery passphrase: ");
+            std::fflush(stderr);
+            std::getline(std::cin, passphrase);
+        }
+
+        auto kp_res = pkg_res.value().unlock_keypair(passphrase, crypto->hash, crypto->aead);
+        if (!kp_res)
+        {
+            std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", kp_res.error().message.c_str());
+            return 1;
+        }
+        auto& kp = kp_res.value();
+
+        if (kp.public_key.empty() || kp.secret_key.empty())
+        {
+            std::fprintf(stderr, "Error: recovery package does not contain a full keypair\n");
+            return 1;
+        }
+        {
+            std::ofstream pk_out(mesh_dir + "/authority.pub", std::ios::binary);
+            pk_out.write(reinterpret_cast<const char*>(kp.public_key.data()), kp.public_key.size());
+            std::ofstream sk_out(mesh_dir + "/authority.sec", std::ios::binary);
+            sk_out.write(reinterpret_cast<const char*>(kp.secret_key.data()), kp.secret_key.size());
+            std::fprintf(stderr, "[smo-admin] Materialized authority keys from recovery.pkg\n");
+        }
+    }
 
     // Open mesh authority
     smo::authority::MeshAuthority authority;
@@ -1030,6 +1087,242 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
 }
 
 // ---------------------------------------------------------------------------
+// cmd_mesh_init_authority: Initialize authority keys from recovery package
+// Completes Stage 1 of genesis for the genesis machine (becomes first authority)
+// ---------------------------------------------------------------------------
+static int cmd_mesh_init_authority(const std::vector<std::string>& args, const std::string& mesh_dir)
+{
+    (void)args;
+
+    if (mesh_dir.empty())
+    {
+        std::fprintf(stderr, "Error: --mesh-dir is required for init-authority command\n");
+        return 1;
+    }
+
+    // Check if authority keys already exist
+    std::string auth_pub_path = mesh_dir + "/authority.pub";
+    std::string auth_sec_path = mesh_dir + "/authority.sec";
+    if (std::filesystem::exists(auth_pub_path) && std::filesystem::exists(auth_sec_path))
+    {
+        std::printf("Authority keys already exist at %s\n", mesh_dir.c_str());
+        return 0;
+    }
+
+    // Read mesh.json
+    std::string json_path = mesh_dir + "/mesh.json";
+    std::ifstream f(json_path);
+    if (!f)
+    {
+        std::fprintf(stderr, "Error: no mesh.json found at %s\n", json_path.c_str());
+        return 1;
+    }
+    std::string json((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+
+    std::string mesh_id = json_read_string(json, "mesh_id");
+    if (mesh_id.empty())
+        mesh_id = fs::path(mesh_dir).filename().string();
+    auto suite_id = read_suite_from_mesh(mesh_dir);
+
+    // Load recovery package
+    std::string pkg_path = mesh_dir + "/recovery.pkg";
+    std::ifstream pf(pkg_path, std::ios::binary);
+    if (!pf)
+    {
+        std::fprintf(stderr, "Error: no recovery.pkg found at %s\n", pkg_path.c_str());
+        return 1;
+    }
+    std::string pkg_json((std::istreambuf_iterator<char>(pf)), std::istreambuf_iterator<char>());
+    auto pkg_res = smo::genesis::RecoveryPackage::deserialize(
+        BytesView(reinterpret_cast<const uint8_t*>(pkg_json.data()), pkg_json.size()));
+    if (!pkg_res)
+    {
+        std::fprintf(stderr, "Error: failed to parse recovery package: %s\n", pkg_res.error().message.c_str());
+        return 1;
+    }
+    auto recovery_pkg = std::move(pkg_res).value();
+
+    // Get passphrase
+    const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
+    std::string passphrase;
+    if (env_pw && env_pw[0])
+    {
+        passphrase = env_pw;
+    }
+    else
+    {
+        std::fprintf(stderr, "Recovery passphrase: ");
+        std::fflush(stderr);
+        std::getline(std::cin, passphrase);
+    }
+
+    // Get crypto provider
+    const smo::CryptoProvider* crypto = nullptr;
+    smo::RngRef rng;
+    if (!get_crypto(suite_id, crypto, rng))
+        return 1;
+
+    // Generate authority keypair
+    if (!crypto->signer.generate_keypair)
+    {
+        std::fprintf(stderr, "Error: no keygen function for suite %u\n", (unsigned)suite_id);
+        return 1;
+    }
+    auto auth_kp_res = crypto->signer.generate_keypair(rng);
+    if (!auth_kp_res)
+    {
+        std::fprintf(stderr, "Error: failed to generate authority keypair: %s\n", auth_kp_res.error().message.c_str());
+        return 1;
+    }
+    auto auth_kp = std::move(auth_kp_res).value();
+
+    // Build the authority certificate: the subject is the fresh authority keypair,
+    // the issuer is the genesis root key (recovery package).
+    smo::Certificate authority_cert;
+    authority_cert.subject_pubkey = auth_kp.public_key;
+    authority_cert.issuer_pubkey = smo::HashProvider::hex_to_bytes(recovery_pkg.root_public_key);
+    authority_cert.mesh_id = smo::HashProvider::hex_to_bytes(mesh_id);
+    authority_cert.role = smo::Role::Authority;
+    authority_cert.display_name = mesh_id + "-authority";
+    authority_cert.capabilities = Bytes(8, 0); // empty capabilities
+    authority_cert.epoch = 1;
+    authority_cert.not_before = std::chrono::duration_cast<std::chrono::seconds>(
+                                    std::chrono::system_clock::now().time_since_epoch()).count();
+    authority_cert.not_after = authority_cert.not_before + 31536000 * 10; // 10 years
+
+    // Build a CSR for the authority keypair (proof of possession) so the root
+    // signature is scoped to this keypair + mesh + display name.
+    smo::CertificateSigningRequest csr;
+    csr.new_public_key = auth_kp.public_key;
+    csr.mesh_id = smo::HashProvider::hex_to_bytes(mesh_id);
+    csr.display_name = mesh_id + "-authority";
+    csr.platform = "linux";
+    csr.version = "0.1.0";
+    csr.timestamp = authority_cert.not_before;
+    csr.old_cert_hash = Bytes(32, 0);
+
+    auto csr_body = csr.serialize_body();
+    auto sig_res = crypto->signer.sign(csr_body, auth_kp.secret_key, rng);
+    if (!sig_res)
+    {
+        std::fprintf(stderr, "Error: failed to sign CSR: %s\n", sig_res.error().message.c_str());
+        return 1;
+    }
+    csr.signature = std::move(sig_res).value();
+
+    Bytes csr_bytes = csr.serialize();
+
+    // Unlock recovery package and sign CSR with Root key
+    auto session_res = recovery_pkg.unlock(passphrase, crypto->hash, crypto->aead, crypto->signer, rng);
+    if (!session_res)
+    {
+        std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", session_res.error().message.c_str());
+        return 1;
+    }
+    auto session = std::move(session_res).value();
+
+    // Activate RootSession for authority bootstrap
+    auto now_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      std::chrono::system_clock::now().time_since_epoch()).count();
+    session.activate("authority-init-" + std::to_string(now_ns), "authority", recovery_pkg.root_public_key,
+                     nullptr, // keep signer from unlock()
+                     smo::genesis::SessionPolicy::bootstrap(),
+                     nullptr, // no-op audit sink
+                     now_ns,
+                     std::chrono::hours(1).count() * 1'000'000'000ULL); // 1h TTL
+
+    // Sign the CSR payload with the Root key.
+    smo::genesis::RootRequest req;
+    req.operation = smo::genesis::RootOperation::SignBootstrapCSR;
+    req.payload = std::move(csr_bytes);
+    req.mesh_id = mesh_id;
+    req.requester = "authority-init";
+    req.reason = "genesis stage 1 authority bootstrap";
+    req.timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                           std::chrono::system_clock::now().time_since_epoch()).count();
+
+    auto exec_res = session.execute(req, rng, req.timestamp_ns);
+    if (!exec_res)
+    {
+        std::fprintf(stderr, "Error: signing failed: %s\n", exec_res.error().message.c_str());
+        return 1;
+    }
+    auto root_res = std::move(exec_res).value();
+
+    // The Certificate::verify() contract signs the certificate BODY (serialize()),
+    // not the CSR payload. So the root must sign the serialized certificate body:
+    // encode the signed CSR as the display_name claim is NOT enough — instead we
+    // re-sign the certificate body with the root key via the activated session.
+    // (The CSR signature above documents key ownership; the cert signature below
+    // is what peers check with Certificate::verify().)
+    smo::genesis::RootRequest cert_req;
+    cert_req.operation = smo::genesis::RootOperation::SignBootstrapCSR;
+    cert_req.payload = authority_cert.serialize();
+    cert_req.mesh_id = mesh_id;
+    cert_req.requester = "authority-init";
+    cert_req.reason = "genesis stage 1 authority certificate";
+    cert_req.timestamp_ns = req.timestamp_ns;
+
+    auto cert_exec = session.execute(cert_req, rng, cert_req.timestamp_ns);
+    if (!cert_exec)
+    {
+        std::fprintf(stderr, "Error: certificate signing failed: %s\n", cert_exec.error().message.c_str());
+        return 1;
+    }
+    authority_cert.signature = std::move(cert_exec.value().output);
+
+    // Write authority public key
+    std::ofstream pub_f(auth_pub_path, std::ios::binary);
+    pub_f.write(reinterpret_cast<const char*>(auth_kp.public_key.data()), auth_kp.public_key.size());
+    pub_f.close();
+
+    // Write authority secret key
+    std::ofstream sec_f(auth_sec_path, std::ios::binary);
+    sec_f.write(reinterpret_cast<const char*>(auth_kp.secret_key.data()), auth_kp.secret_key.size());
+    sec_f.close();
+
+    // Write authority certificate (signed by root) - used by daemon for PQ handshake
+    // NOTE: must be serialize_full() so the signature is persisted; Certificate::verify()
+    // checks the signature over serialize() (the body), so the blob must contain both.
+    std::string auth_cert_path = mesh_dir + "/authority.cert.smoc";
+    Bytes cert_blob = authority_cert.serialize_full();
+    std::ofstream cert_f(auth_cert_path, std::ios::binary);
+    cert_f.write(reinterpret_cast<const char*>(cert_blob.data()), cert_blob.size());
+    cert_f.close();
+
+    // Create identity.json in the mesh dir for the authority (can be copied to data dir)
+    auto node_id_res = smo::node_id_from_public_key(smo::BytesView(auth_kp.public_key), crypto->hash);
+    if (!node_id_res)
+    {
+        std::fprintf(stderr, "Warning: failed to derive NodeID: %s\n", node_id_res.error().message.c_str());
+    }
+    else
+    {
+        auto id_res = smo::Identity::load(smo::BytesView(auth_kp.public_key), smo::BytesView(auth_kp.secret_key),
+                                          static_cast<smo::CryptoSuiteID>(suite_id));
+        if (!id_res)
+        {
+            std::fprintf(stderr, "Warning: failed to create identity: %s\n", id_res.error().message.c_str());
+        }
+        else
+        {
+            std::string identity_path = mesh_dir + "/identity.json";
+            if (auto r = id_res.value().save_to_file(identity_path); !r)
+            {
+                std::fprintf(stderr, "Warning: failed to save identity.json: %s\n", r.error().message.c_str());
+            }
+            else
+            {
+                std::printf("Authority identity saved to %s\n", identity_path.c_str());
+            }
+        }
+    }
+
+    std::printf("Authority keys, certificate, and identity initialized at %s\n", mesh_dir.c_str());
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
 // Serve command — start enroll HTTP server
 // ---------------------------------------------------------------------------
 static int cmd_serve(const std::vector<std::string>& args, const std::string& mesh_dir)
@@ -1234,13 +1527,17 @@ int main(int argc, char* argv[])
     {
         if (args.size() < 2)
         {
-            std::fprintf(stderr, "Usage: smo-admin --mesh <name> mesh publish\n");
+            std::fprintf(stderr, "Usage: smo-admin --mesh <name> mesh publish|init-authority\n");
             return 1;
         }
         auto subcmd = args[1];
         if (subcmd == "publish")
         {
             return cmd_mesh_publish(args, mesh_dir);
+        }
+        if (subcmd == "init-authority")
+        {
+            return cmd_mesh_init_authority(args, mesh_dir);
         }
         std::fprintf(stderr, "Unknown mesh subcommand: %s\n", subcmd.c_str());
         return 1;

@@ -821,7 +821,8 @@ namespace smo {
                 }
                 std::string name = current.value();
                 std::cout << "Publishing mesh '" << name << "'...\n";
-                std::string cmd = "smo-admin --mesh " + name + " mesh publish";
+                std::string admin = find_smo_admin();
+                std::string cmd = "\"" + admin + "\" --mesh " + name + " mesh publish";
                 int rc = std::system(cmd.c_str());
                 if (rc != 0)
                 {
@@ -841,7 +842,8 @@ namespace smo {
                 std::string name = current.value();
                 uint16_t port = static_cast<uint16_t>(context_.get_port().value_or(5454));
                 std::cout << "Starting enroll server for mesh '" << name << "' on port " << port << "...\n";
-                std::string cmd = "smo-admin --mesh " + name + " serve --port " + std::to_string(port);
+                std::string admin = find_smo_admin();
+                std::string cmd = "\"" + admin + "\" --mesh " + name + " serve --port " + std::to_string(port);
                 int rc = std::system(cmd.c_str());
                 if (rc != 0)
                 {
@@ -865,8 +867,9 @@ namespace smo {
                 std::cout << "Generating invite for mesh '" << name << "'...\n";
                 std::cout << "  Role:    " << role << "\n";
                 std::cout << "  Profile: " << profile << "\n";
-                std::string cmd = "smo-admin --mesh " + name + " generate-invite " + role + " --profile " + profile +
-                                  " --expire " + expire;
+                std::string admin = find_smo_admin();
+                std::string cmd = "\"" + admin + "\" --mesh " + name + " generate-invite " + role + " --profile " +
+                                  profile + " --expire " + expire;
                 int rc = std::system(cmd.c_str());
                 if (rc != 0)
                 {
@@ -877,7 +880,11 @@ namespace smo {
             }
             if (intent.flags.count("join"))
             {
-                std::string token = intent.flags.count("join") ? intent.flags.at("join") : "";
+                std::string token = intent.flags.count("token") ? intent.flags.at("token") : "";
+                if (token.empty() && intent.flags.at("join") != "true")
+                {
+                    token = intent.flags.at("join");
+                }
                 if (token.empty())
                 {
                     std::cout << "Usage: mesh join --token SMO-JOIN-...\n";
@@ -888,6 +895,7 @@ namespace smo {
                 {
                     std::cout << "Joining mesh with token...\n";
 
+                    get_crypto(smo::kSuiteClassical);
                     std::string data_dir = context_.get_data_dir().empty() ? home + "/node" : context_.get_data_dir();
                     std::string node_name = context_.get_node_name().empty() ? "node-" + std::to_string(getpid())
                                                                              : context_.get_node_name();
@@ -1003,6 +1011,25 @@ namespace smo {
             return prov ? prov.value() : nullptr;
         }
 
+        // Locate smo-admin: prefer a sibling of the current executable,
+        // then fall back to PATH lookup.
+        static std::string find_smo_admin()
+        {
+            char exe_path[4096];
+            ssize_t len = ::readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
+            if (len > 0)
+            {
+                exe_path[len] = '\0';
+                std::filesystem::path exe(exe_path);
+                auto sibling = exe.parent_path() / "smo-admin";
+                if (std::filesystem::exists(sibling))
+                {
+                    return sibling.string();
+                }
+            }
+            return "smo-admin";
+        }
+
         Result<int> handle_genesis(const Intent& intent)
         {
             std::string home = smo::mesh::smo_home();
@@ -1042,26 +1069,86 @@ namespace smo {
                 }
                 auto profile = std::move(profile_res).value();
 
+                // ── Real crypto provider (suite3 pure PQC: ML-DSA + XChaCha20 + SHA256) ──
+                const smo::CryptoProvider* crypto = get_crypto(smo::kSuitePurePQC);
+                if (!crypto)
+                {
+                    std::cerr << "Error: crypto suite " << (int)smo::kSuitePurePQC
+                              << " is not registered. Build with SMO_WITH_PQC.\n";
+                    return 1;
+                }
+                smo::RngRef rng = crypto->default_rng();
+
+                // Recovery passphrase: env var > prompt > default
+                std::string recovery_passphrase;
+                const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
+                if (env_pw && env_pw[0])
+                {
+                    recovery_passphrase = env_pw;
+                }
+                else if (!interactive_)
+                {
+                    recovery_passphrase = "smo-recovery-passphrase";
+                }
+                else
+                {
+                    std::cout << "Recovery passphrase: ";
+                    std::getline(std::cin, recovery_passphrase);
+                    if (recovery_passphrase.empty())
+                        recovery_passphrase = "smo-recovery-passphrase";
+                }
+
+                // Generate root Ed25519 keypair
+                auto root_kp_res = crypto->signer.generate_keypair(rng);
+                if (!root_kp_res)
+                {
+                    std::cerr << "Error: failed to generate root keypair: " << root_kp_res.error().message << "\n";
+                    return 1;
+                }
+                auto root_kp = std::move(root_kp_res).value();
+                std::string root_pub_hex = bytes_to_hex(root_kp.public_key);
+
+                // Build a real software signer for the root session
+                smo::crypto::SignerMetadata root_meta;
+                root_meta.backend = "Software";
+                root_meta.algorithm = "ML-DSA";
+                root_meta.provider = "Suite3-PurePQC";
+                root_meta.origin = "genesis";
+                root_meta.created_at = 0;
+                auto root_signer = smo::crypto::make_software_signer_context(root_kp.secret_key, crypto->signer,
+                                                                             std::move(root_meta));
+
+                // ── Real GenesisCryptoProvider (hash + AEAD + verify) ──
                 smo::genesis::GenesisCryptoProvider crypto_provider;
-                crypto_provider.hash = [](const std::string& s) -> Result<Bytes> {
-                    (void)s;
-                    return Bytes{};
+                crypto_provider.hash = [crypto](const std::string& s) -> Result<Bytes> {
+                    return crypto->hash.hash(BytesView(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
                 };
-                crypto_provider.encrypt_keypair = [](BytesView data, BytesView key) -> Result<Bytes> {
-                    (void)key;
-                    return Bytes(data.begin(), data.end());
+                crypto_provider.encrypt_keypair = [crypto, &rng, mesh_id = name](BytesView data, BytesView key) -> Result<Bytes> {
+                    // Format expected by unlock(): nonce(24) || ciphertext, AAD = mesh_id
+                    Bytes nonce(24, 0);
+                    rng.fill(BytesMutView{nonce.data(), nonce.size()});
+                    BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+                    auto ct_res = crypto->aead.encrypt(data, aad, key, nonce);
+                    if (!ct_res)
+                    {
+                        return ct_res.error();
+                    }
+                    auto ct = std::move(ct_res).value();
+                    Bytes blob;
+                    blob.reserve(nonce.size() + ct.size());
+                    blob.insert(blob.end(), nonce.begin(), nonce.end());
+                    blob.insert(blob.end(), ct.begin(), ct.end());
+                    return blob;
                 };
-                crypto_provider.verify = [](BytesView data, BytesView sig, BytesView pubkey) -> Result<bool> {
-                    (void)data;
-                    (void)sig;
-                    (void)pubkey;
-                    return true;
+                crypto_provider.verify = [crypto](BytesView data, BytesView sig, BytesView pubkey) -> Result<bool> {
+                    return crypto->signer.verify(data, sig, pubkey);
                 };
 
                 smo::genesis::GenesisWizard wizard(std::move(crypto_provider));
 
-                auto result = wizard.run_stage_0(name, "root-node", "placeholder-root-pubkey", nullptr, profile,
-                                                 authorities, "recovery-passphrase", 0);
+                auto result = wizard.run_stage_0(name, "root-node", root_pub_hex, std::move(root_signer), profile,
+                                                 authorities, recovery_passphrase, root_kp.public_key,
+                                                 root_kp.secret_key, static_cast<uint32_t>(crypto->suite_id), 0);
 
                 if (!result)
                 {
@@ -1093,14 +1180,6 @@ namespace smo {
                     genesis_res.recovery_pkg_path = recovery_path;
                 }
 
-                std::vector<std::string> join_codes;
-                for (size_t i = 0; i < genesis_res.slot_ring.slots.size(); ++i)
-                {
-                    std::ostringstream code;
-                    code << "SMO-BOOT-" << name << "-" << std::setw(3) << std::setfill('0') << i;
-                    join_codes.push_back(code.str());
-                }
-
                 context_.set_mesh(name);
 
                 std::cout << "\n";
@@ -1111,14 +1190,12 @@ namespace smo {
                 std::cout << "  Authorities: " << authorities << " slots\n";
                 std::cout << "  State:       Bootstrap\n";
                 std::cout << "\n";
-                std::cout << "  Join codes for each authority machine:\n";
-                for (size_t i = 0; i < join_codes.size(); ++i)
-                {
-                    std::cout << "    Slot #" << (i + 1) << ": " << join_codes[i] << "\n";
-                }
+                std::cout << "  To bootstrap the mesh, publish it then generate a real join token:\n";
+                std::cout << "    smo mesh publish --port 7777\n";
+                std::cout << "    smo mesh invite --role Authority --endpoint <host>:7777 --expire 1h\n";
                 std::cout << "\n";
-                std::cout << "  On each machine, run:\n";
-                std::cout << "    smo join " << join_codes[0] << "\n";
+                std::cout << "  Then on each joining machine, run:\n";
+                std::cout << "    smo mesh join --token SMO-JOIN-...\n";
                 std::cout << "\n";
                 std::cout << "  Files:\n";
                 std::cout << "    " << manifest_path << "\n";

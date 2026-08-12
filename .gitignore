@@ -1,5 +1,6 @@
 build/
 build_release/
+build-release/
 *.o
 *.so
 *.a

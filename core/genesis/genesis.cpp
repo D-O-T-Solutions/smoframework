@@ -1,6 +1,7 @@
 #include "genesis.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <sstream>
 
 namespace smo::genesis {
@@ -11,7 +12,9 @@ namespace smo::genesis {
                                                      const std::string& root_public_key,
                                                      std::unique_ptr<smo::crypto::SignerContext> root_signer,
                                                      DeploymentProfile profile, uint32_t authority_count,
-                                                     const std::string& recovery_passphrase, uint64_t now_ns)
+                                                     const std::string& recovery_passphrase,
+                                                     BytesView root_public_key_raw, BytesView root_secret_key,
+                                                     uint32_t cipher_suite_id, uint64_t now_ns)
     {
 
         if (stage_ != GenesisStage::NotStarted)
@@ -25,6 +28,7 @@ namespace smo::genesis {
         GenesisManifest manifest;
         manifest.mesh_id = mesh_id;
         manifest.root_public_key = root_public_key;
+        manifest.cipher_suite_id = cipher_suite_id;
         manifest.profile = profile;
         apply_profile_defaults(profile, manifest.authorities, manifest.quorum, manifest.fault_tolerance);
 
@@ -51,10 +55,43 @@ namespace smo::genesis {
         RecoveryPackage pkg;
         pkg.mesh_id = mesh_id;
         pkg.root_public_key = root_public_key;
-        pkg.recovery_passphrase_hash = recovery_passphrase; // placeholder
         pkg.manifest_revision = manifest.manifest_revision;
         pkg.manifest_schema = manifest.manifest_schema;
         pkg.created_at = now_ns;
+
+        // Hash the recovery passphrase (if a real hash callback is injected)
+        if (crypto_.hash && !recovery_passphrase.empty())
+        {
+            auto passhash_res = crypto_.hash(recovery_passphrase);
+            if (passhash_res)
+            {
+                auto passhash = std::move(passhash_res).value();
+                pkg.recovery_passphrase_hash = bytes_to_hex(passhash);
+
+                // Derive AEAD key = first 32 bytes of passphrase hash
+                Bytes aead_key(32, 0);
+                size_t copy_n = (std::min)(passhash.size(), aead_key.size());
+                std::memcpy(aead_key.data(), passhash.data(), copy_n);
+
+                // Encrypt the root keypair: 2-byte BE pubkey_len || pubkey || secret_key
+                if (crypto_.encrypt_keypair && !root_secret_key.empty())
+                {
+                    Bytes plaintext;
+                    plaintext.reserve(2 + root_public_key_raw.size() + root_secret_key.size());
+                    uint16_t pubkey_len = static_cast<uint16_t>(root_public_key_raw.size());
+                    plaintext.push_back(static_cast<uint8_t>((pubkey_len >> 8) & 0xFF));
+                    plaintext.push_back(static_cast<uint8_t>(pubkey_len & 0xFF));
+                    plaintext.insert(plaintext.end(), root_public_key_raw.begin(), root_public_key_raw.end());
+                    plaintext.insert(plaintext.end(), root_secret_key.begin(), root_secret_key.end());
+
+                    auto enc_res = crypto_.encrypt_keypair(BytesView(plaintext), BytesView(aead_key));
+                    if (enc_res)
+                    {
+                        pkg.root_keypair_encrypted = std::move(enc_res).value();
+                    }
+                }
+            }
+        }
 
         auto manifest_bytes_res = manifest.serialize();
         if (!manifest_bytes_res)

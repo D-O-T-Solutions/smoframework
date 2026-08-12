@@ -866,11 +866,22 @@ namespace smo::join {
         }
 
         // 4. Verify request_signature: sign(token || timestamp || nonce || csr_hash)
+        //    The joining node signs with its own identity key, so we must verify
+        //    against the public key embedded in the CSR (csr.new_public_key).
+        //    The token issuer field only identifies the issuing authority; it is
+        //    NOT the key used to sign this request.
         auto& reg = CryptoRegistry::instance();
         auto crypto_result = reg.get_suite(token.cipher_suite_id);
         if (!crypto_result)
             return crypto_result.error();
         const auto* crypto = crypto_result.value();
+
+        Bytes csr_bytes = hex_to_bytes(req.csr_pem);
+        auto csr_result = CertificateSigningRequest::deserialize(BytesView(csr_bytes));
+        if (!csr_result)
+        {
+            return SMO_ERR_CERT(217, Error, NoRetry, None, "Invalid CSR: " + csr_result.error().message);
+        }
 
         {
             Bytes sig_check;
@@ -886,30 +897,12 @@ namespace smo::join {
             sig_check.insert(sig_check.end(), req.nonce.begin(), req.nonce.end());
             sig_check.insert(sig_check.end(), req.csr_hash.begin(), req.csr_hash.end());
 
-            // Extract issuer public key from token issuer field
-            // Format: "root:<fingerprint>" or "authority:<fingerprint>"
-            auto delim = token.issuer.find(':');
-            if (delim == std::string::npos)
-            {
-                return SMO_ERR_CERT(215, Error, NoRetry, None, "Invalid issuer field");
-            }
-            std::string issuer_pubkey_hex = token.issuer.substr(delim + 1);
-            Bytes issuer_pubkey = hex_to_bytes(issuer_pubkey_hex);
-
-            auto verify_res =
-                crypto->signer.verify(BytesView(sig_check), BytesView(req.request_signature), BytesView(issuer_pubkey));
+            auto verify_res = crypto->signer.verify(BytesView(sig_check), BytesView(req.request_signature),
+                                                    BytesView(csr_result.value().new_public_key));
             if (!verify_res || !verify_res.value())
             {
                 return SMO_ERR_CERT(216, Error, NoRetry, None, "JoinRequest signature verification failed");
             }
-        }
-
-        // 5. Parse CSR and sign certificate
-        Bytes csr_bytes = hex_to_bytes(req.csr_pem);
-        auto csr_result = CertificateSigningRequest::deserialize(BytesView(csr_bytes));
-        if (!csr_result)
-        {
-            return SMO_ERR_CERT(217, Error, NoRetry, None, "Invalid CSR: " + csr_result.error().message);
         }
 
         // 6. Issue certificate via Authority

@@ -322,8 +322,12 @@ namespace smo {
         if (!ss2_res)
             return ss2_res.error();
 
-        // 8. Derive session keys
+        // 8. Derive session keys.
+        //    Both sides run the same KDF and produce (tx, rx) in the same order;
+        //    the server must swap so that its rx == client's tx (and vice versa).
         derive_keys(BytesView(ss1), BytesView(ss2_res.value()), BytesView(peer_pk_), BytesView(local_pk_));
+        std::swap(tx_key_, rx_key_);
+        std::swap(tx_nonce_pre_, rx_nonce_pre_);
 
         return {};
     }

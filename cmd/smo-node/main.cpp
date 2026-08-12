@@ -34,6 +34,7 @@
 #include <core/governance/governance.hpp>
 #include <core/recovery/crl.hpp>
 #include <core/storage/manifest_store.hpp>
+#include <sqlite3.h>
 #include <core/network/packet_dispatcher.hpp>
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
@@ -64,6 +65,7 @@
 // ── Vault setup ──────────────────────────────────────────────
 #include <storage/policy_store/policy_store.h>
 
+#include <providers/blake3_provider/blake3_provider.hpp>
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <providers/suite2_modern/suite2_modern_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
@@ -246,6 +248,7 @@ static smo::Bytes load_cert_blob(const std::string& path_or_empty)
 // ===========================================================================
 static void ensure_crypto()
 {
+    smo::Blake3Provider::register_as_default();
     smo::providers::register_suite1_classical();
     smo::providers::register_suite2_modern();
 #ifdef SMO_WITH_PQC
@@ -965,6 +968,18 @@ int main(int argc, char* argv[])
 
     std::printf("[smo-node] Listening on tcp://0.0.0.0:%d\n", port);
 
+    // Self peer record — used when answering HelloMsg with WelcomeMsg so a
+    // joining member learns the seed's identity, not its own (ephemeral) record.
+    smo::PeerRecord self_record;
+    self_record.node_id = local_id;
+    self_record.display_name = node_name.empty() ? "smo-node" : node_name;
+    self_record.endpoint.scheme = "tcp";
+    self_record.endpoint.host = "127.0.0.1";
+    self_record.endpoint.port = static_cast<uint16_t>(port);
+    self_record.state = smo::PeerState::Online;
+    self_record.last_seen = static_cast<int64_t>(
+        std::chrono::system_clock::now().time_since_epoch().count());
+
     // ── Bootstrap summary ─────────────────────────────────────
     if (!mesh_dir.empty())
     {
@@ -1077,7 +1092,11 @@ int main(int argc, char* argv[])
         }
     }
 
-    // ── Bootstrap: connect to seed ────────────────────────────
+    // ── Bootstrap: connect to seed (PQ-secured) ───────────────
+    // The mesh authority serves every TCP connection with a PQ handshake
+    // (it presents a signed certificate). A raw (non-PQ) seed connection
+    // would block the authority's handshake reader, so we must use the
+    // same SecureSession client handshake as `smo mesh join`.
     if (!seed_addr.empty())
     {
         std::printf("[smo-node] Connecting to seed: %s\n", seed_addr.c_str());
@@ -1091,42 +1110,70 @@ int main(int argc, char* argv[])
         else
         {
             seed_ep = ep_result.value();
-
             auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            auto now_ns = static_cast<int64_t>(now) * 1000000000LL;
 
-            auto rec_result =
-                smo::Bootstrap::find_seed({seed_ep}, *tcp_ptr, local_id, static_cast<int64_t>(now) * 1000000000LL);
-
-            if (rec_result)
+            // 1. Raw TCP connect + version handshake
+            auto raw_session = tcp_ptr->connect(seed_ep);
+            if (!raw_session)
             {
-                auto& rec = rec_result.value();
-                std::printf("[smo-node] Seed responded: %s (%s)\n", rec.display_name.c_str(),
-                            rec.endpoint.to_string().c_str());
-
-                // Process WELCOME through DiscoveryEngine
-                auto now_ns = static_cast<int64_t>(now) * 1000000000LL;
-                discovery_engine.handle_welcome(smo::WelcomeMsg{local_id, rec}, now_ns);
-
-                // Request full peer table
-                smo::DiscoverMsg discover;
-                auto disc_data = discover.serialize();
-                auto session = smo::TransportRegistry::instance().connect(seed_ep);
-                if (session)
-                {
-                    session.value()->send(disc_data);
-                    auto recv = session.value()->recv(8192);
-                    if (recv)
-                    {
-                        std::printf("[smo-node] Received peer table (%zu bytes)\n", recv.value().size());
-                    }
-                }
-
-                std::printf("[smo-node] Bootstrap complete. Peers: %zu\n", membership.count());
+                std::printf("[smo-node] Seed connection failed: %s\n", raw_session.error().message.c_str());
+                std::printf("[smo-node] Continuing as first node in mesh\n");
             }
             else
             {
-                std::printf("[smo-node] Seed connection failed: %s\n", rec_result.error().message.c_str());
-                std::printf("[smo-node] Continuing as first node in mesh\n");
+                auto* tcp_ses = static_cast<smo::TcpSession*>(raw_session.value().get());
+                int fd = tcp_ses->release_fd();
+
+                // 2. PQ handshake (client) — authority requires it when certed
+                smo::SecureSession::Config sec_cfg;
+                sec_cfg.role = smo::SecureSession::Role::Client;
+                smo::SecureSession sec(fd, sec_cfg, *crypto);
+                auto hs = sec.handshake();
+                if (!hs)
+                {
+                    std::printf("[smo-node] Seed PQ handshake failed: %s\n", hs.error().message.c_str());
+                    std::printf("[smo-node] Continuing as first node in mesh\n");
+                }
+                else
+                {
+                    // 3. Send HELLO inside the secure session
+                    smo::HelloMsg hello;
+                    hello.node_id = local_id;
+                    auto hello_data = hello.serialize();
+                    auto send_res = sec.send(smo::BytesView(hello_data));
+                    if (!send_res)
+                    {
+                        std::printf("[smo-node] Seed HELLO send failed: %s\n", send_res.error().message.c_str());
+                    }
+                    else
+                    {
+                        // 4. Read WELCOME (encrypted)
+                        auto welcome_data = sec.recv();
+                        if (!welcome_data)
+                        {
+                            std::printf("[smo-node] Seed WELCOME read failed: %s\n",
+                                        welcome_data.error().message.c_str());
+                        }
+                        else
+                        {
+                            auto welcome = smo::WelcomeMsg::deserialize(smo::BytesView(welcome_data.value()));
+                            if (!welcome)
+                            {
+                                std::printf("[smo-node] Seed WELCOME parse failed: %s\n",
+                                            welcome.error().message.c_str());
+                            }
+                            else
+                            {
+                                auto& rec = welcome.value().peer_record;
+                                std::printf("[smo-node] Seed responded: %s (%s)\n", rec.display_name.c_str(),
+                                            rec.endpoint.to_string().c_str());
+                                discovery_engine.handle_welcome(smo::WelcomeMsg{local_id, rec}, now_ns);
+                                std::printf("[smo-node] Bootstrap complete. Peers: %zu\n", membership.count());
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1147,10 +1194,113 @@ int main(int argc, char* argv[])
     smo::SessionManager session_mgr;
 
     // MeshManager for mesh directory/catalog operations
-    smo::MeshManager mesh_manager(smo::MeshManager::Config{});
+    smo::MeshManager mesh_manager(smo::MeshManager::Config{.base_data_dir = mesh_dir.empty() ? "" : mesh_dir.substr(0, mesh_dir.rfind("/meshes/") + 7)});
 
     // MeshAuthority for certificate signing and key management
     smo::authority::MeshAuthority authority;
+    if (!mesh_dir.empty())
+    {
+        std::string authority_mesh_id;
+        std::string mesh_json_path = mesh_dir + "/mesh.json";
+        std::ifstream mf(mesh_json_path);
+        if (mf)
+        {
+            std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
+            auto mpos = mjson.find("\"mesh_id\"");
+            if (mpos != std::string::npos)
+            {
+                auto mcolon = mjson.find(':', mpos);
+                auto mstart = mjson.find('"', mcolon + 1);
+                auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
+                if (mstart != std::string::npos && mend != std::string::npos)
+                    authority_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
+            }
+        }
+        smo::authority::MeshAuthority::Config acfg;
+        acfg.mesh_id = authority_mesh_id;
+        acfg.data_dir = mesh_dir;
+        acfg.registry_path = mesh_dir + "/node_registry.db";
+        auto auth_rng = crypto->default_rng();
+        if (auto ar = authority.init(*crypto, auth_rng); !ar)
+        {
+            std::printf("[smo-node] Warning: failed to init MeshAuthority: %s\n", ar.error().message.c_str());
+        }
+        else if (auto ar2 = authority.open(acfg); !ar2)
+        {
+            std::printf("[smo-node] Warning: failed to open MeshAuthority at %s: %s\n", mesh_dir.c_str(),
+                        ar2.error().message.c_str());
+        }
+        else
+        {
+            std::printf("[smo-node] MeshAuthority opened (mesh_id=%s, registry=%s)\n", acfg.mesh_id.c_str(),
+                        acfg.registry_path.c_str());
+            // Open the mesh for bootstrap sync
+            if (auto mh = mesh_manager.open_mesh(authority_mesh_id); !mh)
+            {
+                std::printf("[smo-node] Warning: failed to open mesh %s: %s\n", authority_mesh_id.c_str(),
+                            mh.error().message.c_str());
+            }
+            else
+            {
+                std::printf("[smo-node] Mesh opened for bootstrap sync: %s\n", authority_mesh_id.c_str());
+            }
+        }
+        // Initialize mesh manager to discover meshes
+        if (auto mi = mesh_manager.initialize(); !mi)
+        {
+            std::printf("[smo-node] Warning: failed to initialize MeshManager: %s\n", mi.error().message.c_str());
+        }
+        else
+        {
+            std::printf("[smo-node] MeshManager initialized\n");
+            // Register existing mesh in catalog for bootstrap sync
+            std::string mesh_json_path = mesh_dir + "/mesh.json";
+            std::ifstream mf(mesh_json_path);
+            if (mf)
+            {
+                std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
+                auto mpos = mjson.find("\"mesh_id\"");
+                std::string catalog_mesh_id = authority_mesh_id;
+                if (mpos != std::string::npos)
+                {
+                    auto mcolon = mjson.find(':', mpos);
+                    auto mstart = mjson.find('"', mcolon + 1);
+                    auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
+                    if (mstart != std::string::npos && mend != std::string::npos)
+                        catalog_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
+                }
+                // Insert into catalog if not present
+                std::string catalog_db = mesh_dir.substr(0, mesh_dir.rfind("/meshes/") + 7) + "/catalog.db";
+                sqlite3* cat_db = nullptr;
+                if (sqlite3_open(catalog_db.c_str(), &cat_db) == SQLITE_OK)
+                {
+                    std::string sql = "INSERT OR IGNORE INTO meshes (mesh_id, display_name, authority_pubkey, "
+                                      "root_pubkey, epoch, created_at, config_json) "
+                                      "VALUES (?, ?, '', '', 1, strftime('%s','now'), ?)";
+                    sqlite3_stmt* stmt = nullptr;
+                    if (sqlite3_prepare_v2(cat_db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
+                    {
+                        sqlite3_bind_text(stmt, 1, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_bind_text(stmt, 2, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_bind_text(stmt, 3, mjson.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_step(stmt);
+                        sqlite3_finalize(stmt);
+                    }
+                    sqlite3_close(cat_db);
+                }
+            }
+            // Set the mesh as active for bootstrap sync
+            if (auto sw = mesh_manager.switch_mesh(authority_mesh_id); !sw)
+            {
+                std::printf("[smo-node] Warning: failed to switch to mesh %s: %s\n", authority_mesh_id.c_str(),
+                            sw.error().message.c_str());
+            }
+            else
+            {
+                std::printf("[smo-node] Mesh set as active: %s\n", authority_mesh_id.c_str());
+            }
+        }
+    }
 
     // GovernanceEngine for mesh governance
     smo::GovernanceEngine governance_engine;
@@ -1539,69 +1689,17 @@ int main(int argc, char* argv[])
             ep.host = remote.address;
             ep.port = remote.port;
 
-            // Try HelloMsg
-            auto hello = smo::HelloMsg::deserialize(raw);
-            if (hello)
-            {
-                std::printf("[smo-node] Raw handler: HelloMsg from %s\n", remote.address.c_str());
-                auto handle_res = discovery_engine.handle_hello(hello.value(), ep, now_ns);
-                if (!handle_res)
-                {
-                    return handle_res.error();
-                }
-
-                // Send WelcomeMsg back
-                auto peer = membership.lookup(hello.value().node_id);
-                if (peer)
-                {
-                    smo::WelcomeMsg welcome;
-                    welcome.node_id = local_id;
-                    welcome.peer_record = peer.value();
-                    auto welcome_data = welcome.serialize();
-                    auto send_res = session.send(welcome_data);
-                    if (!send_res)
-                    {
-                        std::printf("[smo-node] Failed to send WelcomeMsg\n");
-                    }
-                }
-                return {};
-            }
-
-            // Try PingMsg
-            auto ping = smo::PingMsg::deserialize(raw);
-            if (ping)
-            {
-                smo::PongMsg pong;
-                pong.timestamp = ping.value().timestamp;
-                auto pong_data = pong.serialize();
-                session.send(pong_data);
-                return {};
-            }
-
-            // ── Try join protocol (raw CBOR: 4-byte length prefix + CBOR) ──
-            // Used by `smo mesh join` CLI via auto_enroll.cpp
+            // ── Try join protocol FIRST (raw CBOR) ──
+            // Used by `smo mesh join` CLI via auto_enroll.cpp.
+            // The client sends raw CBOR (no length prefix) inside the SecureSession.
+            // Must be tried before HelloMsg/PingMsg since a JoinRequest's CBOR can
+            // accidentally parse as those legacy discovery messages.
             auto try_join_protocol = [&]() -> bool {
-                if (raw.size() < 4)
-                    return false;
-                uint32_t payload_len = (static_cast<uint32_t>(raw[0]) << 24) | (static_cast<uint32_t>(raw[1]) << 16) |
-                                       (static_cast<uint32_t>(raw[2]) << 8) | static_cast<uint32_t>(raw[3]);
-                if (payload_len == 0 || 4 + payload_len > raw.size())
-                    return false;
+                smo::BytesView cbor_data = raw;
 
-                smo::BytesView cbor_data = raw.subspan(4, payload_len);
-
-                // Wrap CBOR response in 4-byte length prefix and send
+                // Send raw CBOR (client decodes without a length prefix)
                 auto send_cbor_resp = [&](const smo::Bytes& cbor) -> bool {
-                    uint32_t len = static_cast<uint32_t>(cbor.size());
-                    uint8_t hdr[4];
-                    hdr[0] = static_cast<uint8_t>((len >> 24) & 0xFF);
-                    hdr[1] = static_cast<uint8_t>((len >> 16) & 0xFF);
-                    hdr[2] = static_cast<uint8_t>((len >> 8) & 0xFF);
-                    hdr[3] = static_cast<uint8_t>(len & 0xFF);
-                    smo::Bytes out;
-                    out.insert(out.end(), hdr, hdr + 4);
-                    out.insert(out.end(), cbor.begin(), cbor.end());
-                    auto send_res = session.send(smo::BytesView(out));
+                    auto send_res = session.send(smo::BytesView(cbor));
                     return static_cast<bool>(send_res);
                 };
 
@@ -1643,6 +1741,42 @@ int main(int argc, char* argv[])
             if (try_join_protocol())
             {
                 std::printf("[smo-node] Join protocol handled successfully\n");
+                return {};
+            }
+
+            // Try HelloMsg
+            auto hello = smo::HelloMsg::deserialize(raw);
+            if (hello)
+            {
+                std::printf("[smo-node] Raw handler: HelloMsg from %s\n", remote.address.c_str());
+                auto handle_res = discovery_engine.handle_hello(hello.value(), ep, now_ns);
+                if (!handle_res)
+                {
+                    return handle_res.error();
+                }
+
+                // Send WelcomeMsg back with our own record so the requester
+                // learns who the seed is (its node_id + reachable endpoint).
+                smo::WelcomeMsg welcome;
+                welcome.node_id = local_id;
+                welcome.peer_record = self_record;
+                auto welcome_data = welcome.serialize();
+                auto send_res = session.send(welcome_data);
+                if (!send_res)
+                {
+                    std::printf("[smo-node] Failed to send WelcomeMsg\n");
+                }
+                return {};
+            }
+
+            // Try PingMsg
+            auto ping = smo::PingMsg::deserialize(raw);
+            if (ping)
+            {
+                smo::PongMsg pong;
+                pong.timestamp = ping.value().timestamp;
+                auto pong_data = pong.serialize();
+                session.send(pong_data);
                 return {};
             }
 

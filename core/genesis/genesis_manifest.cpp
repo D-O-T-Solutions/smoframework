@@ -53,7 +53,8 @@ namespace smo::genesis {
         oss << "    \"max_compromised\": " << fault_tolerance.max_compromised << "\n";
         oss << "  },\n";
         oss << "  \"created_at\": " << created_at << ",\n";
-        oss << "  \"wizard_version\": " << wizard_version << "\n";
+        oss << "  \"wizard_version\": " << wizard_version << ",\n";
+        oss << "  \"cipher_suite_id\": " << cipher_suite_id << "\n";
         oss << "}\n";
 
         std::string str = oss.str();
@@ -133,6 +134,12 @@ namespace smo::genesis {
 
         m.created_at = json_int_value("created_at", json);
         m.wizard_version = (uint32_t)json_int_value("wizard_version", json);
+
+        auto suite_val = json_int_value("cipher_suite_id", json);
+        if (suite_val != 0)
+        {
+            m.cipher_suite_id = (uint32_t)suite_val;
+        }
 
         if (m.mesh_id.empty())
         {

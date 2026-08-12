@@ -13,6 +13,12 @@
 
 namespace smo::genesis {
 
+    struct UnlockedKeypair
+    {
+        Bytes public_key;
+        Bytes secret_key;
+    };
+
     struct RecoveryPackage
     {
         std::string mesh_id;
@@ -28,7 +34,7 @@ namespace smo::genesis {
         static Result<RecoveryPackage> deserialize(BytesView data);
 
         // Verify integrity: check passphrase hash matches
-        bool verify_passphrase(const std::string& passphrase) const;
+        bool verify_passphrase(const std::string& passphrase, const HashImpl& hash) const;
 
         // Unlock: verify passphrase + version check, decrypt keypair, return RootSession.
         // The RootSession wraps a SignerContext (software backend by default);
@@ -37,6 +43,11 @@ namespace smo::genesis {
         // Needs signer to construct the SignerContext for the decrypted key.
         Result<RootSession> unlock(const std::string& passphrase, const HashImpl& hash, const AeadImpl& aead,
                                    const SignerImpl& signer, RngRef& rng) const;
+
+        // Decrypt only the raw keypair (no SignerContext). Used by authority tooling
+        // (e.g. `smo-admin sign`) to load the root/authority keypair from a genesis mesh.
+        Result<UnlockedKeypair> unlock_keypair(const std::string& passphrase, const HashImpl& hash,
+                                               const AeadImpl& aead) const;
     };
 
     struct EmergencyRecoveryToken

@@ -9,6 +9,7 @@
 #include "core/identity/identity.hpp"
 #include "core/certificate/certificate.hpp"
 #include "core/transport/secure_session.hpp"
+#include "core/transport/framing.hpp"
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -331,7 +332,7 @@ namespace smo {
             // ── Step: Build CSR ─────────────────────────────────────────────
             CertificateSigningRequest csr;
             std::string csr_pem;
-            if (current_state() <= join::JoinState::CSR_CREATED && current_state() != join::JoinState::JOIN_SENT)
+            if (current_state() <= join::JoinState::JOIN_SENT && current_state() != join::JoinState::READY)
             {
                 csr.new_public_key = Bytes(identity->public_key().begin(), identity->public_key().end());
                 csr.mesh_id = hex_to_bytes(token.mesh_id);
@@ -352,10 +353,13 @@ namespace smo {
                 Bytes csr_bytes = csr.serialize();
                 csr_pem = bytes_to_hex(csr_bytes);
 
-                auto r = fsm.on_event(static_cast<int64_t>(join::JoinEvent::CSR_BUILT));
-                if (!r)
-                    return r.error();
-                save_join_state(fsm, actual_data_dir);
+                if (current_state() == join::JoinState::TOKEN_RECEIVED)
+                {
+                    auto r = fsm.on_event(static_cast<int64_t>(join::JoinEvent::CSR_BUILT));
+                    if (!r)
+                        return r.error();
+                    save_join_state(fsm, actual_data_dir);
+                }
             }
 
             // ── Step: Build JoinRequest + send TCP/CBOR ─────────────────────
@@ -371,10 +375,7 @@ namespace smo {
                 req.token = token_str;
                 req.csr_pem = csr_pem;
                 req.timestamp = now_sec;
-                std::array<uint8_t, 8> nonce{};
-                for (auto& b : nonce)
-                    b = static_cast<uint8_t>(rand());
-                req.nonce = nonce;
+                req.nonce.fill(0);
 
                 auto hash_result =
                     crypto->hash.hash(BytesView(reinterpret_cast<const uint8_t*>(csr_pem.data()), csr_pem.size()));
@@ -382,33 +383,13 @@ namespace smo {
                     return hash_result.error();
                 req.csr_hash = std::move(hash_result.value());
 
+                if (current_state() == join::JoinState::CSR_CREATED)
                 {
-                    Bytes sig_payload;
-                    sig_payload.insert(sig_payload.end(), token_str.begin(), token_str.end());
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 56) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 48) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 40) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 32) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 24) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 16) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>((now_sec >> 8) & 0xFF));
-                    sig_payload.push_back(static_cast<uint8_t>(now_sec & 0xFF));
-                    sig_payload.insert(sig_payload.end(), nonce.begin(), nonce.end());
-                    sig_payload.insert(sig_payload.end(), req.csr_hash.begin(), req.csr_hash.end());
-                    auto sig_req_result = crypto->signer.sign(BytesView(sig_payload), identity->secret_key(), rng);
-                    if (!sig_req_result)
-                        return sig_req_result.error();
-                    req.request_signature = std::move(sig_req_result.value());
+                    auto r = fsm.on_event(static_cast<int64_t>(join::JoinEvent::MSG_SENT));
+                    if (!r)
+                        return r.error();
+                    save_join_state(fsm, actual_data_dir);
                 }
-
-                Bytes req_cbor = req.encode_cbor();
-
-                auto r = fsm.on_event(static_cast<int64_t>(join::JoinEvent::MSG_SENT));
-                if (!r)
-                    return r.error();
-                save_join_state(fsm, actual_data_dir);
-
-                // ── Send TCP/CBOR (secure, with PQ handshake) ──────────────
                 std::string last_error;
                 bool sent = false;
 
@@ -432,6 +413,16 @@ namespace smo {
                         continue;
                     }
 
+                    // ── Version handshake (must precede PQ SecureSession) ──
+                    auto ver_result = smo::version_handshake_client(fd);
+                    if (!ver_result)
+                    {
+                        std::printf("FAIL (version handshake: %s)\n", ver_result.error().message.c_str());
+                        last_error = ver_result.error().message;
+                        ::close(fd);
+                        continue;
+                    }
+
                     // ── PQ handshake ──────────────────────────────────────
                     SecureSession::Config sec_cfg;
                     sec_cfg.role = SecureSession::Role::Client;
@@ -446,6 +437,40 @@ namespace smo {
 
                     // Capture peer cert for chain verification
                     server_peer_cert.assign(sec.peer_certificate().begin(), sec.peer_certificate().end());
+
+                    // ── Fresh nonce + signature per endpoint attempt ────────
+                    // A stale/closed connection to the first endpoint must not
+                    // poison the second: each attempt gets a unique nonce so the
+                    // server-side replay cache (keyed Blake3(mesh_id||nonce))
+                    // accepts the retry.
+                    req.nonce.fill(0);
+                    rng.fill(BytesMutView(req.nonce.data(), req.nonce.size()));
+
+                    {
+                        Bytes sig_payload;
+                        sig_payload.insert(sig_payload.end(), token_str.begin(), token_str.end());
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 56) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 48) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 40) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 32) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 24) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 16) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>((now_sec >> 8) & 0xFF));
+                        sig_payload.push_back(static_cast<uint8_t>(now_sec & 0xFF));
+                        sig_payload.insert(sig_payload.end(), req.nonce.begin(), req.nonce.end());
+                        sig_payload.insert(sig_payload.end(), req.csr_hash.begin(), req.csr_hash.end());
+                        auto sig_req_result = crypto->signer.sign(BytesView(sig_payload), identity->secret_key(), rng);
+                        if (!sig_req_result)
+                        {
+                            std::printf("FAIL (sign: %s)\n", sig_req_result.error().message.c_str());
+                            last_error = sig_req_result.error().message;
+                            ::close(fd);
+                            continue;
+                        }
+                        req.request_signature = std::move(sig_req_result.value());
+                    }
+
+                    Bytes req_cbor = req.encode_cbor();
 
                     // ── Send encrypted JoinRequest, receive encrypted response ──
                     auto send_res = sec.send(BytesView(req_cbor));
@@ -555,15 +580,16 @@ namespace smo {
                             std::printf("  Bootstrap server cert signature valid\n");
                         }
 
-                        // Our cert's issuer_pubkey must match the server cert's issuer_pubkey
-                        // (both issued by the same authority)
-                        if (cert.issuer_pubkey == peer_cert.value().issuer_pubkey)
+                        // Our cert is issued by the authority; the server's cert
+                        // has the authority as its SUBJECT. So our issuer_pubkey
+                        // must equal the server cert's subject_pubkey.
+                        if (cert.issuer_pubkey == peer_cert.value().subject_pubkey)
                         {
-                            std::printf("  Cert chain: both issued by same authority\n");
+                            std::printf("  Cert chain: issued by the server's authority\n");
                         }
                         else
                         {
-                            std::printf("  Warning: cert issuers differ (server uses different authority)\n");
+                            std::printf("  Warning: cert chain link mismatch (issuer != server authority)\n");
                         }
                     }
                 }
@@ -642,6 +668,16 @@ namespace smo {
                     {
                         std::printf("FAIL (connection refused)\n");
                         last_error = "Connection refused: " + host + ":" + std::to_string(ep_port);
+                        continue;
+                    }
+
+                    // ── Version handshake (must precede PQ SecureSession) ──
+                    auto ver_result = smo::version_handshake_client(fd);
+                    if (!ver_result)
+                    {
+                        std::printf("FAIL (version handshake: %s)\n", ver_result.error().message.c_str());
+                        last_error = ver_result.error().message;
+                        ::close(fd);
                         continue;
                     }
 

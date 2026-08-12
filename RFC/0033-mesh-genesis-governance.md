@@ -324,3 +324,51 @@ core/
 - Mesh health online/offline detection via heartbeat
 - Conflict resolution (1 proposal/resource)
 - `smo mesh health` with real online counts from registry
+
+---
+
+## 14. Known Issues & Fix Log (v0.0.2 → v0.0.3)
+
+> Policy: every bug found and fixed during implementation is recorded here so the spec
+> stays the source of truth for the intended behavior.
+
+### BUG-002 — Genesis used fake crypto / broken recovery package (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:**
+- `recovery.pkg` in the genesis output contained a literal passphrase-hash placeholder and a
+  plaintext `root_public_key` (callback-based fake crypto: hash→empty, encrypt→plaintext,
+  verify→true), so nothing could be unlocked or trusted.
+- The join/enroll path crashed with `XChaCha20: invalid nonce size` because the nonce was
+  hard-coded to 12 bytes instead of the suite's 24-byte nonce.
+
+**Spec intent (authoritative):**
+- `recovery.pkg` MUST contain a real encrypted root keypair: plaintext =
+  `2-byte BE pubkey_len || pubkey || secret_key`, ciphertext = `nonce(24) || AEAD_ct`, AAD =
+  mesh_id, AEAD key = first 32 bytes of SHA-256(passphrase).
+- `GenesisManifest` MUST persist `cipher_suite_id` in `mesh.json` (default = suite1 classical).
+- `run_stage_0(root_public_key_raw, root_secret_key)` MUST accept the real root keypair produced
+  by the caller and encrypt it into the recovery package.
+
+**Fix applied:**
+- `core/genesis/recovery_package.cpp`: real `verify_passphrase(passphrase, hash)` (hex hash
+  comparison), unlock parses 24-byte nonce + ciphertext.
+- `core/genesis/genesis_manifest.{hpp,cpp}`: added + (de)serialized `cipher_suite_id`.
+- `core/genesis/genesis.{hpp,cpp}`: `run_stage_0` now takes `BytesView root_public_key_raw,
+  root_secret_key`, derives AEAD key from SHA-256(passphrase), encrypts the keypair (no fake
+  callbacks).
+- `cmd/smo-cli/cli_application.cpp::handle_genesis`: real suite1 provider (Ed25519 + SHA-256 +
+  XChaCha20), real Ed25519 root keypair, passphrase from `SMO_RECOVERY_PASSPHRASE` env >
+  interactive prompt > default.
+- Nonce fix: XChaCha20 `kNonceSize = 24` enforced at both genesis encrypt and recovery unlock.
+
+### BUG-003 — Genesis printed fake `SMO-BOOT-<name>-<i>` join codes (FIXED)
+
+**Status:** FIXED (2026-08-12)
+
+**Symptoms:** After genesis, the CLI printed placeholder bootstrap codes
+(`SMO-BOOT-...`) that could not be used anywhere.
+
+**Fix applied:** output now gives the real bootstrap sequence:
+`publish` → `invite --role <Role> --endpoint <host>:<port> --expire <dur>` → `join --token SMO-JOIN-...`.
