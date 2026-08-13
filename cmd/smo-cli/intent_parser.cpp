@@ -76,8 +76,13 @@ namespace smo {
                 {{"signal", "Signal number"}, {"force", "Force kill"}});
             add("top", "Show process stats", IntentType::Process, {},
                 {{"delay", "Update delay"}, {"sort", "Sort field"}});
-            add("deploy", "Deploy contract", IntentType::Deploy, {"contract_path"},
-                {{"policy", "Policy preset"}, {"mesh", "Target mesh"}, {"force", "Force deploy"}});
+            add("deploy", "Deploy contract", IntentType::Deploy, {"contract_name"},
+                {{"version", "Version"},
+                 {"publisher", "Publisher"},
+                 {"description", "Description"},
+                 {"entry-point", "Entry point"},
+                 {"policy", "Policy preset"},
+                 {"force", "Force deploy"}});
             add("undeploy", "Undeploy contract", IntentType::Undeploy, {"contract_id"}, {{"force", "Force undeploy"}});
             add("status", "Show status", IntentType::Status, {},
                 {{"contract", "Contract ID"}, {"details", "Show details"}});

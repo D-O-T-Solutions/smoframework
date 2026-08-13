@@ -5,66 +5,71 @@
 
 namespace smo {
 
-enum class Opcode : uint8_t {
-    // MVP (§XVIII.1)
-    LS         = 0x01,
-    PUT        = 0x02,
-    GET        = 0x03,
-    EXEC       = 0x04,
-    QUARANTINE = 0x05,
+    enum class Opcode : uint8_t
+    {
+        // MVP (§XVIII.1)
+        LS = 0x01,
+        PUT = 0x02,
+        GET = 0x03,
+        EXEC = 0x04,
+        QUARANTINE = 0x05,
 
-    // Post-MVP (§XVIII.2)
-    MKDIR      = 0x10,
-    RM         = 0x11,
-    CP         = 0x12,
+        // Post-MVP (§XVIII.2)
+        MKDIR = 0x10,
+        RM = 0x11,
+        CP = 0x12,
 
-    // Governance & Recovery
-    REVOKE_CERT     = 0x20,
-    EPOCH_INCREMENT = 0x21,
-    RECOVERY_SESSION = 0x22,
-    CRL_SYNC        = 0x23,
+        // Governance & Recovery
+        REVOKE_CERT = 0x20,
+        EPOCH_INCREMENT = 0x21,
+        RECOVERY_SESSION = 0x22,
+        CRL_SYNC = 0x23,
 
-    // Governance Contract (Sprint 36D.3)
-    GOV_PROPOSE     = 0x24,
-    GOV_VOTE        = 0x25,
-    GOV_COMMIT      = 0x26,
+        // Governance Contract (Sprint 36D.3)
+        GOV_PROPOSE = 0x24,
+        GOV_VOTE = 0x25,
+        GOV_COMMIT = 0x26,
 
-    // Echo (Sprint 37 E2E test)
-    ECHO       = 0x06,
+        // Echo (Sprint 37 E2E test)
+        ECHO = 0x06,
 
-    // Bootstrap Contract methods
-    BOOTSTRAP_SNAPSHOT = 0x30,
-    BOOTSTRAP_INFO     = 0x31,
+        // Bootstrap Contract methods
+        BOOTSTRAP_SNAPSHOT = 0x30,
+        BOOTSTRAP_INFO = 0x31,
 
-    // Join Contract methods
-    JOIN               = 0x33,
-    LEAVE              = 0x34,
-    JOIN_INFO          = 0x35,
+        // Join Contract methods
+        JOIN = 0x33,
+        LEAVE = 0x34,
+        JOIN_INFO = 0x35,
 
-    // Governance additional methods
-    GOV_LIST           = 0x27,
-    GOV_STATUS         = 0x28,
-    GOV_INFO           = 0x29,
+        // Governance additional methods
+        GOV_LIST = 0x27,
+        GOV_STATUS = 0x28,
+        GOV_INFO = 0x29,
 
-    // Recovery (single opcode, method in payload)
-    RECOVERY           = 0x2A,
+        // Recovery (single opcode, method in payload)
+        RECOVERY = 0x2A,
 
-    // File (single opcode, method in payload)
-    FILE_OP            = 0x2B,
+        // File (single opcode, method in payload)
+        FILE_OP = 0x2B,
 
-    // Process (single opcode, method in payload)
-    PROCESS            = 0x2C,
+        // Process (single opcode, method in payload)
+        PROCESS = 0x2C,
 
-    CUSTOM     = 0xFF,
-};
+        // Contract lifecycle management (single opcode, method in payload)
+        CONTRACT_MGMT = 0x2D,
 
-struct OpcodeInfo {
-    Opcode       code;
-    std::string_view name;
-    bool         idempotent;
-    uint32_t     required_capability_mask;
-};
+        CUSTOM = 0xFF,
+    };
 
-constexpr OpcodeInfo opcode_info(Opcode code) noexcept;
+    struct OpcodeInfo
+    {
+        Opcode code;
+        std::string_view name;
+        bool idempotent;
+        uint32_t required_capability_mask;
+    };
+
+    constexpr OpcodeInfo opcode_info(Opcode code) noexcept;
 
 } // namespace smo

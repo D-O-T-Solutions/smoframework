@@ -57,6 +57,7 @@
 #include <core/runtime/contracts/recovery_contract.hpp>
 #include <core/runtime/contracts/file_contract.hpp>
 #include <core/runtime/contracts/process_contract.hpp>
+#include <core/runtime/contracts/deployment_contract.hpp>
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
 #include <core/runtime/structured_logger.hpp>
@@ -914,8 +915,8 @@ int main(int argc, char* argv[])
     smo::DiscoveryEngine discovery_engine(membership, health_monitor, *udp_transport);
     auto gossip_cfg = smo::GossipEngine::default_config();
     smo::GossipEngine gossip_engine(membership, gossip_cfg);
-    std::printf("[smo-node] Gossip engine initialized (fanout=%zu, interval=%llums)\n",
-                gossip_cfg.fanout, (unsigned long long)gossip_cfg.interval_ms);
+    std::printf("[smo-node] Gossip engine initialized (fanout=%zu, interval=%llums)\n", gossip_cfg.fanout,
+                (unsigned long long)gossip_cfg.interval_ms);
     smo::network::sync::MembershipSync membership_sync(membership, health_monitor);
 
     // Wire MembershipSync to GossipEngine for rich event-based gossip
@@ -979,8 +980,7 @@ int main(int argc, char* argv[])
     self_record.endpoint.host = "127.0.0.1";
     self_record.endpoint.port = static_cast<uint16_t>(port);
     self_record.state = smo::PeerState::Online;
-    self_record.last_seen = static_cast<int64_t>(
-        std::chrono::system_clock::now().time_since_epoch().count());
+    self_record.last_seen = static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
 
     // ── Bootstrap summary ─────────────────────────────────────
     if (!mesh_dir.empty())
@@ -1196,7 +1196,8 @@ int main(int argc, char* argv[])
     smo::SessionManager session_mgr;
 
     // MeshManager for mesh directory/catalog operations
-    smo::MeshManager mesh_manager(smo::MeshManager::Config{.base_data_dir = mesh_dir.empty() ? "" : mesh_dir.substr(0, mesh_dir.rfind("/meshes/") + 7)});
+    smo::MeshManager mesh_manager(smo::MeshManager::Config{
+        .base_data_dir = mesh_dir.empty() ? "" : mesh_dir.substr(0, mesh_dir.rfind("/meshes/") + 7)});
 
     // MeshAuthority for certificate signing and key management
     smo::authority::MeshAuthority authority;
@@ -1517,6 +1518,10 @@ int main(int argc, char* argv[])
     // ProcessContract: process management
     runtime_dispatcher.register_contract("system.process", std::make_unique<smo::runtime::ProcessContract>());
 
+    // DeploymentContract: contract deploy/undeploy/status/trace lifecycle
+    runtime_dispatcher.register_contract("system.contracts",
+                                         std::make_unique<smo::runtime::DeploymentContract>(data_dir));
+
     // ── Middleware Pipeline ────────────────────────────────────
     smo::runtime::MiddlewarePipeline middleware_pipeline;
     auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr);
@@ -1526,6 +1531,7 @@ int main(int argc, char* argv[])
     // keep file/process opcodes reachable without an SMO session.
     policy_mw->set_anonymous("system.file", true);
     policy_mw->set_anonymous("system.process", true);
+    policy_mw->set_anonymous("system.contracts", true);
     middleware_pipeline.push(std::move(policy_mw));
 
     // ── RuntimeBridge: opcode → contract (THIN — no auth) ─────
@@ -1562,6 +1568,9 @@ int main(int argc, char* argv[])
 
     // Register routes for ProcessContract (single opcode, method in payload)
     runtime_bridge.register_route(static_cast<uint32_t>(smo::Opcode::PROCESS), "system.process", "invoke");
+
+    // Register routes for DeploymentContract (single opcode, method in payload)
+    runtime_bridge.register_route(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "system.contracts", "invoke");
 
     // ── PacketDispatcher setup ─────────────────────────────────
     // Helper lambda: session → middleware → bridge → execute → send response
@@ -1746,6 +1755,7 @@ int main(int argc, char* argv[])
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::RECOVERY), runtime_handler);
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::FILE_OP), runtime_handler);
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::PROCESS), runtime_handler);
+    dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), runtime_handler);
     dispatcher.register_handler(smo::join::kOpcodeBootstrapSyncReq, runtime_handler);
 
     // ── Raw handler: discovery protocol (HelloMsg, PingMsg, etc.) ──

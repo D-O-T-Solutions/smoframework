@@ -19,6 +19,7 @@ add_library(smo_runtime STATIC
     contracts/recovery_contract.cpp
     contracts/file_contract.cpp
     contracts/process_contract.cpp
+    contracts/deployment_contract.cpp
 )
 
 target_include_directories(smo_runtime PUBLIC

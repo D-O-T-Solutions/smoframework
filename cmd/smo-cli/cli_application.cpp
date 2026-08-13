@@ -8,6 +8,7 @@
 #include "core/enroll/auto_enroll.hpp"
 #include "core/mesh/mesh_resolver.hpp"
 #include "core/authority/authority.hpp"
+#include "core/opcode/opcode.h"
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
@@ -378,8 +379,110 @@ namespace smo {
 
             if (op == "sync")
             {
-                std::cout << "[sync] " << a << " <-> " << b << "\n";
-                std::cout << "(Sync not yet implemented)\n";
+                if (!context_.is_connected())
+                {
+                    std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                    return 1;
+                }
+                namespace fs = std::filesystem;
+                if (!fs::exists(a))
+                {
+                    std::cerr << "Error: local path does not exist: " << a << "\n";
+                    return 1;
+                }
+
+                const bool dry_run = intent.flags.count("dry-run");
+                size_t files_copied = 0;
+                size_t dirs_created = 0;
+
+                auto hex_encode = [](const std::string& content) {
+                    std::ostringstream hex;
+                    hex << std::hex << std::setfill('0');
+                    for (unsigned char c : content)
+                        hex << std::setw(2) << static_cast<int>(c);
+                    return hex.str();
+                };
+
+                auto remote_path_for = [&](const fs::path& rel) {
+                    std::string joined = b;
+                    if (joined.back() != '/')
+                        joined += "/";
+                    joined += rel.generic_string();
+                    return joined;
+                };
+
+                auto sync_one = [&](const fs::path& local, const fs::path& rel, bool is_dir) -> bool {
+                    if (dry_run)
+                    {
+                        std::cout << "[sync] would " << (is_dir ? "mkdir " : "put ") << remote_path_for(rel) << "\n";
+                        return true;
+                    }
+                    if (is_dir)
+                    {
+                        std::unordered_map<std::string, std::string> args;
+                        args["path"] = remote_path_for(rel);
+                        args["parents"] = "true";
+                        auto net_res = context_.network_execute(
+                            context_.get_connected_node(), static_cast<uint32_t>(smo::Opcode::FILE_OP), "mkdir", args);
+                        if (!net_res)
+                        {
+                            std::cerr << "[sync] mkdir failed " << remote_path_for(rel) << ": "
+                                      << net_res.error().message << "\n";
+                            return false;
+                        }
+                        ++dirs_created;
+                        return true;
+                    }
+
+                    std::ifstream in(local, std::ios::binary);
+                    if (!in)
+                    {
+                        std::cerr << "[sync] cannot open " << local << "\n";
+                        return false;
+                    }
+                    std::stringstream ss;
+                    ss << in.rdbuf();
+                    std::unordered_map<std::string, std::string> args;
+                    args["path"] = remote_path_for(rel);
+                    args["data"] = hex_encode(ss.str());
+                    auto net_res = context_.network_execute(context_.get_connected_node(),
+                                                            static_cast<uint32_t>(smo::Opcode::FILE_OP), "write", args);
+                    if (!net_res)
+                    {
+                        std::cerr << "[sync] write failed " << remote_path_for(rel) << ": " << net_res.error().message
+                                  << "\n";
+                        return false;
+                    }
+                    ++files_copied;
+                    return true;
+                };
+
+                std::function<bool(const fs::path&, const fs::path&)> walk;
+                walk = [&](const fs::path& local, const fs::path& rel) -> bool {
+                    if (fs::is_directory(local))
+                    {
+                        if (!sync_one(local, rel, true))
+                            return false;
+                        for (const auto& entry : fs::directory_iterator(local))
+                        {
+                            fs::path child_rel = rel.empty() ? entry.path().filename() : rel / entry.path().filename();
+                            if (!walk(entry.path(), child_rel))
+                                return false;
+                        }
+                        return true;
+                    }
+                    return sync_one(local, rel, false);
+                };
+
+                if (!walk(fs::path(a), fs::path()))
+                {
+                    std::cerr << "Error: sync failed\n";
+                    return 1;
+                }
+
+                std::cout << "[session " << context_.get_connected_node() << "] sync " << a << " -> " << b << " ("
+                          << files_copied << " files, " << dirs_created << " dirs" << (dry_run ? ", dry-run" : "")
+                          << ")\n";
                 return 0;
             }
 
@@ -443,13 +546,6 @@ namespace smo {
                 out.close();
                 std::cout << "[session " << context_.get_connected_node() << "] get " << a << " -> " << b << " ("
                           << net_res.value().size() << " bytes)\n";
-                return 0;
-            }
-
-            if (op == "sync")
-            {
-                std::cout << "[sync] " << a << " <-> " << b << "\n";
-                std::cout << "(Sync not yet implemented)\n";
                 return 0;
             }
 
@@ -524,11 +620,36 @@ namespace smo {
         {
             if (intent.args.empty())
             {
-                std::cerr << "Usage: deploy <contract_path> [--policy NAME] [--mesh MESH]\n";
+                std::cerr << "Usage: deploy <contract_name> [--version V] [--publisher P] [--description D] "
+                             "[--entry-point E]\n";
                 return 1;
             }
-            std::cout << "Deploying contract: " << intent.args[0] << "\n";
-            std::cout << "(Deploy not yet implemented)\n";
+            if (!context_.is_connected())
+            {
+                std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                return 1;
+            }
+
+            std::unordered_map<std::string, std::string> args;
+            args["name"] = intent.args[0];
+            if (intent.flags.count("version"))
+                args["version"] = intent.flags.at("version");
+            if (intent.flags.count("publisher"))
+                args["publisher"] = intent.flags.at("publisher");
+            if (intent.flags.count("description"))
+                args["description"] = intent.flags.at("description");
+            if (intent.flags.count("entry-point"))
+                args["entry_point"] = intent.flags.at("entry-point");
+
+            auto net_res = context_.network_execute(context_.get_connected_node(),
+                                                    static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "deploy", args);
+            if (!net_res)
+            {
+                std::cerr << "Error: " << net_res.error().message << "\n";
+                return 1;
+            }
+            std::cout << "[session " << context_.get_connected_node() << "] deploy " << intent.args[0] << "\n";
+            std::cout << net_res.value() << "\n";
             return 0;
         }
 
@@ -539,8 +660,24 @@ namespace smo {
                 std::cerr << "Usage: undeploy <contract_id>\n";
                 return 1;
             }
-            std::cout << "Undeploying contract: " << intent.args[0] << "\n";
-            std::cout << "(Undeploy not yet implemented)\n";
+            if (!context_.is_connected())
+            {
+                std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                return 1;
+            }
+
+            std::unordered_map<std::string, std::string> args;
+            args["contract_id"] = intent.args[0];
+
+            auto net_res = context_.network_execute(
+                context_.get_connected_node(), static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "undeploy", args);
+            if (!net_res)
+            {
+                std::cerr << "Error: " << net_res.error().message << "\n";
+                return 1;
+            }
+            std::cout << "[session " << context_.get_connected_node() << "] undeploy " << intent.args[0] << "\n";
+            std::cout << net_res.value() << "\n";
             return 0;
         }
 
@@ -571,8 +708,21 @@ namespace smo {
             }
             else
             {
-                std::cout << "Contract status for: " << intent.args[0] << "\n";
-                std::cout << "(Contract status not yet implemented)\n";
+                if (!context_.is_connected())
+                {
+                    std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                    return 1;
+                }
+                std::unordered_map<std::string, std::string> args;
+                args["contract_id"] = intent.args[0];
+                auto net_res = context_.network_execute(
+                    context_.get_connected_node(), static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "status", args);
+                if (!net_res)
+                {
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
+                }
+                std::cout << net_res.value() << "\n";
             }
             return 0;
         }
@@ -1910,11 +2060,25 @@ namespace smo {
         {
             if (intent.args.empty())
             {
-                std::cout << "Usage: trace <trace_id>\n";
+                std::cout << "Usage: trace <contract_id>\n";
                 return 1;
             }
-            std::cout << "Trace: " << intent.args[0] << "\n";
-            std::cout << "(Trace not yet implemented)\n";
+            if (!context_.is_connected())
+            {
+                std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                return 1;
+            }
+            std::unordered_map<std::string, std::string> args;
+            args["contract_id"] = intent.args[0];
+            auto net_res = context_.network_execute(context_.get_connected_node(),
+                                                    static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "trace", args);
+            if (!net_res)
+            {
+                std::cerr << "Error: " << net_res.error().message << "\n";
+                return 1;
+            }
+            std::cout << "[session " << context_.get_connected_node() << "] trace " << intent.args[0] << "\n";
+            std::cout << net_res.value() << "\n";
             return 0;
         }
 

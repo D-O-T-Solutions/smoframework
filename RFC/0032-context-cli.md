@@ -524,19 +524,19 @@ Parsing features:
 | `handle_help` | Help | Print help/usage for commands |
 | `handle_select` | Select | Filter by name/role/tag/where/mesh/OS/arch/trust, save selections |
 | `handle_exec` | Execute | Execute command on connected session (PROCESS opcode, network exec) |
-| `handle_transfer` | Transfer | File transfer put/get over network (FILE_OP write/read); sync — stub |
+| `handle_transfer` | Transfer | File transfer put/get/sync over network (FILE_OP write/read/mkdir) |
 | `handle_filesystem` | Filesystem | ls/cat/mkdir/rm/cp/mv/echo — stub |
 | `handle_process` | Process | ps/kill/top — stub |
-| `handle_deploy` | Deploy | Deploy contract — stub |
-| `handle_undeploy` | Undeploy | Undeploy contract — stub |
-| `handle_status` | Status | Show current context (mesh, selection, control, scope, session) |
+| `handle_deploy` | Deploy | Deploy contract to connected node (CONTRACT_MGMT deploy) |
+| `handle_undeploy` | Undeploy | Undeploy contract from connected node (CONTRACT_MGMT undeploy) |
+| `handle_status` | Status | Show current context (mesh, selection, control, scope, session) or `status <id>` contract lifecycle |
 | `handle_policy` | Policy | List/set policy presets: `default`, `enterprise`, `emergency`; `policy show <name>` prints real preset details |
 | `handle_control` | Control | Set level/scope/timeout/retry interactively |
 | `handle_context` | Context | Save/load/clear context |
 | `handle_mesh` | Mesh | List/use/create/leave mesh |
 | `handle_connect` | Connect | Connect/disconnect to node |
 | `handle_history` | History | Show command history with optional limit |
-| `handle_trace` | Trace | Show execution trace — stub |
+| `handle_trace` | Trace | Show deployment lifecycle trace for a contract_id |
 
 **Prompt format:**
 
@@ -825,26 +825,26 @@ name, `tcp://127.0.0.1:<port>` endpoint) at startup; the `HelloMsg` handler now 
 
 ---
 
-### v0.0.4 Implementation Gap Report — Documented but Stubbed
+### v0.0.5 Implementation Status — all documented gaps resolved
 
-**Generated:** 2026-08-13 via `/tmp/opencode/e2e-full.sh` (60 PASS, 0 FAIL, 5 STUB)
+**Generated:** 2026-08-13 via `/tmp/opencode/e2e-full.sh` (65 PASS, 0 FAIL, 0 STUB)
 
-The following features are documented in RFCs/discussions and have CLI entry points but are not yet implemented (handlers emit `(not yet implemented)` or parser rejects the command):
+All previously-stubbed CLI operations are now implemented over the connected session:
 
-| # | Feature | CLI Command(s) | Handler Status | Sprint Target |
-|---|---------|----------------|----------------|---------------|
-| 1 | Contract deploy | `deploy <path>` | `handle_deploy`: "(Deploy not yet implemented)" | Sprint B |
-| 2 | Contract undeploy | `undeploy <id>` | `handle_undeploy`: "(Undeploy not yet implemented)" | Sprint B |
-| 3 | Contract status query | `status <contract>` | `handle_status`: "(Contract status not yet implemented)" | Sprint B |
-| 4 | Trace/observability | `trace <id>` | `handle_trace`: "(Trace not yet implemented)" | Sprint C/Observability |
-| 5 | Remote directory sync | `sync <a> <b>` | `handle_transfer`: "(Sync not yet implemented)" | Sprint C |
+| Feature | CLI Command(s) | Implementation |
+|---------|----------------|----------------|
+| Contract deploy | `deploy <name> [--version] [--publisher]` | `DeploymentContract` (`system.contracts`) via `CONTRACT_MGMT` opcode 0x2D; computes deterministic `ctr_<hash>` id; persists `contracts.state` under node data dir |
+| Contract undeploy | `undeploy <contract_id>` | `DeploymentContract::handle_undeploy` — lifecycle → `unloaded` |
+| Contract status | `status <contract_id>` | `DeploymentContract::handle_status` — returns metadata + lifecycle state |
+| Trace | `trace <contract_id>` | `DeploymentContract::handle_trace` — deployment lifecycle events |
+| Remote dir sync | `sync <local> <remote>` | recursive walk, `FILE_OP mkdir/write` per entry (multi-file round-trip verified) |
 
-**Resolved in v0.0.4:** `exec` (network dispatch via PROCESS opcode), `put`/`get` transfer (FILE_OP write/read with hex payload), `policy show <name>` (real preset details), `discover` (live peer check / bootstrap_endpoints from mesh manifest), `export` (context or mesh manifest to file), `governance propose/list` persistence (`$HOME/meshes/<mesh>/governance.state`). `exec` stdout/stderr captured and returned escaped in the exec JSON result.
+The daemon registers `system.contracts` (with anonymous policy route + `CONTRACT_MGMT` handler) and routes the legacy stubs through the same network dispatch as exec/transfer. Execution-trace events (deployed/initialized/ready/undeployed) are recorded on the node and surfaced by `trace`.
 
 **Notes:**
-- Items 1–4 are core Sprint B Operations features per DISCUSSION_0045.
-- Item 5 is a Sprint C follow-up (remote dir sync beyond single-file transfer).
-- The 3-node E2E verified all implemented daemon paths: join, PQ handshake, seed bootstrap, HelloMsg/WelcomeMsg, membership sync, heartbeat, gossip, anti-entropy (BootstrapSync), CRL/policy deltas, plus network exec, transfer, discover, export, and persisted governance.
+- All Sprint B Operations features per DISCUSSION_0045 are now implemented and covered by S4 e2e tests.
+- `exec` stdout/stderr captured and returned escaped in the exec JSON result (v0.0.4).
+- The 3-node E2E verifies all daemon paths: join, PQ handshake, seed bootstrap, HelloMsg/WelcomeMsg, membership sync, heartbeat, gossip, anti-entropy (BootstrapSync), CRL/policy deltas, plus network exec, transfer put/get/sync, discover, export, deploy/undeploy/status/trace, and persisted governance.
 
 ---
 
