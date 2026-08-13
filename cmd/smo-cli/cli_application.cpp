@@ -324,9 +324,26 @@ namespace smo {
             }
 
             std::string cmd = intent.args[0];
+            for (size_t i = 1; i < intent.args.size(); ++i)
+            {
+                cmd += " " + intent.args[i];
+            }
+
             if (context_.is_connected())
             {
-                std::cout << "[session " << context_.get_connected_node() << "] $ " << cmd << "\n";
+                std::unordered_map<std::string, std::string> args;
+                args["command"] = cmd;
+                args["shell"] = "true";
+                if (intent.flags.count("timeout"))
+                    args["timeout_ns"] = intent.flags.at("timeout");
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2C, // PROCESS opcode
+                                                        "exec", args);
+                if (!net_res)
+                {
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
+                }
+                std::cout << net_res.value() << "\n";
                 return 0;
             }
 
@@ -341,16 +358,101 @@ namespace smo {
             std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
             std::cout << "[" << scope_str << " over " << sel.node_names.size() << " node(s)]"
                       << " $ " << cmd << "\n";
-            std::cout << "(Dispatch not yet implemented)\n";
-            return 0;
+            std::cout << "(Exec requires an active session: use 'connect <host>:<port>' first)\n";
+            return 1;
         }
 
         Result<int> handle_transfer(const Intent& intent)
         {
-            std::cout << "[transfer] " << intent.opcode;
-            for (const auto& a : intent.args)
-                std::cout << " " << a;
-            std::cout << "\n";
+            if (intent.args.size() < 2)
+            {
+                std::cerr << "Usage: put <local> <remote>\n"
+                          << "       get <remote> <local>\n"
+                          << "       sync <local> <remote>\n";
+                return 1;
+            }
+
+            const std::string& op = intent.opcode;
+            const std::string& a = intent.args[0];
+            const std::string& b = intent.args[1];
+
+            if (op == "sync")
+            {
+                std::cout << "[sync] " << a << " <-> " << b << "\n";
+                std::cout << "(Sync not yet implemented)\n";
+                return 0;
+            }
+
+            if (!context_.is_connected())
+            {
+                std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                return 1;
+            }
+
+            if (op == "put")
+            {
+                std::ifstream in(a, std::ios::binary);
+                if (!in)
+                {
+                    std::cerr << "Error: cannot open local file: " << a << "\n";
+                    return 1;
+                }
+                std::stringstream ss;
+                ss << in.rdbuf();
+                const std::string& content = ss.str();
+
+                std::ostringstream hex;
+                hex << std::hex << std::setfill('0');
+                for (unsigned char c : content)
+                {
+                    hex << std::setw(2) << static_cast<int>(c);
+                }
+
+                std::unordered_map<std::string, std::string> args;
+                args["path"] = b;
+                args["data"] = hex.str();
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2B, "write", args);
+                if (!net_res)
+                {
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
+                }
+                std::cout << "[session " << context_.get_connected_node() << "] put " << a << " -> " << b << " ("
+                          << content.size() << " bytes)\n";
+                std::cout << net_res.value() << "\n";
+                return 0;
+            }
+
+            if (op == "get")
+            {
+                std::unordered_map<std::string, std::string> args;
+                args["path"] = a;
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2B, "read", args);
+                if (!net_res)
+                {
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
+                }
+                std::ofstream out(b, std::ios::binary | std::ios::trunc);
+                if (!out)
+                {
+                    std::cerr << "Error: cannot open local file for write: " << b << "\n";
+                    return 1;
+                }
+                out.write(net_res.value().data(), static_cast<std::streamsize>(net_res.value().size()));
+                out.close();
+                std::cout << "[session " << context_.get_connected_node() << "] get " << a << " -> " << b << " ("
+                          << net_res.value().size() << " bytes)\n";
+                return 0;
+            }
+
+            if (op == "sync")
+            {
+                std::cout << "[sync] " << a << " <-> " << b << "\n";
+                std::cout << "(Sync not yet implemented)\n";
+                return 0;
+            }
+
             std::cout << "(Transfer not yet implemented)\n";
             return 0;
         }
@@ -359,15 +461,13 @@ namespace smo {
         {
             if (context_.is_connected())
             {
-                auto net_res = context_.network_execute(
-                    context_.get_connected_node(), 0x2B, // FILE_OP opcode
-                    intent.opcode, // method: list, mkdir, remove, copy, move, stat, read, write, etc.
-                    intent.kwargs); // key-value args
+                auto [method, args] = map_cli_to_contract(intent);
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2B, // FILE_OP opcode
+                                                        method, args);
                 if (!net_res)
                 {
-                    // Network not fully implemented, fall back to local stub
-                    std::cout << "(Filesystem operations not yet implemented)\n";
-                    return 0;
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
                 }
                 std::cout << net_res.value() << "\n";
                 return 0;
@@ -378,7 +478,6 @@ namespace smo {
                 auto sel = context_.get_selection();
                 if (!sel)
                 {
-                    // No selection: just show stub (for testing)
                     std::cout << "(Filesystem operations not yet implemented)\n";
                     return 0;
                 }
@@ -394,15 +493,13 @@ namespace smo {
         {
             if (context_.is_connected())
             {
-                auto net_res = context_.network_execute(
-                    context_.get_connected_node(), 0x2C, // PROCESS opcode
-                    intent.opcode, // method: exec, kill, ps, top, systemctl, service
-                    intent.kwargs);
+                auto [method, args] = map_cli_to_contract(intent);
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2C, // PROCESS opcode
+                                                        method, args);
                 if (!net_res)
                 {
-                    // Network not fully implemented, fall back to local stub
-                    std::cout << "(Process operations not yet implemented)\n";
-                    return 0;
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
                 }
                 std::cout << net_res.value() << "\n";
                 return 0;
@@ -412,7 +509,6 @@ namespace smo {
                 auto sel = context_.get_selection();
                 if (!sel)
                 {
-                    // No selection: just show stub (for testing)
                     std::cout << "(Process operations not yet implemented)\n";
                     return 0;
                 }
@@ -493,8 +589,40 @@ namespace smo {
             }
             if (intent.flags.count("show"))
             {
-                std::cout << "Policy: " << intent.flags.at("show") << "\n";
-                std::cout << "(Policy details not yet implemented)\n";
+                std::string name = intent.flags.at("show");
+                auto describe = [](const std::string& preset, ExecutionContext c, const char* desc) {
+                    std::cout << "Policy: " << preset << "\n";
+                    std::cout << "  Description: " << desc << "\n";
+                    std::cout << "  Control:  " << (int)c.control << "\n";
+                    std::cout << "  Scope:    " << (int)c.scope << "\n";
+                    std::cout << "  Timeout:  " << c.timeout_ms << " ms\n";
+                    std::cout << "  Retry:    " << c.retry_count << "\n";
+                    std::cout << "  Dry-run:  " << (c.dry_run ? "true" : "false") << "\n";
+                };
+                if (name == "default")
+                {
+                    describe("default",
+                             ExecutionContext{ControlLevel::Safe, ExecutionScope::Single, 30000, 3, false, ""},
+                             "Read-only, no side effects");
+                }
+                else if (name == "enterprise")
+                {
+                    describe("enterprise",
+                             ExecutionContext{ControlLevel::Normal, ExecutionScope::Quorum, 60000, 3, false, ""},
+                             "Standard operations with quorum");
+                }
+                else if (name == "emergency")
+                {
+                    describe("emergency",
+                             ExecutionContext{ControlLevel::Emergency, ExecutionScope::Mesh, 10000, 0, false, ""},
+                             "Authority only, break glass");
+                }
+                else
+                {
+                    std::cerr << "Unknown policy: " << name << "\n";
+                    std::cerr << "Available: default, enterprise, emergency\n";
+                    return 1;
+                }
                 return 0;
             }
             if (intent.flags.count("preset"))
@@ -1163,15 +1291,16 @@ namespace smo {
                 root_meta.provider = "Suite3-PurePQC";
                 root_meta.origin = "genesis";
                 root_meta.created_at = 0;
-                auto root_signer = smo::crypto::make_software_signer_context(root_kp.secret_key, crypto->signer,
-                                                                             std::move(root_meta));
+                auto root_signer =
+                    smo::crypto::make_software_signer_context(root_kp.secret_key, crypto->signer, std::move(root_meta));
 
                 // ── Real GenesisCryptoProvider (hash + AEAD + verify) ──
                 smo::genesis::GenesisCryptoProvider crypto_provider;
                 crypto_provider.hash = [crypto](const std::string& s) -> Result<Bytes> {
                     return crypto->hash.hash(BytesView(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
                 };
-                crypto_provider.encrypt_keypair = [crypto, &rng, mesh_id = name](BytesView data, BytesView key) -> Result<Bytes> {
+                crypto_provider.encrypt_keypair = [crypto, &rng, mesh_id = name](BytesView data,
+                                                                                 BytesView key) -> Result<Bytes> {
                     // Format expected by unlock(): nonce(24) || ciphertext, AAD = mesh_id
                     Bytes nonce(24, 0);
                     rng.fill(BytesMutView{nonce.data(), nonce.size()});
@@ -1317,13 +1446,85 @@ namespace smo {
 
         Result<int> handle_governance(const Intent& intent)
         {
+            std::string home = smo::mesh::smo_home();
+            auto current = context_.get_current_mesh();
+            std::string mesh_name = current ? current.value() : "";
+            std::string gov_path = home + "/meshes/" + mesh_name + "/governance.state";
+            if (!mesh_name.empty())
+            {
+                std::filesystem::create_directories(home + "/meshes/" + mesh_name);
+            }
+
+            auto load_engine = [&]() -> smo::GovernanceEngine {
+                smo::GovernanceEngine engine;
+                std::ifstream in(gov_path, std::ios::binary);
+                if (in && mesh_name.empty() == false)
+                {
+                    std::stringstream ss;
+                    ss << in.rdbuf();
+                    const std::string& s = ss.str();
+                    if (!s.empty())
+                    {
+                        smo::Bytes data(s.begin(), s.end());
+                        auto r = engine.load_all(smo::BytesView(data.data(), data.size()));
+                        if (!r)
+                        {
+                            std::cerr << "Warning: failed to load governance state: " << r.error().message << "\n";
+                        }
+                    }
+                }
+                return engine;
+            };
+
+            auto save_engine = [&](smo::GovernanceEngine& engine) {
+                if (mesh_name.empty())
+                    return;
+                auto blob = engine.serialize_all();
+                std::ofstream out(gov_path, std::ios::binary | std::ios::trunc);
+                out.write(reinterpret_cast<const char*>(blob.data()), static_cast<std::streamsize>(blob.size()));
+            };
+
             if (intent.flags.count("propose"))
             {
-                smo::GovernanceEngine engine;
+                smo::GovernanceEngine engine = load_engine();
+
+                std::string action_str = intent.flags.count("propose") ? intent.flags.at("propose") : "add_authority";
+                smo::GovernanceAction action = smo::GovernanceAction::AddAuthority;
+                if (action_str == "remove_authority")
+                    action = smo::GovernanceAction::RemoveAuthority;
+                else if (action_str == "suspend_authority")
+                    action = smo::GovernanceAction::SuspendAuthority;
+                else if (action_str == "resume_authority")
+                    action = smo::GovernanceAction::ResumeAuthority;
+                else if (action_str == "change_quorum")
+                    action = smo::GovernanceAction::ChangeQuorum;
+                else if (action_str == "change_policy")
+                    action = smo::GovernanceAction::ChangePolicy;
+                else if (action_str == "update_manifest")
+                    action = smo::GovernanceAction::UpdateManifest;
+                else if (action_str == "upgrade_runtime")
+                    action = smo::GovernanceAction::UpgradeRuntime;
+                else if (action_str == "cert_revoke")
+                    action = smo::GovernanceAction::CertificateRevocation;
+
                 smo::GovernanceProposal prop;
-                prop.action = smo::GovernanceAction::AddAuthority;
+                prop.action = action;
                 prop.payload = Bytes{0x01};
-                prop.created_at = 0;
+                prop.created_at = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                      std::chrono::system_clock::now().time_since_epoch())
+                                      .count();
+                prop.state = smo::ProposalState::Signing;
+
+                int total_auths = 3;
+                prop.threshold = smo::default_quorum(action, total_auths);
+                if (intent.flags.count("tier") && intent.flags.at("tier") == "constitution")
+                {
+                    prop.tier = smo::GovernanceTier::Constitution;
+                }
+                else
+                {
+                    prop.tier = smo::action_to_tier(action);
+                }
 
                 auto pid = engine.submit(std::move(prop));
                 if (!pid)
@@ -1331,17 +1532,29 @@ namespace smo {
                     std::cerr << "Failed to create proposal: " << pid.error().message << "\n";
                     return 1;
                 }
+                save_engine(engine);
                 std::cout << "Proposal created: ID=" << pid.value().value << "\n";
-                std::cout << "Action: " << to_string(prop.action) << "\n";
-                std::cout << "Tier: " << to_string(action_to_tier(prop.action)) << "\n";
+                std::cout << "Action: " << to_string(action) << "\n";
+                std::cout << "Tier: " << to_string(action_to_tier(action)) << "\n";
                 std::cout << "Threshold: " << prop.threshold << "\n";
                 return 0;
             }
 
             if (intent.flags.count("list"))
             {
-                std::cout << "Governance proposals:\n";
-                std::cout << "  (Governance list not yet persisted)\n";
+                smo::GovernanceEngine engine = load_engine();
+                auto pending = engine.pending();
+                if (pending.empty())
+                {
+                    std::cout << "No pending governance proposals.\n";
+                    return 0;
+                }
+                std::cout << "Governance proposals (" << pending.size() << " pending):\n";
+                for (const auto& p : pending)
+                {
+                    std::cout << "  Proposal " << p.id.value << ": " << to_string(p.action) << " [" << to_string(p.tier)
+                              << "] threshold=" << p.threshold << " sigs=" << p.signatures.size() << "\n";
+                }
                 return 0;
             }
 
@@ -1511,21 +1724,147 @@ namespace smo {
 
         Result<int> handle_discover(const Intent& intent)
         {
-            std::cout << "[discover]";
-            for (const auto& a : intent.args)
-                std::cout << " " << a;
-            std::cout << "\n";
-            std::cout << "(Discovery not yet implemented)\n";
+            std::string home = smo::mesh::smo_home();
+            auto current = context_.get_current_mesh();
+            std::string mesh_name = current ? current.value() : "";
+
+            if (intent.flags.count("live"))
+            {
+                if (!context_.is_connected())
+                {
+                    std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                    return 1;
+                }
+                std::unordered_map<std::string, std::string> args;
+                args["command"] = "true";
+                auto net_res = context_.network_execute(context_.get_connected_node(), 0x2C, "exec", args);
+                if (!net_res)
+                {
+                    std::cerr << "Error: " << net_res.error().message << "\n";
+                    return 1;
+                }
+                std::cout << "Peer " << context_.get_connected_node() << " is reachable (PQ handshake OK).\n";
+                return 0;
+            }
+
+            std::cout << "Peer discovery (mesh: " << (mesh_name.empty() ? "(none)" : mesh_name) << ")\n";
+            if (mesh_name.empty())
+            {
+                std::cout << "  No active mesh. Use 'mesh use <name>' first.\n";
+                return 0;
+            }
+
+            std::string manifest_path = home + "/meshes/" + mesh_name + "/mesh.json";
+            if (!std::filesystem::exists(manifest_path))
+            {
+                std::cout << "  No manifest for mesh '" << mesh_name << "'.\n";
+                return 0;
+            }
+
+            std::ifstream file(manifest_path);
+            std::string line;
+            std::vector<std::string> endpoints;
+            while (std::getline(file, line))
+            {
+                auto pos = line.find("bootstrap_endpoints");
+                if (pos != std::string::npos)
+                {
+                    std::string rest = line.substr(pos + 20);
+                    size_t b = rest.find('[');
+                    size_t e = rest.find(']');
+                    if (b != std::string::npos && e != std::string::npos)
+                    {
+                        std::string list = rest.substr(b + 1, e - b - 1);
+                        std::stringstream ss(list);
+                        std::string item;
+                        while (std::getline(ss, item, ','))
+                        {
+                            auto c1 = item.find('"');
+                            auto c2 = item.rfind('"');
+                            if (c1 != std::string::npos && c2 > c1)
+                                endpoints.push_back(item.substr(c1 + 1, c2 - c1 - 1));
+                        }
+                    }
+                }
+            }
+            if (endpoints.empty())
+            {
+                std::cout << "  No bootstrap endpoints recorded.\n";
+            }
+            else
+            {
+                std::cout << "  Bootstrap endpoints:\n";
+                for (const auto& ep : endpoints)
+                {
+                    std::cout << "    - " << ep << "\n";
+                }
+            }
+            if (context_.is_connected())
+            {
+                std::cout << "  Connected: " << context_.get_connected_node() << "\n";
+            }
             return 0;
         }
 
         Result<int> handle_export(const Intent& intent)
         {
-            std::cout << "[export]";
-            for (const auto& a : intent.args)
-                std::cout << " " << a;
-            std::cout << "\n";
-            std::cout << "(Export not yet implemented)\n";
+            std::string home = smo::mesh::smo_home();
+            auto current = context_.get_current_mesh();
+            std::string mesh_name = current ? current.value() : "";
+            std::string out_file = intent.flags.count("file") ? intent.flags.at("file") : "";
+
+            if (intent.flags.count("context"))
+            {
+                if (out_file.empty())
+                {
+                    std::cout << "Usage: export --context --file <path>\n";
+                    return 1;
+                }
+                std::ofstream out(out_file, std::ios::trunc);
+                if (!out)
+                {
+                    std::cerr << "Error: cannot open output file: " << out_file << "\n";
+                    return 1;
+                }
+                out << "{\n";
+                out << "  \"mesh\": \"" << mesh_name << "\",\n";
+                out << "  \"control\": " << (int)context_.get_control_level() << ",\n";
+                out << "  \"scope\": " << (int)context_.get_scope() << ",\n";
+                out << "  \"timeout_ms\": " << context_.get_timeout() << ",\n";
+                out << "  \"retry\": " << context_.get_retry() << ",\n";
+                auto sel = context_.get_selection();
+                out << "  \"selection_active\": " << (sel ? "true" : "false") << "\n";
+                out << "}\n";
+                out.close();
+                std::cout << "Context exported to " << out_file << "\n";
+                return 0;
+            }
+
+            if (intent.flags.count("mesh"))
+            {
+                std::string target = intent.flags.at("mesh");
+                if (out_file.empty())
+                {
+                    std::cout << "Usage: export --mesh NAME --file <path>\n";
+                    return 1;
+                }
+                std::string manifest_path = home + "/meshes/" + target + "/mesh.json";
+                if (!std::filesystem::exists(manifest_path))
+                {
+                    std::cerr << "Mesh '" << target << "' has no manifest.\n";
+                    return 1;
+                }
+                std::ifstream in(manifest_path, std::ios::binary);
+                std::ofstream out(out_file, std::ios::binary | std::ios::trunc);
+                out << in.rdbuf();
+                out.close();
+                std::cout << "Mesh '" << target << "' manifest exported to " << out_file << "\n";
+                return 0;
+            }
+
+            std::cout << "Usage:\n";
+            std::cout << "  export --context --file <path>\n";
+            std::cout << "  export --mesh <name> --file <path>\n";
             return 0;
         }
 
@@ -1577,6 +1916,147 @@ namespace smo {
             std::cout << "Trace: " << intent.args[0] << "\n";
             std::cout << "(Trace not yet implemented)\n";
             return 0;
+        }
+
+        // Map CLI filesystem/process command to (contract_method, args_map)
+        static std::pair<std::string, std::unordered_map<std::string, std::string>>
+        map_cli_to_contract(const Intent& intent)
+        {
+            std::unordered_map<std::string, std::string> args;
+            std::string method;
+
+            if (intent.type == IntentType::Filesystem)
+            {
+                const std::string& cmd = intent.opcode;
+                if (cmd == "ls")
+                {
+                    method = "list";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                    if (intent.flags.count("recursive"))
+                        args["recursive"] = "true";
+                    if (intent.flags.count("long"))
+                        args["long"] = "true";
+                }
+                else if (cmd == "pwd")
+                {
+                    method = "realpath";
+                    args["path"] = ".";
+                }
+                else if (cmd == "mkdir")
+                {
+                    method = "mkdir";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                    if (intent.flags.count("parents"))
+                        args["parents"] = "true";
+                    if (intent.flags.count("mode"))
+                        args["mode"] = intent.flags.at("mode");
+                }
+                else if (cmd == "rm")
+                {
+                    method = "remove";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                    if (intent.flags.count("recursive"))
+                        args["recursive"] = "true";
+                }
+                else if (cmd == "cp")
+                {
+                    method = "copy";
+                    if (intent.args.size() >= 2)
+                    {
+                        args["src"] = intent.args[0];
+                        args["dst"] = intent.args[1];
+                    }
+                    if (intent.flags.count("recursive"))
+                        args["recursive"] = "true";
+                }
+                else if (cmd == "mv")
+                {
+                    method = "move";
+                    if (intent.args.size() >= 2)
+                    {
+                        args["src"] = intent.args[0];
+                        args["dst"] = intent.args[1];
+                    }
+                }
+                else if (cmd == "cat")
+                {
+                    method = "read";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                }
+                else if (cmd == "touch")
+                {
+                    method = "write";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                    args["text"] = "";
+                }
+                else if (cmd == "stat")
+                {
+                    method = "stat";
+                    if (!intent.args.empty())
+                        args["path"] = intent.args[0];
+                }
+                else if (cmd == "info")
+                {
+                    method = "info";
+                }
+            }
+            else if (intent.type == IntentType::Process)
+            {
+                const std::string& cmd = intent.opcode;
+                if (cmd == "ps")
+                {
+                    method = "ps";
+                    if (intent.flags.count("user"))
+                        args["user"] = intent.flags.at("user");
+                    if (intent.flags.count("all"))
+                        args["all"] = "true";
+                }
+                else if (cmd == "top")
+                {
+                    method = "top";
+                    if (intent.flags.count("delay"))
+                        args["delay_ms"] = intent.flags.at("delay");
+                    if (intent.flags.count("sort"))
+                        args["sort"] = intent.flags.at("sort");
+                }
+                else if (cmd == "kill")
+                {
+                    method = "kill";
+                    if (!intent.args.empty())
+                        args["pid"] = intent.args[0];
+                    if (intent.flags.count("signal"))
+                        args["signal"] = intent.flags.at("signal");
+                    if (intent.flags.count("force"))
+                        args["force"] = "true";
+                }
+                else if (cmd == "exec")
+                {
+                    method = "exec";
+                    if (!intent.args.empty())
+                        args["command"] = intent.args[0];
+                    if (intent.flags.count("shell"))
+                        args["shell"] = "true";
+                    if (intent.flags.count("timeout"))
+                        args["timeout_ns"] = intent.flags.at("timeout");
+                }
+                else if (cmd == "info")
+                {
+                    method = "info";
+                }
+            }
+
+            // Merge kwargs (key=value args from parser)
+            for (const auto& [k, v] : intent.kwargs)
+            {
+                args[k] = v;
+            }
+
+            return {method, args};
         }
     };
 

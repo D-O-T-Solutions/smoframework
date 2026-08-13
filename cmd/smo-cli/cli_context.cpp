@@ -9,13 +9,135 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
+#include <cstring>
+#include <poll.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <fcntl.h>
 #include "core/errors/error.hpp"
 #include "core/enroll/join_token.hpp"
 #include "core/enroll/auto_enroll.hpp"
+#include "core/transport/framing.hpp"
+#include "core/transport/secure_session.hpp"
+#include "core/crypto/registry.hpp"
+#include "core/crypto/suite.hpp"
+#include "protocol/packet/packet.h"
+#include "providers/suite1_classical/suite1_classical_provider.hpp"
+#ifdef SMO_WITH_PQC
+#include "providers/suite3_purepqc/suite3_purepqc_provider.hpp"
+#endif
 
 namespace smo {
 
     namespace {
+
+        static void ensure_crypto_registered()
+        {
+            static bool initialized = false;
+            if (initialized)
+                return;
+            initialized = true;
+
+            smo::providers::register_suite1_classical();
+#ifdef SMO_WITH_PQC
+            smo::providers::register_suite3_purepqc();
+#endif
+        }
+
+        static std::string json_escape(const std::string& s)
+        {
+            std::string out;
+            out.reserve(s.size() + 8);
+            for (char c : s)
+            {
+                switch (c)
+                {
+                case '"': out += "\\\""; break;
+                case '\\': out += "\\\\"; break;
+                case '\n': out += "\\n"; break;
+                case '\r': out += "\\r"; break;
+                case '\t': out += "\\t"; break;
+                default: out += c; break;
+                }
+            }
+            return out;
+        }
+
+        static int tcp_connect(const std::string& host, uint16_t port, int timeout_ms = 10000)
+        {
+            struct addrinfo hints{}, *res = nullptr;
+            hints.ai_family = AF_UNSPEC;
+            hints.ai_socktype = SOCK_STREAM;
+            std::string port_str = std::to_string(port);
+            int gai_err = ::getaddrinfo(host.c_str(), port_str.c_str(), &hints, &res);
+            if (gai_err != 0 || !res)
+            {
+                return -1;
+            }
+
+            int fd = ::socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+            if (fd < 0)
+            {
+                ::freeaddrinfo(res);
+                return -1;
+            }
+
+            // Non-blocking connect with timeout
+            int flags = fcntl(fd, F_GETFL, 0);
+            if (flags >= 0)
+                fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+            int connect_res = ::connect(fd, res->ai_addr, res->ai_addrlen);
+            ::freeaddrinfo(res);
+
+            if (connect_res < 0 && errno != EINPROGRESS)
+            {
+                ::close(fd);
+                return -1;
+            }
+
+            if (connect_res == 0)
+            {
+                // Connected immediately
+                if (flags >= 0)
+                    fcntl(fd, F_SETFL, flags);
+                return fd;
+            }
+
+            // Wait for connect to complete
+            struct pollfd pfd{fd, POLLOUT, 0};
+            int poll_res = poll(&pfd, 1, timeout_ms);
+            if (poll_res <= 0)
+            {
+                ::close(fd);
+                return -1;
+            }
+
+            // Check connect status
+            int so_error = 0;
+            socklen_t len = sizeof(so_error);
+            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &so_error, &len) < 0 || so_error != 0)
+            {
+                ::close(fd);
+                return -1;
+            }
+
+            // Restore blocking mode
+            if (flags >= 0)
+                fcntl(fd, F_SETFL, flags);
+
+            // Set receive timeout for all subsequent reads
+            struct timeval tv;
+            tv.tv_sec = timeout_ms / 1000;
+            tv.tv_usec = (timeout_ms % 1000) * 1000;
+            setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+            setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+            return fd;
+        }
 
         std::string context_file_path()
         {
@@ -609,21 +731,116 @@ namespace smo {
         return {};
     }
 
-    Result<std::string> CLIContextManager::network_execute(const std::string& node_address,
-                                                            uint32_t opcode,
-                                                            const std::string& method,
-                                                            const std::unordered_map<std::string, std::string>& args)
+Result<std::string> CLIContextManager::network_execute(const std::string& node_address,
+                                                             uint32_t opcode,
+                                                             const std::string& method,
+                                                             const std::unordered_map<std::string, std::string>& args)
     {
-        // For now, return a placeholder - full network execute requires daemon connection
-        // This is a stub; the real implementation would:
-        // 1. Parse node_address (host:port)
-        // 2. TCP connect + version handshake
-        // 3. If node has cert, PQ handshake (SecureSession)
-        // 4. Build packet: opcode + payload (JSON with method + args)
-        // 5. Send via TCP/PQ, recv response
-        // 6. Parse response packet, return result
-        return SMO_ERR_STORAGE(906, Error, NoRetry, None,
-                               "Network execute not fully implemented; use REPL 'exec' for local dispatch");
+        // Ensure crypto providers are registered (lazy init for REPL)
+        ensure_crypto_registered();
+
+        // 1. Parse host:port
+        auto colon = node_address.rfind(':');
+        if (colon == std::string::npos)
+        {
+            return SMO_ERR_TRANSPORT(306, Error, NoRetry, None, "node address must be host:port");
+        }
+        std::string host = node_address.substr(0, colon);
+        uint16_t port = static_cast<uint16_t>(std::stoul(node_address.substr(colon + 1)));
+
+        // 2. Get PQC crypto provider (matches smo-node daemon)
+        auto& reg = smo::CryptoRegistry::instance();
+        auto crypto_res = reg.get_suite(smo::kSuitePurePQC);
+        if (!crypto_res)
+        {
+            return crypto_res.error();
+        }
+        const auto* crypto = crypto_res.value();
+
+        // 3. TCP connect + version handshake
+        int fd = tcp_connect(host, port, 15000);
+        if (fd < 0)
+        {
+            return SMO_ERR_TRANSPORT(304, Error, RetrySafe, Reconnect, "connection refused: " + node_address);
+        }
+
+        auto ver_res = smo::version_handshake_client(fd);
+        if (!ver_res)
+        {
+            ::close(fd);
+            return SMO_ERR_TRANSPORT(313, Error, NoRetry, Reconnect, "version handshake failed: " + ver_res.error().message);
+        }
+
+        // 4. PQ handshake (client role)
+        smo::SecureSession::Config sec_cfg;
+        sec_cfg.role = smo::SecureSession::Role::Client;
+        smo::SecureSession sec(fd, sec_cfg, *crypto);
+        auto hs = sec.handshake();
+        if (!hs)
+        {
+            ::close(fd);
+            return hs.error();
+        }
+
+        // 5. Build JSON payload: {"method":"...", "key":"value", ...}
+        std::string payload = "{\"method\":\"" + json_escape(method) + "\"";
+        for (const auto& [k, v] : args)
+        {
+            payload += ",\"" + json_escape(k) + "\":\"" + json_escape(v) + "\"";
+        }
+        payload += "}";
+
+        // 6. Build packet + frame
+        smo::Packet pkt;
+        pkt.header.version = 1;
+        pkt.opcode_id = opcode;
+        pkt.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            std::chrono::system_clock::now().time_since_epoch())
+                            .count();
+        pkt.payload.assign(payload.begin(), payload.end());
+
+        std::vector<uint8_t> buf;
+        auto pack_res = smo::packet_to_buffer(pkt, buf);
+        if (!pack_res)
+        {
+            return pack_res.error();
+        }
+
+        smo::Bytes framed;
+        smo::frame_write(smo::BytesView(buf.data(), buf.size()), smo::kFrameFlagNone, framed);
+
+        // 7. Send over secure session
+        auto send_res = sec.send(smo::BytesView(framed));
+        if (!send_res)
+        {
+            return send_res.error();
+        }
+
+        // 8. Receive response
+        auto enc_resp = sec.recv();
+        if (!enc_resp)
+        {
+            return enc_resp.error();
+        }
+
+        // 9. Unframe + parse response packet
+        smo::FrameHeader fh;
+        smo::BytesView resp_payload;
+        size_t frame_sz = smo::frame_read(smo::BytesView(enc_resp.value().data(), enc_resp.value().size()), fh, resp_payload);
+        if (frame_sz == 0)
+        {
+            return SMO_ERR_TRANSPORT(309, Error, RetrySafe, None, "failed to unframe response");
+        }
+
+        auto resp_pkt = smo::packet_from_buffer(resp_payload);
+        if (!resp_pkt)
+        {
+            return resp_pkt.error();
+        }
+
+        // 10. Return payload as string
+        const auto& rp = resp_pkt.value().payload;
+        return std::string(rp.begin(), rp.end());
     }
 
 } // namespace smo

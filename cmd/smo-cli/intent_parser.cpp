@@ -139,6 +139,10 @@ namespace smo {
                   {"force", "Force hard recovery"},
                   {"status", "Show recovery status"},
                   {"cancel", "Cancel recovery"}});
+            add("discover", "Discover mesh peers", IntentType::Discover, {},
+                {{"live", "Query live peers"}, {"mesh", "Filter by mesh"}});
+            add("export", "Export context/mesh data", IntentType::Export, {},
+                {{"context", "Export current context"}, {"mesh", "Export mesh manifest"}, {"file", "Output file"}});
             add("connect", "Connect to node", IntentType::Connect, {},
                 {{"address", "Node address"}, {"name", "Connection name"}});
             add("disconnect", "Disconnect", IntentType::Disconnect, {}, {});

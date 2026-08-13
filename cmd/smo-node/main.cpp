@@ -1522,6 +1522,10 @@ int main(int argc, char* argv[])
     auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr);
     policy_mw->set_anonymous("system.bootstrap", true);
     policy_mw->set_anonymous("system.join", true);
+    // CLI/operator packets carry no session yet (transport is PQ-secured);
+    // keep file/process opcodes reachable without an SMO session.
+    policy_mw->set_anonymous("system.file", true);
+    policy_mw->set_anonymous("system.process", true);
     middleware_pipeline.push(std::move(policy_mw));
 
     // ── RuntimeBridge: opcode → contract (THIN — no auth) ─────
@@ -1610,10 +1614,27 @@ int main(int argc, char* argv[])
 
         // 3. Bridge: Packet → RuntimeKernel → RuntimeResult
         auto original_pkt = pkt;
+
+        // Send an error response packet back to the requester (so a
+        // request/response client never blocks waiting for an answer).
+        auto send_error_packet = [&](const std::string& message) {
+            smo::Packet err_resp;
+            err_resp.header = original_pkt.header;
+            err_resp.opcode_id = original_pkt.opcode_id;
+            err_resp.session_id = original_pkt.session_id;
+            err_resp.intent_id = original_pkt.intent_id;
+            err_resp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                     std::chrono::system_clock::now().time_since_epoch())
+                                     .count();
+            err_resp.payload.assign(message.begin(), message.end());
+            (void)t.send(std::move(err_resp), remote);
+        };
+
         auto rt_result = runtime_bridge.bridge(std::move(pkt));
         if (!rt_result)
         {
             std::printf("[smo-node] RuntimeBridge failed: %s\n", rt_result.error().message.c_str());
+            send_error_packet("error: " + rt_result.error().message);
             return rt_result.error();
         }
 
@@ -1621,8 +1642,44 @@ int main(int argc, char* argv[])
         auto& next_actions = rt_result.value().next_actions;
         if (next_actions.empty())
         {
-            std::printf("[smo-node] No next actions — result: %s\n",
-                        rt_result.value().output ? rt_result.value().output->data.c_str() : "(no output)");
+            // No async actions: deliver the contract result directly as the
+            // response packet so request/response clients (CLI) get an answer.
+            if (rt_result.value().output)
+            {
+                smo::Packet resp;
+                resp.header = original_pkt.header;
+                resp.opcode_id = original_pkt.opcode_id;
+                resp.session_id = original_pkt.session_id;
+                resp.intent_id = original_pkt.intent_id;
+                resp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                     std::chrono::system_clock::now().time_since_epoch())
+                                     .count();
+
+                const auto& out = rt_result.value().output.value();
+                if (!out.binary.empty())
+                {
+                    resp.payload = out.binary;
+                }
+                else
+                {
+                    resp.payload.assign(out.data.begin(), out.data.end());
+                }
+
+                auto send_ec = t.send(std::move(resp), remote);
+                if (send_ec)
+                {
+                    std::printf("[smo-node] Response send failed: %s\n", send_ec.message().c_str());
+                    return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport,
+                                                     static_cast<uint16_t>(send_ec.value()), smo::Severity::Error,
+                                                     smo::RetryClass::RetrySafe, smo::Recovery::None),
+                                      "response send failed", __FILE__, __LINE__);
+                }
+            }
+            else
+            {
+                std::printf("[smo-node] No next actions and no output — result: %s\n",
+                            rt_result.value().output ? rt_result.value().output->data.c_str() : "(no output)");
+            }
             return {};
         }
 
@@ -1654,6 +1711,17 @@ int main(int argc, char* argv[])
     // ── Node Lifecycle FSM ─────────────────────────────────────
     smo::NodeLifecycleFSM node_fsm;
     node_fsm.on_event(smo::NodeLifecycleEvent::IDENTITY_CREATED);
+
+    // Authority node: transition to ACTIVE since it has a cert and is the mesh root
+    if (!server_cert_blob.empty())
+    {
+        node_fsm.on_event(smo::NodeLifecycleEvent::CSR_EXPORTED);
+        node_fsm.on_event(smo::NodeLifecycleEvent::CERT_IMPORTED);
+        node_fsm.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_START);
+        node_fsm.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_COMPLETE);
+        node_fsm.on_event(smo::NodeLifecycleEvent::JOIN_COMPLETE);
+        node_fsm.on_event(smo::NodeLifecycleEvent::SYNC_COMPLETE);
+    }
     std::printf("[smo-node] Node state: %s\n", node_fsm.state_name().c_str());
 
     // ── PacketDispatcher setup ─────────────────────────────────

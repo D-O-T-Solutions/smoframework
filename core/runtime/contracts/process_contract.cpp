@@ -257,11 +257,47 @@ namespace smo::runtime {
         auto elapsed =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count();
 
+        auto json_escape = [](const std::string& s) {
+            std::string out;
+            out.reserve(s.size());
+            for (char c : s)
+            {
+                switch (c)
+                {
+                case '"':
+                    out += "\\\"";
+                    break;
+                case '\\':
+                    out += "\\\\";
+                    break;
+                case '\n':
+                    out += "\\n";
+                    break;
+                case '\r':
+                    out += "\\r";
+                    break;
+                case '\t':
+                    out += "\\t";
+                    break;
+                default:
+                    out += c;
+                }
+            }
+            return out;
+        };
+
         std::ostringstream oss;
         oss << "{"
             << "\"exit_code\":" << exit_code << ","
             << "\"timed_out\":" << (timed_out ? "true" : "false") << ","
-            << "\"duration_ns\":" << elapsed << "}";
+            << "\"duration_ns\":" << elapsed;
+        if (capture)
+        {
+            oss << ","
+                << "\"stdout\":\"" << json_escape(stdout_str) << "\","
+                << "\"stderr\":\"" << json_escape(stderr_str) << "\"";
+        }
+        oss << "}";
 
         ContractResult result = ContractResult::ok(oss.str());
         result.metrics["exit_code"] = ContextValue(static_cast<int64_t>(exit_code));

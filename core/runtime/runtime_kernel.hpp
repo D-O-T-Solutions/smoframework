@@ -60,6 +60,11 @@ namespace smo::runtime {
 
         uint64_t next_execution_id_ = 1;
         uint64_t generate_execution_id();
+
+        // Output of the last executed plan step. Populated by execute_plan()
+        // and consumed by execute() so the caller can deliver a response
+        // (or downstream next_actions) back over the transport.
+        std::optional<ContractResult> last_plan_output_;
     };
 
 } // namespace smo::runtime

@@ -447,6 +447,38 @@ namespace smo {
         return out;
     }
 
+    Result<void> GovernanceEngine::load_all(BytesView data)
+    {
+        size_t off = 0;
+        if (data.size() < 12)
+        {
+            return SMO_ERR_GOVERNANCE(812, Error, NoRetry, None, "corrupt governance state");
+        }
+        next_id_ = read_u64(data, off);
+        uint32_t count = read_u32(data, off);
+        proposals_.clear();
+        for (uint32_t i = 0; i < count; ++i)
+        {
+            if (off + 4 > data.size())
+            {
+                return SMO_ERR_GOVERNANCE(812, Error, NoRetry, None, "truncated governance state");
+            }
+            uint32_t len = read_u32(data, off);
+            if (off + len > data.size())
+            {
+                return SMO_ERR_GOVERNANCE(812, Error, NoRetry, None, "truncated governance proposal");
+            }
+            auto prop = GovernanceProposal::deserialize(data.subspan(off, len));
+            if (!prop)
+            {
+                return prop.error();
+            }
+            proposals_[prop.value().id.value] = std::move(prop).value();
+            off += len;
+        }
+        return {};
+    }
+
     Bytes GovernanceProposalMsg::serialize() const
     {
         return proposal.serialize();

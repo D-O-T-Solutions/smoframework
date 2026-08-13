@@ -310,6 +310,9 @@ namespace smo {
         // Serialize all proposals
         Bytes serialize_all() const;
 
+        // Restore all proposals previously serialized by serialize_all()
+        Result<void> load_all(BytesView data);
+
     private:
         std::unordered_map<uint64_t, GovernanceProposal> proposals_;
         uint64_t next_id_ = 1;

@@ -25,6 +25,8 @@ namespace smo::runtime {
     {
         auto start = std::chrono::steady_clock::now();
 
+        last_plan_output_.reset();
+
         RuntimeContext ctx;
         if (req.context)
         {
@@ -58,6 +60,19 @@ namespace smo::runtime {
         result.execution_id = std::to_string(ctx.info.execution_id);
         result.status = RuntimeResult::Status::Success;
         result.elapsed_ns = elapsed;
+
+        // Carry the plan's contract output + next_actions to the caller so a
+        // transport layer can build a response packet from the real result.
+        if (last_plan_output_)
+        {
+            result.output = *last_plan_output_;
+            result.next_actions = last_plan_output_->next_actions;
+            result.metrics = last_plan_output_->metrics;
+            result.status = (last_plan_output_->status == ContractResult::Status::Success)
+                                ? RuntimeResult::Status::Success
+                                : RuntimeResult::Status::Error;
+            last_plan_output_.reset();
+        }
 
         return result;
     }
@@ -160,21 +175,17 @@ namespace smo::runtime {
             plan_ctx.context[key] = val;
         }
 
+        // Use the method and arguments from the request (extracted by RuntimeBridge)
+        // instead of the hardcoded "invoke" + template.
+        const std::string& request_method = req.input.method;
+        const ContextValue& request_args = req.input.arguments;
+
         PlanExecutor executor(plan, [&](const Step& step, PlanContext& pctx) -> PlanExecutor::StepResult {
-            std::string input_template = step.input_template;
-            for (const auto& [key, val] : pctx.context)
-            {
-                size_t pos = 0;
-                while ((pos = input_template.find("{{" + key + "}}", pos)) != std::string::npos)
-                {
-                    input_template.replace(pos, key.length() + 4, val);
-                    pos += val.length();
-                }
-            }
+            (void)pctx; // unused: we use request's method/args directly
 
             ContractInput cin;
-            cin.method = "invoke";
-            cin.arguments = ContextValue(input_template);
+            cin.method = request_method.empty() ? "invoke" : request_method;
+            cin.arguments = request_args;
 
             auto* contract = dispatcher_.get_contract(step.contract_id);
             if (!contract)
@@ -189,6 +200,8 @@ namespace smo::runtime {
                 return PlanExecutor::StepResult{false, {}, RuntimeError::internal(res.error().message)};
             }
 
+            // Capture the raw contract result for response delivery downstream.
+            last_plan_output_ = res.value();
             return PlanExecutor::StepResult{true, std::move(res).value(), {}};
         });
 

@@ -523,14 +523,14 @@ Parsing features:
 |---------|-------------|---------|
 | `handle_help` | Help | Print help/usage for commands |
 | `handle_select` | Select | Filter by name/role/tag/where/mesh/OS/arch/trust, save selections |
-| `handle_exec` | Execute | Execute command on selected nodes or connected session |
-| `handle_transfer` | Transfer | File transfer (get/put/sync) — stub |
+| `handle_exec` | Execute | Execute command on connected session (PROCESS opcode, network exec) |
+| `handle_transfer` | Transfer | File transfer put/get over network (FILE_OP write/read); sync — stub |
 | `handle_filesystem` | Filesystem | ls/cat/mkdir/rm/cp/mv/echo — stub |
 | `handle_process` | Process | ps/kill/top — stub |
 | `handle_deploy` | Deploy | Deploy contract — stub |
 | `handle_undeploy` | Undeploy | Undeploy contract — stub |
 | `handle_status` | Status | Show current context (mesh, selection, control, scope, session) |
-| `handle_policy` | Policy | List/set policy presets: `default`, `enterprise`, `emergency` |
+| `handle_policy` | Policy | List/set policy presets: `default`, `enterprise`, `emergency`; `policy show <name>` prints real preset details |
 | `handle_control` | Control | Set level/scope/timeout/retry interactively |
 | `handle_context` | Context | Save/load/clear context |
 | `handle_mesh` | Mesh | List/use/create/leave mesh |
@@ -825,32 +825,26 @@ name, `tcp://127.0.0.1:<port>` endpoint) at startup; the `HelloMsg` handler now 
 
 ---
 
-### v0.0.3 Implementation Gap Report — Documented but Stubbed
+### v0.0.4 Implementation Gap Report — Documented but Stubbed
 
-**Generated:** 2026-08-12 via `/tmp/opencode/e2e-full.sh` (47 PASS, 0 FAIL, 12 STUB)
+**Generated:** 2026-08-13 via `/tmp/opencode/e2e-full.sh` (60 PASS, 0 FAIL, 5 STUB)
 
 The following features are documented in RFCs/discussions and have CLI entry points but are not yet implemented (handlers emit `(not yet implemented)` or parser rejects the command):
 
 | # | Feature | CLI Command(s) | Handler Status | Sprint Target |
 |---|---------|----------------|----------------|---------------|
-| 1 | Contract execution dispatch | `exec <cmd>` | `handle_exec`: "(Dispatch not yet implemented)" | Sprint B |
-| 2 | Contract deploy | `deploy <path>` | `handle_deploy`: "(Deploy not yet implemented)" | Sprint B |
-| 3 | Contract undeploy | `undeploy <id>` | `handle_undeploy`: "(Undeploy not yet implemented)" | Sprint B |
-| 4 | Contract status query | `status <contract>` | `handle_status`: "(Contract status not yet implemented)" | Sprint B |
-| 5 | Policy details | `policy show <name>` | `handle_policy show`: "(Policy details not yet implemented)" | Sprint B |
-| 6 | Trace/observability | `trace <id>` | `handle_trace`: "(Trace not yet implemented)" | Sprint C/Observability |
-| 7 | Filesystem ops | `ls`, `cat`, `touch`, `mkdir`, `rm`, `cp`, `mv`, `sync` | `handle_filesystem`: "(Filesystem operations not yet implemented)" | Sprint B |
-| 8 | Process management | `ps`, `top`, `kill` | `handle_process`: "(Process operations not yet implemented)" | Sprint B |
-| 9 | File transfer | `put`, `get`, `cp`, `mv`, `sync` (remote) | `handle_transfer`: "(Transfer not yet implemented)" | Sprint B |
-| 10 | Discovery protocol | `discover` | Parser: "Unknown command: discover" (handler exists but not wired) | Sprint A |
-| 11 | Export | `export` | Parser: "Unknown command: export" (handler exists but not wired) | Sprint A |
-| 12 | Governance list persistence | `governance list` | `handle_governance list`: "(Governance list not yet persisted)" | Sprint B |
+| 1 | Contract deploy | `deploy <path>` | `handle_deploy`: "(Deploy not yet implemented)" | Sprint B |
+| 2 | Contract undeploy | `undeploy <id>` | `handle_undeploy`: "(Undeploy not yet implemented)" | Sprint B |
+| 3 | Contract status query | `status <contract>` | `handle_status`: "(Contract status not yet implemented)" | Sprint B |
+| 4 | Trace/observability | `trace <id>` | `handle_trace`: "(Trace not yet implemented)" | Sprint C/Observability |
+| 5 | Remote directory sync | `sync <a> <b>` | `handle_transfer`: "(Sync not yet implemented)" | Sprint C |
+
+**Resolved in v0.0.4:** `exec` (network dispatch via PROCESS opcode), `put`/`get` transfer (FILE_OP write/read with hex payload), `policy show <name>` (real preset details), `discover` (live peer check / bootstrap_endpoints from mesh manifest), `export` (context or mesh manifest to file), `governance propose/list` persistence (`$HOME/meshes/<mesh>/governance.state`). `exec` stdout/stderr captured and returned escaped in the exec JSON result.
 
 **Notes:**
-- Items 1–9 are core Sprint B Operations features per DISCUSSION_0045.
-- Items 10–11 have handler stubs in `cli_application.cpp` but are not registered in `intent_parser.cpp`.
-- Item 12: proposal creation works (`governance propose`), but list/vote/commit M-of-N flow is absent.
-- The 3-node E2E verified all implemented daemon paths: join, PQ handshake, seed bootstrap, HelloMsg/WelcomeMsg, membership sync, heartbeat, gossip, anti-entropy (BootstrapSync), CRL/policy deltas.
+- Items 1–4 are core Sprint B Operations features per DISCUSSION_0045.
+- Item 5 is a Sprint C follow-up (remote dir sync beyond single-file transfer).
+- The 3-node E2E verified all implemented daemon paths: join, PQ handshake, seed bootstrap, HelloMsg/WelcomeMsg, membership sync, heartbeat, gossip, anti-entropy (BootstrapSync), CRL/policy deltas, plus network exec, transfer, discover, export, and persisted governance.
 
 ---
 
