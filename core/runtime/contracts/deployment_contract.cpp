@@ -76,7 +76,8 @@ namespace smo::runtime {
 
     } // namespace
 
-    DeploymentContract::DeploymentContract(std::string data_dir) : NativeContract(default_metadata()), data_dir_(std::move(data_dir))
+    DeploymentContract::DeploymentContract(std::string data_dir)
+        : NativeContract(default_metadata()), data_dir_(std::move(data_dir))
     {
         load_state();
     }
