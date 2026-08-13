@@ -58,6 +58,7 @@
 #include <core/runtime/contracts/file_contract.hpp>
 #include <core/runtime/contracts/process_contract.hpp>
 #include <core/runtime/contracts/deployment_contract.hpp>
+#include <core/runtime/contracts/trust_contract.hpp>
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
 #include <core/runtime/structured_logger.hpp>
@@ -1195,6 +1196,18 @@ int main(int argc, char* argv[])
     // SessionManager for tracking peer sessions
     smo::SessionManager session_mgr;
 
+    // RFC 0014 §6: crash-recover the session store. Sessions that were ACTIVE
+    // at crash time own orphaned contracts and are forced to Closed; ESTABLISHED
+    // sessions are closed gracefully.
+    {
+        int64_t now_ns = static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+        auto rec_ec = session_mgr.recover(data_dir + "/session_store.bin", now_ns);
+        if (!rec_ec)
+        {
+            std::printf("[smo-node] Session store recover failed: %s\n", rec_ec.error().message.c_str());
+        }
+    }
+
     // MeshManager for mesh directory/catalog operations
     smo::MeshManager mesh_manager(smo::MeshManager::Config{
         .base_data_dir = mesh_dir.empty() ? "" : mesh_dir.substr(0, mesh_dir.rfind("/meshes/") + 7)});
@@ -1522,6 +1535,35 @@ int main(int argc, char* argv[])
     runtime_dispatcher.register_contract("system.contracts",
                                          std::make_unique<smo::runtime::DeploymentContract>(data_dir));
 
+    // TrustContract (RFC 0017): peer trust scores + witness attestation/selection.
+    // Wired to the daemon's TrustManager; the local signer is injected so the
+    // node can act as a witness and produce signed attestations.
+    {
+        auto trust_contract = std::make_unique<smo::runtime::TrustContract>(&trust_mgr, data_dir);
+        trust_contract->set_signer([crypto, local_identity](smo::BytesView msg) {
+            auto rng = crypto->default_rng();
+            auto sig = crypto->signer.sign(
+                msg, smo::Bytes(local_identity.secret_key().begin(), local_identity.secret_key().end()), rng);
+            if (!sig)
+                return smo::Bytes{};
+            return sig.value();
+        });
+        trust_contract->set_membership_provider([&membership]() {
+            std::vector<smo::NodeID> online;
+            std::vector<smo::NodeID> all;
+            for (const auto& entry : membership.peers())
+            {
+                all.push_back(entry.node_id);
+            }
+            for (const auto& entry : membership.peers_with_state(smo::PeerState::Online))
+            {
+                online.push_back(entry.node_id);
+            }
+            return std::make_pair(std::move(online), std::move(all));
+        });
+        runtime_dispatcher.register_contract("system.trust", std::move(trust_contract));
+    }
+
     // ── Middleware Pipeline ────────────────────────────────────
     smo::runtime::MiddlewarePipeline middleware_pipeline;
     auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr);
@@ -1532,6 +1574,7 @@ int main(int argc, char* argv[])
     policy_mw->set_anonymous("system.file", true);
     policy_mw->set_anonymous("system.process", true);
     policy_mw->set_anonymous("system.contracts", true);
+    policy_mw->set_anonymous("system.trust", true);
     middleware_pipeline.push(std::move(policy_mw));
 
     // ── RuntimeBridge: opcode → contract (THIN — no auth) ─────
@@ -1571,6 +1614,9 @@ int main(int argc, char* argv[])
 
     // Register routes for DeploymentContract (single opcode, method in payload)
     runtime_bridge.register_route(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "system.contracts", "invoke");
+
+    // Register routes for TrustContract (single opcode, method in payload, RFC 0017)
+    runtime_bridge.register_route(static_cast<uint32_t>(smo::Opcode::WITNESS), "system.trust", "invoke");
 
     // ── PacketDispatcher setup ─────────────────────────────────
     // Helper lambda: session → middleware → bridge → execute → send response
@@ -1756,6 +1802,7 @@ int main(int argc, char* argv[])
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::FILE_OP), runtime_handler);
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::PROCESS), runtime_handler);
     dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), runtime_handler);
+    dispatcher.register_handler(static_cast<uint32_t>(smo::Opcode::WITNESS), runtime_handler);
     dispatcher.register_handler(smo::join::kOpcodeBootstrapSyncReq, runtime_handler);
 
     // ── Raw handler: discovery protocol (HelloMsg, PingMsg, etc.) ──
@@ -2125,6 +2172,15 @@ int main(int argc, char* argv[])
             session_mgr.tick(now_ns);
             session_mgr.collect_garbage();
             anti_entropy.tick(now_ns); // P1: 30-min Merkle tree exchange
+
+            // Decay trust scores over time (RFC 0017 §4) and persist them
+            trust_mgr.tick(now_ns);
+
+            // Persist session store so a crash leaves recoverable state (RFC 0014 §6)
+            if (auto persist_ec = session_mgr.persist(data_dir + "/session_store.bin"); !persist_ec)
+            {
+                std::printf("[smo-node] Session store persist failed: %s\n", persist_ec.error().message.c_str());
+            }
 
             // ── Readiness check (P2) ─────────────────────────────
             int64_t uptime_ns = now_ns - daemon_start_ns;

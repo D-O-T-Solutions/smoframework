@@ -848,6 +848,41 @@ The daemon registers `system.contracts` (with anonymous policy route + `CONTRACT
 
 ---
 
+### v0.0.6 Implementation Status — trust/witness + RFC 0014 session recovery
+
+**Generated:** 2026-08-13 via `/tmp/opencode/e2e-full.sh` (71 PASS, 0 FAIL, 0 STUB)
+
+Implements the two remaining gaps identified in the RFC-vs-code audit:
+
+**1. Session orphan recovery (RFC 0014 §6).** The SessionManager previously
+persisted (`serialize_all`) but never recovered. Now:
+
+- `SessionManager::persist(path)` — writes the full store (big-endian count + per-session blobs) to `session_store.bin`.
+- `SessionManager::recover(path, now)` — scans the store after a restart: sessions that were **ACTIVE** at crash time own contracts that are now orphans and are forced to **Closed**; **ESTABLISHED**/**Renewing** sessions are closed gracefully; handshake/closed entries are dropped. Returns the count recovered.
+- The node daemon calls `recover()` at startup and `persist()` on its 5s tick, so a crash leaves fully recoverable state.
+
+Verified by `Manager persist + recover (RFC 0014)` and `Manager recover empty store` unit tests, plus an S5 e2e test that SIGKILLs node-a, restarts it against its data dir, and asserts `SessionManager: recovered N sessions from .../session_store.bin (M orphaned ACTIVE contracts)`.
+
+**2. Trust/witness wiring (RFC 0003 + RFC 0017).** RFC 0017 had deferred the
+TrustEngine to Stage 5-6 and audit found the complete `TrustManager` was never
+wired to the runtime and no witness selection existed. Now:
+
+- New `smo::trust::WitnessSelector` (`core/trust/witness.{hpp,cpp}`) — deterministic witness choice per RFC 0003 §3: never the requester/responder, never a trust anchor, prefers online peers then highest score, tie-breaks on NodeID, and falls back to a local decision when no third party exists (RFC 0003 §3.4).
+- New `smo::runtime::TrustContract` (`system.trust`) exposed over the new **WITNESS opcode 0x2E** (`core/opcode/opcode.h`), with methods: `score`, `status`, `record` (success/failure/offline → updates Execution/Citizen components), `attest` (produces a signed `witness|subject|claimed|ts|sig` payload or verifies + applies a received one), `select` (witness selection over the daemon's membership provider), `anchors` (add/remove/list), and `digest`.
+- The daemon wires the local `SignerImpl` (signs with `local_identity.secret_key()`), the `MembershipTable` (via `peers()`/`peers_with_state(Online)`), runs `TrustManager::tick()` (half-life decay) each 5s tick, registers the `0x2E` route/handler, and marks `system.trust` anonymous like the other CLI-reachable contracts.
+- CLI: new `trust` command (`--status`, `--score <node>`, `--record <node> --outcome <...>`, `--attest <witness> --subject <node> --claimed <0..1>`, `--select <requester>`, `--anchors <action>`) routed through `network_execute(node, 0x2E, method, args)`.
+
+Verified by `WS excludes requester+responder`, `WS prefers online high trust, no anchor`, and `WS fallback local when no third party` unit tests plus S5 e2e steps: `trust status`, `trust record failure`, `trust score`, `witness select`, and a signed `witness attest (produce)` round-trip against the enrolled node.
+
+**Notes:**
+- The audit also confirmed ciphersuite (RFC 0024) and certificate verification
+  (CERT_VERIFY in mesh join) were already complete; no changes were needed there.
+- `attest` signature production uses the local identity key; `verify_attestation`
+  validates the timestamp window, score range and signature presence (full
+  public-key verification of received attestations is left to a future sprint).
+
+---
+
 ## References
 
 - [RFC 0028] Contract Runtime

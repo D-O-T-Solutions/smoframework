@@ -1,6 +1,7 @@
 #include "session.hpp"
 
 #include <cstring>
+#include <fstream>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -459,6 +460,95 @@ namespace smo {
             out.insert(out.end(), ser.begin(), ser.end());
         }
         return out;
+    }
+
+    // ===========================================================================
+    // SessionManager::persist / recover — RFC 0014 §6 crash recovery
+    // ===========================================================================
+
+    Result<void> SessionManager::persist(const std::string& path) const
+    {
+        std::ofstream out(path, std::ios::binary | std::ios::trunc);
+        if (!out)
+        {
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "cannot open session store for write: " + path);
+        }
+        Bytes ser = serialize_all();
+        out.write(reinterpret_cast<const char*>(ser.data()), static_cast<std::streamsize>(ser.size()));
+        if (!out)
+        {
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "failed writing session store: " + path);
+        }
+        return {};
+    }
+
+    Result<size_t> SessionManager::recover(const std::string& path, int64_t now)
+    {
+        std::ifstream in(path, std::ios::binary);
+        if (!in)
+        {
+            // No store on disk yet — nothing to recover.
+            return 0;
+        }
+        in.seekg(0, std::ios::end);
+        std::streamsize sz = in.tellg();
+        in.seekg(0, std::ios::beg);
+        if (sz <= 0)
+        {
+            return 0;
+        }
+        Bytes data(static_cast<size_t>(sz));
+        in.read(reinterpret_cast<char*>(data.data()), sz);
+        if (!in)
+        {
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "failed reading session store: " + path);
+        }
+
+        size_t off = 0;
+        BytesView data_view(data);
+        uint32_t count = read_u32(data_view, off);
+        size_t recovered = 0;
+        size_t orphans = 0;
+        for (uint32_t i = 0; i < count; ++i)
+        {
+            uint32_t len = read_u32(data_view, off);
+            if (off + len > data.size())
+                break;
+            auto res = Session::deserialize(BytesView(data).subspan(off, len));
+            off += len;
+            if (!res)
+                continue;
+
+            Session persisted = std::move(res.value());
+            // RFC 0014 §6: sessions ACTIVE at crash time own contracts that are
+            // now orphans; they cannot resume. Everyone is closed deterministically.
+            if (persisted.state() == SessionState::Active)
+            {
+                persisted.on_event(SessionEvent::Close, now);
+                ++orphans;
+            }
+            else if (persisted.state() == SessionState::Established || persisted.state() == SessionState::Renewing)
+            {
+                // Graceful close: no contract was in flight.
+                persisted.on_event(SessionEvent::Close, now);
+            }
+            else
+            {
+                // Handshake / Closed — drop silently.
+                continue;
+            }
+
+            auto key = to_key(persisted.id());
+            if (sessions_.find(key) == sessions_.end())
+            {
+                sessions_.emplace(key, std::move(persisted));
+                ++recovered;
+            }
+        }
+
+        std::printf("[smo-node] SessionManager: recovered %zu sessions from %s (%zu orphaned ACTIVE contracts)\n",
+                    recovered, path.c_str(), orphans);
+        return recovered;
     }
 
     // ===========================================================================

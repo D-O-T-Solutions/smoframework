@@ -244,6 +244,8 @@ namespace smo {
                 return handle_history(intent);
             case IntentType::Trace:
                 return handle_trace(intent);
+            case IntentType::Trust:
+                return handle_trust(intent);
             default:
                 std::cerr << "Unknown intent type: " << (int)intent.type << "\n";
                 return 1;
@@ -2082,7 +2084,84 @@ namespace smo {
             return 0;
         }
 
-        // Map CLI filesystem/process command to (contract_method, args_map)
+        // ── Trust: peer trust scores + witness attestation (RFC 0017) ──
+        // Maps to the daemon's TrustContract over the WITNESS opcode (0x2E).
+        Result<int> handle_trust(const Intent& intent)
+        {
+            if (!context_.is_connected())
+            {
+                std::cerr << "No active session. Use 'connect <host>:<port>' first.\n";
+                return 1;
+            }
+
+            std::unordered_map<std::string, std::string> args;
+            std::string method;
+
+            if (intent.flags.empty())
+            {
+                method = "status";
+            }
+            else if (intent.flags.count("status"))
+            {
+                method = "status";
+            }
+            else if (intent.flags.count("score"))
+            {
+                method = "score";
+                args["node"] = intent.flags.at("score");
+            }
+            if (intent.flags.count("record"))
+            {
+                method = "record";
+                args["node"] = intent.flags.at("record");
+                args["outcome"] = intent.flags.count("outcome") ? intent.flags.at("outcome") : "success";
+            }
+            if (intent.flags.count("attest"))
+            {
+                method = "attest";
+                args["witness"] = intent.flags.at("attest");
+                if (intent.flags.count("subject"))
+                    args["subject"] = intent.flags.at("subject");
+                if (intent.flags.count("claimed"))
+                    args["claimed_score"] = intent.flags.at("claimed");
+                if (intent.flags.count("payload"))
+                    args["attestation_base64"] = intent.flags.at("payload");
+            }
+            if (intent.flags.count("select"))
+            {
+                method = "select";
+                args["requester"] = intent.flags.at("select");
+                if (intent.flags.count("peers"))
+                    args["peers"] = intent.flags.at("peers");
+            }
+            if (intent.flags.count("anchors"))
+            {
+                method = "anchors";
+                args["action"] = intent.flags.at("anchors");
+                if (intent.flags.count("node"))
+                    args["node"] = intent.flags.at("node");
+            }
+
+            if (method.empty())
+            {
+                std::cerr
+                    << "Usage: trust --status | --score <node> | --record <node> --outcome <success|failure|offline> "
+                    << "| --attest <witness> --subject <node> --claimed <0..1> | --select <requester> | --anchors "
+                       "list\n";
+                return 1;
+            }
+
+            auto net_res = context_.network_execute(context_.get_connected_node(),
+                                                    static_cast<uint32_t>(smo::Opcode::WITNESS), method, args);
+            if (!net_res)
+            {
+                std::cerr << "Error: " << net_res.error().message << "\n";
+                return 1;
+            }
+            std::cout << "[session " << context_.get_connected_node() << "] trust " << method << "\n";
+            std::cout << net_res.value() << "\n";
+            return 0;
+        }
         static std::pair<std::string, std::unordered_map<std::string, std::string>>
         map_cli_to_contract(const Intent& intent)
         {

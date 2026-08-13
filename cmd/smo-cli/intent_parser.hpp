@@ -42,6 +42,7 @@ namespace smo {
         Genesis,
         Governance,
         Recovery,
+        Trust,
     };
 
     struct Intent

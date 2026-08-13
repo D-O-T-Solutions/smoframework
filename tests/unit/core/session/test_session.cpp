@@ -3,6 +3,7 @@
 #include <crypto/impl.hpp>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 
 using namespace smo;
 
@@ -573,6 +574,64 @@ static bool test_manager_serialize_all()
     return true;
 }
 
+// RFC 0014 §6: persist + recover a session store across a crash.
+static bool test_manager_persist_recover()
+{
+    SessionManager mgr;
+
+    SessionId id1;
+    id1.bytes.fill(0x40);
+    NodeID peer_id;
+    Certificate cert;
+    CapabilitySet caps;
+
+    auto s1 = Session::create(id1, peer_id, cert, caps, 0, 5000);
+    ASSERT(s1);
+    ASSERT(mgr.open(std::move(s1.value())));
+    ASSERT(mgr.transition(id1, SessionEvent::Established, 100));
+    ASSERT(mgr.transition(id1, SessionEvent::Activate, 100)); // ACTIVE → will be orphaned
+
+    SessionId id2;
+    id2.bytes.fill(0x41);
+    auto s2 = Session::create(id2, peer_id, cert, caps, 100, 10000);
+    ASSERT(s2);
+    ASSERT(mgr.open(std::move(s2.value())));
+    ASSERT(mgr.transition(id2, SessionEvent::Established, 100)); // ESTABLISHED → graceful close
+
+    const std::string path = "/tmp/smo_test_session_store.bin";
+    ASSERT(mgr.persist(path));
+
+    // A fresh manager simulating a crashed-then-restarted node.
+    SessionManager recovered_mgr;
+    auto recovered = recovered_mgr.recover(path, 1000);
+    ASSERT(recovered);
+    ASSERT_EQ(recovered.value(), 2U);
+
+    // Both sessions were closed deterministically on recovery.
+    auto first = recovered_mgr.lookup(id1);
+    auto second = recovered_mgr.lookup(id2);
+    ASSERT(first);
+    ASSERT(second);
+    ASSERT_EQ(first->state(), SessionState::Closed);
+    ASSERT_EQ(second->state(), SessionState::Closed);
+
+    std::remove(path.c_str());
+    return true;
+}
+
+// RFC 0014 §6: recover on a corrupted/empty store must not fail the node.
+static bool test_manager_recover_empty()
+{
+    const std::string path = "/tmp/smo_test_session_store_empty.bin";
+    std::ofstream(path, std::ios::binary) << ""; // 0-byte file
+    SessionManager mgr;
+    auto res = mgr.recover(path, 1000);
+    ASSERT(res);
+    ASSERT_EQ(res.value(), 0U);
+    std::remove(path.c_str());
+    return true;
+}
+
 // ── SessionOpenMsg / SessionCloseMsg ───────────────────────────────────
 
 static bool test_session_open_msg_roundtrip()
@@ -640,6 +699,8 @@ int main(int, char*[])
     TEST("Manager duplicate open fails") END_TEST(test_manager_duplicate_open_fails());
     TEST("Manager tick expires sessions") END_TEST(test_manager_tick_expires_sessions());
     TEST("Manager serialize all") END_TEST(test_manager_serialize_all());
+    TEST("Manager persist + recover (RFC 0014") END_TEST(test_manager_persist_recover());
+    TEST("Manager recover empty store") END_TEST(test_manager_recover_empty());
     TEST("SessionOpenMsg roundtrip") END_TEST(test_session_open_msg_roundtrip());
     TEST("SessionCloseMsg roundtrip") END_TEST(test_session_close_msg_roundtrip());
 

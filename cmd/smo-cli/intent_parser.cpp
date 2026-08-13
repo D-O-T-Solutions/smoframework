@@ -148,6 +148,13 @@ namespace smo {
                 {{"live", "Query live peers"}, {"mesh", "Filter by mesh"}});
             add("export", "Export context/mesh data", IntentType::Export, {},
                 {{"context", "Export current context"}, {"mesh", "Export mesh manifest"}, {"file", "Output file"}});
+            add2("trust", "Peer trust & witness", IntentType::Trust, {}, {},
+                 {{"status", "Show all peer trust scores"},
+                  {"score", "Show score for a node"},
+                  {"record", "Record success|failure|offline for a node"},
+                  {"attest", "Produce or apply a witness attestation"},
+                  {"select", "Select a witness for a requester"},
+                  {"anchors", "List trust anchors"}});
             add("connect", "Connect to node", IntentType::Connect, {},
                 {{"address", "Node address"}, {"name", "Connection name"}});
             add("disconnect", "Disconnect", IntentType::Disconnect, {}, {});

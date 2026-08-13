@@ -188,6 +188,18 @@ namespace smo {
         // Serialize all sessions for crash recovery
         Bytes serialize_all() const;
 
+        // ── Crash recovery (RFC 0014 §6) ─────────────────────────────────
+        // Persist all ESTABLISHED/ACTIVE sessions to a file. Used before
+        // shutdown or on a periodic flush so the store survives a crash.
+        Result<void> persist(const std::string& path) const;
+
+        // Scan the persisted session store after a node restart.
+        // Per RFC 0014 §6: sessions that were ACTIVE when the node crashed are
+        // marked as orphans (their contracts are orphans) and forced to Closed;
+        // sessions that were ESTABLISHED are closed gracefully.
+        // Returns the number of sessions recovered (orphaned ACTIVE included).
+        Result<size_t> recover(const std::string& path, int64_t now);
+
     private:
         std::unordered_map<uint64_t, Session> sessions_;
         recovery::CRL* crl_ = nullptr;

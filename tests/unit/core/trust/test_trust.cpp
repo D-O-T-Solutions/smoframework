@@ -1,4 +1,5 @@
 #include <trust/trust.hpp>
+#include <trust/witness.hpp>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -497,6 +498,82 @@ static bool test_trust_manager_config()
 }
 
 // ==========================================================================
+// WitnessSelector (RFC 0003)
+// ==========================================================================
+
+static bool test_witness_selector_excludes_participants()
+{
+    smo::trust::WitnessSelector sel;
+    NodeID a, b, c;
+    a.value.fill(0x01);
+    b.value.fill(0x02);
+    c.value.fill(0x03);
+
+    std::vector<smo::trust::WitnessSelector::Candidate> candidates;
+    candidates.push_back({a, true, 0.8, false});
+    candidates.push_back({b, true, 0.9, false});
+    candidates.push_back({c, true, 0.7, false});
+
+    // Requester = a, responder = b → only c remains eligible.
+    auto witness = sel.select(a, b, candidates);
+    ASSERT(witness);
+    if (witness.value() != c)
+    {
+        printf("    unexpected witness selected\n");
+        return false;
+    }
+
+    return true;
+}
+
+static bool test_witness_selector_prefers_online_high_trust()
+{
+    smo::trust::WitnessSelector sel;
+    NodeID r, resp, best_offline, best_online, anchor;
+    r.value.fill(0x10);
+    resp.value.fill(0x20);
+    best_offline.value.fill(0x30);
+    best_online.value.fill(0x40);
+    anchor.value.fill(0x50);
+
+    std::vector<smo::trust::WitnessSelector::Candidate> candidates;
+    // Higher trust but offline / not anchor.
+    candidates.push_back({best_offline, false, 0.95, false});
+    // Slightly lower trust but online.
+    candidates.push_back({best_online, true, 0.9, false});
+    // Anchor is never a witness, even with max trust.
+    candidates.push_back({anchor, true, 1.0, true});
+
+    auto witness = sel.select(r, resp, candidates);
+    ASSERT(witness);
+    if (witness.value() != best_online)
+    {
+        printf("    expected online candidate selected\n");
+        return false;
+    }
+
+    return true;
+}
+
+static bool test_witness_selector_fallback_local()
+{
+    smo::trust::WitnessSelector sel;
+    NodeID a, b;
+    a.value.fill(0xA1);
+    b.value.fill(0xB2);
+
+    std::vector<smo::trust::WitnessSelector::Candidate> candidates;
+    candidates.push_back({a, true, 0.8, false});
+    candidates.push_back({b, true, 0.9, false});
+
+    // No third party → no witness → local decision (RFC 0003 §3.4).
+    auto witness = sel.select(a, b, candidates);
+    ASSERT(!witness);
+
+    return true;
+}
+
+// ==========================================================================
 // Main
 // ==========================================================================
 
@@ -527,6 +604,9 @@ int main(int, char*[])
     TEST("TM tick decay") END_TEST(test_trust_manager_tick_decay());
     TEST("TM serialization") END_TEST(test_trust_manager_serialization());
     TEST("TM config") END_TEST(test_trust_manager_config());
+    TEST("WS excludes requester+responder") END_TEST(test_witness_selector_excludes_participants());
+    TEST("WS prefers online high trust, no anchor") END_TEST(test_witness_selector_prefers_online_high_trust());
+    TEST("WS fallback local when no third party") END_TEST(test_witness_selector_fallback_local());
 
     printf("\n");
     if (failures == 0)

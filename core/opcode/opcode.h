@@ -59,6 +59,9 @@ namespace smo {
         // Contract lifecycle management (single opcode, method in payload)
         CONTRACT_MGMT = 0x2D,
 
+        // Witness/trust (single opcode, method in payload — RFC 0003 §3, RFC 0017)
+        WITNESS = 0x2E,
+
         CUSTOM = 0xFF,
     };
 
