@@ -281,8 +281,7 @@ static int cmd_sign(const std::vector<std::string>& args, const std::string& mes
         std::ifstream pf(pkg_path, std::ios::binary);
         if (!pf)
         {
-            std::fprintf(stderr, "Error: no recovery.pkg found at %s (authority keys missing).\n",
-                         pkg_path.c_str());
+            std::fprintf(stderr, "Error: no recovery.pkg found at %s (authority keys missing).\n", pkg_path.c_str());
             return 1;
         }
         std::string pkg_json((std::istreambuf_iterator<char>(pf)), std::istreambuf_iterator<char>());
@@ -1219,8 +1218,8 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
     authority_cert.display_name = mesh_id + "-authority";
     authority_cert.capabilities = Bytes(8, 0); // empty capabilities
     authority_cert.epoch = 1;
-    authority_cert.not_before = std::chrono::duration_cast<std::chrono::seconds>(
-                                    std::chrono::system_clock::now().time_since_epoch()).count();
+    authority_cert.not_before =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     authority_cert.not_after = authority_cert.not_before + 31536000 * 10; // 10 years
 
     // Build a CSR for the authority keypair (proof of possession) so the root
@@ -1255,8 +1254,9 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
     auto session = std::move(session_res).value();
 
     // Activate RootSession for authority bootstrap
-    auto now_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                      std::chrono::system_clock::now().time_since_epoch()).count();
+    auto now_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
     session.activate("authority-init-" + std::to_string(now_ns), "authority", recovery_pkg.root_public_key,
                      nullptr, // keep signer from unlock()
                      smo::genesis::SessionPolicy::bootstrap(),
@@ -1271,8 +1271,9 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
     req.mesh_id = mesh_id;
     req.requester = "authority-init";
     req.reason = "genesis stage 1 authority bootstrap";
-    req.timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                           std::chrono::system_clock::now().time_since_epoch()).count();
+    req.timestamp_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+            .count();
 
     auto exec_res = session.execute(req, rng, req.timestamp_ns);
     if (!exec_res)

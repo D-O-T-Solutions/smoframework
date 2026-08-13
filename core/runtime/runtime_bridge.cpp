@@ -10,8 +10,7 @@ namespace smo::runtime {
     // ── Simple JSON parser for payload ──────────────────────────────────────
     // Expected format: {"method": "list", "key": "value", ...}
     // Returns pair<method, arguments_map>
-    static Result<std::pair<std::string, std::unordered_map<std::string, std::string>>>
-    parse_payload(BytesView payload)
+    static Result<std::pair<std::string, std::unordered_map<std::string, std::string>>> parse_payload(BytesView payload)
     {
         std::string json(reinterpret_cast<const char*>(payload.data()), payload.size());
 
@@ -122,7 +121,7 @@ namespace smo::runtime {
 
         RuntimeRequest req;
         req.contract_id = route->contract_id;
-        req.input.method = parsed.value().first; // extracted method
+        req.input.method = parsed.value().first;                   // extracted method
         req.input.arguments = ContextValue(parsed.value().second); // arguments map
 
         return kernel_.execute(req);

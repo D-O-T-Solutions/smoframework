@@ -55,12 +55,24 @@ namespace smo {
             {
                 switch (c)
                 {
-                case '"': out += "\\\""; break;
-                case '\\': out += "\\\\"; break;
-                case '\n': out += "\\n"; break;
-                case '\r': out += "\\r"; break;
-                case '\t': out += "\\t"; break;
-                default: out += c; break;
+                case '"':
+                    out += "\\\"";
+                    break;
+                case '\\':
+                    out += "\\\\";
+                    break;
+                case '\n':
+                    out += "\\n";
+                    break;
+                case '\r':
+                    out += "\\r";
+                    break;
+                case '\t':
+                    out += "\\t";
+                    break;
+                default:
+                    out += c;
+                    break;
                 }
             }
             return out;
@@ -68,7 +80,9 @@ namespace smo {
 
         static int tcp_connect(const std::string& host, uint16_t port, int timeout_ms = 10000)
         {
-            struct addrinfo hints{}, *res = nullptr;
+            struct addrinfo hints
+            {
+            }, *res = nullptr;
             hints.ai_family = AF_UNSPEC;
             hints.ai_socktype = SOCK_STREAM;
             std::string port_str = std::to_string(port);
@@ -108,7 +122,10 @@ namespace smo {
             }
 
             // Wait for connect to complete
-            struct pollfd pfd{fd, POLLOUT, 0};
+            struct pollfd pfd
+            {
+                fd, POLLOUT, 0
+            };
             int poll_res = poll(&pfd, 1, timeout_ms);
             if (poll_res <= 0)
             {
@@ -731,10 +748,9 @@ namespace smo {
         return {};
     }
 
-Result<std::string> CLIContextManager::network_execute(const std::string& node_address,
-                                                             uint32_t opcode,
-                                                             const std::string& method,
-                                                             const std::unordered_map<std::string, std::string>& args)
+    Result<std::string> CLIContextManager::network_execute(const std::string& node_address, uint32_t opcode,
+                                                           const std::string& method,
+                                                           const std::unordered_map<std::string, std::string>& args)
     {
         // Ensure crypto providers are registered (lazy init for REPL)
         ensure_crypto_registered();
@@ -768,7 +784,8 @@ Result<std::string> CLIContextManager::network_execute(const std::string& node_a
         if (!ver_res)
         {
             ::close(fd);
-            return SMO_ERR_TRANSPORT(313, Error, NoRetry, Reconnect, "version handshake failed: " + ver_res.error().message);
+            return SMO_ERR_TRANSPORT(313, Error, NoRetry, Reconnect,
+                                     "version handshake failed: " + ver_res.error().message);
         }
 
         // 4. PQ handshake (client role)
@@ -794,9 +811,9 @@ Result<std::string> CLIContextManager::network_execute(const std::string& node_a
         smo::Packet pkt;
         pkt.header.version = 1;
         pkt.opcode_id = opcode;
-        pkt.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            std::chrono::system_clock::now().time_since_epoch())
-                            .count();
+        pkt.timestamp =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+                .count();
         pkt.payload.assign(payload.begin(), payload.end());
 
         std::vector<uint8_t> buf;
@@ -826,7 +843,8 @@ Result<std::string> CLIContextManager::network_execute(const std::string& node_a
         // 9. Unframe + parse response packet
         smo::FrameHeader fh;
         smo::BytesView resp_payload;
-        size_t frame_sz = smo::frame_read(smo::BytesView(enc_resp.value().data(), enc_resp.value().size()), fh, resp_payload);
+        size_t frame_sz =
+            smo::frame_read(smo::BytesView(enc_resp.value().data(), enc_resp.value().size()), fh, resp_payload);
         if (frame_sz == 0)
         {
             return SMO_ERR_TRANSPORT(309, Error, RetrySafe, None, "failed to unframe response");
