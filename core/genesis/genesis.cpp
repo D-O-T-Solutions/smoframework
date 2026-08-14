@@ -59,37 +59,29 @@ namespace smo::genesis {
         pkg.manifest_schema = manifest.manifest_schema;
         pkg.created_at = now_ns;
 
-        // Hash the recovery passphrase (if a real hash callback is injected)
-        if (crypto_.hash && !recovery_passphrase.empty())
+        // Recovery domain params (locked defaults, SPEC §7.8 / §17.9).
+        pkg.recovery_params = smo::kdf::Argon2idParams{};
+
+        // P0-EX: encrypt root keypair with the dedicated RecoveryDomain
+        // (Argon2id + AES-256-GCM) via crypto::RecoveryCryptoProvider. The
+        // salt + nonce are generated inside seal(); the versioned envelope is
+        // stored hex-encoded in root_keypair_encrypted.
+        if (crypto_.encrypt_keypair && !root_secret_key.empty())
         {
-            auto passhash_res = crypto_.hash(recovery_passphrase);
-            if (passhash_res)
+            // Format: 2-byte BE pubkey_len || pubkey || secret_key
+            Bytes plaintext;
+            plaintext.reserve(2 + root_public_key_raw.size() + root_secret_key.size());
+            uint16_t pubkey_len = static_cast<uint16_t>(root_public_key_raw.size());
+            plaintext.push_back(static_cast<uint8_t>((pubkey_len >> 8) & 0xFF));
+            plaintext.push_back(static_cast<uint8_t>(pubkey_len & 0xFF));
+            plaintext.insert(plaintext.end(), root_public_key_raw.begin(), root_public_key_raw.end());
+            plaintext.insert(plaintext.end(), root_secret_key.begin(), root_secret_key.end());
+
+            auto enc_res = crypto_.encrypt_keypair(BytesView(plaintext), recovery_passphrase,
+                                                   BytesView(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size()));
+            if (enc_res)
             {
-                auto passhash = std::move(passhash_res).value();
-                pkg.recovery_passphrase_hash = bytes_to_hex(passhash);
-
-                // Derive AEAD key = first 32 bytes of passphrase hash
-                Bytes aead_key(32, 0);
-                size_t copy_n = (std::min)(passhash.size(), aead_key.size());
-                std::memcpy(aead_key.data(), passhash.data(), copy_n);
-
-                // Encrypt the root keypair: 2-byte BE pubkey_len || pubkey || secret_key
-                if (crypto_.encrypt_keypair && !root_secret_key.empty())
-                {
-                    Bytes plaintext;
-                    plaintext.reserve(2 + root_public_key_raw.size() + root_secret_key.size());
-                    uint16_t pubkey_len = static_cast<uint16_t>(root_public_key_raw.size());
-                    plaintext.push_back(static_cast<uint8_t>((pubkey_len >> 8) & 0xFF));
-                    plaintext.push_back(static_cast<uint8_t>(pubkey_len & 0xFF));
-                    plaintext.insert(plaintext.end(), root_public_key_raw.begin(), root_public_key_raw.end());
-                    plaintext.insert(plaintext.end(), root_secret_key.begin(), root_secret_key.end());
-
-                    auto enc_res = crypto_.encrypt_keypair(BytesView(plaintext), BytesView(aead_key));
-                    if (enc_res)
-                    {
-                        pkg.root_keypair_encrypted = std::move(enc_res).value();
-                    }
-                }
+                pkg.root_keypair_encrypted = std::move(enc_res).value();
             }
         }
 

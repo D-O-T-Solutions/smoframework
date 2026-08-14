@@ -876,6 +876,64 @@ namespace smo::join {
             return crypto_result.error();
         const auto* crypto = crypto_result.value();
 
+        // 3.75 Token signature verification (P0-S1): the joining node's request
+        // signature proves knowledge of its CSR key, but it does NOT prove the
+        // token itself was issued by our authority. An attacker can mint a token
+        // with an arbitrary role/admission and present a self-created CSR. We
+        // must verify the token's own signature against the issuing authority's
+        // public key (root or authority) before trusting token.admission.role.
+        {
+            // v1 (HMAC) tokens carry no issuer and no issuer signature → the
+            // packet path cannot authenticate them; reject explicitly.
+            if (enroll::token_is_v1(token))
+            {
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention,
+                                    "v1 HMAC join token rejected: use a v2 token issued by this mesh authority");
+            }
+
+            // Resolve issuer key: "root:<fingerprint>" → mesh root key (loaded by
+            // the authority from the mesh manifest), "authority:<fingerprint>" →
+            // the seed authority's own public key.
+            const Bytes* issuer_key = nullptr;
+            std::string expected_fp;
+            if (token.issuer.rfind("root:", 0) == 0)
+            {
+                issuer_key = &authority.root_public_key();
+                expected_fp = token.issuer.substr(5);
+            }
+            else if (token.issuer.rfind("authority:", 0) == 0)
+            {
+                issuer_key = &authority.authority_public_key();
+                expected_fp = token.issuer.substr(10);
+            }
+            else
+            {
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention,
+                                    "Join token has unrecognized issuer: " + token.issuer);
+            }
+
+            if (issuer_key->empty())
+            {
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention,
+                                    "Authority public key not loaded; cannot verify join token");
+            }
+
+            // Fingerprint bound: issuer's "<fingerprint>" is the leading hex of
+            // the resolved public key (see smo-admin generate-invite), so a token
+            // claiming "root:<X>" must be bound to the actual mesh root key.
+            std::string actual_fp = bytes_to_hex(*issuer_key).substr(0, expected_fp.size());
+            if (expected_fp != actual_fp)
+            {
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Join token issuer fingerprint mismatch");
+            }
+
+            auto validate_res = enroll::validate_token(token, crypto->signer, BytesView(*issuer_key), crypto->hash);
+            if (!validate_res)
+            {
+                return validate_res.error();
+            }
+        }
+
         Bytes csr_bytes = hex_to_bytes(req.csr_pem);
         auto csr_result = CertificateSigningRequest::deserialize(BytesView(csr_bytes));
         if (!csr_result)
@@ -937,6 +995,7 @@ namespace smo::join {
         // Bootstrap ticket: opaque CBOR with {mesh_id, node_id, timestamp, hmac}
         // Used by BOOTSTRAP_SYNC to authenticate the node.
         {
+            // Build bootstrap ticket payload (without signature)
             cbor::Encoder enc;
             enc.encode_map(4);
             enc.encode_uint(1);
@@ -945,10 +1004,30 @@ namespace smo::join {
             enc.encode_string(bytes_to_hex(cert.subject_pubkey));
             enc.encode_uint(3);
             enc.encode_int(now_sec);
-            // 4: HMAC placeholder — in real impl, sign with authority key
+            // 4: signature field - will be filled after signing
             enc.encode_uint(4);
-            enc.encode_string("placeholder_hmac");
-            resp.bootstrap_ticket = enc.take();
+            enc.encode_bytes(Bytes{}); // placeholder for signature
+            Bytes ticket_payload = enc.take();
+
+            // Sign the ticket payload with authority's private key
+            auto sig_res = authority.sign_data(BytesView(ticket_payload), authority.rng());
+            if (!sig_res)
+            {
+                return sig_res.error();
+            }
+
+            // Now encode the final ticket with the signature
+            cbor::Encoder enc2;
+            enc2.encode_map(4);
+            enc2.encode_uint(1);
+            enc2.encode_string(token.mesh_id);
+            enc2.encode_uint(2);
+            enc2.encode_string(bytes_to_hex(cert.subject_pubkey));
+            enc2.encode_uint(3);
+            enc2.encode_int(now_sec);
+            enc2.encode_uint(4);
+            enc2.encode_bytes(BytesView(sig_res.value()));
+            resp.bootstrap_ticket = enc2.take();
         }
 
         return resp;
@@ -973,9 +1052,10 @@ namespace smo::join {
         resp.nonce = req.nonce;
         resp.manifest_revision = current_epoch;
 
-        // Manifest delta
+        // Manifest delta (signed envelope)
         if (req.manifest_revision < current_epoch)
         {
+            // Build manifest data payload
             cbor::Encoder enc;
             enc.encode_map(4);
             enc.encode_uint(1);
@@ -988,7 +1068,36 @@ namespace smo::join {
             enc.encode_array(cfg.bootstrap_endpoints.size());
             for (auto& ep : cfg.bootstrap_endpoints)
                 enc.encode_string(ep);
-            resp.manifest_delta = enc.take();
+            Bytes manifest_data = enc.take();
+
+            // Create manifest envelope: {1: data, 2: signature, 3: epoch}
+            cbor::Encoder enc_env;
+            enc_env.encode_map(3);
+            enc_env.encode_uint(1);
+            enc_env.encode_bytes(BytesView(manifest_data));
+            enc_env.encode_uint(2);
+            enc_env.encode_bytes(Bytes{}); // placeholder for signature
+            enc_env.encode_uint(3);
+            enc_env.encode_uint(current_epoch);
+            Bytes env_payload = enc_env.take();
+
+            // Sign the envelope payload
+            auto sig_res = authority.sign_data(BytesView(env_payload), authority.rng());
+            if (!sig_res)
+            {
+                return sig_res.error();
+            }
+
+            // Build final signed envelope
+            cbor::Encoder enc_final;
+            enc_final.encode_map(3);
+            enc_final.encode_uint(1);
+            enc_final.encode_bytes(BytesView(manifest_data));
+            enc_final.encode_uint(2);
+            enc_final.encode_bytes(BytesView(sig_res.value()));
+            enc_final.encode_uint(3);
+            enc_final.encode_uint(current_epoch);
+            resp.manifest_delta = enc_final.take();
         }
 
         // Membership delta

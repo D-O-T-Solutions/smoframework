@@ -413,7 +413,7 @@ namespace smo {
                         continue;
                     }
 
-                    // ── Version handshake (must precede PQ SecureSession) ──
+                    // ── Version handshake (must precede join request) ──
                     auto ver_result = smo::version_handshake_client(fd);
                     if (!ver_result)
                     {
@@ -422,21 +422,6 @@ namespace smo {
                         ::close(fd);
                         continue;
                     }
-
-                    // ── PQ handshake ──────────────────────────────────────
-                    SecureSession::Config sec_cfg;
-                    sec_cfg.role = SecureSession::Role::Client;
-                    SecureSession sec(fd, sec_cfg, *crypto);
-                    auto hs = sec.handshake();
-                    if (!hs)
-                    {
-                        std::printf("FAIL (handshake: %s)\n", hs.error().message.c_str());
-                        last_error = hs.error().message;
-                        continue;
-                    }
-
-                    // Capture peer cert for chain verification
-                    server_peer_cert.assign(sec.peer_certificate().begin(), sec.peer_certificate().end());
 
                     // ── Fresh nonce + signature per endpoint attempt ────────
                     // A stale/closed connection to the first endpoint must not
@@ -472,8 +457,8 @@ namespace smo {
 
                     Bytes req_cbor = req.encode_cbor();
 
-                    // ── Send encrypted JoinRequest, receive encrypted response ──
-                    auto send_res = sec.send(BytesView(req_cbor));
+                    // ── Send JoinRequest CBOR, receive JoinResponse CBOR ──
+                    auto send_res = smo::write_field(fd, BytesView(req_cbor));
                     if (!send_res)
                     {
                         std::printf("FAIL (send: %s)\n", send_res.error().message.c_str());
@@ -481,15 +466,15 @@ namespace smo {
                         continue;
                     }
 
-                    auto enc_resp = sec.recv();
-                    if (!enc_resp)
+                    auto resp_cbor_res = smo::read_field(fd);
+                    if (!resp_cbor_res)
                     {
-                        std::printf("FAIL (recv: %s)\n", enc_resp.error().message.c_str());
-                        last_error = enc_resp.error().message;
+                        std::printf("FAIL (recv: %s)\n", resp_cbor_res.error().message.c_str());
+                        last_error = resp_cbor_res.error().message;
                         continue;
                     }
 
-                    auto decode_result = join::JoinResponse::decode_cbor(BytesView(enc_resp.value()));
+                    auto decode_result = join::JoinResponse::decode_cbor(BytesView(resp_cbor_res.value()));
                     if (!decode_result)
                     {
                         std::printf("FAIL (invalid response: %s)\n", decode_result.error().message.c_str());
@@ -499,7 +484,7 @@ namespace smo {
 
                     resp = std::move(decode_result.value());
                     sent = true;
-                    std::printf("OK (PQ-secure)\n");
+                    std::printf("OK (join request accepted)\n");
                     break;
                 }
 
@@ -777,24 +762,27 @@ namespace smo {
                                         verify_msg.push_back(static_cast<uint8_t>((manifest_epoch >> (b * 8)) & 0xFF));
                                     auto sig_ok = crypto->signer.verify(BytesView(verify_msg), BytesView(manifest_sig),
                                                                         BytesView(auth_pubkey));
-                                    if (sig_ok && sig_ok.value())
-                                    {
-                                        std::printf("    manifest: signature VALID (epoch=%llu)\n",
-                                                    (unsigned long long)manifest_epoch);
-                                    }
-                                    else
-                                    {
-                                        std::printf("    manifest: WARNING signature INVALID, rejecting\n");
-                                    }
-                                }
-                                else
-                                {
-                                    std::printf("    manifest: envelope missing data/sig fields\n");
-                                }
+if (sig_ok && sig_ok.value())
+                            {
+                                std::printf("    manifest: signature VALID (epoch=%llu)\n",
+                                            (unsigned long long)manifest_epoch);
                             }
                             else
                             {
-                                std::printf("    manifest: not a valid envelope, treating as raw\n");
+                                return SMO_ERR_CERT(220, Error, RetrySafe, None,
+                                                    "manifest delta signature verification failed");
+                            }
+                                }
+else
+                            {
+                                return SMO_ERR_CERT(220, Error, RetrySafe, None,
+                                                    "manifest delta envelope missing data/sig fields");
+                            }
+                            }
+                            else
+                            {
+                                return SMO_ERR_CERT(220, Error, RetrySafe, None,
+                                                    "manifest delta not a valid signed envelope");
                             }
                         }
 

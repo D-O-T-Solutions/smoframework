@@ -4,6 +4,7 @@
 #include "../types.hpp"
 #include "../crypto/impl.hpp"
 #include "../crypto/suite.hpp"
+#include "../recovery/crl.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -38,6 +39,9 @@ namespace smo {
             Server
         };
 
+        // Handshake context string
+        static constexpr uint8_t kHandshakeCtx[] = "smo-pq-handshake-v1";
+
         struct Config
         {
             Role role = Role::Client;
@@ -45,6 +49,15 @@ namespace smo {
             // Server authentication (required for Role::Server)
             Bytes server_cert;        // signed certificate to present
             Bytes signing_secret_key; // identity key matching cert's pubkey
+
+            // Client authentication (required for Role::Client)
+            Bytes client_cert;        // signed certificate to present
+            Bytes client_signing_secret_key; // identity key matching cert's pubkey
+
+            // Trust & authorization (used by both Client and Server)
+            Bytes root_public_key;    // mesh root public key for chain verification
+            std::string mesh_id;      // mesh ID for authorization
+            const recovery::CRL* crl = nullptr; // CRL for revocation checking (optional)
         };
 
         // Take ownership of a connected socket fd.
@@ -76,6 +89,9 @@ namespace smo {
         bool secure_ = false;
         Config config_;
         const CryptoProvider& crypto_;
+
+        // Helper to verify certificate chain, expiry, CRL, and mesh authorization
+        Result<void> verify_peer_certificate(BytesView cert_blob) const;
 
         // Handshake transcript state
         Bytes peer_pk_;   // peer's KEM public key

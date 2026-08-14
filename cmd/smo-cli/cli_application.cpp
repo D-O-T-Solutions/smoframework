@@ -11,9 +11,12 @@
 #include "core/opcode/opcode.h"
 
 #include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite2_modern/suite2_modern_provider.hpp>
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
 
 #include <core/crypto/registry.hpp>
+#include <core/crypto/recovery_crypto.hpp>
+#include <core/crypto/kdf/argon2id.hpp>
 #include <core/crypto/suite.hpp>
 
 #include <iostream>
@@ -1329,6 +1332,7 @@ namespace smo {
             if (!crypto_initialized)
             {
                 smo::providers::register_suite1_classical();
+                smo::providers::register_suite2_modern();
 #ifdef SMO_WITH_PQC
                 smo::providers::register_suite3_purepqc();
 #endif
@@ -1426,7 +1430,7 @@ namespace smo {
                         recovery_passphrase = "smo-recovery-passphrase";
                 }
 
-                // Generate root Ed25519 keypair
+                // Generate root keypair (Suite 3 = ML-DSA)
                 auto root_kp_res = crypto->signer.generate_keypair(rng);
                 if (!root_kp_res)
                 {
@@ -1446,29 +1450,21 @@ namespace smo {
                 auto root_signer =
                     smo::crypto::make_software_signer_context(root_kp.secret_key, crypto->signer, std::move(root_meta));
 
-                // ── Real GenesisCryptoProvider (hash + AEAD + verify) ──
+                // ── Real GenesisCryptoProvider (RecoveryDomain: Argon2id + AES-256-GCM) ──
                 smo::genesis::GenesisCryptoProvider crypto_provider;
-                crypto_provider.hash = [crypto](const std::string& s) -> Result<Bytes> {
-                    return crypto->hash.hash(BytesView(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
-                };
-                crypto_provider.encrypt_keypair = [crypto, &rng, mesh_id = name](BytesView data,
-                                                                                 BytesView key) -> Result<Bytes> {
-                    // Format expected by unlock(): nonce(24) || ciphertext, AAD = mesh_id
-                    Bytes nonce(24, 0);
-                    rng.fill(BytesMutView{nonce.data(), nonce.size()});
-                    BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
-                    auto ct_res = crypto->aead.encrypt(data, aad, key, nonce);
-                    if (!ct_res)
-                    {
-                        return ct_res.error();
-                    }
-                    auto ct = std::move(ct_res).value();
-                    Bytes blob;
-                    blob.reserve(nonce.size() + ct.size());
-                    blob.insert(blob.end(), nonce.begin(), nonce.end());
-                    blob.insert(blob.end(), ct.begin(), ct.end());
-                    return blob;
-                };
+                crypto_provider.encrypt_keypair =
+                    [crypto, &rng, mesh_id = name](BytesView plaintext, const std::string& passphrase,
+                                                   BytesView aad) -> Result<Bytes> {
+                        // P0-EX: dedicated recovery domain — Argon2id (Monocypher)
+                        // + AES-256-GCM (OpenSSL EVP via RecoveryCryptoProvider).
+                        // No suite AEAD (XChaCha20) here (SPEC §7.8, §26.3).
+                        (void)crypto;
+                        smo::kdf::Argon2idParams params;
+                        return smo::crypto::RecoveryCryptoProvider::seal(
+                            plaintext, aad,
+                            BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()),
+                            params, rng);
+                    };
                 crypto_provider.verify = [crypto](BytesView data, BytesView sig, BytesView pubkey) -> Result<bool> {
                     return crypto->signer.verify(data, sig, pubkey);
                 };

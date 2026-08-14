@@ -4,6 +4,10 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
+#include <iomanip>
+#include <sstream>
+#include "../crypto/registry.hpp"
+#include "../crypto/suite.hpp"
 
 namespace smo {
 
@@ -202,6 +206,8 @@ namespace smo {
             write_u32(out, static_cast<uint32_t>(ser.size()));
             out.insert(out.end(), ser.begin(), ser.end());
         }
+        write_u32(out, static_cast<uint32_t>(signature.size()));
+        out.insert(out.end(), signature.begin(), signature.end());
         return out;
     }
 
@@ -227,6 +233,11 @@ namespace smo {
             d.scores.push_back(std::move(s.value()));
             off += slen;
         }
+        uint32_t sig_len = read_u32(data, off);
+        if (off + sig_len > data.size())
+            return SMO_ERR_TRUST(203, Warn, NoRetry, None, "truncated digest signature");
+        d.signature.assign(data.data() + off, data.data() + off + sig_len);
+        off += sig_len;
         return d;
     }
 
@@ -372,7 +383,7 @@ namespace smo {
         return anchors_;
     }
 
-    Result<void> TrustManager::verify_attestation(const Attestation& att, int64_t now, int64_t max_age) const
+    Result<void> TrustManager::verify_attestation(const Attestation& att, int64_t now, int64_t max_age, const CryptoProvider* crypto) const
     {
         if (att.timestamp <= 0)
             return SMO_ERR_TRUST(208, Warn, NoRetry, None, "attestation missing timestamp");
@@ -382,6 +393,42 @@ namespace smo {
             return SMO_ERR_TRUST(206, Error, NoRetry, None, "attestation score out of range");
         if (att.signature.empty())
             return SMO_ERR_TRUST(206, Error, NoRetry, None, "attestation missing signature");
+
+        // Resolve witness public key from trust anchors
+        const TrustAnchor* anchor = nullptr;
+        for (const auto& a : anchors_)
+        {
+            if (a.node_id == att.witness_id)
+            {
+                anchor = &a;
+                break;
+            }
+        }
+        if (!anchor)
+            return SMO_ERR_TRUST(206, Error, NoRetry, None, "witness not a trust anchor: " + smo::bytes_to_hex(att.witness_id.value));
+
+        // Verify signature
+        if (!crypto)
+        {
+            // Try to resolve suite from anchor metadata or use default
+            return SMO_ERR_TRUST(206, Error, NoRetry, None, "crypto provider required for attestation verification");
+        }
+
+        // Reconstruct canonical payload (without signature)
+        Bytes payload = Attestation{
+            att.witness_id,
+            att.subject_id,
+            att.claimed_score,
+            att.timestamp,
+            Bytes{} // empty signature
+        }.serialize();
+
+        auto verify_result = crypto->signer.verify(BytesView(payload), BytesView(att.signature), BytesView(anchor->public_key));
+        if (!verify_result)
+            return verify_result.error();
+        if (!verify_result.value())
+            return SMO_ERR_TRUST(206, Error, NoRetry, None, "attestation signature verification failed");
+
         return {};
     }
 
@@ -407,10 +454,44 @@ namespace smo {
         return d;
     }
 
-    Result<void> TrustManager::apply_digest(const TrustDigest& digest)
+    Result<void> TrustManager::apply_digest(const TrustDigest& digest, const CryptoProvider* crypto)
     {
         if (digest.scores.empty())
             return SMO_ERR_TRUST(203, Warn, NoRetry, None, "empty digest");
+
+        // Verify origin signature if crypto provider is provided
+        if (crypto && !digest.signature.empty())
+        {
+            // Resolve origin public key from trust anchors
+            const TrustAnchor* anchor = nullptr;
+            for (const auto& a : anchors_)
+            {
+                if (a.node_id == digest.origin)
+                {
+                    anchor = &a;
+                    break;
+                }
+            }
+            if (!anchor)
+                return SMO_ERR_TRUST(206, Error, NoRetry, None, "digest origin not a trust anchor: " + smo::bytes_to_hex(digest.origin.value));
+
+            // Reconstruct canonical payload (without signature)
+            TrustDigest payload_digest = digest;
+            payload_digest.signature.clear();
+            Bytes payload = payload_digest.serialize();
+
+            auto verify_res = crypto->signer.verify(BytesView(payload_digest.serialize()), BytesView(digest.signature), BytesView(anchor->public_key));
+            if (!verify_res)
+                return verify_res.error();
+            if (!verify_res.value())
+                return SMO_ERR_TRUST(206, Error, NoRetry, None, "digest signature verification failed");
+        }
+        else if (!digest.signature.empty())
+        {
+            // Signature present but no crypto provider to verify
+            return SMO_ERR_TRUST(206, Error, NoRetry, None, "crypto provider required for digest signature verification");
+        }
+
         for (const auto& score : digest.scores)
         {
             auto k = node_id_key(score.node_id);

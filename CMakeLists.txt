@@ -32,6 +32,9 @@ if(WITH_PQC)
 endif()
 add_subdirectory(third_party/clipboard)
 
+# ── OpenSSL 3 (RecoveryDomain AES-256-GCM, P0-EX — REQUIRED, no fallback) ──
+find_package(OpenSSL 3 REQUIRED COMPONENTS Crypto)
+
 # yaml-cpp for PolicyEngine (core/acl)
 include(FetchContent)
 FetchContent_Declare(

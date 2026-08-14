@@ -1,5 +1,5 @@
 add_executable(smo-admin main.cpp)
-target_link_libraries(smo-admin PRIVATE smo_sdk smo_tooling smo_core smo_mesh smo_genesis smo_suite1_classical)
+target_link_libraries(smo-admin PRIVATE smo_sdk smo_tooling smo_core smo_mesh smo_genesis smo_suite1_classical smo_suite2_modern)
 if(WITH_PQC)
     target_link_libraries(smo-admin PRIVATE smo_suite3_purepqc)
 endif()

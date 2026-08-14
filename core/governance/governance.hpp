@@ -5,6 +5,7 @@
 #include "../types.hpp"
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -281,12 +282,16 @@ namespace smo {
     class GovernanceEngine
     {
     public:
-        GovernanceEngine() = default;
+        // Authority public key resolver: given NodeID, returns public key if authority
+        using AuthorityResolver = std::function<Result<BytesView>(NodeID)>;
+
+        explicit GovernanceEngine(AuthorityResolver resolver = {})
+            : resolver_(std::move(resolver)) {}
 
         // Submit a new proposal (enters Signing state)
         Result<ProposalID> submit(GovernanceProposal proposal);
 
-        // Sign an existing proposal (adds signature)
+        // Sign an existing proposal (adds signature after verification)
         Result<void> sign(ProposalID id, NodeID authority, Bytes signature, int64_t now);
 
         // Commit a proposal (marks Committed if threshold met)
@@ -316,6 +321,7 @@ namespace smo {
     private:
         std::unordered_map<uint64_t, GovernanceProposal> proposals_;
         uint64_t next_id_ = 1;
+        AuthorityResolver resolver_;
     };
 
     // ===========================================================================

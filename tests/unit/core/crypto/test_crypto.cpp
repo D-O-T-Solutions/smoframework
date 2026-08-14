@@ -7,6 +7,9 @@
 #include "core/crypto/secure/secure_compare.hpp"
 #include "core/crypto/random/getrandom.hpp"
 #include "core/crypto/kdf/hkdf.hpp"
+#include "core/crypto/kdf/argon2id.hpp"
+#include "core/crypto/aead/aes256_gcm_provider.hpp"
+#include "core/crypto/recovery_crypto.hpp"
 #include "core/crypto/hash/sha256.hpp"
 #include "core/crypto/signer/ed25519_provider.hpp"
 #include "core/crypto/kem/x25519_provider.hpp"
@@ -327,6 +330,152 @@ static bool test_hash_suite_classification()
 }
 
 // ==========================================================================
+// RecoveryDomain (P0-EX): Argon2id + AES-256-GCM via RecoveryCryptoProvider
+// ==========================================================================
+
+static bool test_recovery_crypto_roundtrip()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
+
+    // Small memory for test speed (still >= 8 * lanes)
+    kdf::Argon2idParams params;
+    params.memory_kib = 8192; // 8 MiB
+    params.iterations = 2;
+    params.lanes = 4;
+
+    std::string passphrase = "correct horse battery staple";
+    Bytes secret(48, 0xAB);
+    std::string mesh_id = "TestMesh";
+    BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+    BytesView pass(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size());
+
+    auto envelope_res = crypto::RecoveryCryptoProvider::seal(BytesView(secret), aad, pass, params, rng);
+    ASSERT(envelope_res);
+    auto envelope = std::move(envelope_res).value();
+
+    // Versioned envelope self-describing: header(60) + ciphertext(48+16 tag)
+    ASSERT(crypto::RecoveryCryptoProvider::is_envelope(BytesView(envelope)));
+    ASSERT(envelope.size() == crypto::RecoveryCryptoProvider::kEnvelopeHeaderSize + secret.size() +
+                                   aead::AES256GCMProvider::kMacSize);
+
+    auto plain_res = crypto::RecoveryCryptoProvider::open(BytesView(envelope), aad, pass);
+    ASSERT(plain_res);
+    ASSERT(plain_res.value() == secret);
+    return true;
+}
+
+static bool test_recovery_crypto_wrong_passphrase()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
+
+    kdf::Argon2idParams params;
+    params.memory_kib = 8192;
+    params.iterations = 2;
+    params.lanes = 4;
+
+    std::string passphrase = "right";
+    std::string wrong = "wrong";
+    Bytes secret(32, 0x11);
+    std::string mesh_id = "MeshA";
+    BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+
+    auto envelope_res =
+        crypto::RecoveryCryptoProvider::seal(BytesView(secret), aad,
+                                             BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()),
+                                             params, rng);
+    ASSERT(envelope_res);
+    auto envelope = std::move(envelope_res).value();
+
+    auto plain_res =
+        crypto::RecoveryCryptoProvider::open(BytesView(envelope), aad,
+                                             BytesView(reinterpret_cast<const uint8_t*>(wrong.data()), wrong.size()));
+    ASSERT(!plain_res);
+    return true;
+}
+
+static bool test_recovery_crypto_tamper()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
+
+    kdf::Argon2idParams params;
+    params.memory_kib = 8192;
+    params.iterations = 2;
+    params.lanes = 4;
+
+    std::string passphrase = "tamper-check";
+    Bytes secret(24, 0x22);
+    std::string mesh_id = "MeshB";
+    BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+    BytesView pass(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size());
+
+    auto envelope_res = crypto::RecoveryCryptoProvider::seal(BytesView(secret), aad, pass, params, rng);
+    ASSERT(envelope_res);
+    auto envelope = std::move(envelope_res).value();
+
+    // Flip a ciphertext byte → GCM tag must reject
+    envelope[envelope.size() - 1] ^= 0x01;
+    auto plain_res = crypto::RecoveryCryptoProvider::open(BytesView(envelope), aad, pass);
+    ASSERT(!plain_res);
+    return true;
+}
+
+static bool test_recovery_crypto_legacy_rejected()
+{
+    // Old scheme blob (nonce24 || ct) must NOT be accepted as a versioned
+    // envelope — no silent downgrade (SPEC §26.3 / P0-EX lock).
+    Bytes legacy(80, 0x00);
+    ASSERT(!crypto::RecoveryCryptoProvider::is_envelope(BytesView(legacy)));
+    std::string pass = "x";
+    auto res = crypto::RecoveryCryptoProvider::open(
+        BytesView(legacy), BytesView(reinterpret_cast<const uint8_t*>("m"), 1),
+        BytesView(reinterpret_cast<const uint8_t*>(pass.data()), pass.size()));
+    ASSERT(!res);
+    return true;
+}
+
+static bool test_aes256_gcm_known_vector()
+{
+    // NIST GCM test vector (CAVS, AES-256-GCM):
+    // key 0000000000000000000000000000000000000000000000000000000000000000
+    // iv  000000000000000000000000
+    // aad ""
+    // plaintext ""
+    // tag  530f8afbc74536b9a963b4f1c4cb738b
+    uint8_t key_b[32] = {0};
+    uint8_t nonce_b[12] = {0};
+    auto ct = aead::AES256GCMProvider::encrypt(BytesView{}, BytesView{}, BytesView(key_b), BytesView(nonce_b));
+    ASSERT(ct.size() == 16);
+    const uint8_t expected[16] = {0x53, 0x0f, 0x8a, 0xfb, 0xc7, 0x45, 0x36, 0xb9,
+                                  0xa9, 0x63, 0xb4, 0xf1, 0xc4, 0xcb, 0x73, 0x8b};
+    ASSERT(memcmp(ct.data(), expected, 16) == 0);
+    return true;
+}
+
+static bool test_argon2id_deterministic()
+{
+    kdf::Argon2idParams params;
+    params.memory_kib = 1024;
+    params.iterations = 2;
+    params.lanes = 2;
+
+    std::string pass = "Argon2id-test";
+    std::string salt = "0123456789abcdef";
+    BytesView p(reinterpret_cast<const uint8_t*>(pass.data()), pass.size());
+    BytesView s(reinterpret_cast<const uint8_t*>(salt.data()), salt.size());
+
+    auto a = kdf::argon2id_derive(p, s, params, 32);
+    auto b = kdf::argon2id_derive(p, s, params, 32);
+    ASSERT(a == b);
+    ASSERT(a.size() == 32);
+    // Different salt → different output
+    std::string salt2 = "fedcba9876543210";
+    BytesView s2(reinterpret_cast<const uint8_t*>(salt2.data()), salt2.size());
+    auto c = kdf::argon2id_derive(p, s2, params, 32);
+    ASSERT(a != c);
+    return true;
+}
+
+// ==========================================================================
 // Main
 // ==========================================================================
 
@@ -390,6 +539,20 @@ int main()
     END_TEST(test_crypto_suite_constants());
     TEST("HashSuite classification");
     END_TEST(test_hash_suite_classification());
+
+    printf("\n[RecoveryDomain (P0-EX)]\n");
+    TEST("AES-256-GCM known vector (NIST CAVS)");
+    END_TEST(test_aes256_gcm_known_vector());
+    TEST("Argon2id deterministic derive");
+    END_TEST(test_argon2id_deterministic());
+    TEST("RecoveryCryptoProvider seal/open roundtrip");
+    END_TEST(test_recovery_crypto_roundtrip());
+    TEST("Wrong passphrase rejected");
+    END_TEST(test_recovery_crypto_wrong_passphrase());
+    TEST("Tampered ciphertext rejected");
+    END_TEST(test_recovery_crypto_tamper());
+    TEST("Legacy (nonce24) envelope rejected");
+    END_TEST(test_recovery_crypto_legacy_rejected());
 
     printf("\n=== %s ===\n", failures ? "FAILURES" : "ALL PASS");
     return failures ? 1 : 0;

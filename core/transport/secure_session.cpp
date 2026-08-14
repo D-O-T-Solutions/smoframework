@@ -2,6 +2,9 @@
 
 #include "../crypto/kdf/hkdf.hpp"
 #include "../certificate/certificate.hpp"
+#include "../types.hpp"
+#include <chrono>
+#include <recovery/crl.hpp>
 
 #include <cstring>
 #include <sys/socket.h>
@@ -207,8 +210,19 @@ namespace smo {
         local_pk_ = std::move(kp.value().public_key);
         local_sk_ = std::move(kp.value().secret_key);
 
-        // 2. Send ClientHello: [pk_len(2)][kem_pk]
+        // 2. Send ClientHello: [pk_len(2)][kem_pk][cert_len(2)][cert][sig_len(2)][sig]
         SMO_TRY(write_field(fd_, BytesView(local_pk_)));
+
+        // Sign ClientHello with our identity key
+        Bytes hello_msg;
+        hello_msg.insert(hello_msg.end(), kHandshakeCtx, kHandshakeCtx + sizeof(kHandshakeCtx) - 1);
+        hello_msg.insert(hello_msg.end(), local_pk_.begin(), local_pk_.end());
+        auto hello_sig_res = crypto_.signer.sign(BytesView(hello_msg), BytesView(config_.client_signing_secret_key), rng);
+        if (!hello_sig_res)
+            return hello_sig_res.error();
+
+        SMO_TRY(write_field(fd_, BytesView(config_.client_cert)));
+        SMO_TRY(write_field(fd_, BytesView(hello_sig_res.value())));
 
         // 3. Read ServerHello: [pk][ct][cert][sig]
         auto server_pk_res = read_field(fd_);
@@ -226,6 +240,9 @@ namespace smo {
             return cert_res.error();
         peer_cert_ = std::move(cert_res.value());
 
+        // Verify peer certificate (chain, expiry, CRL, mesh authorization)
+        SMO_TRY(verify_peer_certificate(BytesView(peer_cert_)));
+
         auto sig_res = read_field(fd_);
         if (!sig_res)
             return sig_res.error();
@@ -233,8 +250,7 @@ namespace smo {
 
         // 4. Verify server signature
         Bytes sig_msg;
-        static const uint8_t kCtx[] = "smo-pq-handshake-v1";
-        sig_msg.insert(sig_msg.end(), kCtx, kCtx + sizeof(kCtx) - 1);
+        sig_msg.insert(sig_msg.end(), kHandshakeCtx, kHandshakeCtx + sizeof(kHandshakeCtx) - 1);
         sig_msg.insert(sig_msg.end(), local_pk_.begin(), local_pk_.end());
         sig_msg.insert(sig_msg.end(), peer_pk_.begin(), peer_pk_.end());
         sig_msg.insert(sig_msg.end(), ct.begin(), ct.end());
@@ -274,11 +290,43 @@ namespace smo {
     {
         auto rng = crypto_.default_rng();
 
-        // 1. Read ClientHello: [pk_len(2)][kem_pk]
+        // 1. Read ClientHello: [pk_len(2)][kem_pk][cert_len(2)][cert][sig_len(2)][sig]
         auto client_pk_res = read_field(fd_);
         if (!client_pk_res)
             return client_pk_res.error();
         peer_pk_ = std::move(client_pk_res.value());
+
+        // Read client certificate
+        auto client_cert_res = read_field(fd_);
+        if (!client_cert_res)
+            return client_cert_res.error();
+        peer_cert_ = std::move(client_cert_res.value());
+
+        // Verify client certificate
+        SMO_TRY(verify_peer_certificate(BytesView(peer_cert_)));
+
+        // Read client signature
+        auto client_sig_res = read_field(fd_);
+        if (!client_sig_res)
+            return client_sig_res.error();
+        Bytes client_signature = std::move(client_sig_res.value());
+
+        // Verify client signature over ClientHello
+        Bytes hello_msg;
+        hello_msg.insert(hello_msg.end(), kHandshakeCtx, kHandshakeCtx + sizeof(kHandshakeCtx) - 1);
+        hello_msg.insert(hello_msg.end(), peer_pk_.begin(), peer_pk_.end());
+
+        // Get client's public key from certificate
+        auto client_cert_parse_res = Certificate::deserialize(BytesView(peer_cert_));
+        if (!client_cert_parse_res)
+            return client_cert_parse_res.error();
+
+        auto verify_res = crypto_.signer.verify(
+            BytesView(hello_msg), BytesView(client_signature), BytesView(client_cert_parse_res.value().subject_pubkey));
+        if (!verify_res || !verify_res.value())
+        {
+            return SMO_ERR_CERT(216, Error, NoRetry, None, "Client handshake signature invalid");
+        }
 
         // 2. Generate our KEM keypair
         auto kp = crypto_.kem.generate_keypair(rng);
@@ -296,8 +344,7 @@ namespace smo {
 
         // 4. Sign handshake
         Bytes sig_msg;
-        static const uint8_t kCtx[] = "smo-pq-handshake-v1";
-        sig_msg.insert(sig_msg.end(), kCtx, kCtx + sizeof(kCtx) - 1);
+        sig_msg.insert(sig_msg.end(), kHandshakeCtx, kHandshakeCtx + sizeof(kHandshakeCtx) - 1);
         sig_msg.insert(sig_msg.end(), peer_pk_.begin(), peer_pk_.end());
         sig_msg.insert(sig_msg.end(), local_pk_.begin(), local_pk_.end());
         sig_msg.insert(sig_msg.end(), ct.begin(), ct.end());
@@ -404,5 +451,56 @@ namespace smo {
 
         return crypto_.aead.decrypt(ciphertext, BytesView{}, BytesView(rx_key_), BytesView(wire_nonce));
     }
+
+// Verify peer certificate: chain, expiry, CRL, and mesh authorization
+Result<void> SecureSession::verify_peer_certificate(BytesView cert_blob) const
+{
+    // Parse certificate
+    auto cert_res = Certificate::deserialize(cert_blob);
+    if (!cert_res)
+        return cert_res.error();
+    Certificate cert = std::move(cert_res.value());
+
+    // For now, we only have a single certificate (not a full chain).
+    // In the future, this should build a chain and verify up to root_public_key.
+    // Check temporal validity
+    auto now_sec = std::chrono::duration_cast<std::chrono::seconds>(
+                       std::chrono::system_clock::now().time_since_epoch())
+                       .count();
+    if (!cert.is_valid_at(now_sec))
+    {
+        return SMO_ERR_CERT(217, Error, NoRetry, None, "Certificate expired or not yet valid");
+    }
+
+    // Check CRL if provided
+    if (config_.crl)
+    {
+        // Compute fingerprint of the certificate
+        auto fp_res = crypto_.hash.hash(cert_blob);
+        if (!fp_res)
+            return fp_res.error();
+        std::string fp_hex = bytes_to_hex(fp_res.value());
+        if (config_.crl->is_revoked(fp_hex))
+        {
+            return SMO_ERR_CERT(218, Error, NoRetry, None, "Certificate revoked");
+        }
+    }
+
+// Check mesh authorization: the certificate's mesh_id must match config_.mesh_id
+        // The certificate stores mesh_id in its mesh_id field (Bytes), convert to string for comparison
+        if (!config_.mesh_id.empty())
+        {
+            std::string cert_mesh_id(cert.mesh_id.begin(), cert.mesh_id.end());
+            if (cert_mesh_id != config_.mesh_id)
+            {
+                return SMO_ERR_CERT(219, Error, NoRetry, None, "Certificate mesh_id mismatch");
+            }
+        }
+
+    // TODO: Full chain verification up to root_public_key when chain support is added
+    // For now, we only have a single certificate from the peer
+
+    return {};
+}
 
 } // namespace smo

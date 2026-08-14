@@ -1,5 +1,8 @@
 #include <trust/trust.hpp>
 #include <trust/witness.hpp>
+#include <crypto/registry.hpp>
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -338,36 +341,78 @@ static bool test_trust_manager_all_scores()
 
 static bool test_trust_manager_verify_attestation()
 {
-    TrustManager tm;
-    Attestation att;
-    att.witness_id = make_node_id(0x01);
-    att.subject_id = make_node_id(0x02);
-    att.claimed_score = 0.5;
-    att.timestamp = 1000;
-    att.signature = {0x01, 0x02, 0x03};
-
-    // Valid
-    ASSERT(tm.verify_attestation(att, 1500, 10000));
-
-    // Missing timestamp
-    Attestation bad1 = att;
-    bad1.timestamp = 0;
-    ASSERT(!tm.verify_attestation(bad1, 1500, 10000));
-
-    // Expired
-    Attestation bad2 = att;
-    ASSERT(!tm.verify_attestation(bad2, 9999999999999LL, 1000));
-
-    // Score out of range
-    Attestation bad3 = att;
-    bad3.claimed_score = 1.5;
-    ASSERT(!tm.verify_attestation(bad3, 1500, 10000));
-
-    // Missing signature
-    Attestation bad4 = att;
-    bad4.signature.clear();
-    ASSERT(!tm.verify_attestation(bad4, 1500, 10000));
-
+    // Initialize all crypto suites via registry
+    auto& reg = CryptoRegistry::instance();
+    
+    // Test with all registered suites
+    for (auto suite_id : reg.available_suites())
+    {
+        auto crypto_res = reg.get_suite(suite_id);
+        if (!crypto_res) continue;
+        const auto* crypto = crypto_res.value();
+        
+        TrustManager tm;
+        
+        // Create a witness anchor with a keypair from this suite
+        auto rng = crypto->default_rng();
+        auto kp_res = crypto->signer.generate_keypair(rng);
+        if (!kp_res) continue;
+        auto kp = std::move(kp_res).value();
+        
+        // Add witness as trust anchor
+        TrustAnchor anchor;
+        anchor.node_id = make_node_id(0x01);
+        anchor.public_key = std::move(kp.public_key);
+        tm.add_trust_anchor(std::move(anchor));
+        
+        // Create valid attestation signed by the witness key
+        Attestation att;
+        att.witness_id = make_node_id(0x01);
+        att.subject_id = make_node_id(0x02);
+        att.claimed_score = 0.5;
+        att.timestamp = 1000;
+        
+        // Sign canonical payload
+        Attestation payload_att;
+        payload_att.witness_id = att.witness_id;
+        payload_att.subject_id = att.subject_id;
+        payload_att.claimed_score = att.claimed_score;
+        payload_att.timestamp = att.timestamp;
+        payload_att.signature.clear();
+        auto payload = payload_att.serialize();
+        
+        auto sig_res = crypto->signer.sign(BytesView(payload), BytesView(kp.secret_key), rng);
+        if (!sig_res) continue;
+        att.signature = std::move(sig_res).value();
+        
+        // Valid attestation should pass
+        auto verify_res = tm.verify_attestation(att, 1500, 10000, crypto);
+        if (!verify_res) return false;
+        
+        // Missing timestamp
+        Attestation bad1 = att;
+        bad1.timestamp = 0;
+        auto bad1_res = tm.verify_attestation(bad1, 1500, 10000, crypto);
+        if (bad1_res) return false;
+        
+        // Expired
+        Attestation bad2 = att;
+        auto bad2_res = tm.verify_attestation(bad2, 9999999999999LL, 1000, crypto);
+        if (bad2_res) return false;
+        
+        // Score out of range
+        Attestation bad3 = att;
+        bad3.claimed_score = 1.5;
+        auto bad3_res = tm.verify_attestation(bad3, 1500, 10000, crypto);
+        if (bad3_res) return false;
+        
+        // Missing signature
+        Attestation bad4 = att;
+        bad4.signature.clear();
+        auto bad4_res = tm.verify_attestation(bad4, 1500, 10000, crypto);
+        if (bad4_res) return false;
+    }
+    
     return true;
 }
 
@@ -411,9 +456,9 @@ static bool test_trust_manager_produce_and_apply_digest()
     ASSERT_EQ(digest.scores.size(), 2U);
     ASSERT_EQ(digest.sequence, 1);
 
-    // Apply to a fresh TrustManager
+    // Apply to a fresh TrustManager (no crypto provider, signature empty so skip verify)
     TrustManager tm2;
-    ASSERT(tm2.apply_digest(digest));
+    ASSERT(tm2.apply_digest(digest, nullptr));
     ASSERT_EQ(tm2.count(), 2U);
 
     auto s1 = tm2.get_score(n1);
@@ -430,7 +475,7 @@ static bool test_trust_manager_apply_empty_digest()
     TrustDigest d;
     d.origin = make_node_id(0xFF);
     d.scores = {};
-    ASSERT(!tm.apply_digest(d));
+    ASSERT(!tm.apply_digest(d, nullptr));
 
     return true;
 }

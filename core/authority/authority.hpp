@@ -80,6 +80,11 @@ namespace smo::authority {
         // Returns: serialized Certificate
         Result<Certificate> sign_csr(BytesView csr_blob, const std::string& mesh_id);
 
+        // Sign arbitrary data with the authority's private key
+        // Used for bootstrap tickets, manifest deltas, etc.
+        // Returns: signature bytes
+        Result<Bytes> sign_data(BytesView data, RngRef& rng);
+
         // ── Certificate Operations ───────────────────────────────────
 
         // Verify a certificate chain
@@ -94,6 +99,17 @@ namespace smo::authority {
         const NodeRegistry& registry() const { return *registry_; }
         bool is_initialized() const { return initialized_; }
         std::string mesh_id() const { return config_.mesh_id; }
+
+        // ── Public Key Accessors (join-token / handshake verification) ──
+
+        // Authority public key (loaded from disk / generated at mesh create)
+        const Bytes& authority_public_key() const;
+
+        // Root public key (only loaded if root.cert is present in data_dir)
+        const Bytes& root_public_key() const;
+
+        // Get RNG reference for signing operations
+        RngRef& rng();
 
     private:
         class Impl;

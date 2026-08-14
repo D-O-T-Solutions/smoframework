@@ -25,7 +25,7 @@ add_executable(smo_test_governance
     unit/core/governance/test_governance.cpp
 )
 target_link_libraries(smo_test_governance PRIVATE
-    smo_core fmt::fmt
+    smo_core smo_suite1_classical fmt::fmt
 )
 smo_set_warnings(smo_test_governance)
 smo_set_optimisation(smo_test_governance)
@@ -141,6 +141,17 @@ smo_set_warnings(smo_test_crypto)
 smo_set_optimisation(smo_test_crypto)
 add_test(NAME crypto_model COMMAND smo_test_crypto)
 
+# ── Recovery package tests (P0-EX RecoveryDomain format v1) ─────────
+add_executable(smo_test_recovery_package
+    unit/core/genesis/test_recovery_package.cpp
+)
+target_link_libraries(smo_test_recovery_package PRIVATE
+    smo_genesis smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_recovery_package)
+smo_set_optimisation(smo_test_recovery_package)
+add_test(NAME recovery_package_model COMMAND smo_test_recovery_package)
+
 # ── Error model tests ────────────────────────────────────────────────
 add_executable(smo_test_error
     unit/core/errors/test_error.cpp
@@ -168,8 +179,13 @@ add_executable(smo_pct
     unit/protocol/test_pct.cpp
 )
 target_link_libraries(smo_pct PRIVATE
-    smo_runtime smo_core smo_contract smo_protocol smo_storage fmt::fmt
+    smo_runtime smo_core smo_contract smo_protocol smo_storage
+    smo_suite1_classical smo_suite2_modern
+    fmt::fmt
 )
+if(WITH_PQC)
+    target_link_libraries(smo_pct PRIVATE smo_suite3_purepqc)
+endif()
 smo_set_warnings(smo_pct)
 smo_set_optimisation(smo_pct)
 target_compile_definitions(smo_pct PRIVATE SMO_TEST=1)

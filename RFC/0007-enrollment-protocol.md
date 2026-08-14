@@ -1,7 +1,7 @@
 # RFC 0007 — Enrollment Protocol
 
 ## Status
-ACCEPTED — incorporated into SPEC.md §VII.
+ACCEPTED — AMENDED 2026-08-14 (§AMEND-5 Join Token: HMAC → issuer digital signature; `hmac_secret` deprecated). Incorporated into SPEC.md §VII.
 
 **Implementation Status: ~60% Complete**
 
@@ -11,7 +11,7 @@ ACCEPTED — incorporated into SPEC.md §VII.
 | Transport abstraction (stdin/clipboard/file) | ✅ | ✅ | `smo node import` auto-detects |
 | Pipe/stdout automation | ✅ | ✅ | `smo-admin sign \| smo node import` |
 | Clipboard (interactive) | ✅ | ✅ | `ClipboardProvider` with 5 backends |
-| Join Token v1 (CBOR+HMAC) | ✅ | ✅ | Format frozen, `generate-invite` works |
+| Join Token v2 (CBOR + issuer signature) | ✅ | ✅ | Format AMENDED 2026-08-14 (HMAC → issuer sig); `generate-invite` works |
 | `smo mesh join --token` | ✅ | ❌ STUB | Only prints "not yet implemented" |
 | `smo node --join <token>` | ✅ | ❌ MISSING | Flag doesn't exist |
 | Auto-enrollment flow | ✅ | ❌ MISSING | Manual: init→export→copy→sign→import |
@@ -29,7 +29,14 @@ How does a new node deliver its Public Key to an Authority and receive a verifia
 3. **`smo node import` auto-detects transport** in order: stdin → clipboard → filename → error. No format flags needed.
 4. **Pipe/stdout is the automation default.** `smo-admin sign request.smor | smo node import`. Also works over SSH: `ssh admin "smo-admin sign ..." | smo node import`.
 5. **Clipboard is the interactive default.** `smo-admin sign request.smor --copy` → operator switches context → `smo node import`. No file paths.
-6. **Join Token (v1, CBOR)** for one-command enrollment: `smo-admin generate-invite --expire 30m --endpoint 10.0.0.1:7777` generates `SMO-JOIN-<base64url(CBOR||HMAC)>`; `smo mesh join SMO-JOIN-...` automates CSR → sign → import. The token is a CBOR map (RFC 7049 subset) containing: `version`, `mesh_id`, `mesh_epoch`, `cipher_suite_id`, `bootstrap_endpoints[]`, `role`, `expiry`, `nonce`. The HMAC is computed over the CBOR payload with the mesh's `hmac_secret` (32-byte key stored in `mesh.json`). Error 212 = invalid HMAC, 213 = expired. The token contains ONLY bootstrap data — NEVER a certificate or private key.
+6. **Join Token v2 (issuer-signed, AMEND-5)** for one-command enrollment: `smo-admin generate-invite --expire 30m --endpoint 10.0.0.1:7777` generates `SMO-JOIN-<base64url(CBOR||signature)>`; `smo mesh join SMO-JOIN-...` automates CSR → sign → import. The token is a CBOR map (RFC 7049 subset) containing: `version`, `mesh_id`, `mesh_epoch`, `cipher_suite_id`, `bootstrap_endpoints[]`, `role`, `expiry`, `nonce`, plus token-auth metadata `issuer_key_id` and `issuer_suite_id`.
+
+> **AMEND-5 (2026-08-14, supersedes original Decision 6 HMAC):** Join Token authentication = **issuer digital signature**, NOT HMAC.
+> - Old: `SMO-JOIN-<base64url(CBOR || HMAC(mesh hmac_secret 32B))>`; HMAC key stored in `mesh.json`.
+> - New: `SMO-JOIN-<base64url(CBOR || digital_signature)>`, signed by an Authority/Root key. Verification requires `issuer_key_id + issuer_suite_id` to select the issuer public key from the trust root — never algorithm inference.
+> - `MeshConfig.hmac_secret` is **deprecated** for Join Token auth. It MAY remain for backward compatibility or be removed (operator decision — see DISCUSSION_0046 §22.D).
+> - Rationale: symmetric HMAC gives no non-repudiation and requires distributing/holding a shared mesh secret; an asymmetric issuer signature binds the token to the issuing authority and verifies through the existing certificate chain. Breaking protocol change vs v1.
+> - Error 212 = invalid signature/issuer, 213 = expired. The token contains ONLY bootstrap data — NEVER a certificate or private key.
 7. **QR code** (future) for air-gap: `smo-admin sign request.smor --qr` renders terminal QR; `smo node scan` reads via camera.
 8. **Recovery Package** requires encryption before transport. `smo mesh recovery --copy` prompts for passphrase, AES-256-GCM encrypts, then copies.
 9. **Post-import summary** is mandatory: NodeID, certificate fingerprint, cipher suite, mesh name, role, epoch, expiry.
@@ -44,7 +51,7 @@ How does a new node deliver its Public Key to an Authority and receive a verifia
 18. **Error code 220 — DisplayNameAlreadyExists.** Mapped from `SQLITE_CONSTRAINT_UNIQUE`. `Severity: Warn`, `RetryClass: RetrySafe`, `Recovery: None`. The node proposes a different name and retries.
 19. **display_name validation** before insertion: non-empty, ≤128 chars, starts with alphanumeric, only `[a-zA-Z0-9._-]`. Errors 221 (InvalidDisplayName) and 222 (DisplayNameTooLong) are returned for violations.
 20. **CipherSuite is a property of the Mesh**, not the Node. `MeshConfig` carries `cipher_suite_id`; all nodes in a mesh use the same suite. No cipher negotiation at enrollment time. Suite is locked per mesh epoch. When `mesh_epoch` changes, `cipher_suite_id` MAY stay the same or change.
-21. **`MeshConfig.hmac_secret`** is a 32-byte random hex key auto-generated at mesh creation and written into `mesh.json`. It is used to HMAC-sign all Join Tokens for that mesh. The Authority reads it from `mesh.json` during `generate_invite()` and during `sign_csr()` (to validate the token).
+21. **`MeshConfig.hmac_secret`** is a 32-byte random hex key auto-generated at mesh creation and written into `mesh.json`. It is **deprecated for Join Token auth (AMEND-5)**; may be retained for compatibility or removed per operator decision. Join Token v2 uses an issuer digital signature instead. The Authority reads issuer key metadata during `generate_invite()` and during `sign_csr()` (to validate the token signature).
 22. **Bootstrap endpoints are a property of the Mesh, not the Join Token generator.** `MeshConfig` stores `bootstrap_endpoints[]` and `advertise_addresses[]`. These are configured once via `smo-admin mesh publish` (interactive wizard) and read by `generate-invite` automatically. The operator does NOT pass `--endpoint` to `generate-invite` after publish.
 23. **Listen Address vs Advertise Address are separate concepts.** `listen_address` (default `0.0.0.0:7777`) is what the daemon binds to. `advertise_addresses[]` are what peers connect to (DNS name, public IP, private IP). This follows Kubernetes/Consul/RabbitMQ convention.
 23. **Mesh is not considered "online" until publish.** `create-mesh` generates keys + mesh.json offline. `mesh publish` configures network endpoints, verifies port availability, detects NAT, and marks bootstrap as ready. `smo-node --daemon` refuses to start without published endpoints. `generate-invite` returns error 223 (BOOTSTRAP_NOT_CONFIGURED) if called before publish.

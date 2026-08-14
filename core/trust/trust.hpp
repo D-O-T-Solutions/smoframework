@@ -132,6 +132,7 @@ namespace smo {
         int64_t sequence{0}; // Monotonic counter, newest wins
         int64_t timestamp{0};
         std::vector<TrustScore> scores;
+        Bytes signature; // signature by origin's private key
 
         Bytes serialize() const;
         static Result<TrustDigest> deserialize(BytesView data);
@@ -176,7 +177,7 @@ namespace smo {
         // --- Attestation ---
 
         // Verify an attestation (check timestamp window + signature)
-        Result<void> verify_attestation(const Attestation& att, int64_t now, int64_t max_age = 3600000000000LL) const;
+        Result<void> verify_attestation(const Attestation& att, int64_t now, int64_t max_age = 3600000000000LL, const CryptoProvider* crypto = nullptr) const;
 
         // Apply an attestation to the subject's score
         void apply_attestation(const Attestation& att);
@@ -188,7 +189,7 @@ namespace smo {
         int64_t digest_sequence() const noexcept { return digest_seq_; }
 
         // Apply a received digest (newer wins)
-        Result<void> apply_digest(const TrustDigest& digest);
+        Result<void> apply_digest(const TrustDigest& digest, const CryptoProvider* crypto = nullptr);
 
         // --- Config ---
 

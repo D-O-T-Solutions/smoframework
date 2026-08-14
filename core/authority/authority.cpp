@@ -1,6 +1,7 @@
 #include "authority.hpp"
 
 #include "../crypto/impl.hpp"
+#include "../crypto/recovery_crypto.hpp"
 #include "../certificate/certificate.hpp"
 #include "../errors/error.hpp"
 #include "../identity/identity.hpp"
@@ -136,21 +137,96 @@ namespace smo::authority {
     {
         config_ = config;
 
-        // Load authority keys from disk
+        // Load authority keys from disk (or use in-memory keys if already initialized)
         std::string pk_path = config.data_dir + "/authority.pub";
         std::string sk_path = config.data_dir + "/authority.sec";
 
+        // Load public key from disk (required)
         std::ifstream pk_file(pk_path, std::ios::binary);
-        std::ifstream sk_file(sk_path, std::ios::binary);
-        if (!pk_file || !sk_file)
+        if (!pk_file)
         {
-            return SMO_ERR_IDENTITY(101, Error, NoRetry, None, "authority key files not found in " + config.data_dir);
+            return SMO_ERR_IDENTITY(101, Error, NoRetry, None, "authority.pub not found in " + config.data_dir);
         }
-
         impl_->authority_public_key_ =
             Bytes((std::istreambuf_iterator<char>(pk_file)), std::istreambuf_iterator<char>());
-        impl_->authority_secret_key_ =
-            Bytes((std::istreambuf_iterator<char>(sk_file)), std::istreambuf_iterator<char>());
+
+        // Load secret key from disk (encrypted) or use in-memory key if already initialized
+        if (impl_->authority_secret_key_.empty())
+        {
+            std::ifstream sk_file(sk_path, std::ios::binary);
+            if (!sk_file)
+            {
+                return SMO_ERR_IDENTITY(101, Error, NoRetry, None, "authority.sec not found in " + config.data_dir);
+            }
+            Bytes blob((std::istreambuf_iterator<char>(sk_file)), std::istreambuf_iterator<char>());
+            if (blob.empty())
+            {
+                return SMO_ERR_IDENTITY(101, Error, NoRetry, None, "authority.sec empty");
+            }
+
+            // P0-EX: decrypt with the dedicated RecoveryDomain (Argon2id + AES-256-GCM)
+            // via crypto::RecoveryCryptoProvider — the single SMO abstraction for
+            // recovery/authority secret material. No EVP_* here (SPEC §7.8, §26.3).
+            const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
+            std::string passphrase = env_pw ? env_pw : "smo-recovery-passphrase";
+
+            BytesView aad(reinterpret_cast<const uint8_t*>(config.mesh_id.data()), config.mesh_id.size());
+            auto plaintext_res = smo::crypto::RecoveryCryptoProvider::open(
+                BytesView(blob), aad,
+                BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
+            if (!plaintext_res)
+            {
+                return SMO_ERR_IDENTITY(101, Error, NoRetry, None,
+                                        "Failed to decrypt authority.sec: " + plaintext_res.error().message);
+            }
+            impl_->authority_secret_key_ = std::move(plaintext_res).value();
+        }
+
+        // Load root public key. Two sources:
+        //  1. root.cert (created by the legacy create_mesh_keys flow)
+        //  2. mesh manifest "root_public_key" (hex) — genesis flow
+        {
+            std::string root_cert_path = config.data_dir + "/root.cert";
+            std::ifstream root_cert_file(root_cert_path, std::ios::binary);
+            if (root_cert_file)
+            {
+                Bytes root_cert_blob((std::istreambuf_iterator<char>(root_cert_file)), std::istreambuf_iterator<char>());
+                auto root_cert = Certificate::deserialize(BytesView(root_cert_blob));
+                if (root_cert)
+                {
+                    impl_->root_public_key_ = root_cert.value().subject_pubkey;
+                }
+            }
+
+            if (impl_->root_public_key_.empty())
+            {
+                std::string manifest_path = config.data_dir + "/mesh.json";
+                std::ifstream mf(manifest_path);
+                if (mf)
+                {
+                    std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
+                    auto key_pos = mjson.find("\"root_public_key\"");
+                    if (key_pos != std::string::npos)
+                    {
+                        auto colon = mjson.find(':', key_pos);
+                        auto start = colon != std::string::npos ? mjson.find('"', colon + 1) : std::string::npos;
+                        auto end = start != std::string::npos ? mjson.find('"', start + 1) : std::string::npos;
+                        if (start != std::string::npos && end != std::string::npos)
+                        {
+                            std::string root_hex = mjson.substr(start + 1, end - start - 1);
+                            if (!root_hex.empty())
+                            {
+                                Bytes root_raw = hex_to_bytes(root_hex);
+                                if (!root_raw.empty())
+                                {
+                                    impl_->root_public_key_ = std::move(root_raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Open registry
         registry_ = std::make_unique<NodeRegistry>();
@@ -347,6 +423,21 @@ namespace smo::authority {
         return cert;
     }
 
+Result<Bytes> MeshAuthority::sign_data(BytesView data, RngRef& rng)
+{
+        if (!initialized_)
+        {
+            return SMO_ERR_IDENTITY(100, Error, NoRetry, RetryOperation, "authority not initialized");
+        }
+        if (!impl_->crypto_ || !impl_->crypto_->signer.sign)
+        {
+            return SMO_ERR_CRYPTO(100, Error, NoRetry, RetryOperation, "crypto not configured for signing");
+        }
+
+        // Sign with authority's private key
+        return impl_->crypto_->signer.sign(data, impl_->authority_secret_key_, rng);
+    }
+
     Result<void> MeshAuthority::verify_chain(const CertificateChain& chain) const
     {
         if (!impl_->crypto_)
@@ -363,6 +454,36 @@ namespace smo::authority {
             return SMO_ERR_STORAGE(900, Error, NoRetry, None, "registry not open");
         }
         return registry_->revoke_certificate(cert_fingerprint, reason);
+    }
+
+    const Bytes& MeshAuthority::authority_public_key() const
+    {
+        if (!impl_)
+        {
+            static const Bytes kEmpty;
+            return kEmpty;
+        }
+        return impl_->authority_public_key_;
+    }
+
+const Bytes& MeshAuthority::root_public_key() const
+{
+        if (!impl_)
+        {
+            static const Bytes kEmpty;
+            return kEmpty;
+        }
+        return impl_->root_public_key_;
+    }
+
+    RngRef& MeshAuthority::rng()
+    {
+        if (!impl_)
+        {
+            static RngRef kEmpty = {nullptr, nullptr};
+            return kEmpty;
+        }
+        return impl_->rng_;
     }
 
 } // namespace smo::authority

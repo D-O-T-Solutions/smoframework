@@ -21,8 +21,8 @@ RFCs are the source of truth for design history.
 | 0003 | Witness Protocol | Accepted | |
 | 0004 | Trust Model | Accepted | |
 | 0005 | DAG Execution Model | Accepted | |
-| 0006 | Mesh Identity & Certificate | Accepted | |
-| 0007 | Enrollment Protocol | Accepted | |
+| 0006 | Mesh Identity & Certificate | Accepted | AMENDED 2026-08-14: suite-selected identity (AMEND-1), Epoch+RevocationSet (AMEND-2), recovery domain (AMEND-3) |
+| 0007 | Enrollment Protocol | Accepted | AMENDED 2026-08-14: Join Token = issuer signature (AMEND-5) |
 | 0008 | Error Model | Accepted | |
 | 0009 | Crypto Provider | Superseded by 0024 | |
 | 0010 | Storage Backend | Accepted | |
@@ -31,10 +31,10 @@ RFCs are the source of truth for design history.
 | 0013 | Transport Abstraction | Accepted | |
 | 0014 | Session Lifecycle | Accepted | |
 | 0015 | Discovery Engine | Accepted | MVP: UDP HELLO/PING |
-| 0016 | Governance Protocol | Accepted | |
+| 0016 | Governance Protocol | Accepted | AMENDED 2026-08-14: atomic transition + base_epoch/state_hash (AMEND-6), liveness≠revocation (AMEND-7) |
 | 0017 | Trust Engine | Accepted | |
 | 0018 | Mesh Manifest | Accepted | |
-| 0019 | Packet Layout | Accepted | |
+| 0019 | Packet Layout | Accepted | AMENDED 2026-08-14: packet-authentication semantics (AMEND-4) |
 | 0020 | Opcode Registry | Accepted | |
 | 0021 | FSM Rules | Accepted | |
 | 0022 | Storage Schema | Accepted | |

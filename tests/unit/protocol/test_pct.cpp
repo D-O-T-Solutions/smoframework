@@ -14,6 +14,13 @@
 #include <discovery/discovery.hpp>
 #include <bootstrap/cbor.hpp>
 #include <crypto/hash_provider.hpp>
+#include <crypto/registry.hpp>
+#include <crypto/random/getrandom.hpp>
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite2_modern/suite2_modern_provider.hpp>
+#ifdef SMO_WITH_PQC
+#include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
+#endif
 #include <storage/policy_store/policy_store.h>
 #include <providers/blake3_provider/blake3_provider.hpp>
 #include <runtime/structured_logger.hpp>
@@ -1088,6 +1095,98 @@ static bool test_pct_019()
 }
 
 // ==========================================================================
+// PCT-023: Join token signature verification (P0-S1 regression)
+//   Suite-driven (RFC 0009 / RFC 0024): every crypto op goes through
+//   CryptoRegistry by cipher_suite_id — never a concrete primitive.
+//   Runs against ALL registered suites (Classical, Modern, PurePQC).
+//   A v2 token must fail verification if the signature does not match the
+//   issuer's public key (tampered payload / forged issuer).
+// ==========================================================================
+static bool test_pct_023()
+{
+    RngRef rng(nullptr, [](void*, uint8_t* buf, size_t len) { random::fill(BytesMutView{buf, len}); });
+
+    // Register ALL suites exactly like smo-node does at startup
+    smo::providers::register_suite1_classical();
+    smo::providers::register_suite2_modern();
+#ifdef SMO_WITH_PQC
+    smo::providers::register_suite3_purepqc();
+#endif
+
+    auto& reg = CryptoRegistry::instance();
+    const auto available = reg.available_suites();
+    ASSERT(!available.empty());
+
+    auto now_sec =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    const int64_t expiry = now_sec + 3600;
+
+    enroll::Admission admission;
+    admission.role = "Member";
+    admission.profile = "server";
+
+    for (auto suite_id : available)
+    {
+        // Resolve crypto by suite id — the only sanctioned way to touch crypto
+        auto prov_res = reg.get_suite(suite_id);
+        ASSERT(prov_res);
+        const auto* prov = prov_res.value();
+        ASSERT(prov->signer.generate_keypair && prov->signer.sign && prov->signer.verify);
+        ASSERT(prov->hash.hash);
+
+        // Root keypair (the "issuer" authority) + attacker keypair
+        auto root_kp = prov->signer.generate_keypair(rng);
+        ASSERT(root_kp);
+        ASSERT(!root_kp.value().public_key.empty());
+        auto attacker_kp = prov->signer.generate_keypair(rng);
+        ASSERT(attacker_kp);
+
+        const std::string issuer = "root:" + bytes_to_hex(root_kp.value().public_key).substr(0, 16);
+
+        // 1. Valid token signed by root → must validate
+        auto tok = enroll::generate_token("mesh-test", 1, static_cast<int>(suite_id), {"10.0.0.1:7777"}, admission,
+                                          expiry, issuer, prov->signer, root_kp.value().secret_key, rng);
+        ASSERT(tok);
+        ASSERT(!tok.value().signature.empty());
+        ASSERT(!enroll::token_is_v1(tok.value()));
+        auto vr = enroll::validate_token(tok.value(), prov->signer, root_kp.value().public_key, prov->hash);
+        ASSERT(vr);
+
+        // 2. Tampered payload (role escalation) → must FAIL
+        {
+            auto tam = tok.value();
+            tam.admission.role = "Authority";
+            auto tcheck = enroll::validate_token(tam, prov->signer, root_kp.value().public_key, prov->hash);
+            ASSERT(!tcheck); // signature no longer matches modified payload
+        }
+
+        // 3. Forged token (signed by attacker's key) → must FAIL against root key
+        {
+            auto forged =
+                enroll::generate_token("mesh-test", 1, static_cast<int>(suite_id), {"10.0.0.1:7777"}, admission, expiry,
+                                       issuer, prov->signer, attacker_kp.value().secret_key, rng);
+            ASSERT(forged);
+            auto fcheck = enroll::validate_token(forged.value(), prov->signer, root_kp.value().public_key, prov->hash);
+            ASSERT(!fcheck); // wrong signing key
+        }
+
+        // 4. v1 (HMAC) token path is suite-agnostic via provider hash
+        {
+            auto v1 = enroll::generate_token_hmac("mesh-test", 1, static_cast<int>(suite_id), {"10.0.0.1:7777"},
+                                                  "Member", expiry, Bytes{1, 2, 3, 4}, prov->hash);
+            ASSERT(v1);
+            ASSERT(enroll::token_is_v1(v1.value()));
+            auto v1ok = enroll::validate_token_v1(v1.value(), Bytes{1, 2, 3, 4}, prov->hash);
+            ASSERT(v1ok);
+            auto v1bad = enroll::validate_token_v1(v1.value(), Bytes{9, 9, 9, 9}, prov->hash);
+            ASSERT(!v1bad); // wrong secret
+        }
+    }
+
+    return true;
+}
+
+// ==========================================================================
 // Main
 // ==========================================================================
 int main(int, char*[])
@@ -1146,10 +1245,13 @@ int main(int, char*[])
     printf("\n── §9.12 Fault Injection / Chaos ─────────────────────────────────\n");
     TEST("PCT-024  VersionVector partition + heal") END_TEST(test_pct_024());
 
+    printf("\n── §9.13 Security ─────────────────────────────────────────────────\n");
+    TEST("PCT-023  Join token signature verify (P0-S1)") END_TEST(test_pct_023());
+
     printf("\n");
     if (failures == 0)
     {
-        printf("ALL 23 PCT TESTS PASSED\n");
+        printf("ALL 24 PCT TESTS PASSED\n");
         return 0;
     }
     else

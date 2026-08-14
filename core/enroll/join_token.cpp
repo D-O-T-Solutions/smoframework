@@ -170,17 +170,28 @@ namespace smo::enroll {
             static const char kEnc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                        "abcdefghijklmnopqrstuvwxyz0123456789-_";
             std::string out;
-            for (size_t i = 0; i < data.size(); i += 3)
+            size_t i = 0;
+            for (; i + 2 < data.size(); i += 3)
             {
-                uint32_t v = (uint32_t)data[i] << 16;
-                if (i + 1 < data.size())
-                    v |= (uint32_t)data[i + 1] << 8;
-                if (i + 2 < data.size())
-                    v |= (uint32_t)data[i + 2];
+                uint32_t v = (uint32_t)data[i] << 16 | (uint32_t)data[i + 1] << 8 | (uint32_t)data[i + 2];
                 out += kEnc[(v >> 18) & 0x3f];
                 out += kEnc[(v >> 12) & 0x3f];
                 out += kEnc[(v >> 6) & 0x3f];
                 out += kEnc[v & 0x3f];
+            }
+            size_t remaining = data.size() - i;
+            if (remaining == 2)
+            {
+                uint32_t v = (uint32_t)data[i] << 16 | (uint32_t)data[i + 1] << 8;
+                out += kEnc[(v >> 18) & 0x3f];
+                out += kEnc[(v >> 12) & 0x3f];
+                out += kEnc[(v >> 6) & 0x3f];
+            }
+            else if (remaining == 1)
+            {
+                uint32_t v = (uint32_t)data[i] << 16;
+                out += kEnc[(v >> 18) & 0x3f];
+                out += kEnc[(v >> 12) & 0x3f];
             }
             return out;
         }
@@ -558,48 +569,165 @@ namespace smo::enroll {
             return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Join Token too short");
         }
 
-        // Wire format: CBOR payload || sig_len(2 bytes BE) || signature
-        // Backward compat (v1, HMAC): CBOR payload || 32 bytes signature (no length)
+        // Wire format (v2+): CBOR payload (without signature) || sig_len(2 bytes BE) || signature
+        // Backward compat (v1, HMAC): CBOR payload || 32 bytes signature (no length prefix)
         //
-        // To detect: if remaining bytes > 2 and the 2-byte prefix encodes a
-        // plausible sig_len, use the new format. Otherwise assume 32-byte HMAC.
-        size_t sig_len = 0;
-        BytesView sig_raw;
+        // To parse v2+: we must first parse the CBOR payload to find its exact end,
+        // then read the 2-byte sig_len, then read sig_len bytes for signature.
+        // If CBOR parsing fails or sig_len is implausible, fall back to v1 format.
 
-        // Minimum plausible CBOR map is ~10 bytes (mesh_id + epoch + ...)
-        // If remaining bytes > 2, check if 2-byte prefix encodes a valid sig_len
-        constexpr size_t kMinPayload = 10;
+        auto calculate_payload_len = [](BytesView data) -> Result<size_t> {
+            using namespace cbor;
+            size_t off = 0;
+            if (off >= data.size())
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Empty CBOR payload");
 
-        if (raw.size() > kMinPayload + 2)
-        {
-            // Read 2-byte big-endian sig length
-            uint16_t candidate_len =
-                (static_cast<uint16_t>(raw[raw.size() - 2]) << 8) | static_cast<uint16_t>(raw[raw.size() - 1]);
-            size_t total_prefix = static_cast<size_t>(candidate_len) + 2; // len field + signature
+            size_t pairs = decode_map(data, off);
+            if (pairs == 0)
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Join Token: expected CBOR map");
 
-            // Plausible: candidate_len in [8, 8192] and total_prefix fits
-            if (candidate_len >= 8 && candidate_len <= 8192 && raw.size() > kMinPayload + 2 &&
-                raw.size() >= kMinPayload + total_prefix)
+            for (size_t i = 0; i < pairs; ++i)
             {
-                // New format with length prefix
-                sig_len = static_cast<size_t>(candidate_len);
-                size_t payload_len = raw.size() - 2 - sig_len;
-                BytesView payload(raw.data(), payload_len);
-                sig_raw = BytesView(raw.data() + payload_len + 2, sig_len);
+                if (off >= data.size())
+                    return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated map key");
 
-                auto token_result = JoinToken::deserialize_payload(payload);
-                if (!token_result)
-                    return token_result.error();
+                uint64_t key = decode_uint(data, off);
+                if (off >= data.size())
+                    return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated map value");
 
-                token_result.value().signature = Bytes(sig_raw.begin(), sig_raw.end());
-                return token_result;
+                (void)key;
+
+                uint8_t ib = data[off];
+                uint8_t mt = ib >> 5;
+                if (mt == 0 || mt == 1)
+                {
+                    decode_uint(data, off);
+                }
+                else if (mt == 3)
+                {
+                    decode_text(data, off);
+                }
+                else if (mt == 2)
+                {
+                    decode_bytes(data, off);
+                }
+                else if (mt == 4)
+                {
+                    size_t n = decode_array(data, off);
+                    for (size_t j = 0; j < n; ++j)
+                    {
+                        if (off >= data.size())
+                            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated array element");
+                        uint8_t ib2 = data[off];
+                        uint8_t mt2 = ib2 >> 5;
+                        if (mt2 == 0 || mt2 == 1)
+                            decode_uint(data, off);
+                        else if (mt2 == 3)
+                            decode_text(data, off);
+                        else if (mt2 == 2)
+                            decode_bytes(data, off);
+                        else
+                            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Unsupported array element type");
+                    }
+                }
+                else if (mt == 5)
+                {
+                    size_t n = decode_map(data, off);
+                    std::fprintf(stderr, "[DEBUG calculate_payload_len] nested map at key=%llu, pairs=%zu, off=%zu\n", (unsigned long long)key, n, off);
+                    for (size_t j = 0; j < n; ++j)
+                    {
+                        if (off >= data.size())
+                            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated nested map key");
+                        uint64_t nested_key = decode_uint(data, off);
+                        if (off >= data.size())
+                            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated nested map value");
+                        uint8_t ib3 = data[off];
+                        uint8_t mt3 = ib3 >> 5;
+std::fprintf(stderr, "[DEBUG calculate_payload_len] nested key=%llu, mt=%u, off=%zu\n", (unsigned long long)nested_key, mt3, off);
+        std::fflush(stderr);
+                        if (mt3 == 0 || mt3 == 1)
+                            decode_uint(data, off);
+                        else if (mt3 == 3)
+                            decode_text(data, off);
+                        else if (mt3 == 2)
+                            decode_bytes(data, off);
+                        else if (mt3 == 5)
+                        {
+                            size_t m = decode_map(data, off);
+                            std::fprintf(stderr, "[DEBUG calculate_payload_len]     deep nested map pairs=%zu\n", m);
+                            for (size_t k = 0; k < m; ++k)
+                            {
+                                if (off >= data.size())
+                                    return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated deep nested map key");
+                                decode_uint(data, off);
+                                if (off >= data.size())
+                                    return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated deep nested map value");
+                                uint8_t ib4 = data[off];
+                                uint8_t mt4 = ib4 >> 5;
+                                if (mt4 == 0 || mt4 == 1)
+                                    decode_uint(data, off);
+                                else if (mt4 == 3)
+                                    decode_text(data, off);
+                                else if (mt4 == 2)
+                                    decode_bytes(data, off);
+                                else
+                                    return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Unsupported deep nested value type");
+                            }
+                        }
+                        else
+                        {
+                            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Unsupported nested map value type");
+                        }
+                    }
+                }
+else
+                    {
+                        return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Unsupported value type");
+                    }
             }
+            return off;
+        };
+
+        size_t payload_len = 0;
+        {
+            auto pl = calculate_payload_len(BytesView(raw));
+            if (!pl)
+                return pl.error();
+            payload_len = pl.value();
         }
 
-        // Fallback: v1/HMAC format — last 32 bytes are the signature
-        size_t payload_len = raw.size() - 32;
+        if (payload_len + 2 > raw.size())
+            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Token too short for sig_len");
+
+        unsigned int sig_len = (static_cast<unsigned int>(raw[payload_len]) << 8) | static_cast<unsigned int>(raw[payload_len + 1]);
+
+        if (sig_len < 8 || sig_len > 8192)
+        {
+            // Fallback: v1/HMAC format — last 32 bytes are the signature
+            if (raw.size() < 32)
+            {
+                return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Token too short for v1 signature");
+            }
+            size_t v1_payload_len = raw.size() - 32;
+            BytesView payload(raw.data(), v1_payload_len);
+            BytesView sig_raw(raw.data() + v1_payload_len, 32);
+
+            auto token_result = JoinToken::deserialize_payload(payload);
+            if (!token_result)
+                return token_result.error();
+
+            token_result.value().signature = Bytes(sig_raw.begin(), sig_raw.end());
+            return token_result;
+        }
+
+        size_t total_needed = payload_len + 2 + sig_len;
+        if (raw.size() != total_needed)
+        {
+            return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Token length mismatch");
+        }
+
         BytesView payload(raw.data(), payload_len);
-        sig_raw = BytesView(raw.data() + payload_len, 32);
+        BytesView sig_raw(raw.data() + payload_len + 2, sig_len);
 
         auto token_result = JoinToken::deserialize_payload(payload);
         if (!token_result)
@@ -637,7 +765,11 @@ namespace smo::enroll {
 
         // Verify signature: sign(message=payload, secret_key) → signature
         // Verify: signer.verify(message, signature, public_key) → bool
-        auto payload = token.serialize_payload();
+        // The issuer signed the payload WITHOUT the signature field (it was
+        // empty at signing time). Recompute the same payload by clearing it.
+        JoinToken tmp = token;
+        tmp.signature.clear();
+        auto payload = tmp.serialize_payload();
         auto verify_result = signer.verify(BytesView(payload), BytesView(token.signature), issuer_public_key);
         if (!verify_result)
         {
@@ -668,7 +800,10 @@ namespace smo::enroll {
             }
         }
 
-        auto payload = token.serialize_payload();
+        // HMAC covers the payload WITHOUT the signature field (empty at signing)
+        JoinToken vtmp = token;
+        vtmp.signature.clear();
+        auto payload = vtmp.serialize_payload();
         auto hmac_result = hash.hmac(BytesView(hmac_secret), BytesView(payload));
         if (!hmac_result)
         {

@@ -1,8 +1,16 @@
 #include <governance/governance.hpp>
+#include <crypto/registry.hpp>
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
 #include <cstdio>
 #include <cstring>
 
 using namespace smo;
+
+// Global one-time registration
+static bool g_crypto_registered = []() {
+    smo::providers::register_suite1_classical();
+    return true;
+}();
 
 // ---------------------------------------------------------------------------
 static int failures = 0;
@@ -256,7 +264,33 @@ static bool test_engine_submit_empty_payload()
 
 static bool test_engine_sign_and_commit()
 {
-    GovernanceEngine engine;
+    auto& reg = CryptoRegistry::instance();
+    auto crypto_res = reg.get_suite(kSuiteClassical);
+    if (!crypto_res) return false;
+    const auto* crypto = crypto_res.value();
+
+    // Create three test authority keypairs (need 3 for Constitution quorum: ceil(3*3/4)=3)
+    auto rng = crypto->default_rng();
+    auto kp1_res = crypto->signer.generate_keypair(rng);
+    auto kp2_res = crypto->signer.generate_keypair(rng);
+    auto kp3_res = crypto->signer.generate_keypair(rng);
+    if (!kp1_res || !kp2_res || !kp3_res) return false;
+    auto kp1 = std::move(kp1_res).value();
+    auto kp2 = std::move(kp2_res).value();
+    auto kp3 = std::move(kp3_res).value();
+    NodeID authority_id1 = make_node_id(0x01);
+    NodeID authority_id2 = make_node_id(0x02);
+    NodeID authority_id3 = make_node_id(0x03);
+
+    // Create authority resolver
+    GovernanceEngine::AuthorityResolver resolver = [&](NodeID id) -> Result<BytesView> {
+        if (id == authority_id1) return BytesView(kp1.public_key);
+        if (id == authority_id2) return BytesView(kp2.public_key);
+        if (id == authority_id3) return BytesView(kp3.public_key);
+        return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "authority not found");
+    };
+
+    GovernanceEngine engine(resolver);
 
     GovernanceProposal prop;
     prop.level = GovernanceLevel::Authority;
@@ -267,24 +301,84 @@ static bool test_engine_sign_and_commit()
     ASSERT(id_res);
     auto id = id_res.value();
 
-    // Sign
-    Bytes sig_data = {0xde, 0xad};
-    ASSERT(engine.sign(id, make_node_id(0x01), sig_data, 500));
+    // Get the proposal from engine (has correct id)
+    auto prop_res = engine.get(id);
+    ASSERT(prop_res);
+    auto& prop_stored = prop_res.value();
 
-    // Commit — should work since threshold=1 matches 1 signature
-    ASSERT(engine.commit(id, 600));
+    // Sign with authority 1
+    GovernanceProposal payload_prop1 = prop_stored;
+    payload_prop1.signatures.clear();
+    auto payload1 = payload_prop1.serialize();
+
+    auto sig1_res = crypto->signer.sign(BytesView(payload1), BytesView(kp1.secret_key), rng);
+    if (!sig1_res) return false;
+    auto sig1 = std::move(sig1_res).value();
+
+    ASSERT(engine.sign(id, authority_id1, sig1, 500));
+
+    // Sign with authority 2
+    GovernanceProposal payload_prop2 = prop_stored;
+    payload_prop2.signatures.clear();
+    auto payload2 = payload_prop2.serialize();
+
+    auto sig2_res = crypto->signer.sign(BytesView(payload2), BytesView(kp2.secret_key), rng);
+    if (!sig2_res) return false;
+    auto sig2 = std::move(sig2_res).value();
+
+    ASSERT(engine.sign(id, authority_id2, sig2, 600));
+
+    // Sign with authority 3
+    GovernanceProposal payload_prop3 = prop_stored;
+    payload_prop3.signatures.clear();
+    auto payload3 = payload_prop3.serialize();
+
+    auto sig3_res = crypto->signer.sign(BytesView(payload3), BytesView(kp3.secret_key), rng);
+    if (!sig3_res) return false;
+    auto sig3 = std::move(sig3_res).value();
+
+    ASSERT(engine.sign(id, authority_id3, sig3, 700));
+
+    // Commit — should work since threshold=3 matches 3 signatures
+    ASSERT(engine.commit(id, 800));
 
     // Verify committed
-    auto prop2 = engine.get(id);
-    ASSERT(prop2);
-    ASSERT_EQ(prop2.value().state, ProposalState::Committed);
+    auto prop_final = engine.get(id);
+    ASSERT(prop_final);
+    ASSERT_EQ(prop_final.value().state, ProposalState::Committed);
 
     return true;
 }
 
 static bool test_engine_sign_threshold_not_met()
 {
-    GovernanceEngine engine;
+    auto& reg = CryptoRegistry::instance();
+    auto crypto_res = reg.get_suite(kSuiteClassical);
+    if (!crypto_res) return false;
+    const auto* crypto = crypto_res.value();
+
+    // Create test authority keypairs
+    auto rng = crypto->default_rng();
+    NodeID auth1 = make_node_id(0x01);
+    NodeID auth2 = make_node_id(0x02);
+    NodeID auth3 = make_node_id(0x03);
+
+    auto kp1_res = crypto->signer.generate_keypair(rng);
+    auto kp2_res = crypto->signer.generate_keypair(rng);
+    auto kp3_res = crypto->signer.generate_keypair(rng);
+    if (!kp1_res || !kp2_res || !kp3_res) return false;
+    auto kp1 = std::move(kp1_res).value();
+    auto kp2 = std::move(kp2_res).value();
+    auto kp3 = std::move(kp3_res).value();
+
+    GovernanceEngine::AuthorityResolver resolver = [&](NodeID id) -> Result<BytesView> {
+        if (id == auth1) return BytesView(kp1.public_key);
+        if (id == auth2) return BytesView(kp2.public_key);
+        if (id == auth3) return BytesView(kp3.public_key);
+        return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "authority not found");
+    };
+
+    GovernanceEngine engine(resolver);
 
     GovernanceProposal prop;
     prop.level = GovernanceLevel::Policy;
@@ -295,9 +389,25 @@ static bool test_engine_sign_threshold_not_met()
     auto id = engine.submit(prop);
     ASSERT(id);
 
-    // Sign twice (still not enough)
-    ASSERT(engine.sign(id.value(), make_node_id(0x01), {0x01}, 100));
-    ASSERT(engine.sign(id.value(), make_node_id(0x02), {0x02}, 200));
+    // Get stored proposal with correct id
+    auto prop_res = engine.get(id.value());
+    ASSERT(prop_res);
+
+    // Sign with auth1
+    GovernanceProposal payload_prop1 = prop_res.value();
+    payload_prop1.signatures.clear();
+    auto payload1 = payload_prop1.serialize();
+    auto sig1_res = crypto->signer.sign(BytesView(payload1), BytesView(kp1.secret_key), rng);
+    if (!sig1_res) return false;
+    ASSERT(engine.sign(id.value(), auth1, sig1_res.value(), 100));
+
+    // Sign with auth2
+    GovernanceProposal payload_prop2 = prop_res.value();
+    payload_prop2.signatures.clear();
+    auto payload2 = payload_prop2.serialize();
+    auto sig2_res = crypto->signer.sign(BytesView(payload2), BytesView(kp2.secret_key), rng);
+    if (!sig2_res) return false;
+    ASSERT(engine.sign(id.value(), auth2, sig2_res.value(), 200));
 
     // Commit should fail — only 2/3
     auto res = engine.commit(id.value(), 300);
@@ -309,7 +419,25 @@ static bool test_engine_sign_threshold_not_met()
 
 static bool test_engine_duplicate_signer()
 {
-    GovernanceEngine engine;
+    auto& reg = CryptoRegistry::instance();
+    auto crypto_res = reg.get_suite(kSuiteClassical);
+    if (!crypto_res) return false;
+    const auto* crypto = crypto_res.value();
+
+    // Create test authority keypair
+    auto rng = crypto->default_rng();
+    auto kp_res = crypto->signer.generate_keypair(rng);
+    if (!kp_res) return false;
+    auto kp = std::move(kp_res).value();
+    NodeID authority_id = make_node_id(0x01);
+
+    // Create authority resolver
+    GovernanceEngine::AuthorityResolver resolver = [&](NodeID id) -> Result<BytesView> {
+        if (id == authority_id) return BytesView(kp.public_key);
+        return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "authority not found");
+    };
+
+    GovernanceEngine engine(resolver);
 
     GovernanceProposal prop;
     prop.level = GovernanceLevel::Authority;
@@ -318,10 +446,23 @@ static bool test_engine_duplicate_signer()
     auto id = engine.submit(prop);
     ASSERT(id);
 
-    ASSERT(engine.sign(id.value(), make_node_id(0x01), {0x01}, 100));
+    // Get stored proposal with correct id
+    auto prop_res = engine.get(id.value());
+    ASSERT(prop_res);
 
-    // Same authority signs again
-    auto res = engine.sign(id.value(), make_node_id(0x01), {0x02}, 200);
+    // Sign first time
+    GovernanceProposal payload_prop = prop_res.value();
+    payload_prop.signatures.clear();
+    auto payload = payload_prop.serialize();
+
+    auto sig_res = crypto->signer.sign(BytesView(payload), BytesView(kp.secret_key), rng);
+    if (!sig_res) return false;
+    ASSERT(engine.sign(id.value(), authority_id, sig_res.value(), 100));
+
+    // Same authority signs again — should fail
+    auto sig_res2 = crypto->signer.sign(BytesView(payload), BytesView(kp.secret_key), rng);
+    if (!sig_res2) return false;
+    auto res = engine.sign(id.value(), authority_id, sig_res2.value(), 200);
     ASSERT(!res);
 
     return true;

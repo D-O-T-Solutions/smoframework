@@ -39,4 +39,11 @@ namespace smo {
     Result<uint32_t> version_handshake_client(int fd);
     Result<uint32_t> version_handshake_server(int fd);
 
+    // Length-prefixed field framing over a raw socket (u16 BE length + payload).
+    // Used by the join domain to send JoinRequest/JoinResponse CBOR before a
+    // SecureSession exists. Exposed here so both client and server share one
+    // implementation (RFC 0007 AMEND-5).
+    Result<void> write_field(int fd, BytesView data);
+    Result<Bytes> read_field(int fd);
+
 } // namespace smo

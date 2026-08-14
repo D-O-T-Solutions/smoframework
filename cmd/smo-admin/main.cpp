@@ -3,6 +3,7 @@
 #include <core/authority/enroll_server.hpp>
 #include <core/certificate/certificate.hpp>
 #include <core/crypto/impl.hpp>
+#include <core/crypto/recovery_crypto.hpp>
 #include <core/crypto/registry.hpp>
 #include <core/crypto/suite.hpp>
 #include <core/enroll/join_token.hpp>
@@ -42,6 +43,9 @@
 namespace fs = std::filesystem;
 using smo::Bytes;
 using smo::BytesView;
+using smo::Result;
+using smo::CryptoProvider;
+using smo::RngRef;
 
 static void print_usage(const char* prog)
 {
@@ -193,6 +197,35 @@ static smo::CryptoSuiteID read_suite_from_mesh(const std::string& mesh_dir)
 }
 
 // ---------------------------------------------------------------------------
+// P0-EX: Encrypt authority secret key with passphrase-derived key
+// Returns a versioned RecoveryDomain envelope (Argon2id + AES-256-GCM).
+// Format locked in SPEC §7.8 / DISCUSSION_0046 §17.9 / §26.3 — salt 32B,
+// nonce 12B, tag 16B, memory 65536 KiB, 3 passes, 4 lanes.
+// ---------------------------------------------------------------------------
+static smo::Result<Bytes> encrypt_authority_secret_key(const std::string& passphrase,
+                                                       const std::string& mesh_id,
+                                                       BytesView secret_key,
+                                                       smo::RngRef& rng)
+{
+    using smo::crypto::RecoveryCryptoProvider;
+    using smo::kdf::Argon2idParams;
+
+    Argon2idParams params; // locked defaults (SPEC §7.8)
+    try
+    {
+        return RecoveryCryptoProvider::seal(BytesView(secret_key),
+                                            BytesView(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size()),
+                                            BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()),
+                                            params, rng);
+    }
+    catch (const std::exception& e)
+    {
+        return SMO_ERR_CRYPTO(100, Error, NoRetry, ManualIntervention,
+                              std::string("failed to encrypt authority secret key: ") + e.what());
+    }
+}
+
+// ---------------------------------------------------------------------------
 // cmd_sign: Load CSR, sign via authority, output .smoc
 //
 // Transports:
@@ -306,7 +339,23 @@ static int cmd_sign(const std::vector<std::string>& args, const std::string& mes
             std::getline(std::cin, passphrase);
         }
 
-        auto kp_res = pkg_res.value().unlock_keypair(passphrase, crypto->hash, crypto->aead);
+        // Read mesh_id from mesh.json for encryption
+        std::string mesh_id;
+        {
+            std::string json_path = mesh_dir + "/mesh.json";
+            std::ifstream f(json_path);
+            if (f)
+            {
+                std::string json((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+                mesh_id = json_read_string(json, "mesh_id");
+            }
+            if (mesh_id.empty())
+            {
+                mesh_id = fs::path(mesh_dir).filename().string();
+            }
+        }
+
+        auto kp_res = pkg_res.value().unlock_keypair(passphrase);
         if (!kp_res)
         {
             std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", kp_res.error().message.c_str());
@@ -322,9 +371,20 @@ static int cmd_sign(const std::vector<std::string>& args, const std::string& mes
         {
             std::ofstream pk_out(mesh_dir + "/authority.pub", std::ios::binary);
             pk_out.write(reinterpret_cast<const char*>(kp.public_key.data()), kp.public_key.size());
+
+            // P0-EX: Encrypt authority secret key before writing to disk
+            auto enc_res = encrypt_authority_secret_key(passphrase, mesh_id,
+                                                        BytesView(kp.secret_key), rng);
+            if (!enc_res)
+            {
+                std::fprintf(stderr, "Error: failed to encrypt authority secret key: %s\n",
+                             enc_res.error().message.c_str());
+                return 1;
+            }
             std::ofstream sk_out(mesh_dir + "/authority.sec", std::ios::binary);
-            sk_out.write(reinterpret_cast<const char*>(kp.secret_key.data()), kp.secret_key.size());
-            std::fprintf(stderr, "[smo-admin] Materialized authority keys from recovery.pkg\n");
+            sk_out.write(reinterpret_cast<const char*>(enc_res.value().data()), enc_res.value().size());
+            sk_out.close();
+            std::fprintf(stderr, "[smo-admin] Materialized authority keys from recovery.pkg (secret encrypted)\n");
         }
     }
 
@@ -651,7 +711,7 @@ static int cmd_generate_invite(const std::vector<std::string>& args, const std::
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();
 
-    auto session_res = recovery_pkg.unlock(passphrase, crypto->hash, crypto->aead, crypto->signer, rng);
+    auto session_res = recovery_pkg.unlock(passphrase, crypto->signer, rng);
     if (!session_res)
     {
         std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", session_res.error().message.c_str());
@@ -1245,7 +1305,7 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
     Bytes csr_bytes = csr.serialize();
 
     // Unlock recovery package and sign CSR with Root key
-    auto session_res = recovery_pkg.unlock(passphrase, crypto->hash, crypto->aead, crypto->signer, rng);
+    auto session_res = recovery_pkg.unlock(passphrase, crypto->signer, rng);
     if (!session_res)
     {
         std::fprintf(stderr, "Error: failed to unlock recovery package: %s\n", session_res.error().message.c_str());
@@ -1310,10 +1370,19 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
     pub_f.write(reinterpret_cast<const char*>(auth_kp.public_key.data()), auth_kp.public_key.size());
     pub_f.close();
 
-    // Write authority secret key
+    // P0-EX: Encrypt authority secret key before writing to disk
+    auto enc_res = encrypt_authority_secret_key(passphrase, mesh_id,
+                                                BytesView(auth_kp.secret_key), rng);
+    if (!enc_res)
+    {
+        std::fprintf(stderr, "Error: failed to encrypt authority secret key: %s\n",
+                     enc_res.error().message.c_str());
+        return 1;
+    }
     std::ofstream sec_f(auth_sec_path, std::ios::binary);
-    sec_f.write(reinterpret_cast<const char*>(auth_kp.secret_key.data()), auth_kp.secret_key.size());
+    sec_f.write(reinterpret_cast<const char*>(enc_res.value().data()), enc_res.value().size());
     sec_f.close();
+    std::fprintf(stderr, "[smo-admin] Materialized authority keys from genesis (secret encrypted)\n");
 
     // Write authority certificate (signed by root) - used by daemon for PQ handshake
     // NOTE: must be serialize_full() so the signature is persisted; Certificate::verify()

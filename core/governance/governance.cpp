@@ -4,6 +4,8 @@
 #include <cstring>
 #include <limits>
 #include <sstream>
+#include "../crypto/registry.hpp"
+#include "../crypto/suite.hpp"
 
 namespace smo {
 
@@ -322,6 +324,11 @@ namespace smo {
             proposal.expires_at = proposal.created_at + ttl;
         }
 
+        // Compute threshold from quorum: need total authorities count
+        // For now use default quorum for 3 authorities; in production would query authority registry
+        int total_authorities = 3; // TODO: query from authority registry
+        proposal.threshold = default_quorum(proposal.action, total_authorities);
+
         proposals_[pid.value] = std::move(proposal);
         return pid;
     }
@@ -351,6 +358,44 @@ namespace smo {
             {
                 return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "authority already signed");
             }
+        }
+
+        // Resolve authority public key
+        if (!resolver_)
+        {
+            return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "no authority resolver configured");
+        }
+        auto pubkey_res = resolver_(authority);
+        if (!pubkey_res)
+        {
+            return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "authority not found: " + pubkey_res.error().message);
+        }
+        BytesView pubkey = pubkey_res.value();
+
+        // Verify signature over proposal payload
+        // For governance, we need a crypto provider. For now use Suite 1 (Ed25519) as default
+        // In production, proposal should carry suite_id
+        auto& reg = CryptoRegistry::instance();
+        auto crypto_res = reg.get_suite(kSuiteClassical);
+        if (!crypto_res)
+        {
+            return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "Suite 1 (Classical) not registered");
+        }
+        const auto* crypto = crypto_res.value();
+
+        // Payload for signing is the serialized proposal without signatures
+        GovernanceProposal payload_prop = prop;
+        payload_prop.signatures.clear();
+        Bytes payload = payload_prop.serialize();
+
+        auto verify_res = crypto->signer.verify(BytesView(payload), BytesView(signature), pubkey);
+        if (!verify_res)
+        {
+            return verify_res.error();
+        }
+        if (!verify_res.value())
+        {
+            return SMO_ERR_GOVERNANCE(800, Error, NoRetry, GovernanceVote, "vote signature verification failed");
         }
 
         GovernanceSignature gs;

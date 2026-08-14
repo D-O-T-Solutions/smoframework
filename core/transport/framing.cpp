@@ -135,4 +135,32 @@ namespace smo {
         return negotiated;
     }
 
+    // ── Length-prefixed field framing (join domain, RFC 0007 AMEND-5) ──────
+
+    Result<void> write_field(int fd, BytesView data)
+    {
+        uint8_t len_hdr[2];
+        len_hdr[0] = static_cast<uint8_t>((data.size() >> 8) & 0xFF);
+        len_hdr[1] = static_cast<uint8_t>(data.size() & 0xFF);
+        SMO_TRY(write_all(fd, len_hdr, 2));
+        if (!data.empty())
+        {
+            return write_all(fd, data.data(), data.size());
+        }
+        return {};
+    }
+
+    Result<Bytes> read_field(int fd)
+    {
+        uint8_t len_hdr[2];
+        SMO_TRY(read_all(fd, len_hdr, 2));
+        uint16_t sz = (static_cast<uint16_t>(len_hdr[0]) << 8) | static_cast<uint16_t>(len_hdr[1]);
+        Bytes buf(sz);
+        if (sz > 0)
+        {
+            SMO_TRY(read_all(fd, buf.data(), sz));
+        }
+        return buf;
+    }
+
 } // namespace smo

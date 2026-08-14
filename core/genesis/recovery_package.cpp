@@ -52,12 +52,6 @@ namespace smo::genesis {
         return strtoull(json.c_str() + pos, &end, 10);
     }
 
-    static std::string json_extract_hex(const std::string& key, const std::string& json)
-    {
-        auto val = json_extract_str(key, json);
-        return val;
-    }
-
     Result<Bytes> RecoveryPackage::serialize() const
     {
         std::ostringstream oss;
@@ -65,7 +59,12 @@ namespace smo::genesis {
         oss << "  \"mesh_id\": " << json_esc(mesh_id) << ",\n";
         oss << "  \"root_public_key\": " << json_esc(root_public_key) << ",\n";
         oss << "  \"root_keypair_encrypted\": " << json_esc(bytes_to_hex(root_keypair_encrypted)) << ",\n";
-        oss << "  \"recovery_passphrase_hash\": " << json_esc(recovery_passphrase_hash) << ",\n";
+        oss << "  \"crypto_domain\": \"recovery\",\n";
+        oss << "  \"kdf\": \"Argon2id\",\n";
+        oss << "  \"aead\": \"AES-256-GCM\",\n";
+        oss << "  \"argon2_memory_kib\": " << recovery_params.memory_kib << ",\n";
+        oss << "  \"argon2_iterations\": " << recovery_params.iterations << ",\n";
+        oss << "  \"argon2_lanes\": " << recovery_params.lanes << ",\n";
         oss << "  \"manifest_revision\": " << manifest_revision << ",\n";
         oss << "  \"manifest_schema\": " << manifest_schema << ",\n";
         oss << "  \"genesis_manifest_json\": " << json_esc(genesis_manifest_json) << ",\n";
@@ -83,13 +82,23 @@ namespace smo::genesis {
         RecoveryPackage pkg;
         pkg.mesh_id = json_extract_str("mesh_id", json);
         pkg.root_public_key = json_extract_str("root_public_key", json);
-        pkg.recovery_passphrase_hash = json_extract_str("recovery_passphrase_hash", json);
         pkg.genesis_manifest_json = json_extract_str("genesis_manifest_json", json);
         pkg.manifest_revision = (uint32_t)json_extract_int("manifest_revision", json);
         pkg.manifest_schema = (uint32_t)json_extract_int("manifest_schema", json);
         pkg.created_at = json_extract_int("created_at", json);
 
-        // Decode hex keypair
+        // Recovery domain params (optional in JSON — defaults match SPEC §7.8).
+        pkg.recovery_params.memory_kib = (uint32_t)json_extract_int("argon2_memory_kib", json);
+        pkg.recovery_params.iterations = (uint32_t)json_extract_int("argon2_iterations", json);
+        pkg.recovery_params.lanes = (uint32_t)json_extract_int("argon2_lanes", json);
+        if (pkg.recovery_params.memory_kib == 0)
+            pkg.recovery_params.memory_kib = smo::kdf::Argon2idParams{}.memory_kib;
+        if (pkg.recovery_params.iterations == 0)
+            pkg.recovery_params.iterations = smo::kdf::Argon2idParams{}.iterations;
+        if (pkg.recovery_params.lanes == 0)
+            pkg.recovery_params.lanes = smo::kdf::Argon2idParams{}.lanes;
+
+        // Decode hex keypair envelope
         auto hex_str = json_extract_str("root_keypair_encrypted", json);
         if (!hex_str.empty())
         {
@@ -110,21 +119,22 @@ namespace smo::genesis {
         return pkg;
     }
 
-    bool RecoveryPackage::verify_passphrase(const std::string& passphrase, const HashImpl& hash) const
+    bool RecoveryPackage::verify_passphrase(const std::string& passphrase) const
     {
-        if (recovery_passphrase_hash.empty())
+        if (root_keypair_encrypted.empty())
             return false;
-        auto hash_res = hash.hash(BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
-        if (!hash_res)
-            return false;
-        auto hashed = std::move(hash_res).value();
-        return bytes_to_hex(hashed) == recovery_passphrase_hash;
+
+        BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
+        auto plain_res = smo::crypto::RecoveryCryptoProvider::open(
+            BytesView(root_keypair_encrypted), aad,
+            BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
+        return static_cast<bool>(plain_res);
     }
 
-    Result<RootSession> RecoveryPackage::unlock(const std::string& passphrase, const HashImpl& hash,
-                                                const AeadImpl& aead, const SignerImpl& signer, RngRef& rng) const
+    Result<RootSession> RecoveryPackage::unlock(const std::string& passphrase, const SignerImpl& signer,
+                                                RngRef& rng) const
     {
-        if (!verify_passphrase(passphrase, hash))
+        if (!verify_passphrase(passphrase))
         {
             return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "incorrect recovery passphrase");
         }
@@ -143,40 +153,19 @@ namespace smo::genesis {
                                    "recovery package has no encrypted keypair");
         }
 
-        // ── 1. Derive encryption key from passphrase ───────────────────
-        auto key_result = hash.hash(BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
-        if (!key_result)
-        {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to derive key from passphrase");
-        }
-        auto key = std::move(key_result).value();
-        // Use first 32 bytes as AEAD key (truncate/pad as needed)
-        Bytes aead_key(32, 0);
-        size_t copy_n = (std::min)(key.size(), aead_key.size());
-        std::memcpy(aead_key.data(), key.data(), copy_n);
-
-        // ── 2. Parse encrypted blob: nonce(24) || ciphertext ───────────
-        const size_t nonce_size = 24;
-        if (root_keypair_encrypted.size() < nonce_size + 1)
-        {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
-                                   "recovery package encrypted blob too small");
-        }
-        BytesView nonce(root_keypair_encrypted.data(), nonce_size);
-        BytesView ciphertext(root_keypair_encrypted.data() + nonce_size, root_keypair_encrypted.size() - nonce_size);
-
-        // Use mesh_id as AAD for domain separation
+        // ── 1. Open the RecoveryDomain envelope (Argon2id + AES-256-GCM) ───
         BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
-
-        // ── 3. Decrypt ─────────────────────────────────────────────────
-        auto plaintext_res = aead.decrypt(ciphertext, aad, BytesView(aead_key), nonce);
+        auto plaintext_res = smo::crypto::RecoveryCryptoProvider::open(
+            BytesView(root_keypair_encrypted), aad,
+            BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
         if (!plaintext_res)
         {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to decrypt recovery keypair");
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
+                                   "failed to decrypt recovery keypair: " + plaintext_res.error().message);
         }
         auto plaintext = std::move(plaintext_res).value();
 
-        // ── 4. Parse plaintext: 2-byte BE pubkey_len || pubkey || secret_key ──
+        // ── 2. Parse plaintext: 2-byte BE pubkey_len || pubkey || secret_key ──
         BytesView seckey_raw;
         if (plaintext.size() >= 3)
         {
@@ -197,7 +186,7 @@ namespace smo::genesis {
             seckey_raw = BytesView(plaintext);
         }
 
-        // ── 5. Build SignerContext + RootSession ───────────────────────
+        // ── 3. Build SignerContext + RootSession ───────────────────────
         smo::crypto::SignerMetadata meta;
         meta.backend = "Software";
         meta.algorithm = "Unknown (recovery)";
@@ -218,10 +207,9 @@ namespace smo::genesis {
         return session;
     }
 
-    Result<UnlockedKeypair> RecoveryPackage::unlock_keypair(const std::string& passphrase, const HashImpl& hash,
-                                                            const AeadImpl& aead) const
+    Result<UnlockedKeypair> RecoveryPackage::unlock_keypair(const std::string& passphrase) const
     {
-        if (!verify_passphrase(passphrase, hash))
+        if (!verify_passphrase(passphrase))
         {
             return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "incorrect recovery passphrase");
         }
@@ -239,30 +227,14 @@ namespace smo::genesis {
                                    "recovery package has no encrypted keypair");
         }
 
-        auto key_result = hash.hash(BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
-        if (!key_result)
-        {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to derive key from passphrase");
-        }
-        auto key = std::move(key_result).value();
-        Bytes aead_key(32, 0);
-        size_t copy_n = (std::min)(key.size(), aead_key.size());
-        std::memcpy(aead_key.data(), key.data(), copy_n);
-
-        const size_t nonce_size = 24;
-        if (root_keypair_encrypted.size() < nonce_size + 1)
-        {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
-                                   "recovery package encrypted blob too small");
-        }
-        BytesView nonce(root_keypair_encrypted.data(), nonce_size);
-        BytesView ciphertext(root_keypair_encrypted.data() + nonce_size, root_keypair_encrypted.size() - nonce_size);
         BytesView aad(reinterpret_cast<const uint8_t*>(mesh_id.data()), mesh_id.size());
-
-        auto plaintext_res = aead.decrypt(ciphertext, aad, BytesView(aead_key), nonce);
+        auto plaintext_res = smo::crypto::RecoveryCryptoProvider::open(
+            BytesView(root_keypair_encrypted), aad,
+            BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()));
         if (!plaintext_res)
         {
-            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention, "failed to decrypt recovery keypair");
+            return SMO_ERR_GENESIS(1404, Error, NoRetry, ManualIntervention,
+                                   "failed to decrypt recovery keypair: " + plaintext_res.error().message);
         }
         auto plaintext = std::move(plaintext_res).value();
 

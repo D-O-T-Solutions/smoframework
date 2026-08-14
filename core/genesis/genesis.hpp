@@ -5,6 +5,7 @@
 #include "recovery_package.hpp"
 #include "root_session.hpp"
 
+#include "../crypto/kdf/argon2id.hpp"
 #include "../errors/error.hpp"
 #include "../types.hpp"
 
@@ -37,8 +38,10 @@ namespace smo::genesis {
     // ── Callbacks for crypto operations (injected to avoid hard crypto dep) ──
     struct GenesisCryptoProvider
     {
-        std::function<Result<Bytes>(const std::string&)> hash;
-        std::function<Result<Bytes>(BytesView data, BytesView key)> encrypt_keypair;
+        // Seal a plaintext keypair with the passphrase using the dedicated
+        // RecoveryDomain (Argon2id + AES-256-GCM). Returns the versioned
+        // SMO recovery envelope bytes.
+        std::function<Result<Bytes>(BytesView plaintext, const std::string& passphrase, BytesView aad)> encrypt_keypair;
         std::function<Result<bool>(BytesView data, BytesView signature, BytesView pubkey)> verify;
     };
 

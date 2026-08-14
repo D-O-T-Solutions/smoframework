@@ -217,7 +217,11 @@ namespace smo::recovery {
     Result<bool> RecoveryEngine::verify_recovery_package(const std::string& passphrase)
     {
         (void)passphrase;
-        // TODO: actual recovery package verification
+        // TODO (P0-EX follow-up): wire real RecoveryPackage verification. NOTE:
+        // RecoveryEngine lives in smo_core while RecoveryPackage lives in
+        // smo_genesis (which links smo_core) — calling it here would create a
+        // circular static-lib dependency. Verify via RecoveryCryptoProvider at
+        // the tooling layer instead.
         return true;
     }
 
