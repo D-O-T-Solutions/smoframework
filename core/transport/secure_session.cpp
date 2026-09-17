@@ -109,7 +109,8 @@ namespace smo {
           local_pk_(std::move(other.local_pk_)), local_sk_(std::move(other.local_sk_)),
           tx_key_(std::move(other.tx_key_)), rx_key_(std::move(other.rx_key_)),
           tx_nonce_pre_(std::move(other.tx_nonce_pre_)), rx_nonce_pre_(std::move(other.rx_nonce_pre_)),
-          tx_counter_(other.tx_counter_), rx_counter_(other.rx_counter_)
+          tx_counter_(other.tx_counter_), rx_counter_(other.rx_counter_),
+          session_id_(other.session_id_), crypto_context_(std::move(other.crypto_context_))
     {
         other.fd_ = -1;
         other.secure_ = false;
@@ -136,6 +137,8 @@ namespace smo {
             rx_nonce_pre_ = std::move(other.rx_nonce_pre_);
             tx_counter_ = other.tx_counter_;
             rx_counter_ = other.rx_counter_;
+            session_id_ = other.session_id_;
+            crypto_context_ = std::move(other.crypto_context_);
         }
         return *this;
     }
@@ -176,6 +179,15 @@ namespace smo {
         rx_key_.assign(material.begin() + 32, material.begin() + 64);
         tx_nonce_pre_.assign(material.begin() + 64, material.begin() + 80);
         rx_nonce_pre_.assign(material.begin() + 80, material.begin() + 96);
+
+        // B3a: derive the session_id exactly once from the SAME canonical
+        // handshake ikm, domain-separated from the traffic keys. Both peers
+        // compute an identical value; packet code never re-derives it.
+        static const uint8_t kIdInfo[] = "session-id-v1";
+        Bytes id_material =
+            kdf::hkdf(BytesView(kSalt, sizeof(kSalt) - 1), BytesView(ikm), BytesView(kIdInfo, sizeof(kIdInfo) - 1),
+                      SessionId::kSize);
+        std::memcpy(session_id_.bytes.data(), id_material.data(), SessionId::kSize);
     }
 
     // ── Handshake ───────────────────────────────────────────────────────
@@ -194,6 +206,9 @@ namespace smo {
             SMO_TRY(server_handshake());
             break;
         }
+
+        // Keys are in final TX/RX orientation here (server already swapped).
+        crypto_context_ = SessionCryptoContext::create(session_id_, BytesView(tx_key_), BytesView(rx_key_));
 
         secure_ = true;
         return {};
@@ -450,6 +465,54 @@ namespace smo {
         ++rx_counter_;
 
         return crypto_.aead.decrypt(ciphertext, BytesView{}, BytesView(rx_key_), BytesView(wire_nonce));
+    }
+
+    // ── Transport framing (G3 packet path) ─────────────────────────────
+    //
+    // Framing only: [4-byte big-endian length][payload]. The payload is the
+    // already-sealed packet; DATA-plane AEAD belongs to packet_crypto.
+
+    Result<void> SecureSession::send_framed(BytesView payload)
+    {
+        if (!secure_)
+        {
+            return SMO_ERR_TRANSPORT(312, Error, NoRetry, Reconnect, "send_framed before handshake");
+        }
+
+        uint32_t len = static_cast<uint32_t>(payload.size());
+        uint8_t hdr[4];
+        hdr[0] = static_cast<uint8_t>((len >> 24) & 0xFF);
+        hdr[1] = static_cast<uint8_t>((len >> 16) & 0xFF);
+        hdr[2] = static_cast<uint8_t>((len >> 8) & 0xFF);
+        hdr[3] = static_cast<uint8_t>(len & 0xFF);
+
+        SMO_TRY(write_all(fd_, hdr, 4));
+        return write_all(fd_, payload.data(), payload.size());
+    }
+
+    Result<Bytes> SecureSession::recv_framed()
+    {
+        if (!secure_)
+        {
+            return SMO_ERR_TRANSPORT(312, Error, NoRetry, Reconnect, "recv_framed before handshake");
+        }
+
+        uint8_t hdr[4];
+        SMO_TRY(read_all(fd_, hdr, 4));
+        uint32_t len = (static_cast<uint32_t>(hdr[0]) << 24) | (static_cast<uint32_t>(hdr[1]) << 16) |
+                       (static_cast<uint32_t>(hdr[2]) << 8) | static_cast<uint32_t>(hdr[3]);
+
+        if (len > 1024 * 1024)
+        {
+            return SMO_ERR_TRANSPORT(400, Error, NoRetry, None, "framed payload too large");
+        }
+
+        Bytes payload(len);
+        if (len > 0)
+        {
+            SMO_TRY(read_all(fd_, payload.data(), payload.size()));
+        }
+        return payload;
     }
 
 // Verify peer certificate: chain, expiry, CRL, and mesh authorization

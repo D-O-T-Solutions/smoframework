@@ -4,12 +4,9 @@
 #include <string>
 #include <array>
 #include "core/capability/capability.h"
+#include "core/session/session_id.hpp"
 
 namespace smo {
-
-struct SessionId {
-    std::array<uint8_t, 16> bytes{};  // 128-bit session ID
-};
 
 struct Session {
     SessionId     id;

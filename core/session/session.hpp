@@ -8,6 +8,7 @@
 #include "../errors/error.hpp"
 #include "../identity/identity.hpp"
 #include "../types.hpp"
+#include "session_id.hpp"
 
 #include <array>
 #include <cstdint>
@@ -35,24 +36,8 @@ namespace smo {
     } // namespace SessionErrc
 
     // ---------------------------------------------------------------------------
-    // SessionId — 128-bit unique session identifier
+    // SessionId — canonical definition in session_id.hpp (included above)
     // ---------------------------------------------------------------------------
-    struct SessionId
-    {
-        std::array<uint8_t, 16> bytes{};
-
-        bool operator==(const SessionId& other) const noexcept = default;
-        bool operator!=(const SessionId& other) const noexcept = default;
-
-        // Derive from a byte sequence (e.g., Blake3(peer_pubkey || nonce))
-        static Result<SessionId> derive(BytesView seed, const HashImpl& hash);
-
-        Bytes to_bytes() const;
-        static Result<SessionId> from_bytes(BytesView data);
-
-        // Convert to hex string
-        std::string to_hex() const;
-    };
 
     // ---------------------------------------------------------------------------
     // SessionState — 5-state FSM per RFC 0014

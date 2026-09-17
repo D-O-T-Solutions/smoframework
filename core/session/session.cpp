@@ -59,55 +59,6 @@ namespace smo {
     } // anonymous namespace
 
     // ===========================================================================
-    // SessionId
-    // ===========================================================================
-
-    Result<SessionId> SessionId::derive(BytesView seed, const HashImpl& hash)
-    {
-        if (!hash.hash)
-        {
-            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "null hash implementation");
-        }
-        auto h = hash.hash(seed);
-        if (!h)
-            return std::move(h.error());
-
-        SessionId id;
-        size_t copy = h.value().size() < 16 ? h.value().size() : 16;
-        std::memcpy(id.bytes.data(), h.value().data(), copy);
-        return id;
-    }
-
-    Bytes SessionId::to_bytes() const
-    {
-        return Bytes(bytes.begin(), bytes.end());
-    }
-
-    std::string SessionId::to_hex() const
-    {
-        static const char* hex = "0123456789abcdef";
-        std::string out;
-        out.reserve(32);
-        for (uint8_t b : bytes)
-        {
-            out.push_back(hex[b >> 4]);
-            out.push_back(hex[b & 0xF]);
-        }
-        return out;
-    }
-
-    Result<SessionId> SessionId::from_bytes(BytesView data)
-    {
-        if (data.size() < 16)
-        {
-            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated SessionId");
-        }
-        SessionId id;
-        std::memcpy(id.bytes.data(), data.data(), 16);
-        return id;
-    }
-
-    // ===========================================================================
     // SessionState
     // ===========================================================================
 

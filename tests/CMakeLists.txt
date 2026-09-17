@@ -53,6 +53,17 @@ smo_set_warnings(smo_test_session)
 smo_set_optimisation(smo_test_session)
 add_test(NAME session_model COMMAND smo_test_session)
 
+# ── Session security tests ────────────────────────────────────────────
+add_executable(smo_test_session_security
+    unit/core/session/test_session_security.cpp
+)
+target_link_libraries(smo_test_session_security PRIVATE
+    smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_session_security)
+smo_set_optimisation(smo_test_session_security)
+add_test(NAME session_security_model COMMAND smo_test_session_security)
+
 # ── Transport tests ───────────────────────────────────────────────────
 add_executable(smo_test_transport
     unit/core/transport/test_transport.cpp
@@ -63,6 +74,17 @@ target_link_libraries(smo_test_transport PRIVATE
 smo_set_warnings(smo_test_transport)
 smo_set_optimisation(smo_test_transport)
 add_test(NAME transport_model COMMAND smo_test_transport)
+
+# ── SecureSession P2 tests (crypto context + framing) ─────────────────
+add_executable(smo_test_secure_session
+    unit/core/transport/test_secure_session.cpp
+)
+target_link_libraries(smo_test_secure_session PRIVATE
+    smo_core smo_suite1_classical fmt::fmt
+)
+smo_set_warnings(smo_test_secure_session)
+smo_set_optimisation(smo_test_secure_session)
+add_test(NAME secure_session_model COMMAND smo_test_secure_session)
 
 # ── High-Level Transport tests ────────────────────────────────────────
 add_executable(smo_test_transport_hl

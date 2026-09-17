@@ -5,6 +5,8 @@
 #include "../crypto/impl.hpp"
 #include "../crypto/suite.hpp"
 #include "../recovery/crl.hpp"
+#include "../session/session_crypto_context.hpp"
+#include "../session/session_id.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -78,11 +80,20 @@ namespace smo {
         // Encrypted recv: reads from socket, decrypts, returns plaintext.
         Result<Bytes> recv();
 
+        // Transport framing only: [4-byte big-endian len][payload bytes].
+        // NO AEAD is applied here — the G3 packet codec owns DATA-plane AEAD.
+        // Used by the Packet path; non-Packet CBOR keeps using send()/recv().
+        Result<void> send_framed(BytesView payload);
+        Result<Bytes> recv_framed();
+
         // Accessors
         bool is_secure() const { return secure_; }
         BytesView peer_certificate() const { return peer_cert_; }
         BytesView peer_public_key() const { return peer_pk_; }
         int fd() const { return fd_; }
+
+        // Packet crypto capability, populated after a successful handshake.
+        const SessionCryptoContext& crypto_context() const { return crypto_context_; }
 
     private:
         int fd_ = -1;
@@ -106,6 +117,11 @@ namespace smo {
         Bytes rx_nonce_pre_; // 16 bytes
         uint64_t tx_counter_ = 0;
         uint64_t rx_counter_ = 0;
+
+        // G3 (B2/B3): session identity + packet crypto capability, derived
+        // exactly once during derive_keys() and assembled after the handshake.
+        SessionId session_id_{};
+        SessionCryptoContext crypto_context_{};
 
         Result<void> client_handshake();
         Result<void> server_handshake();
