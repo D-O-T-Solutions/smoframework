@@ -501,6 +501,7 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 1. ~~Ghi lại các quyết định Q1–Q12 vào Decision Log~~ **DONE — §2.5**.
 2. Với **Q1=(b)** (làm rõ bởi **B1=(i) §7.1.1**): Packet layer là AEAD owner cho **Packet path**.
+   **Q1=(b) chỉ áp dụng cho Packet path — KHÔNG có nghĩa `SecureSession::send()/recv()` mất AEAD.**
    KHÔNG gỡ AEAD khỏi `SecureSession` toàn cục — `send()/recv()` giữ AEAD cho non-Packet CBOR;
    thêm **transport-frame-only** path cho Packet. Định nghĩa `AAD = canonical 39B header`.
 3. Sửa `protocol/packet/packet.h/.cpp` (edit tool) theo format đã chốt + mapping Q5.
@@ -818,7 +819,7 @@ Phân tầng trách nhiệm:
 ```text
 Application
     ├── Control / Join / Enroll → SecureSession → transport AEAD → framing
-    └── Packet → packet.cpp (39B canonical) → packet_crypto (AEAD + replay)
+    └── Packet → packet.cpp (39B canonical) → packet_crypto (AEAD only)
                     → SecureSession frame-only → TCP
 ```
 
@@ -832,19 +833,27 @@ Packet      : [39B header (cleartext, AAD)][ciphertext N][16B AEAD tag]
               AAD                = canonical 39B header
 ```
 
-Security state:
+Security state (B2d — state và secret tách hẳn):
 
 ```text
 Session
- └── SessionSecurityState
+ ├── SessionSecurityState        (state only — KHÔNG giữ secret)
+ │    ├── session_id
+ │    ├── epoch
+ │    ├── tx_sequence
+ │    ├── rx_epoch
+ │    ├── rx_highest
+ │    └── replay_window
+ │
+ └── SessionCryptoContext        (secret owner)
       ├── session_id
-      ├── K_session          (qua SessionCryptoContext — B2)
-      ├── epoch
-      ├── tx_sequence
-      ├── rx_epoch
-      ├── rx_highest
-      └── replay_window
+      ├── PacketTxKey
+      └── PacketRxKey
 ```
+
+> **Boundary P4 (ràng buộc cho P5):** `packet_crypto` chỉ authenticate/decrypt. Nó **KHÔNG**
+> được gọi `ReplayWindow.commit()`. Session/security layer là nơi quyết định commit replay
+> state, và **chỉ commit sau khi `packet_open_data` trả về thành công**.
 
 ### 7.3 File-by-file change map
 
@@ -1068,6 +1077,9 @@ Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verif
   cho Packet path (B5 đã chốt)**; lifecycle check dùng adapter.
 - `hl::TcpTransport` (test path): cập nhật.
 - E2E test 1 packet CLI↔node xanh.
+- **Boundary:** P5 chỉ dựng header/seal/open + wiring. **KHÔNG** đưa `ReplayWindow.commit()`
+  vào `packet_open_data()`; replay enforcement thuộc **P6** (session/security layer, commit chỉ
+  sau khi open thành công).
 - **Exit:** build + ctest + PCT + E2E xanh.
 
 #### P6 — Wire replay enforcement + ordering
