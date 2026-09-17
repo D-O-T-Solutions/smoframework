@@ -891,6 +891,25 @@ int main(int argc, char* argv[])
     }
     smo::Bytes server_signing_key(local_identity.secret_key().begin(), local_identity.secret_key().end());
 
+    // Load root public key (mesh authority) for client certificate verification
+    std::string root_pub_path = "";
+    if (!mesh_dir.empty())
+    {
+        root_pub_path = mesh_dir + "/authority.pub";
+    }
+    smo::Bytes root_public_key = load_file_binary(root_pub_path);
+    if (root_public_key.empty() && !mesh_dir.empty())
+    {
+        std::fprintf(stderr, "[smo-node] Warning: no root public key at %s, client cert verification may fail\n", root_pub_path.c_str());
+    }
+    std::string mesh_id_str = "";
+    if (!mesh_dir.empty())
+    {
+        // Extract mesh_id from mesh directory name
+        mesh_id_str = std::filesystem::path(mesh_dir).filename().string();
+    }
+    smo::Bytes mesh_id_bytes(mesh_id_str.begin(), mesh_id_str.end());
+
     // Register transports BEFORE any references
     smo::TransportRegistry::instance().register_transport(std::make_unique<smo::TcpTransport>(), "tcp");
     smo::TransportRegistry::instance().register_transport(std::make_unique<smo::network::udp::UdpTransport>(), "udp");
@@ -2293,6 +2312,8 @@ int main(int argc, char* argv[])
                 sec_cfg.role = smo::SecureSession::Role::Server;
                 sec_cfg.server_cert = server_cert_blob;
                 sec_cfg.signing_secret_key = server_signing_key;
+                sec_cfg.root_public_key = root_public_key;
+                sec_cfg.mesh_id = mesh_id_str;
 
                 int client_fd = tcp_ses->release_fd();
                 smo::SecureSession sec(client_fd, sec_cfg, *crypto);

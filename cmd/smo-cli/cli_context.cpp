@@ -20,6 +20,7 @@
 #include "core/errors/error.hpp"
 #include "core/enroll/join_token.hpp"
 #include "core/enroll/auto_enroll.hpp"
+#include "core/identity/identity.hpp"
 #include "core/transport/framing.hpp"
 #include "core/transport/secure_session.hpp"
 #include "core/crypto/registry.hpp"
@@ -78,6 +79,18 @@ namespace smo {
                 }
             }
             return out;
+        }
+
+        static smo::Bytes load_file_binary(const std::string& path)
+        {
+            std::ifstream f(path, std::ios::binary | std::ios::ate);
+            if (!f)
+                return {};
+            auto size = f.tellg();
+            f.seekg(0);
+            smo::Bytes data(static_cast<size_t>(size));
+            f.read(reinterpret_cast<char*>(data.data()), size);
+            return data;
         }
 
         static int tcp_connect(const std::string& host, uint16_t port, int timeout_ms = 10000)
@@ -790,9 +803,29 @@ Result<std::string> CLIContextManager::network_execute(const std::string& node_a
                                      "version handshake failed: " + ver_res.error().message);
         }
 
-        // 4. PQ handshake (client role)
+        // 4. Load client certificate and secret key for mutual auth
+        std::string data_dir = get_data_dir();
+        std::string cert_path = data_dir + "/node.cert.smoc";
+        smo::Bytes client_cert_blob = load_file_binary(cert_path);
+        if (client_cert_blob.empty())
+        {
+            ::close(fd);
+            return SMO_ERR_TRANSPORT(314, Error, NoRetry, None, "client certificate not found at " + cert_path);
+        }
+        std::string id_path = data_dir + "/identity.json";
+        auto id_res = smo::Identity::load_from_file(id_path, *crypto);
+        if (!id_res)
+        {
+            ::close(fd);
+            return SMO_ERR_TRANSPORT(315, Error, NoRetry, None, "identity not found at " + id_path);
+        }
+        smo::Bytes client_signing_key(id_res.value().secret_key().begin(), id_res.value().secret_key().end());
+
+        // 5. PQ handshake (client role) with mutual auth
         smo::SecureSession::Config sec_cfg;
         sec_cfg.role = smo::SecureSession::Role::Client;
+        sec_cfg.client_cert = client_cert_blob;
+        sec_cfg.client_signing_secret_key = client_signing_key;
         smo::SecureSession sec(fd, sec_cfg, *crypto);
         auto hs = sec.handshake();
         if (!hs)

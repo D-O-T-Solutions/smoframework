@@ -136,16 +136,17 @@ namespace smo {
             return provider;
         }
 
-        void register_suite1_classical()
-        {
-            auto& registry = CryptoRegistry::instance();
-            auto& provider = get_suite1_classical_provider();
-            auto result = registry.register_suite(provider);
-            if (!result)
-            {
-                throw std::runtime_error("Suite 1 Classical registration failed");
-            }
-        }
+void register_suite1_classical()
+{
+    auto& registry = CryptoRegistry::instance();
+    auto& provider = get_suite1_classical_provider();
+    auto result = registry.register_suite(provider);
+    if (!result)
+    {
+        fprintf(stderr, "Suite 1 registration failed: %s\n", result.error().message.c_str());
+        throw std::runtime_error("Suite 1 Classical registration failed: " + result.error().message);
+    }
+}
 
     } // namespace providers
 } // namespace smo

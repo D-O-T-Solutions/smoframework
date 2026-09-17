@@ -13,10 +13,7 @@
 
 int main(int argc, char* argv[])
 {
-    smo::providers::register_suite1_classical();
-#ifdef SMO_WITH_PQC
-    smo::providers::register_suite3_purepqc();
-#endif
+    // Let CLIApplication::get_crypto() handle suite registration
     smo::CLIApplication app;
     auto init_result = app.initialize("~/.smo");
     if (!init_result)
