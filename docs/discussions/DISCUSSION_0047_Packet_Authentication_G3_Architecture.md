@@ -515,12 +515,14 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 Decision Log (§2.5) đã chốt hết Q1–Q12. Blocker B1–B5 cũng đã chốt (§7.1.1):
 B1=(i) dual-path, B2=(B2a–B2d), B3=(deterministic KDF from canonical transcript),
-B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 + P5 DONE**:
+B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 + P5 + P6 DONE**:
 canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, `SessionCryptoContext`
 (`PacketTxKey`/`PacketRxKey` opaque, `matches()` CT) + `SecureSession` `session_id` +
 `send_framed/recv_framed`, Packet wire format 39B canonical + `packet_route`, Packet AEAD
-`packet_seal_data`/`packet_open_data`, và **production wiring** (`cli_context.cpp`:
-`packet_seal_data`+`send_framed`, `main.cpp`: `dispatch_packet_session` với replay precheck→open→commit) (23/23 ctest, 24/24 PCT). **Tiếp theo: P6** (replay enforcement wiring).
+`packet_seal_data`/`packet_open_data`, production wiring (`cli_context.cpp` + `main.cpp`),
+và **replay enforcement hoàn chỉnh** (`is_acceptable` → `open` → `commit`, epoch check,
+serialize/deserialize replay state, `ReplayProtector` deprecated) (24/24 ctest, 24/24 PCT).
+**Tiếp theo: P7** (negative tests + PCT-full + E2E 3-node).
 
 Ràng buộc vẫn giữ trong lúc implement:
 
@@ -1110,6 +1112,19 @@ Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verif
 - Test: replay dup seq reject; stale epoch reject; advance state chỉ khi AEAD success
   (gửi packet giả seq cao → không đẩy `highest`).
 - **Exit:** xanh.
+
+**P6 — ✅ DONE (2026-09-17).**
+- Receive path ordering khóa chặt: `parse → session lookup → is_acceptable(seq) →
+  packet_open_data(rx_key) → commit(seq) → lifecycle → dispatch`.
+- `ReplayWindow` thuộc `SessionSecurityState` per-session; `is_acceptable` **không mutate**,
+  `commit` chỉ sau AEAD success.
+- Epoch check implicit qua session lookup (không có epoch trên wire, RFC 0019 39B header).
+- Serialize/deserialize `Session` bảo toàn `rx_window` (highest + bitmap) cho crash recovery.
+- `ReplayProtector` (protocol/replay) deprecated — không dùng ở production path.
+- Tests mới `tests/unit/protocol/test_replay_enforcement.cpp` (target `smo_test_replay`,
+  ctest `replay_model`): 11/11 PASS bao gồm ReplayWindow cơ bản, duplicate/out-of-order/stale,
+  serialize/deserialize replay state, roundtrip với commit, **tampered high-seq không advance highest**.
+- **Verify:** 24/24 ctest (+replay_model), 24/24 PCT.
 
 #### P7 — Packet negative tests + PCT
 - Negative: replay, stale epoch, tamper payload, tamper header/AAD, auth length sai,

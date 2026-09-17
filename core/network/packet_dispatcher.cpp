@@ -312,6 +312,7 @@ namespace smo::network {
         }
 
         // 5. Replay window precheck (sequence = header.nonce)
+        // Epoch is implicit in session state (no epoch on wire per RFC 0019).
         uint64_t sequence = pkt.header.nonce;
         if (!session->security_state().rx_window.is_acceptable(sequence))
         {

@@ -20,6 +20,17 @@ smo_set_warnings(smo_test_packet_crypto)
 smo_set_optimisation(smo_test_packet_crypto)
 add_test(NAME packet_crypto_model COMMAND smo_test_packet_crypto)
 
+# ── Replay enforcement (P6) ───────────────────────────────────────────
+add_executable(smo_test_replay
+    unit/protocol/test_replay_enforcement.cpp
+)
+target_link_libraries(smo_test_replay PRIVATE
+    smo_core smo_protocol smo_suite1_classical fmt::fmt
+)
+smo_set_warnings(smo_test_replay)
+smo_set_optimisation(smo_test_replay)
+add_test(NAME replay_model COMMAND smo_test_replay)
+
 # ── Trust tests ───────────────────────────────────────────────────────
 add_executable(smo_test_trust
     unit/core/trust/test_trust.cpp
