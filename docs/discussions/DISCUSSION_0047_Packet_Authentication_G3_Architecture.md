@@ -1191,3 +1191,13 @@ Rollback: mỗi phase là 1 commit độc lập; P3/P4 không wire nên revert a
 - CONTROL/IDENTITY signature trong Packet (Q10=(a)).
 - Amend RFC 0019.
 - Rewrite dispatcher/runtime (Q5=(a) adapter).
+
+---
+
+### 7.9 P8 — Documentation + Cross-links ✅ DONE (2026-09-17)
+
+- DISCUSSION_0046 §15: G3 moved from **Pending** → **Completed**; §26.4: implementation order updated with G3 ✅
+- DISCUSSION_0046 §868: G3 status updated to **COMPLETED 2026-09-17**
+- DISCUSSION_0046 header: cross-link to DISCUSSION_0047 added
+- DISCUSSION_0047: this document — architecture + implementation plan + test results for G3 Packet Auth (P0–P7)
+- **All 25 ctest + 24 PCT pass.** No amend RFC 0019.

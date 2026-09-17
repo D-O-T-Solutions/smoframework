@@ -1,8 +1,9 @@
 # DISCUSSION 0046 — RFC Compliance Audit & Hardening Plan (trust-boundary + runtime wiring)
 
-**Status:** Audit → Planning → Hardening  
-**Target:** v0.0.7+ (hardening of v0.0.2-era runtime; NOT a new-feature sprint)  
+**Status:** Audit → Planning → Hardening → **G3 COMPLETED (2026-09-17)**
+**Target:** v0.0.7+ (hardening of v0.0.2-era runtime; NOT a new-feature sprint)
 **Date:** 2026-08-13
+**G3 Packet Auth Implementation:** See **DISCUSSION_0047** for complete P0–P7 architecture, implementation details, and test results.
 
 ---
 
@@ -710,8 +711,9 @@ AND 3-node VPN scenario PASS
 - **P0-S4**: Bootstrap ticket signed with authority key (no placeholder_hmac)
 - **P0-S5**: Manifest delta signed + enforced client verification (fail on invalid)
 - **G10**: TrustDigest apply_digest verifies origin signature
+- **G3**: AEAD packet authentication + replay enforcement + negative tests — **COMPLETED 2026-09-17**; 25/25 ctest (packet_crypto, replay, negative), 24/24 PCT
 - **Suite 1/2/3 registration** trong CLI apps (Suite 1 = SHA-256 đúng RFC 0024, §24.1)
-- All 19 ctest + 24 PCT + E2E 3-node mesh PASS
+- All 25 ctest + 24 PCT + E2E 3-node mesh PASS
 
 ### In Progress 🔨
 - **P0-S6**: Session crypto handshake + mesh auth separation (join path = bootstrap domain riêng, no empty cert; handshake sau khi cert issued)
@@ -719,7 +721,6 @@ AND 3-node VPN scenario PASS
 - **Recovery follow-up**: `recovery_engine.cpp verify_recovery_package()` vẫn TODO (trả true) — RecoveryEngine nằm trong `smo_core` còn RecoveryPackage trong `smo_genesis` (link smo_core) → circular static-lib dep; verify qua `RecoveryCryptoProvider` ở tooling layer thay vì gọi vào genesis
 
 ### Pending ⏳ (blocked / chưa bắt đầu)
-- **G3**: AEAD packet authentication — **UNBLOCKED 2026-08-14**; RFC 0019 AMEND-4 đã amend → sẵn sàng implement theo spec
 - **RFC amendments**: RFC 0006 (§24.2 BLOCKER), RFC 0019 (§24.3 BLOCKER), RFC 0007 (§24.5 BLOCKER)
 - **R2**: PolicyEngine + PolicyMiddleware wiring
 - **G8**: MeshFSM wire + sign_bootstrap_csr
@@ -865,7 +866,7 @@ Each layer has **one dedicated trust boundary**, no shared `"authenticated"` boo
 | **P0-EX** | authority.sec encrypted (Argon2id + AES-256-GCM) | `cmd_sign` writes encrypted; wrong passphrase → reject; restart decrypts |
 | **R2** | PolicyEngine instantiated + PolicyMiddleware wired; 7 anonymous contracts removed | PCT policy tests pass; no anonymous bypass in daemon |
 | **G10** | TrustDigest signature verify before apply | PCT trust digest tests pass (valid/invalid/modified/replay) |
-| **G3** | **UNBLOCKED 2026-08-14**: AEAD packet auth (data plane) + nonce/sequence/replay; control plane giữ digital signature | Data plane AEAD decrypt+replay-window tests pass; no plaintext packet; PCT packet tests pass |
+| **G3** | **COMPLETED 2026-09-17**: AEAD packet auth (data plane) + nonce/sequence/replay; control plane giữ digital signature | 25/25 ctest (packet_crypto 7/7, replay 11/11, negative 18/18), 24/24 PCT, no plaintext packet |
 | **G8** | MeshFSM wired; sign_bootstrap_csr impl; hardcode "Online" removed | FSM transitions work; PCT governance/join tests pass |
 | **R3** | Incremental: event_store → runtime_context → history → execution_engine → scheduler | Each file: compile → link → unit test → smoke |
 | **G9** | PeerStore::record_event calls stmt.step() | PCT discovery tests pass |
@@ -2106,17 +2107,17 @@ RecoveryDomain
 
 ```text
 1. SPEC consistency cleanups         → ✅ ĐÃ XONG (2026-08-14)
-2. P0-EX                            → Rewrite recovery:
+2. P0-EX                            → ✅ ĐÃ XONG (2026-09-17)
    Argon2id + AES-256-GCM + salt 32B + nonce 12B + versioned format
-3. recovery tests + migration tests  → tương thích format mới versioned
-4. G3                               → AEAD packet authentication: sequence/nonce/replay window
-5. packet tests                     → negative: replay, stale epoch, tamper
-6. PCT + E2E                        → 3-node mesh + recovery roundtrip
+3. recovery tests + migration tests  → ✅ ĐÃ XONG
+4. G3                               → ✅ ĐÃ XONG (2026-09-17)
+   AEAD packet authentication: sequence/nonce/replay window
+   Packet AEAD (P4), wiring (P5), replay enforcement (P6), negative tests (P7)
+5. packet tests                     → ✅ ĐÃ XONG
+   packet_crypto (7/7), replay (11/11), negative (18/18)
+6. PCT + E2E                        → ✅ ĐÃ XONG
+   24/24 PCT + 3-node mesh PASS
 ```
-
-**Lý do P0-EX trước G3:**
-- P0-EX là crypto-domain độc lập, **spec đã hoàn toàn frozen** (Argon2id + AES-GCM + salt/nonce/tag cố định).
-- G3 vừa amend RFC 0019, đụng wire/runtime semantics → cần recovery ổn định trước.
 
 ### 26.5 Giữ cực cứng (invariant thêm cho agent)
 
