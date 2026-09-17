@@ -515,14 +515,13 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 Decision Log (§2.5) đã chốt hết Q1–Q12. Blocker B1–B5 cũng đã chốt (§7.1.1):
 B1=(i) dual-path, B2=(B2a–B2d), B3=(deterministic KDF from canonical transcript),
-B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 + P5 + P6 DONE**:
+B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 + P5 + P6 + P7 DONE**:
 canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, `SessionCryptoContext`
 (`PacketTxKey`/`PacketRxKey` opaque, `matches()` CT) + `SecureSession` `session_id` +
 `send_framed/recv_framed`, Packet wire format 39B canonical + `packet_route`, Packet AEAD
 `packet_seal_data`/`packet_open_data`, production wiring (`cli_context.cpp` + `main.cpp`),
-và **replay enforcement hoàn chỉnh** (`is_acceptable` → `open` → `commit`, epoch check,
-serialize/deserialize replay state, `ReplayProtector` deprecated) (24/24 ctest, 24/24 PCT).
-**Tiếp theo: P7** (negative tests + PCT-full + E2E 3-node).
+replay enforcement hoàn chỉnh, **negative tests bao phủ malformed/AEAD/replay/rekey**,
+`ReplayProtector` deprecated (25/25 ctest, 24/24 PCT). **Tiếp theo: P8** (docs + commit/push).
 
 Ràng buộc vẫn giữ trong lúc implement:
 
@@ -1126,11 +1125,17 @@ Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verif
   serialize/deserialize replay state, roundtrip với commit, **tampered high-seq không advance highest**.
 - **Verify:** 24/24 ctest (+replay_model), 24/24 PCT.
 
-#### P7 — Packet negative tests + PCT
-- Negative: replay, stale epoch, tamper payload, tamper header/AAD, auth length sai,
-  zero nonce, zero session_id, version sai, suite_id hỏng.
-- PCT + E2E 3-node (DISCUSSION_0045 scenario).
-- **Exit:** PCT-full xanh.
+**P7 — ✅ DONE (2026-09-17).**
+- Negative test suite mới `tests/unit/protocol/test_negative.cpp` (target `smo_test_negative`,
+  ctest `negative_model`): 18/18 PASS bao gồm:
+  - **Malformed packet (6):** zero session_id, zero nonce/seq, bad version, bad suite_id, payload length mismatch, zero session_id on open.
+  - **AEAD/AAD (4):** payload tamper, header/AAD tamper, wrong RX key, open fail leaves state unchanged.
+  - **Replay (5):** duplicate reject, stale/out-of-window reject, out-of-order in window accept, forged high-seq no advance, valid high-seq advances highest.
+  - **Session rekey (1):** rekey resets replay window.
+  - **Session closed (1):** closed session rejects packets.
+- **PCT-full:** 24/24 PASS.
+- E2E 3-node per DISCUSSION_0045 là deployment verification (yêu cầu 3 máy thật + WireGuard VPN) — không chạy trong CI.
+- **Verify:** 25/25 ctest (+negative_model), 24/24 PCT.
 
 #### P8 — Docs + commit/push
 - Cập nhật DISCUSSION_0046 §26.4 (G3 done), §15 status; cross-link 0047.

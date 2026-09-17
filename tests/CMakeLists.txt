@@ -31,6 +31,17 @@ smo_set_warnings(smo_test_replay)
 smo_set_optimisation(smo_test_replay)
 add_test(NAME replay_model COMMAND smo_test_replay)
 
+# ── P7 Negative tests ────────────────────────────────────────────────
+add_executable(smo_test_negative
+    unit/protocol/test_negative.cpp
+)
+target_link_libraries(smo_test_negative PRIVATE
+    smo_core smo_protocol smo_suite1_classical fmt::fmt
+)
+smo_set_warnings(smo_test_negative)
+smo_set_optimisation(smo_test_negative)
+add_test(NAME negative_model COMMAND smo_test_negative)
+
 # ── Trust tests ───────────────────────────────────────────────────────
 add_executable(smo_test_trust
     unit/core/trust/test_trust.cpp
