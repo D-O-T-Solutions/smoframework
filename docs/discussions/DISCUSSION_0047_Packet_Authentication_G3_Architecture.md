@@ -1012,6 +1012,9 @@ Result<void> packet_open_data(Packet&, BytesView key);  // verify+decrypt
 ```
 
 - AAD = canonical 39B header (serialize header với `payload_length` đã set, nonce đã set).
+- **Ràng buộc cứng:** `packet_crypto` chỉ nhìn canonical 39B header → AAD; **KHÔNG** biết và
+  **KHÔNG** phụ thuộc `opcode_id`/`intent_id` (shim P3). Mapping `opcode_id → {ns, message_id}`
+  chỉ thuộc `packet_route`/adapter. `packet_crypto` không gọi `packet_route`.
 - `packet_open_data` fail ⇒ **không** commit replay state.
 - Unit tests: seal→open roundtrip; tamper payload → fail; tamper header (AAD) → fail;
   sai key → fail; tag 16B; nonce derive khớp 2 đầu.
