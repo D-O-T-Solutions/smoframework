@@ -514,11 +514,11 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 Decision Log (§2.5) đã chốt hết Q1–Q12. Blocker B1–B5 cũng đã chốt (§7.1.1):
 B1=(i) dual-path, B2=(B2a–B2d), B3=(deterministic KDF from canonical transcript),
-B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 DONE**:
-canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, và `SessionCryptoContext`
+B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 DONE**:
+canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, `SessionCryptoContext`
 (`PacketTxKey`/`PacketRxKey` opaque, `matches()` CT) + `SecureSession` `session_id` +
-`send_framed/recv_framed` (22/22 ctest, 24/24 PCT). **Tiếp theo: P3** (Packet header 39B +
-route mapping, chưa AEAD).
+`send_framed/recv_framed`, và Packet wire format 39B canonical + `packet_route`
+(22/22 ctest, 24/24 PCT). **Tiếp theo: P4** (Packet AEAD `seal_data/open_data`).
 
 Ràng buộc vẫn giữ trong lúc implement:
 
@@ -854,8 +854,8 @@ Session
 | `core/session/session.hpp/.cpp` | dùng canonical `SessionId`; gắn `SessionSecurityState` | P1/P2 |
 | `core/session/session_crypto_context.hpp/.cpp` *(mới)* | `SessionCryptoContext`, `PacketTxKey`, `PacketRxKey` (opaque, `matches()` CT) — **B2** | **P2 DONE** |
 | `core/transport/secure_session.hpp/.cpp` | `send()/recv()` **giữ nguyên AEAD**; thêm transport-frame-only `send_framed/recv_framed`; derive `session_id` một lần trong `derive_keys()`; expose `SessionCryptoContext` (B1/B2) | **P2 DONE** |
-| `protocol/packet/packet.h/.cpp` | rewrite header 39B + `Packet` (auth variable) | P3 |
-| `protocol/packet/packet_route.hpp/.cpp` *(mới)* | mapping `Opcode ↔ {namespace,message_id}` | P3 |
+| `protocol/packet/packet.h/.cpp` | header canonical 39B + codec big-endian + compat shim | P3 **DONE** |
+| `protocol/packet/packet_route.hpp/.cpp` *(mới)* | mapping `Opcode ↔ {namespace,message_id}` | P3 **DONE** |
 | `protocol/packet/packet_crypto.hpp/.cpp` *(mới)* | `seal_data/open_data` + derive nonce24 (B4=(i): tách khỏi `packet.cpp`) | P4 |
 | `cmd/smo-cli/cli_context.cpp` | build packet (ns/mid, session_id, ts ns, seq), seal, send_framed | P5 |
 | `cmd/smo-node/main.cpp` | open_data trước dispatch; response seal + session_id | P5 |
@@ -935,30 +935,72 @@ private:
   **22/22 ctest + 24/24 PCT xanh.** 10/10 exit criteria đạt; chưa wire Packet G3.
 
 #### P3 — Packet format 39B + route mapping (chưa AEAD)
+
+> **Quyết định P3 #1 — Route mapping (Q5), chốt 2026-09-17: "option 4 — RFC-pure".**
+> Không tạo namespace mới ngoài 0x01–0x04 (không dùng 0x05/0x06 dù codebase
+> bootstrap/join hiện đang gộp namespace+method vào một `opcode_id` 32-bit).
+> `message_id` = **giá trị byte của `Opcode` nội bộ** (implementation mapping,
+> **không** phải RFC registration). Packet-capable (25 opcode):
+> - `0x03 EXECUTION`: LS, PUT, GET, EXEC, QUARANTINE, MKDIR, RM, CP, ECHO, FILE_OP, PROCESS, CUSTOM
+> - `0x02 CONTROL`: CONTRACT_MGMT, WITNESS, REVOKE_CERT, EPOCH_INCREMENT, RECOVERY_SESSION, CRL_SYNC, RECOVERY, GOV_PROPOSE, GOV_VOTE, GOV_COMMIT, GOV_LIST, GOV_STATUS, GOV_INFO
+> - **Non-Packet (không có route, reject):** BOOTSTRAP_SNAPSHOT, BOOTSTRAP_INFO, JOIN, LEAVE, JOIN_INFO.
+> - Test T7: roundtrip cho mọi Opcode packet-capable; assert non-Packet không có route.
+
+> **Quyết định P3 #2 — Packet struct compat shim (Q6), chốt 2026-09-17: "option 1".**
+> "P3 preserves legacy `Packet` fields as in-memory compatibility adapters only. They are
+> explicitly non-wire fields and MUST NOT participate in serialization, authentication/AAD,
+> equality of canonical wire representation, or packet-size calculations."
+> `session_id`/`timestamp` là canonical trong `PacketHeader`, **không** tạo duplicate field;
+> `Packet` cung cấp accessor `session_id()`/`timestamp()` trỏ vào header. Shim `opcode_id`/
+> `intent_id` sẽ bị xóa ở P5 khi caller được migrate.
+
 - `packet.h`:
 
 ```cpp
-struct PacketHeader {              // 39B, big-endian
+struct PacketHeader {              // in-memory; wire ghi big-endian từng field
     uint8_t  protocol_version{0x03};
     uint8_t  suite_id{0};
-    uint8_t  namespace{0};
+    uint8_t  ns{0};                // 'namespace' là keyword C++, đặt là 'ns'
     uint16_t message_id{0};
     uint8_t  session_id[16]{};
-    uint64_t timestamp{0};         // Unix ns
+    int64_t  timestamp{0};         // Unix ns (int64 để khớp caller cũ)
     uint64_t nonce{0};             // = sequence
     uint16_t payload_length{0};
-} __attribute__((packed));
-static_assert(sizeof(PacketHeader) == 39);
+};
+inline constexpr size_t kPacketHeaderWireSize = 1+1+1+2+16+8+8+2; // 39
+static_assert(kPacketHeaderWireSize == 39);
 ```
 
-- `Packet { PacketHeader header; Bytes payload; Bytes auth; }`; bỏ `intent_id`, `opcode_id`,
-  `signature[64]` (Q6). Adapter `opcode_id()` derive từ `(namespace,message_id)`.
-- `packet_route`: bảng tĩnh `Opcode → {ns, mid}`; `to_packet_route/from_packet_route` (Q5).
+> Lưu ý: struct **không** `packed` — packed field không bind được vào reference mà
+> accessor canonical cần; codec tự ghi/đọc big-endian nên `sizeof(struct)` không
+> tham gia wire. Kích thước wire được assert qua `kPacketHeaderWireSize`.
+
+- `Packet { PacketHeader header; Bytes payload; Bytes auth; }` + accessor
+  `session_id()`/`timestamp()` (map vào header); shim in-memory `opcode_id`, `intent_id`
+  (không lên wire, không tham gia AAD/size/equality). `signature[64]` bị bỏ.
+- `packet_route`: bảng tĩnh `Opcode → {ns, mid}`; `to_packet_route/from_packet_route` (Q5);
+  `expected_auth_length(ns, suite_id)` derive signature/AEAD-tag size (Q4, không lên wire).
 - `packet_from_buffer`: reject version ≠ 0x03; reject nonce == 0 (RFC rule 1); reject zero
-  session_id (Q9); bounds-check auth length derive từ `namespace + suite_id` (Q4).
+  session_id (Q9); reject namespace ngoài 0x02/0x03/0x04; bounds-check payload/auth length.
 - Unit tests: roundtrip 39B; bad version; zero nonce; zero session_id; payload_length mismatch;
   auth-length sai/thiếu; mapping roundtrip toàn bộ `Opcode`.
 - **Exit:** build + protocol tests xanh (chưa AEAD, chưa wiring).
+
+**P3 — ✅ DONE (2026-09-17).**
+- `packet.h/.cpp`: header canonical (unpacked in-memory; wire 39B ghi big-endian từng field,
+  `kPacketHeaderWireSize` + `static_assert==39`); `Packet{header,payload,auth}` + accessor
+  `session_id()/timestamp()` + shim `opcode_id/intent_id`; bỏ `signature[64]`.
+- `expected_auth_length(ns, suite_id)`: EXECUTION/DATA = 16 (AEAD tag); CONTROL suite 1/2 = 64,
+  suite 3 = 3309; còn lại = 0 → reject "unsupported namespace".
+- `packet_route.hpp/.cpp`: 25 opcode packet-capable (12 EXECUTION + 13 CONTROL), 5 non-Packet
+  (BOOTSTRAP_*/JOIN/LEAVE/JOIN_INFO) không có route; `message_id = opcode byte`.
+- `packet_from_buffer` reject: version≠0x03, <39B, nonce==0, zero session_id, ns ngoài
+  0x02/0x03/0x04, payload_length vượt buffer, auth length sai/thiếu.
+- `packet_to_buffer`: derive route từ `opcode_id` khi `header.message_id==0`; reject
+  non-Packet opcode.
+- Caller tối thiểu (canonical accessor, không wiring): `cli_context.cpp`, `main.cpp` (2 chỗ),
+  `action_executor.cpp`, `bootstrap_protocol.cpp` (chỉ compile-fix), 2 test transport.
+- Tests T1–T7 trong `tests/unit/protocol/test_protocol.cpp` PASS; **22/22 ctest, 24/24 PCT**.
 
 #### P4 — Packet AEAD `seal_data/open_data` (DATA plane, Q10)
 - `packet_crypto` (B4=(i)):

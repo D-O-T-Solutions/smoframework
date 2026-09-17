@@ -3,4 +3,5 @@ target_include_directories(smo_protocol_packet INTERFACE ${CMAKE_CURRENT_SOURCE_
 
 target_sources(smo_protocol PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/packet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/packet_route.cpp
 )

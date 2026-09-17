@@ -1,4 +1,5 @@
 #include <packet/packet.h>
+#include <packet/packet_route.hpp>
 #include <signing/signing.h>
 #include <encryption/encryption.h>
 #include <replay/replay.h>
@@ -68,106 +69,191 @@ static int failures = 0;
     } while (false)
 
 // ==========================================================================
-// Tests — Packet
+// Tests — Packet (RFC 0019 39B canonical)
 // ==========================================================================
-static bool test_packet_to_buffer_roundtrip()
+namespace {
+
+// Build a valid EXECUTION packet wire buffer via public serializer.
+std::vector<uint8_t> make_valid_wire(uint8_t ns, uint16_t message_id, uint8_t suite_id,
+                                     size_t payload_len, size_t auth_len)
 {
     Packet pkt;
-    pkt.header.version = 1;
-    pkt.header.flags = 0x42;
-    pkt.header.payload_len = 0;
-    pkt.session_id.fill(0xAA);
+    pkt.header.protocol_version = kPacketProtocolVersion;
+    pkt.header.suite_id = suite_id;
+    pkt.header.ns = ns;
+    pkt.header.message_id = message_id;
+    pkt.session_id().fill(0xA5);
+    pkt.header.timestamp = 1234567890;
+    pkt.header.nonce = 42;
+    pkt.payload.assign(payload_len, 0x11);
+    pkt.auth.assign(auth_len, 0x22);
+
+    std::vector<uint8_t> out;
+    (void)packet_to_buffer(pkt, out);
+    return out;
+}
+
+} // anonymous namespace
+
+static bool test_packet_roundtrip_39b()
+{
+    Packet pkt;
+    pkt.header.protocol_version = kPacketProtocolVersion;
+    pkt.header.suite_id = 1;
+    pkt.header.ns = packet_route::kNamespaceExecution;
+    pkt.header.message_id = static_cast<uint16_t>(Opcode::PUT);
+    pkt.session_id().fill(0xAA);
     pkt.intent_id.fill(0xBB);
-    pkt.opcode_id = 0x01020304;
-    pkt.timestamp = 1234567890;
-    pkt.nonce.fill(0xCC);
+    pkt.timestamp() = 1234567890;
+    pkt.header.nonce = 7;
     pkt.payload = {0x01, 0x02, 0x03};
-    pkt.signature.fill(0xDD);
+    pkt.auth.assign(16, 0xDD);
 
     std::vector<uint8_t> buf;
-    auto res = packet_to_buffer(pkt, buf);
-    ASSERT(res);
-    ASSERT(buf.size() > 100);
+    ASSERT(packet_to_buffer(pkt, buf));
+    ASSERT_EQ(buf.size(), 39U + 3U + 16U);
+    ASSERT_EQ(buf[0], kPacketProtocolVersion);
 
     auto parsed = packet_from_buffer(buf);
     ASSERT(parsed);
-    ASSERT_EQ(parsed.value().header.version, 1);
-    ASSERT_EQ(parsed.value().header.flags, 0x42);
-    ASSERT_EQ(parsed.value().session_id[0], 0xAA);
-    ASSERT_EQ(parsed.value().intent_id[0], 0xBB);
-    ASSERT_EQ(parsed.value().opcode_id, 0x01020304);
-    ASSERT_EQ(parsed.value().timestamp, 1234567890);
-    ASSERT_EQ(parsed.value().nonce[0], 0xCC);
+    ASSERT_EQ(parsed.value().header.protocol_version, kPacketProtocolVersion);
+    ASSERT_EQ(parsed.value().header.suite_id, 1);
+    ASSERT_EQ(parsed.value().header.ns, packet_route::kNamespaceExecution);
+    ASSERT_EQ(parsed.value().header.message_id, static_cast<uint16_t>(Opcode::PUT));
+    ASSERT_EQ(parsed.value().session_id()[0], 0xAA);
+    ASSERT_EQ(parsed.value().timestamp(), 1234567890);
+    ASSERT_EQ(parsed.value().header.nonce, 7U);
     ASSERT_EQ(parsed.value().payload.size(), 3U);
-    ASSERT_EQ(parsed.value().payload[0], 0x01);
     ASSERT_EQ(parsed.value().payload[2], 0x03);
-    ASSERT_EQ(parsed.value().signature[0], 0xDD);
+    ASSERT_EQ(parsed.value().auth.size(), 16U);
+    ASSERT_EQ(parsed.value().opcode_id, static_cast<uint32_t>(Opcode::PUT));
+    // Shim không lên wire: intent_id luôn rỗng sau khi parse.
+    ASSERT_EQ(parsed.value().intent_id[0], 0x00);
 
     return true;
 }
 
-static bool test_packet_from_buffer_too_short()
+static bool test_packet_too_short()
 {
     std::vector<uint8_t> buf(10, 0);
-    auto res = packet_from_buffer(buf);
-    ASSERT(!res);
+    ASSERT(!packet_from_buffer(buf));
+    return true;
+}
+
+static bool test_packet_bad_version()
+{
+    Packet pkt;
+    pkt.header.protocol_version = 99;
+    pkt.session_id().fill(0xAA);
+    pkt.header.nonce = 1;
+    std::vector<uint8_t> buf;
+    ASSERT(!packet_to_buffer(pkt, buf));
+
+    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+                                1, 0, 16);
+    ASSERT(!wire.empty());
+    wire[0] = 99;
+    ASSERT(!packet_from_buffer(wire));
+    return true;
+}
+
+static bool test_packet_zero_nonce_payload_len_mismatch()
+{
+    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+                                1, 0, 16);
+    ASSERT(!wire.empty());
+
+    // payload_length quá lớn so với buffer (offset 37..38)
+    auto big_len = wire;
+    big_len[37] = 0xFF;
+    big_len[38] = 0xFF;
+    ASSERT(!packet_from_buffer(big_len));
+
+    // nonce == 0 (offset 29..36)
+    auto zero_nonce = wire;
+    for (size_t i = 29; i < 37; ++i)
+        zero_nonce[i] = 0;
+    ASSERT(!packet_from_buffer(zero_nonce));
 
     return true;
 }
 
-static bool test_packet_from_buffer_bad_version()
+static bool test_packet_zero_session_id()
 {
-    Packet pkt;
-    pkt.header.version = 99;
+    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+                                1, 0, 16);
+    ASSERT(!wire.empty());
+    for (size_t i = 5; i < 21; ++i)
+        wire[i] = 0;
+    ASSERT(!packet_from_buffer(wire));
+    return true;
+}
 
-    std::vector<uint8_t> buf;
-    auto res = packet_to_buffer(pkt, buf);
-    ASSERT(!res); // serialize rejects bad version too
+static bool test_packet_auth_length()
+{
+    // CONTROL + suite 1 (Ed25519) = 64B auth → hợp lệ.
+    auto ctrl = make_valid_wire(packet_route::kNamespaceControl,
+                                static_cast<uint16_t>(Opcode::CONTRACT_MGMT), 1, 4, 64);
+    ASSERT(!ctrl.empty());
+    ASSERT(packet_from_buffer(ctrl));
+    ASSERT_EQ(ctrl.size(), 39U + 4U + 64U);
 
-    // Manually make a buffer with wrong version
-    buf.assign(200, 0);
-    buf[0] = 99; // version
-    auto res2 = packet_from_buffer(buf);
-    ASSERT(!res2);
+    // Thiếu auth byte → reject.
+    auto truncated = ctrl;
+    truncated.pop_back();
+    ASSERT(!packet_from_buffer(truncated));
+
+    // Thừa auth byte → reject.
+    auto extended = ctrl;
+    extended.push_back(0x33);
+    ASSERT(!packet_from_buffer(extended));
+
+    // Namespace không hỗ trợ Packet (DISCOVERY 0x01) → reject.
+    auto exec = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+                                1, 0, 16);
+    ASSERT(!exec.empty());
+    exec[2] = packet_route::kNamespaceDiscovery;
+    ASSERT(!packet_from_buffer(exec));
 
     return true;
 }
 
-static bool test_packet_empty_payload()
+static bool test_packet_route_mapping()
 {
+    const Opcode capable[] = {
+        Opcode::LS,          Opcode::PUT,           Opcode::GET,          Opcode::EXEC,
+        Opcode::QUARANTINE,  Opcode::ECHO,          Opcode::MKDIR,        Opcode::RM,
+        Opcode::CP,          Opcode::FILE_OP,       Opcode::PROCESS,      Opcode::CUSTOM,
+        Opcode::CONTRACT_MGMT, Opcode::WITNESS,     Opcode::REVOKE_CERT,  Opcode::EPOCH_INCREMENT,
+        Opcode::RECOVERY_SESSION, Opcode::CRL_SYNC, Opcode::RECOVERY,     Opcode::GOV_PROPOSE,
+        Opcode::GOV_VOTE,    Opcode::GOV_COMMIT,    Opcode::GOV_LIST,     Opcode::GOV_STATUS,
+        Opcode::GOV_INFO,
+    };
+    for (const auto op : capable)
+    {
+        ASSERT(packet_route::is_packet_capable(op));
+        auto route = packet_route::to_packet_route(op);
+        ASSERT(route);
+        ASSERT_EQ(route->message_id, static_cast<uint16_t>(op));
+        auto back = packet_route::from_packet_route(route->ns, route->message_id);
+        ASSERT(back);
+        ASSERT(*back == op);
+    }
+
+    const Opcode non_packet[] = {Opcode::BOOTSTRAP_SNAPSHOT, Opcode::BOOTSTRAP_INFO, Opcode::JOIN,
+                                 Opcode::LEAVE, Opcode::JOIN_INFO};
+    for (const auto op : non_packet)
+    {
+        ASSERT(!packet_route::is_packet_capable(op));
+        ASSERT(!packet_route::to_packet_route(op));
+    }
+
+    // Serialize reject non-Packet opcode khi header route chưa set.
     Packet pkt;
-    pkt.header.version = 1;
-
+    pkt.opcode_id = static_cast<uint32_t>(Opcode::JOIN);
+    pkt.session_id().fill(0xAA);
     std::vector<uint8_t> buf;
-    auto res = packet_to_buffer(pkt, buf);
-    ASSERT(res);
-
-    auto parsed = packet_from_buffer(buf);
-    ASSERT(parsed);
-    ASSERT(parsed.value().payload.empty());
-
-    return true;
-}
-
-static bool test_packet_payload_length_mismatch()
-{
-    Packet pkt;
-    pkt.header.version = 1;
-    pkt.payload = {0x01, 0x02};
-
-    std::vector<uint8_t> buf;
-    auto res = packet_to_buffer(pkt, buf);
-    ASSERT(res);
-
-    // Payload length starts at byte 58 (6 header + 16 session + 16 intent
-    // + 4 opcode + 8 timestamp + 8 nonce)
-    buf[58] = 0xFF;
-    buf[59] = 0xFF;
-    buf[60] = 0xFF;
-    buf[61] = 0xFF;
-
-    auto parsed = packet_from_buffer(buf);
-    ASSERT(!parsed);
+    ASSERT(!packet_to_buffer(pkt, buf));
 
     return true;
 }
@@ -293,11 +379,13 @@ int main(int, char*[])
     printf("SMO Protocol — Unit Tests\n");
     printf("==========================\n\n");
 
-    TEST("Packet roundtrip") END_TEST(test_packet_to_buffer_roundtrip());
-    TEST("Packet from_buffer too short") END_TEST(test_packet_from_buffer_too_short());
-    TEST("Packet bad version") END_TEST(test_packet_from_buffer_bad_version());
-    TEST("Packet empty payload") END_TEST(test_packet_empty_payload());
-    TEST("Packet payload length mismatch") END_TEST(test_packet_payload_length_mismatch());
+    TEST("Packet roundtrip 39B") END_TEST(test_packet_roundtrip_39b());
+    TEST("Packet too short") END_TEST(test_packet_too_short());
+    TEST("Packet bad version") END_TEST(test_packet_bad_version());
+    TEST("Packet zero nonce / payload length") END_TEST(test_packet_zero_nonce_payload_len_mismatch());
+    TEST("Packet zero session_id") END_TEST(test_packet_zero_session_id());
+    TEST("Packet auth length") END_TEST(test_packet_auth_length());
+    TEST("Packet route mapping") END_TEST(test_packet_route_mapping());
     TEST("Schema MessageType to_string") END_TEST(test_schema_message_type_to_string());
     TEST("Schema message classification") END_TEST(test_schema_message_classification());
     TEST("Schema protocol version") END_TEST(test_schema_protocol_version());

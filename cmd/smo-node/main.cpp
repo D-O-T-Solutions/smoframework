@@ -1627,10 +1627,10 @@ int main(int argc, char* argv[])
 
         // 1. Session lookup (if session_id present)
         const smo::Session* session = nullptr;
-        bool has_session = pkt.session_id.size() >= 16;
+        bool has_session = pkt.session_id().size() >= 16;
         if (has_session)
         {
-            auto sid_res = smo::SessionId::from_bytes(smo::BytesView(pkt.session_id.data(), 16));
+            auto sid_res = smo::SessionId::from_bytes(smo::BytesView(pkt.session_id().data(), 16));
             if (sid_res)
             {
                 session = session_mgr.lookup(sid_res.value());
@@ -1676,9 +1676,9 @@ int main(int argc, char* argv[])
             smo::Packet err_resp;
             err_resp.header = original_pkt.header;
             err_resp.opcode_id = original_pkt.opcode_id;
-            err_resp.session_id = original_pkt.session_id;
+            err_resp.session_id() = original_pkt.session_id();
             err_resp.intent_id = original_pkt.intent_id;
-            err_resp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+            err_resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
                                      std::chrono::system_clock::now().time_since_epoch())
                                      .count();
             err_resp.payload.assign(message.begin(), message.end());
@@ -1704,9 +1704,9 @@ int main(int argc, char* argv[])
                 smo::Packet resp;
                 resp.header = original_pkt.header;
                 resp.opcode_id = original_pkt.opcode_id;
-                resp.session_id = original_pkt.session_id;
+                resp.session_id() = original_pkt.session_id();
                 resp.intent_id = original_pkt.intent_id;
-                resp.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
                                      std::chrono::system_clock::now().time_since_epoch())
                                      .count();
 

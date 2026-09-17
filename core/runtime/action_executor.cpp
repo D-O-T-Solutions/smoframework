@@ -48,9 +48,9 @@ namespace smo::runtime {
         Packet resp;
         resp.header = original_pkt.header;
         resp.opcode_id = original_pkt.opcode_id;
-        resp.session_id = original_pkt.session_id;
+        resp.session_id() = original_pkt.session_id();
         resp.intent_id = original_pkt.intent_id;
-        resp.timestamp =
+        resp.timestamp() =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
         resp.payload = msg.data;

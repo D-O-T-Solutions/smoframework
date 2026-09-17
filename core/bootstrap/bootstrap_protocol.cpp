@@ -333,12 +333,12 @@ namespace smo::bootstrap {
                                         auto resp_bytes = resp.value().encode_cbor();
 
                                         Packet resp_pkt;
-                                        resp_pkt.header.version = 1;
+                                        resp_pkt.header.protocol_version = kPacketProtocolVersion;
                                         resp_pkt.opcode_id = kOpcodeBootstrapResponse;
-                                        resp_pkt.session_id = pkt.session_id;
+                                        resp_pkt.session_id() = pkt.session_id();
                                         resp_pkt.intent_id = pkt.intent_id;
-                                        resp_pkt.timestamp = pkt.timestamp;
-                                        resp_pkt.nonce = pkt.nonce;
+                                        resp_pkt.timestamp() = pkt.timestamp();
+                                        resp_pkt.header.nonce = pkt.header.nonce;
                                         resp_pkt.payload = std::move(resp_bytes);
 
                                         std::error_code ec = t.send(std::move(resp_pkt), remote);

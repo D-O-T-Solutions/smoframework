@@ -163,13 +163,13 @@ static bool test_tcp_connect_send_receive()
 
     // Create and send a packet
     Packet sent;
-    sent.header.version = 1;
-    sent.session_id.fill(0xAA);
+    sent.header.protocol_version = smo::kPacketProtocolVersion;
+    sent.session_id().fill(0xAA);
     sent.intent_id.fill(0xBB);
-    sent.opcode_id = 1;
-    sent.timestamp = 1000;
-    sent.nonce = {1, 2, 3, 4, 5, 6, 7, 8};
-    sent.signature.fill(0xCC);
+    sent.opcode_id = static_cast<uint32_t>(smo::Opcode::ECHO);
+    sent.timestamp() = 1000;
+    sent.header.nonce = 1;
+    sent.auth.assign(16, 0xCC);
 
     auto serr = client.send(std::move(sent), ep);
     if (serr)
@@ -199,11 +199,11 @@ static bool test_tcp_connect_send_receive()
     if (got_error)
         return false;
 
-    ASSERT_EQ(received.header.version, 1);
-    ASSERT_EQ(received.session_id[0], 0xAA);
-    ASSERT_EQ(received.intent_id[0], 0xBB);
-    ASSERT_EQ(received.opcode_id, 1);
-    ASSERT_EQ(received.timestamp, 1000);
+    ASSERT_EQ(received.header.protocol_version, smo::kPacketProtocolVersion);
+    ASSERT_EQ(received.session_id()[0], 0xAA);
+    // intent_id là shim in-memory, KHÔNG lên wire → không survive qua transport.
+    ASSERT_EQ(received.opcode_id, static_cast<uint32_t>(smo::Opcode::ECHO));
+    ASSERT_EQ(received.timestamp(), 1000);
 
     return true;
 }

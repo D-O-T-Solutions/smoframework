@@ -809,9 +809,9 @@ namespace smo {
 
         // 6. Build packet + frame
         smo::Packet pkt;
-        pkt.header.version = 1;
+        pkt.header.protocol_version = smo::kPacketProtocolVersion;
         pkt.opcode_id = opcode;
-        pkt.timestamp =
+        pkt.timestamp() =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
         pkt.payload.assign(payload.begin(), payload.end());
