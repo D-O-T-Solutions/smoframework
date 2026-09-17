@@ -6,3 +6,4 @@ build-release/
 *.a
 .DS_Store
 build-tidy/
+.env
