@@ -515,12 +515,12 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 Decision Log (§2.5) đã chốt hết Q1–Q12. Blocker B1–B5 cũng đã chốt (§7.1.1):
 B1=(i) dual-path, B2=(B2a–B2d), B3=(deterministic KDF from canonical transcript),
-B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 DONE**:
+B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 + P5 DONE**:
 canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, `SessionCryptoContext`
 (`PacketTxKey`/`PacketRxKey` opaque, `matches()` CT) + `SecureSession` `session_id` +
-`send_framed/recv_framed`, Packet wire format 39B canonical + `packet_route`, và Packet AEAD
-`packet_seal_data`/`packet_open_data` (23/23 ctest, 24/24 PCT). **Tiếp theo: P5** (wiring
-CLI + Node + Dispatcher).
+`send_framed/recv_framed`, Packet wire format 39B canonical + `packet_route`, Packet AEAD
+`packet_seal_data`/`packet_open_data`, và **production wiring** (`cli_context.cpp`:
+`packet_seal_data`+`send_framed`, `main.cpp`: `dispatch_packet_session` với replay precheck→open→commit) (23/23 ctest, 24/24 PCT). **Tiếp theo: P6** (replay enforcement wiring).
 
 Ràng buộc vẫn giữ trong lúc implement:
 
@@ -1081,6 +1081,27 @@ Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verif
   vào `packet_open_data()`; replay enforcement thuộc **P6** (session/security layer, commit chỉ
   sau khi open thành công).
 - **Exit:** build + ctest + PCT + E2E xanh.
+
+**P5 — ✅ DONE (2026-09-17).**
+- `Session` + `SessionSecurityState` integration: `Session.create()` khởi tạo `security_state_`
+  với `session_id`, `epoch=0`, `tx_sequence=0`, `rx_epoch=0`; serialize/deserialize bao gồm
+  replay window state (highest + bitmap) cho crash recovery.
+- `TransportSession` interface: thêm `send_framed`/`recv_framed` virtual methods (default
+  delegate to `send`/`recv`); `SecureTransportSession` override gọi `SecureSession::send_framed`/
+  `recv_framed`.
+- `PacketDispatcher::dispatch_packet_session(SecureSession&, SessionManager&, Endpoint)`:
+  receive framed → parse → `packet_route::from_packet_route(ns, mid)` → session lookup by
+  `header.session_id` → **replay precheck** (`rx_window.is_acceptable(sequence)`) →
+  `packet_open_data(pkt, sec.crypto_context().packet_rx_key())` → **replay commit** (`rx_window.commit`)
+  → lifecycle check (mapped opcode) → handler dispatch with `PacketSessionTransport` (response path).
+- `PacketSessionTransport`: response `send()` gọi `packet_seal_data(pkt, sec.crypto_context().packet_tx_key(), nonce)`
+  → `packet_to_buffer` → `sec.send_framed()` (no inner FrameHeader, B5).
+- `cli_context.cpp::network_execute`: full client packet path — `to_packet_route(opcode)` → build header
+  (`ns`, `mid`, `session_id` từ `crypto_context()`, `nonce=1`, timestamp) → `packet_seal_data(tx_key)`
+  → `send_framed` → `recv_framed` → `packet_open_data(rx_key)` → return payload.
+- `main.cpp` daemon: accept loop dùng `dispatch_packet_session(sec, session_mgr, remote_ep)` thay vì
+  `dispatch_session` cho PQ-authenticated connections; legacy `dispatch_session` vẫn dùng cho non-PQ.
+- **Verify:** 23/23 ctest, 24/24 PCT xanh.
 
 #### P6 — Wire replay enforcement + ordering
 - Trong receive path: `parse → session lookup → epoch/window precheck (is_acceptable)

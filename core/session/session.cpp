@@ -159,6 +159,10 @@ namespace smo {
         s.created_at_ = now;
         s.expires_at_ = now + static_cast<int64_t>(ttl_ns);
         s.last_active_ = now;
+        s.security_state_.session_id = id;
+        s.security_state_.epoch = 0;
+        s.security_state_.tx_sequence = 0;
+        s.security_state_.rx_epoch = 0;
         return s;
     }
 
@@ -223,6 +227,14 @@ namespace smo {
         write_u32(out, static_cast<uint32_t>(cert_ser.size()));
         out.insert(out.end(), cert_ser.begin(), cert_ser.end());
 
+        // SessionSecurityState (P5)
+        out.insert(out.end(), security_state_.session_id.bytes.begin(), security_state_.session_id.bytes.end());
+        write_u64(out, security_state_.epoch);
+        write_u64(out, security_state_.tx_sequence);
+        write_u64(out, security_state_.rx_epoch);
+        write_u64(out, security_state_.rx_window.highest());
+        write_u64(out, security_state_.rx_window.bitmap()); // Need accessor
+
         return out;
     }
 
@@ -283,6 +295,28 @@ namespace smo {
         if (!cert)
             return std::move(cert.error());
         s.peer_cert_ = std::move(cert.value());
+
+        // SessionSecurityState (P5)
+        if (off + 16 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state session_id");
+        std::memcpy(s.security_state_.session_id.bytes.data(), data.data() + off, 16);
+        off += 16;
+        if (off + 8 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state epoch");
+        s.security_state_.epoch = read_u64(data, off);
+        if (off + 8 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state tx_sequence");
+        s.security_state_.tx_sequence = read_u64(data, off);
+        if (off + 8 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state rx_epoch");
+        s.security_state_.rx_epoch = read_u64(data, off);
+        if (off + 8 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state rx_highest");
+        uint64_t rx_highest = read_u64(data, off);
+        if (off + 8 > data.size())
+            return SMO_ERR_SESSION(500, Error, NoRetry, Reconnect, "truncated security state rx_bitmap");
+        uint64_t rx_bitmap = read_u64(data, off);
+        s.security_state_.rx_window.restore(rx_highest, rx_bitmap);
 
         return s;
     }

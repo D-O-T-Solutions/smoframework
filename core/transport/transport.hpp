@@ -85,6 +85,17 @@ namespace smo {
         // Receive up to max_bytes. Blocks until data arrives or error.
         virtual Result<Bytes> recv(size_t max_bytes = 65536) = 0;
 
+        // G3 Packet path: framing only (no AEAD). Default implementation falls back to send/recv.
+        // Override for transports that support frame-only mode (e.g., SecureSession after handshake).
+        virtual Result<void> send_framed(BytesView payload)
+        {
+            return send(payload);
+        }
+        virtual Result<Bytes> recv_framed(size_t max_bytes = 65536)
+        {
+            return recv(max_bytes);
+        }
+
         // Close the session gracefully.
         virtual Result<void> close() = 0;
 

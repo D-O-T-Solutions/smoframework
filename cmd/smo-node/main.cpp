@@ -657,8 +657,14 @@ struct SecureTransportSession : public smo::TransportSession
 
     SecureTransportSession(smo::SecureSession&& s, smo::Endpoint ep) : sec(std::move(s)), remote(std::move(ep)) {}
 
+    // Legacy AEAD path
     smo::Result<void> send(smo::BytesView data) override { return sec.send(data); }
     smo::Result<smo::Bytes> recv(size_t) override { return sec.recv(); }
+
+    // G3 Packet path: framing only (no AEAD at transport layer)
+    smo::Result<void> send_framed(smo::BytesView payload) override { return sec.send_framed(payload); }
+    smo::Result<smo::Bytes> recv_framed(size_t) override { return sec.recv_framed(); }
+
     smo::Result<void> close() override
     {
         open_ = false;
@@ -2298,14 +2304,12 @@ int main(int argc, char* argv[])
                     continue;
                 }
 
-                SecureTransportSession secure_ses(std::move(sec),
-                                                  smo::Endpoint{"tcp", remote_ep.address, remote_ep.port, ""});
-                auto dispatch_res = dispatcher.dispatch_session(secure_ses, remote_ep);
+                // G3 Packet path: use dispatch_packet_session with AEAD + replay
+                auto dispatch_res = dispatcher.dispatch_packet_session(sec, session_mgr, remote_ep);
                 if (!dispatch_res)
                 {
                     LOG.warn("dispatch failed: " + dispatch_res.error().message + " from " + remote_str);
                 }
-                secure_ses.close();
             }
             else
             {

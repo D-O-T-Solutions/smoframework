@@ -6,6 +6,8 @@
 #include "core/errors/error.hpp"
 #include "core/types.hpp"
 #include "core/fsm/node_lifecycle_fsm.hpp"
+#include "core/session/session.hpp"
+#include "core/transport/secure_session.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -66,6 +68,11 @@ namespace smo::network {
         // First tries framed Packet format; if that fails, falls back to raw handler.
         // Returns error if both fail or read/write fails.
         Result<void> dispatch_session(TransportSession& session, const hl::Endpoint& remote);
+
+        // G3 Packet path: dispatch using packet AEAD + replay protection.
+        // Takes SecureSession for crypto keys and SessionManager for replay state.
+        Result<void> dispatch_packet_session(SecureSession& sec, SessionManager& session_mgr,
+                                             const hl::Endpoint& remote);
 
         // Set GossipEngine for automatic gossip message routing.
         void set_gossip_engine(::smo::GossipEngine* engine) { gossip_engine_ = engine; }

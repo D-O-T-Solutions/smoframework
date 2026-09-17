@@ -9,6 +9,7 @@
 #include "../identity/identity.hpp"
 #include "../types.hpp"
 #include "session_id.hpp"
+#include "session_security.hpp"
 
 #include <array>
 #include <cstdint>
@@ -111,6 +112,10 @@ namespace smo {
         void set_cert_fingerprint(std::string fp) { cert_fingerprint_ = std::move(fp); }
         const std::string& cert_fingerprint() const { return cert_fingerprint_; }
 
+        // Session security state (P5: G3 packet path)
+        SessionSecurityState& security_state() noexcept { return security_state_; }
+        const SessionSecurityState& security_state() const noexcept { return security_state_; }
+
         // Serialization
         Bytes serialize() const;
         static Result<Session> deserialize(BytesView data);
@@ -125,6 +130,7 @@ namespace smo {
         int64_t created_at_ = 0;
         int64_t expires_at_ = 0;
         int64_t last_active_ = 0;
+        SessionSecurityState security_state_{};
     };
 
     // ---------------------------------------------------------------------------

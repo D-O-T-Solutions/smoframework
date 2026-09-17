@@ -29,6 +29,15 @@ namespace smo {
 
         uint64_t highest() const noexcept { return highest_; }
 
+        uint64_t bitmap() const noexcept { return bitmap_; }
+
+        // Restore replay window state (for crash recovery).
+        void restore(uint64_t highest, uint64_t bitmap) noexcept
+        {
+            highest_ = highest;
+            bitmap_ = bitmap;
+        }
+
         // Reset for a new epoch (rekey / restart).
         void reset() noexcept;
 

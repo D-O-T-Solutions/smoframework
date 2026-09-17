@@ -25,6 +25,8 @@
 #include "core/crypto/registry.hpp"
 #include "core/crypto/suite.hpp"
 #include "protocol/packet/packet.h"
+#include "protocol/packet/packet_crypto.hpp"
+#include "protocol/packet/packet_route.hpp"
 #include "providers/suite1_classical/suite1_classical_provider.hpp"
 #ifdef SMO_WITH_PQC
 #include "providers/suite3_purepqc/suite3_purepqc_provider.hpp"
@@ -748,9 +750,9 @@ namespace smo {
         return {};
     }
 
-    Result<std::string> CLIContextManager::network_execute(const std::string& node_address, uint32_t opcode,
-                                                           const std::string& method,
-                                                           const std::unordered_map<std::string, std::string>& args)
+Result<std::string> CLIContextManager::network_execute(const std::string& node_address, uint32_t opcode,
+                                                            const std::string& method,
+                                                            const std::unordered_map<std::string, std::string>& args)
     {
         // Ensure crypto providers are registered (lazy init for REPL)
         ensure_crypto_registered();
@@ -807,15 +809,34 @@ namespace smo {
         }
         payload += "}";
 
-        // 6. Build packet + frame
+        // 6. Map opcode to packet route (namespace + message_id)
+        auto route_opt = smo::packet_route::to_packet_route(opcode);
+        if (!route_opt)
+        {
+            return SMO_ERR_PROTOCOL(604, Error, NoRetry, None, "Opcode not packet-capable: 0x" + std::to_string(opcode));
+        }
+
+        // 7. Build packet with G3 header fields
         smo::Packet pkt;
         pkt.header.protocol_version = smo::kPacketProtocolVersion;
-        pkt.opcode_id = opcode;
-        pkt.timestamp() =
+        pkt.header.ns = route_opt->ns;
+        pkt.header.message_id = route_opt->message_id;
+        const auto& sid = sec.crypto_context().session_id();
+        std::memcpy(pkt.header.session_id.data(), sid.bytes.data(), 16);
+        pkt.header.nonce = 1; // First packet in new session
+        pkt.header.timestamp =
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
         pkt.payload.assign(payload.begin(), payload.end());
 
+        // 8. Seal packet with AEAD (PacketTxKey)
+        auto seal_res = smo::packet_seal_data(pkt, sec.crypto_context().packet_tx_key(), pkt.header.nonce);
+        if (!seal_res)
+        {
+            return seal_res.error();
+        }
+
+        // 9. Serialize and send framed (no inner FrameHeader per B5)
         std::vector<uint8_t> buf;
         auto pack_res = smo::packet_to_buffer(pkt, buf);
         if (!pack_res)
@@ -823,40 +844,34 @@ namespace smo {
             return pack_res.error();
         }
 
-        smo::Bytes framed;
-        smo::frame_write(smo::BytesView(buf.data(), buf.size()), smo::kFrameFlagNone, framed);
-
-        // 7. Send over secure session
-        auto send_res = sec.send(smo::BytesView(framed));
+        auto send_res = sec.send_framed(smo::BytesView(buf.data(), buf.size()));
         if (!send_res)
         {
             return send_res.error();
         }
 
-        // 8. Receive response
-        auto enc_resp = sec.recv();
-        if (!enc_resp)
+        // 10. Receive framed response
+        auto framed_resp = sec.recv_framed();
+        if (!framed_resp)
         {
-            return enc_resp.error();
+            return framed_resp.error();
         }
 
-        // 9. Unframe + parse response packet
-        smo::FrameHeader fh;
-        smo::BytesView resp_payload;
-        size_t frame_sz =
-            smo::frame_read(smo::BytesView(enc_resp.value().data(), enc_resp.value().size()), fh, resp_payload);
-        if (frame_sz == 0)
-        {
-            return SMO_ERR_TRANSPORT(309, Error, RetrySafe, None, "failed to unframe response");
-        }
-
-        auto resp_pkt = smo::packet_from_buffer(resp_payload);
+        // 11. Parse response packet
+        auto resp_pkt = smo::packet_from_buffer(framed_resp.value());
         if (!resp_pkt)
         {
             return resp_pkt.error();
         }
 
-        // 10. Return payload as string
+        // 12. Open response packet with AEAD (PacketRxKey)
+        auto open_res = smo::packet_open_data(resp_pkt.value(), sec.crypto_context().packet_rx_key());
+        if (!open_res)
+        {
+            return open_res.error();
+        }
+
+        // 13. Return payload as string
         const auto& rp = resp_pkt.value().payload;
         return std::string(rp.begin(), rp.end());
     }
