@@ -1003,12 +1003,30 @@ static_assert(kPacketHeaderWireSize == 39);
 - Tests T1–T7 trong `tests/unit/protocol/test_protocol.cpp` PASS; **22/22 ctest, 24/24 PCT**.
 
 #### P4 — Packet AEAD `seal_data/open_data` (DATA plane, Q10)
+
+> **Quyết định P4 — Key interface (documentation correction, chốt 2026-09-17).**
+> Đoạn P4 cũ ghi `BytesView key` là **stale** so với B2 đã chốt ở P2. `packet_crypto`
+> nhận **opaque directional capability**, không quay lại raw key bytes:
+> - `PacketTxKey`/`PacketRxKey` **không expose raw bytes**, không `get_key()`/`BytesView key()`.
+> - `packet_seal_data()` chỉ nhận `PacketTxKey` (không thể vô tình dùng RX key);
+>   `packet_open_data()` chỉ nhận `PacketRxKey`.
+> - `packet_crypto` được cấp **quyền tối thiểu** (friend access) để dùng material bên trong
+>   capability. **Không** chọn `detail::PacketKeyAccess` ở thời điểm này.
+> - **Không sửa P2 để phục vụ P4** ngoài friend access tối thiểu; `SessionCryptoContext` vẫn là
+>   secret owner, getter chỉ trả `const PacketTxKey&`/`const PacketRxKey&`.
+> - `packet_crypto` **không biết `SessionCryptoContext`**, không gọi `packet_route`, không đụng
+>   `opcode_id`/`intent_id`; `session_id` lấy từ `packet.header.session_id`, nonce/sequence lấy
+>   từ canonical header.
+> - AAD vẫn là canonical 39B header; replay state ở session/security boundary, chỉ commit sau
+>   khi AEAD thành công.
+
 - `packet_crypto` (B4=(i)):
 
 ```cpp
 Bytes derive_aead_nonce(BytesView session_id, uint64_t wire_nonce); // BLAKE3[0:24]
-Result<void> packet_seal_data(Packet&, BytesView key, uint64_t sequence);
-Result<void> packet_open_data(Packet&, BytesView key);  // verify+decrypt
+
+Result<void> packet_seal_data(Packet& packet, const PacketTxKey& key, uint64_t sequence);
+Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verify+decrypt
 ```
 
 - AAD = canonical 39B header (serialize header với `payload_length` đã set, nonce đã set).
