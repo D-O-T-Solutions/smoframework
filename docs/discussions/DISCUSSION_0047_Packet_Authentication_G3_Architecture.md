@@ -514,11 +514,12 @@ Cần chốt ranh giới chính xác trước khi sửa.
 
 Decision Log (§2.5) đã chốt hết Q1–Q12. Blocker B1–B5 cũng đã chốt (§7.1.1):
 B1=(i) dual-path, B2=(B2a–B2d), B3=(deterministic KDF from canonical transcript),
-B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 DONE**:
+B4=(i) `packet_crypto`, B5=(bỏ inner FrameHeader). **P0 + P1 + P2 + P3 + P4 DONE**:
 canonical `SessionId` + `SessionSecurityState`/`ReplayWindow`, `SessionCryptoContext`
 (`PacketTxKey`/`PacketRxKey` opaque, `matches()` CT) + `SecureSession` `session_id` +
-`send_framed/recv_framed`, và Packet wire format 39B canonical + `packet_route`
-(22/22 ctest, 24/24 PCT). **Tiếp theo: P4** (Packet AEAD `seal_data/open_data`).
+`send_framed/recv_framed`, Packet wire format 39B canonical + `packet_route`, và Packet AEAD
+`packet_seal_data`/`packet_open_data` (23/23 ctest, 24/24 PCT). **Tiếp theo: P5** (wiring
+CLI + Node + Dispatcher).
 
 Ràng buộc vẫn giữ trong lúc implement:
 
@@ -856,7 +857,7 @@ Session
 | `core/transport/secure_session.hpp/.cpp` | `send()/recv()` **giữ nguyên AEAD**; thêm transport-frame-only `send_framed/recv_framed`; derive `session_id` một lần trong `derive_keys()`; expose `SessionCryptoContext` (B1/B2) | **P2 DONE** |
 | `protocol/packet/packet.h/.cpp` | header canonical 39B + codec big-endian + compat shim | P3 **DONE** |
 | `protocol/packet/packet_route.hpp/.cpp` *(mới)* | mapping `Opcode ↔ {namespace,message_id}` | P3 **DONE** |
-| `protocol/packet/packet_crypto.hpp/.cpp` *(mới)* | `seal_data/open_data` + derive nonce24 (B4=(i): tách khỏi `packet.cpp`) | P4 |
+| `protocol/packet/packet_crypto.hpp/.cpp` *(mới)* | `seal_data/open_data` (opaque Tx/Rx key) + nonce24 BLAKE3 | P4 **DONE** |
 | `cmd/smo-cli/cli_context.cpp` | build packet (ns/mid, session_id, ts ns, seq), seal, send_framed | P5 |
 | `cmd/smo-node/main.cpp` | open_data trước dispatch; response seal + session_id | P5 |
 | `core/network/packet_dispatcher.cpp` | route theo `(namespace,message_id)`/adapter; bỏ inner frame — **B5 đã chốt** | P5 |
@@ -1037,6 +1038,23 @@ Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);  // verif
 - Unit tests: seal→open roundtrip; tamper payload → fail; tamper header (AAD) → fail;
   sai key → fail; tag 16B; nonce derive khớp 2 đầu.
 - **Exit:** build + tests xanh.
+
+**P4 — ✅ DONE (2026-09-17).**
+- `packet_crypto.hpp/.cpp` (mới): `derive_aead_nonce` = BLAKE3(session_id || nonce_be8)[0:24]
+  (dùng `blake3.h` trực tiếp, giống convention `core/`); `packet_seal_data`/`packet_open_data`
+  nhận **opaque** `const PacketTxKey&`/`const PacketRxKey&` qua friend access tối thiểu trong
+  `session_crypto_context.hpp` (forward-declare `struct Packet;` + friend free functions).
+  **Không** mở raw getter, **không** sửa P2 ngoài friend access.
+- AAD = `serialize_packet_header(header)` — hàm mới trong `packet.cpp`, dùng chung cho wire và
+  AAD nên AAD byte-identical với header trên wire (`packet_to_buffer` đã refactor dùng hàm này).
+- AEAD = `aead::XChaCha20Provider` (monocypher); `seal` tách ciphertext||tag → `payload`/`auth`
+  (tag 16B); `open` ghép lại, verify+decrypt; **fail ⇒ packet không đổi, replay chưa commit**.
+- Fail-closed: reject key sai size, zero sequence, zero session_id, payload >65535, tag length
+  != 16, `payload_length` mismatch. `open` success ⇒ `auth` cleared, `payload` = plaintext.
+- Tests `tests/unit/protocol/test_packet_crypto.cpp` (target `smo_test_packet_crypto`,
+  ctest `packet_crypto_model`) 7/7 PASS: roundtrip qua wire, tamper payload, tamper header/AAD,
+  wrong key, zero seq/session, bad tag length, nonce derive deterministic + bound.
+- **23/23 ctest, 24/24 PCT**.
 
 #### P5 — Wiring vào CLI + Node + Dispatcher
 - `cli_context.cpp`: dựng header (ns/mid từ opcode, session_id thật, timestamp ns, nonce=seq

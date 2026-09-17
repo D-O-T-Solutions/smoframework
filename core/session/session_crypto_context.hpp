@@ -1,9 +1,20 @@
 #pragma once
 
 #include "../types.hpp"
+#include "../errors/error.hpp"
 #include "session_id.hpp"
 
 namespace smo {
+
+    struct Packet; // protocol/packet — only referenced by friend declarations below
+
+    class PacketTxKey;
+    class PacketRxKey;
+
+    // packet_crypto (P4): granted minimal friend access to the opaque key material.
+    // Declared here so the friend declarations below bind to the same functions.
+    Result<void> packet_seal_data(Packet& packet, const PacketTxKey& key, uint64_t sequence);
+    Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);
 
     // ── PacketTxKey / PacketRxKey ────────────────────────────────────────
     // Opaque, move-only packet crypto capabilities (B2a). Directional by
@@ -36,6 +47,7 @@ namespace smo {
 
         friend class SessionCryptoContext;
         friend class PacketRxKey; // symmetric matches()
+        friend Result<void> packet_seal_data(Packet& packet, const PacketTxKey& key, uint64_t sequence);
     };
 
     class PacketRxKey
@@ -59,6 +71,7 @@ namespace smo {
 
         friend class SessionCryptoContext;
         friend class PacketTxKey;
+        friend Result<void> packet_open_data(Packet& packet, const PacketRxKey& key);
     };
 
     // ── SessionCryptoContext ─────────────────────────────────────────────

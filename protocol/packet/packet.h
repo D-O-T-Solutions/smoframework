@@ -43,6 +43,11 @@ struct PacketHeader {
 // Trả 0 nghĩa là namespace không hỗ trợ Packet ở G3.
 size_t expected_auth_length(uint8_t ns, uint8_t suite_id) noexcept;
 
+// Serialize the canonical 39B big-endian header (RFC 0019). This is the single
+// source of truth for the wire header AND for the AEAD AAD, so the AAD is
+// byte-identical to what `packet_to_buffer` emits.
+std::array<uint8_t, kPacketHeaderWireSize> serialize_packet_header(const PacketHeader& header) noexcept;
+
 struct Packet {
     PacketHeader header{};
     std::vector<uint8_t> payload;

@@ -12,18 +12,6 @@ namespace smo {
         constexpr size_t kEd25519SigLen = 64;
         constexpr size_t kMlDsa65SigLen = 3309;
 
-        void put_u16(std::vector<uint8_t>& out, uint16_t v)
-        {
-            out.push_back(static_cast<uint8_t>(v >> 8));
-            out.push_back(static_cast<uint8_t>(v & 0xFF));
-        }
-
-        void put_u64(std::vector<uint8_t>& out, uint64_t v)
-        {
-            for (int i = 7; i >= 0; --i)
-                out.push_back(static_cast<uint8_t>(v >> (i * 8)));
-        }
-
         uint16_t get_u16(std::span<const uint8_t> data, size_t off)
         {
             return static_cast<uint16_t>((static_cast<uint16_t>(data[off]) << 8) | data[off + 1]);
@@ -54,6 +42,27 @@ namespace smo {
         }
 
         return 0;
+    }
+
+    std::array<uint8_t, kPacketHeaderWireSize> serialize_packet_header(const PacketHeader& header) noexcept
+    {
+        std::array<uint8_t, kPacketHeaderWireSize> out{};
+        out[0] = header.protocol_version;
+        out[1] = header.suite_id;
+        out[2] = header.ns;
+        out[3] = static_cast<uint8_t>(header.message_id >> 8);
+        out[4] = static_cast<uint8_t>(header.message_id & 0xFF);
+        std::memcpy(out.data() + 5, header.session_id.data(), header.session_id.size());
+
+        const uint64_t ts = static_cast<uint64_t>(header.timestamp);
+        for (int i = 0; i < 8; ++i)
+            out[21 + static_cast<size_t>(i)] = static_cast<uint8_t>(ts >> ((7 - i) * 8));
+        for (int i = 0; i < 8; ++i)
+            out[29 + static_cast<size_t>(i)] = static_cast<uint8_t>(header.nonce >> ((7 - i) * 8));
+
+        out[37] = static_cast<uint8_t>(header.payload_length >> 8);
+        out[38] = static_cast<uint8_t>(header.payload_length & 0xFF);
+        return out;
     }
 
     Result<Packet> packet_from_buffer(std::span<const uint8_t> wire)
@@ -143,15 +152,15 @@ namespace smo {
             message_id = route->message_id;
         }
 
+        PacketHeader wire_header = pkt.header;
+        wire_header.protocol_version = kPacketProtocolVersion;
+        wire_header.ns = ns;
+        wire_header.message_id = message_id;
+        wire_header.payload_length = static_cast<uint16_t>(pkt.payload.size());
+        const auto header_bytes = serialize_packet_header(wire_header);
+
         out.reserve(kHeaderSize + pkt.payload.size() + pkt.auth.size());
-        out.push_back(kPacketProtocolVersion);
-        out.push_back(pkt.header.suite_id);
-        out.push_back(ns);
-        put_u16(out, message_id);
-        out.insert(out.end(), pkt.header.session_id.begin(), pkt.header.session_id.end());
-        put_u64(out, static_cast<uint64_t>(pkt.header.timestamp));
-        put_u64(out, pkt.header.nonce);
-        put_u16(out, static_cast<uint16_t>(pkt.payload.size()));
+        out.insert(out.end(), header_bytes.begin(), header_bytes.end());
         out.insert(out.end(), pkt.payload.begin(), pkt.payload.end());
         out.insert(out.end(), pkt.auth.begin(), pkt.auth.end());
 

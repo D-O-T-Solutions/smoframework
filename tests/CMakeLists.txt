@@ -9,6 +9,17 @@ smo_set_warnings(smo_test_protocol)
 smo_set_optimisation(smo_test_protocol)
 add_test(NAME protocol_model COMMAND smo_test_protocol)
 
+# ── Packet crypto (P4) ────────────────────────────────────────────────
+add_executable(smo_test_packet_crypto
+    unit/protocol/test_packet_crypto.cpp
+)
+target_link_libraries(smo_test_packet_crypto PRIVATE
+    smo_core smo_protocol fmt::fmt
+)
+smo_set_warnings(smo_test_packet_crypto)
+smo_set_optimisation(smo_test_packet_crypto)
+add_test(NAME packet_crypto_model COMMAND smo_test_packet_crypto)
+
 # ── Trust tests ───────────────────────────────────────────────────────
 add_executable(smo_test_trust
     unit/core/trust/test_trust.cpp
