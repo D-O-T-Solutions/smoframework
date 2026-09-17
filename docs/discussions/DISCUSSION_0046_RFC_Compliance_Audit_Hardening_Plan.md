@@ -4,6 +4,7 @@
 **Target:** v0.0.7+ (hardening of v0.0.2-era runtime; NOT a new-feature sprint)
 **Date:** 2026-08-13
 **G3 Packet Auth Implementation:** See **DISCUSSION_0047** for complete P0–P7 architecture, implementation details, and test results.
+**Next: Local PQ Handshake Debug** — See **DISCUSSION_0048** for A↔B localhost debug before 3-node deployment verification.
 
 ---
 

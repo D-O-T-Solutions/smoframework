@@ -1201,3 +1201,13 @@ Rollback: mỗi phase là 1 commit độc lập; P3/P4 không wire nên revert a
 - DISCUSSION_0046 header: cross-link to DISCUSSION_0047 added
 - DISCUSSION_0047: this document — architecture + implementation plan + test results for G3 Packet Auth (P0–P7)
 - **All 25 ctest + 24 PCT pass.** No amend RFC 0019.
+
+### 7.10 Next Step: DISCUSSION_0048 — Local PQ Handshake Debug
+
+G3 Packet Auth is frozen. Deployment verification now requires **local PQ handshake** between Node A and Node B on localhost before 3-node mesh verification (DISCUSSION_0045).
+
+See **DISCUSSION_0048_Local_PQ_Handshake_Debug.md** for:
+- Phase 1: A↔B standalone debug (version handshake → PQ handshake → SecureSession)
+- Phase 2: Add Node C after A↔B works
+- Debug instrumentation points in `framing.cpp`, `secure_session.cpp`
+- Exit criteria: A↔B complete SecureSession handshake, then G3 packet tests
