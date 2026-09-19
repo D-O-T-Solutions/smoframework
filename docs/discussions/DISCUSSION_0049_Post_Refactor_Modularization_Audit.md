@@ -69,7 +69,7 @@ Committed sections found inline (line numbers from `git show 5fb9f16` / working 
 | Phase | Component | State |
 |---|---|---|
 | Phase 1 | `core/runtime/node_runtime.{hpp,cpp}` | **MISSING** — no composition root |
-| Phase 2 | `core/network/connection_manager.{hpp,cpp}` | 🔶 extracted — class on disk (Config/AcceptFn/PlainHook/SecureHook, `accept_once()`) and compiles into `smo_runtime` via the `core/network/*.cpp` GLOB; accept-loop delegation in `node_runtime.cpp` still pending (next splice) |
+| Phase 2 | `core/network/connection_manager.{hpp,cpp}` | ✅ DONE — ConnectionManager owns accept loop (Config/AcceptFn/Hook plain/secure + accept_once()), compiles into smo_core, wired into NodeRuntime::Impl::run() with real PQ hooks (crypto_/dispatcher_/session_mgr_), smo_runtime+smo-node 100% green |
 | Phase 3 | `core/network/udp_server.{hpp,cpp}` | **MISSING** — UDP read loop still in main |
 | Phase 4 | `BootstrapClient` USED by main | **NOT wired** — class orphaned |
 | Phase 5 | Raw protocol dispatch removal | **NOT done** — raw handler at 1853+ inline |
