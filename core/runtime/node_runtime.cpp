@@ -1,0 +1,1853 @@
+// NodeRuntime - daemon composition root.
+//
+// Phase 1 (God Object sweep): owns every subsystem's lifecycle and exposes a
+// thin, ordered surface: initialize() -> start() -> run() -> shutdown().
+//
+// Mechanical extraction of the daemon-mode block that previously lived inside
+// cmd/smo-node/main.cpp. Semantics (ordering, config paths, ports, crypto
+// flow, logging) preserved exactly; no behavior changed.
+//
+// Remaining network-loop / protocol-dispatch extraction is tracked in the
+// ConnectionManager / UdpServer / protocol-service phases (P2/P3/P5).
+//
+// NOTE: the listen port is NOT hardcoded here - it comes from NodeRuntimeConfig
+// supplied by the caller (main.cpp parses --port).
+
+#include <core/runtime/node_runtime.hpp>
+
+#include <core/crypto/impl.hpp>
+#include <core/crypto/registry.hpp>
+#include <core/crypto/suite.hpp>
+#include <core/discovery/discovery.hpp>
+#include <core/errors/error.hpp>
+#include <core/identity/identity.hpp>
+#include <core/transport/transport.hpp>
+#include <core/transport/tcp_transport.hpp>
+#include <core/transport/secure_session.hpp>
+#include <core/network/udp/udp_transport.hpp>
+#include <core/select/selector.hpp>
+#include <core/network/udp/heartbeat_service.hpp>
+#include <core/discovery/gossip.hpp>
+#include <core/network/sync/membership_sync.hpp>
+#include <core/network/sync/sync_service.hpp>
+#include <core/network/transport/address_resolver.hpp>
+#include <core/discovery/peer_store.hpp>
+#include <core/certificate/certificate.hpp>
+#include <core/enroll/auto_enroll.hpp>
+#include <core/mesh/mesh_resolver.hpp>
+#include <core/mesh/mesh_manager.hpp>
+#include <core/authority/authority.hpp>
+#include <core/governance/governance.hpp>
+#include <core/recovery/crl.hpp>
+#include <core/storage/manifest_store.hpp>
+#include <sqlite3.h>
+#include <core/network/packet_dispatcher.hpp>
+#include <core/fsm/node_lifecycle_fsm.hpp>
+#include <core/bootstrap/bootstrap_protocol.hpp>
+#include <core/join/join_protocol.hpp>
+#include <core/runtime/runtime_bridge.hpp>
+#include <core/runtime/middleware_pipeline.hpp>
+#include <core/runtime/policy_middleware.hpp>
+#include <core/runtime/action_executor.hpp>
+#include <core/runtime/dispatcher.hpp>
+#include <core/runtime/contracts/echo_contract.hpp>
+#include <core/runtime/contracts/bootstrap_contract.hpp>
+#include <core/runtime/contracts/join_contract.hpp>
+#include <core/runtime/contracts/governance_contract.hpp>
+#include <core/runtime/output_manager.hpp>
+#include <core/session/session.hpp>
+#include <core/trust/trust.hpp>
+#include <core/recovery/recovery_engine.hpp>
+#include <core/recovery/crl.hpp>
+#include <core/runtime/contracts/recovery_contract.hpp>
+#include <core/runtime/contracts/file_contract.hpp>
+#include <core/runtime/contracts/process_contract.hpp>
+#include <core/runtime/contracts/deployment_contract.hpp>
+#include <core/runtime/contracts/trust_contract.hpp>
+#include <core/runtime/service_registry.hpp>
+#include <core/runtime/telemetry.hpp>
+#include <core/runtime/structured_logger.hpp>
+#include <core/network/sync/anti_entropy.hpp>
+#include <core/network/sync/sync_backend.hpp>
+
+#include <storage/policy_store/policy_store.h>
+
+#include <providers/blake3_provider/blake3_provider.hpp>
+#include <providers/suite1_classical/suite1_classical_provider.hpp>
+#include <providers/suite2_modern/suite2_modern_provider.hpp>
+#include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
+
+#include <chrono>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <vector>
+
+namespace smo::runtime {
+
+namespace {
+
+    void node_id_to_hex(const smo::NodeID& id, std::string& out)
+    {
+        std::ostringstream oss;
+        for (uint8_t b : id.value)
+        {
+            oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+        }
+        out = oss.str();
+    }
+
+    smo::Bytes load_file_binary(const std::string& path)
+    {
+        std::ifstream f(path, std::ios::binary | std::ios::ate);
+        if (!f)
+            return {};
+        auto size = f.tellg();
+        f.seekg(0);
+        smo::Bytes data(static_cast<size_t>(size));
+        f.read(reinterpret_cast<char*>(data.data()), size);
+        return data;
+    }
+
+    void ensure_crypto()
+    {
+        smo::Blake3Provider::register_as_default();
+        smo::providers::register_suite1_classical();
+        smo::providers::register_suite2_modern();
+#ifdef SMO_WITH_PQC
+        smo::providers::register_suite3_purepqc();
+#endif
+    }
+
+    const smo::CryptoProvider* get_crypto(smo::CryptoSuiteID suite_id)
+    {
+        auto& reg = smo::CryptoRegistry::instance();
+        auto prov_result = reg.get_suite(suite_id);
+        if (!prov_result)
+        {
+            std::fprintf(stderr, "Error: cipher suite %u not registered\n", (unsigned)suite_id);
+            return nullptr;
+        }
+        return prov_result.value();
+    }
+
+    int64_t now_ns_since_epoch()
+    {
+        return static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    }
+
+    smo::network::udp::HeartbeatService::Config make_hb_config(int port)
+    {
+        smo::network::udp::HeartbeatService::Config hb_config;
+        hb_config.ping_interval_ms = 5000;
+        hb_config.ping_timeout_ms = 3000;
+        hb_config.max_misses = 3;
+        hb_config.local_port = port;
+        return hb_config;
+    }
+
+    // Sync backend bridging MembershipTable/CRL to the anti-entropy engine.
+    struct DaemonSyncBackend : smo::sync::SyncBackend
+    {
+        smo::MembershipTable* memb_ptr;
+        smo::recovery::CRL* crl_ptr;
+
+        DaemonSyncBackend(smo::MembershipTable& tbl, smo::recovery::CRL* c) : memb_ptr(&tbl), crl_ptr(c) {}
+
+        smo::sync::Delta get_membership_delta(const smo::sync::VersionVector& vv) override
+        {
+            (void)vv;
+            return {};
+        }
+        smo::sync::Delta get_crl_delta(const smo::sync::VersionVector& vv) override
+        {
+            (void)vv;
+            return {};
+        }
+        smo::sync::Delta get_policy_delta(const smo::sync::VersionVector& vv) override
+        {
+            (void)vv;
+            return {};
+        }
+        smo::sync::Delta get_contract_delta(const smo::sync::VersionVector& vv) override
+        {
+            (void)vv;
+            return {};
+        }
+        smo::sync::Delta get_full_snapshot(smo::sync::TreeID id) override
+        {
+            (void)id;
+            return {};
+        }
+        smo::sync::MerkleTree compute_tree(smo::sync::TreeID id) override
+        {
+            auto tree = smo::sync::MerkleTree(id);
+            tree.epoch = 1;
+            tree.rebuild();
+            return tree;
+        }
+    };
+
+} // anonymous namespace
+
+NodeRuntime* NodeRuntime::current_ = nullptr;
+
+NodeRuntime::NodeRuntime(const NodeRuntimeConfig& config) : impl_(std::make_unique<Impl>(config))
+{
+    current_ = this;
+}
+
+NodeRuntime::~NodeRuntime()
+{
+    if (current_ == this)
+        current_ = nullptr;
+}
+
+// ===========================================================================
+// Impl
+// ===========================================================================
+//
+// Owns every subsystem. Construction order mirrors the daemon-mode block in
+// main.cpp (transports -> engines -> runtime -> mesh/trust/recovery -> sync).
+class NodeRuntime::Impl
+{
+public:
+    explicit Impl(const NodeRuntimeConfig& cfg);
+    ~Impl() = default;
+
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
+    Result<void> initialize();
+    Result<void> start();
+    void shutdown();
+    int run();
+
+    // initialize() stage helpers (order-preserving split of the daemon block)
+    void print_mesh_bootstrap_summary();
+    void connect_to_seed();
+    void subscribe_membership_events();
+    void wire_runtime();
+    void _wire_sync_services();
+    void _wire_contracts();
+    void _wire_routes();
+    void _wire_packet_handlers();
+    void _wire_event_subscriptions();
+    void _wire_registry_telemetry();
+
+private:
+    NodeRuntimeConfig config_;
+    std::string data_dir_;
+
+    // crypto / identity
+    const smo::CryptoProvider* crypto_ = nullptr;
+    smo::Identity identity_;
+    smo::NodeID local_id_;
+    std::string local_id_hex_;
+
+    // PQ handshake material (loaded once, used by accept loop + seed connect)
+    smo::Bytes server_cert_blob_;
+    smo::Bytes server_signing_key_;
+    smo::Bytes root_public_key_;
+    std::string mesh_id_str_;
+
+    // transports / listeners
+    std::unique_ptr<smo::network::udp::UdpTransport> udp_transport_;
+    smo::ListenerPtr udp_listener_owner_;
+    smo::TransportListener* udp_listener_ = nullptr;
+    smo::ListenerPtr tcp_listener_owner_;
+
+    // core engines
+    smo::MembershipTable membership_;
+    smo::HealthMonitor health_monitor_;
+    smo::DiscoveryEngine discovery_;
+    smo::GossipEngine gossip_;
+    smo::network::sync::MembershipSync membership_sync_;
+    smo::PeerStore peer_store_;
+    smo::network::transport::AddressResolver address_resolver_;
+    smo::network::udp::HeartbeatService heartbeat_;
+    smo::PeerRecord self_record_;
+
+    // runtime
+    smo::runtime::EventBus event_bus_;
+    smo::runtime::OutputManager output_mgr_;
+    smo::runtime::Dispatcher runtime_dispatcher_;
+    smo::runtime::PlanResolver plan_resolver_;
+    smo::runtime::RuntimeKernel runtime_kernel_;
+    smo::SessionManager session_mgr_;
+    smo::MeshManager mesh_manager_;
+    smo::authority::MeshAuthority authority_;
+    smo::GovernanceEngine governance_engine_;
+    smo::TrustManager trust_mgr_;
+    smo::recovery::CRL crl_;
+    smo::sync::SyncService sync_service_;
+    smo::ManifestStore manifest_store_;
+    smo::PolicyStore policy_store_;
+    smo::recovery::RecoveryEngine recovery_engine_;
+    smo::runtime::MiddlewarePipeline middleware_pipeline_;
+    smo::runtime::RuntimeBridge runtime_bridge_;
+    smo::network::PacketDispatcher dispatcher_;
+    smo::NodeLifecycleFSM node_fsm_;
+
+    // anti-entropy
+    std::shared_ptr<DaemonSyncBackend> sync_backend_;
+    std::unique_ptr<smo::sync::AntiEntropyService> anti_entropy_;
+
+    // delta bookkeeping (persisted across initialize/run cycles)
+    uint64_t last_crl_epoch_ = 0;
+    uint64_t last_policy_version_ = 0;
+    uint64_t last_manifest_epoch_ = 0;
+
+    // run() bookkeeping
+    int64_t last_tick_ = 0;
+    int64_t last_peerstore_sync_ = 0;
+    int64_t daemon_start_ns_ = 0;
+    bool daemon_ready_logged_ = false;
+    bool daemon_degraded_logged_ = false;
+};
+
+NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
+    : config_(cfg)
+    , data_dir_(cfg.data_dir)
+    , udp_transport_(std::make_unique<smo::network::udp::UdpTransport>())
+    , discovery_(membership_, health_monitor_, *udp_transport_)
+    , gossip_(membership_, smo::GossipEngine::default_config())
+    , membership_sync_(membership_, health_monitor_)
+    , heartbeat_(make_hb_config(cfg.port))
+    , runtime_kernel_(event_bus_, output_mgr_, runtime_dispatcher_, plan_resolver_)
+    , mesh_manager_(smo::MeshManager::Config{
+          .base_data_dir = cfg.mesh_dir.empty() ? "" : cfg.mesh_dir.substr(0, cfg.mesh_dir.rfind("/meshes/") + 7)})
+    , sync_service_(gossip_, &crl_, smo::sync::SyncSchedule{})
+    , policy_store_(cfg.data_dir)
+    , recovery_engine_(smo::recovery::RecoveryConfig{})
+    , runtime_bridge_(runtime_kernel_, runtime_dispatcher_)
+{
+}
+
+// ===========================================================================
+// initialize() — identity, transports, engines, bootstrap, runtime wiring
+// ===========================================================================
+
+Result<void> NodeRuntime::Impl::initialize()
+{
+    auto& LOG = smo::runtime::global_logger();
+
+    ensure_crypto();
+    crypto_ = get_crypto(smo::kSuitePurePQC);
+    if (!crypto_)
+    {
+        return smo::Error(smo::ErrorCode(smo::ErrorCategory::Crypto, 1, smo::Severity::Error,
+                                         smo::RetryClass::NoRetry, smo::Recovery::None),
+                          "cipher suite %u not available", __FILE__, __LINE__);
+    }
+
+    // Load identity
+    std::string id_path = data_dir_ + "/identity.json";
+    auto id_result = smo::Identity::load_from_file(id_path, *crypto_);
+    if (!id_result)
+    {
+        std::fprintf(stderr, "[smo-node] Fatal: cannot load identity from %s: %s\n", id_path.c_str(),
+                     id_result.error().message.c_str());
+        std::fprintf(stderr, "[smo-node] Run 'smo-node --init --name <name>' first\n");
+        return id_result.error();
+    }
+    identity_ = std::move(id_result.value());
+
+    local_id_ = identity_.node_id();
+    node_id_to_hex(local_id_, local_id_hex_);
+    std::printf("[smo-node] Local NodeID: %s (state: %s)\n", local_id_hex_.c_str(),
+                smo::to_string(identity_.state()));
+
+    // Structured Logger (P10)
+    {
+        auto& slog = smo::runtime::global_logger();
+        slog.set_node_id(local_id_hex_);
+        slog.set_component("smo-node");
+        std::string lf = std::getenv("SMO_LOG_FORMAT") ? std::getenv("SMO_LOG_FORMAT") : "plaintext";
+        if (lf == "json")
+            slog.set_format(smo::runtime::StructuredLogger::Format::Json);
+    }
+    LOG.info("starting daemon on port " + std::to_string(config_.port));
+    LOG.info("node_id: " + local_id_hex_);
+
+    // Load server certificate for PQ handshake
+    std::string cert_path = data_dir_ + "/node.cert.smoc";
+    server_cert_blob_ = load_file_binary(cert_path);
+    if (server_cert_blob_.empty())
+    {
+        std::fprintf(stderr, "[smo-node] Warning: no certificate at %s, PQ handshake disabled\n", cert_path.c_str());
+    }
+    server_signing_key_ = smo::Bytes(identity_.secret_key().begin(), identity_.secret_key().end());
+
+    // Load root public key (mesh authority) for client certificate verification
+    std::string root_pub_path = "";
+    if (!config_.mesh_dir.empty())
+    {
+        root_pub_path = config_.mesh_dir + "/authority.pub";
+    }
+    root_public_key_ = load_file_binary(root_pub_path);
+    if (root_public_key_.empty() && !config_.mesh_dir.empty())
+    {
+        std::fprintf(stderr, "[smo-node] Warning: no root public key at %s, client cert verification may fail\n",
+                     root_pub_path.c_str());
+    }
+    mesh_id_str_ = "";
+    if (!config_.mesh_dir.empty())
+    {
+        // Read canonical mesh_id from mesh.json (not the directory basename)
+        std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
+        std::ifstream mfd(mesh_json_path);
+        if (mfd)
+        {
+            std::string mjs((std::istreambuf_iterator<char>(mfd)), std::istreambuf_iterator<char>());
+            auto mp = mjs.find("\"mesh_id\"");
+            if (mp != std::string::npos)
+            {
+                auto mc = mjs.find(':', mp);
+                auto ms = mc != std::string::npos ? mjs.find('"', mc + 1) : std::string::npos;
+                auto me = ms != std::string::npos ? mjs.find('"', ms + 1) : std::string::npos;
+                if (ms != std::string::npos && me != std::string::npos)
+                    mesh_id_str_ = mjs.substr(ms + 1, me - ms - 1);
+            }
+        }
+        if (mesh_id_str_.empty())
+            mesh_id_str_ = std::filesystem::path(config_.mesh_dir).filename().string();
+    }
+    smo::Bytes mesh_id_bytes(mesh_id_str_.begin(), mesh_id_str_.end());
+    (void)mesh_id_bytes;
+
+    // Register transports BEFORE any references
+    smo::TransportRegistry::instance().register_transport(std::make_unique<smo::TcpTransport>(), "tcp");
+    smo::TransportRegistry::instance().register_transport(std::make_unique<smo::network::udp::UdpTransport>(), "udp");
+    auto* tcp_ptr = smo::TransportRegistry::instance().get("tcp");
+
+    // UDP Transport (5.20: Discovery = UDP)
+    smo::Endpoint udp_listen_ep;
+    udp_listen_ep.scheme = "udp";
+    udp_listen_ep.host = "0.0.0.0";
+    udp_listen_ep.port = static_cast<uint16_t>(config_.port);
+
+    auto udp_listener_result = udp_transport_->listen(udp_listen_ep);
+    if (!udp_listener_result)
+    {
+        std::fprintf(stderr, "[smo-node] Failed to listen UDP: %s\n", udp_listener_result.error().message.c_str());
+    }
+    else
+    {
+        std::printf("[smo-node] Listening on udp://0.0.0.0:%d\n", config_.port);
+        udp_listener_owner_ = std::move(udp_listener_result.value());
+        udp_listener_ = udp_listener_owner_.get();
+    }
+
+    // DiscoveryEngine uses UDP transport (5.20)
+    {
+        auto gossip_cfg = smo::GossipEngine::default_config();
+        std::printf("[smo-node] Gossip engine initialized (fanout=%u, interval=%llums)\n",
+                    (unsigned)gossip_cfg.fanout, (unsigned long long)gossip_cfg.interval_ms);
+    }
+    gossip_.set_membership_sync(&membership_sync_);
+
+    // PeerStore sync with MembershipTable
+    if (auto r = peer_store_.open(data_dir_); !r)
+    {
+        std::fprintf(stderr, "[smo-node] Failed to open PeerStore: %s\n", r.error().message.c_str());
+    }
+    else
+    {
+        peer_store_.sync_to_membership(membership_);
+    }
+
+    // HeartbeatService
+    auto hb_start = heartbeat_.start(*udp_transport_, membership_, health_monitor_);
+    if (!hb_start)
+    {
+        std::fprintf(stderr, "[smo-node] Failed to start heartbeat: %s\n", hb_start.error().message.c_str());
+    }
+    else
+    {
+        auto hb_cfg = make_hb_config(config_.port);
+        std::printf("[smo-node] Heartbeat service started (interval=%ums, timeout=%ums, max_misses=%u)\n",
+                    hb_cfg.ping_interval_ms, hb_cfg.ping_timeout_ms, hb_cfg.max_misses);
+    }
+
+    // TCP listening endpoint
+    smo::Endpoint listen_ep;
+    listen_ep.scheme = "tcp";
+    listen_ep.host = "0.0.0.0";
+    listen_ep.port = static_cast<uint16_t>(config_.port);
+
+    auto listen_result = tcp_ptr->listen(listen_ep);
+    if (!listen_result)
+    {
+        std::fprintf(stderr, "[smo-node] Failed to listen TCP: %s\n", listen_result.error().message.c_str());
+        return listen_result.error();
+    }
+    tcp_listener_owner_ = std::move(listen_result.value());
+
+    std::printf("[smo-node] Listening on tcp://0.0.0.0:%d\n", config_.port);
+
+    // Self peer record - used when answering HelloMsg so a joining member learns
+    // the seed's identity, not its own (ephemeral) record.
+    self_record_.node_id = local_id_;
+    self_record_.display_name = config_.node_name.empty() ? "smo-node" : config_.node_name;
+    self_record_.endpoint.scheme = "tcp";
+    self_record_.endpoint.host = "127.0.0.1";
+    self_record_.endpoint.port = static_cast<uint16_t>(config_.port);
+    self_record_.state = smo::PeerState::Online;
+    self_record_.last_seen = now_ns_since_epoch();
+
+    print_mesh_bootstrap_summary();
+    connect_to_seed();
+    subscribe_membership_events();
+    wire_runtime();
+
+    return {};
+}
+
+// ===========================================================================
+// Bootstrap summary — peer/role/status printout (purely informational)
+// ===========================================================================
+
+void NodeRuntime::Impl::print_mesh_bootstrap_summary()
+{
+    if (config_.mesh_dir.empty())
+        return;
+
+    std::string mesh_json = config_.mesh_dir + "/mesh.json";
+    std::ifstream f(mesh_json);
+    if (!f)
+        return;
+
+    std::string json((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    std::string listen_addr = "0.0.0.0:7777";
+    std::vector<std::string> advertise;
+    std::vector<std::string> bootstrap;
+    bool bootstrap_configured = false;
+
+    // Parse listen_address
+    auto pos = json.find("\"listen_address\"");
+    if (pos != std::string::npos)
+    {
+        auto colon = json.find(':', pos);
+        auto start = json.find('"', colon + 1);
+        if (start != std::string::npos)
+        {
+            auto end = json.find('"', start + 1);
+            if (end != std::string::npos)
+                listen_addr = json.substr(start + 1, end - start - 1);
+        }
+    }
+
+    // Parse bootstrap_configured
+    pos = json.find("\"bootstrap_configured\"");
+    if (pos != std::string::npos)
+    {
+        auto colon = json.find(':', pos);
+        auto start = json.find_first_of("tf", colon);
+        if (start != std::string::npos)
+            bootstrap_configured = json[start] == 't';
+    }
+
+    // Parse advertise_addresses
+    pos = json.find("\"advertise_addresses\"");
+    if (pos != std::string::npos)
+    {
+        auto colon = json.find(':', pos);
+        auto arr_start = json.find('[', colon);
+        if (arr_start != std::string::npos)
+        {
+            auto arr_end = json.find(']', arr_start);
+            if (arr_end != std::string::npos)
+            {
+                std::string arr = json.substr(arr_start + 1, arr_end - arr_start - 1);
+                size_t p = 0;
+                while (true)
+                {
+                    auto q1 = arr.find('"', p);
+                    if (q1 == std::string::npos)
+                        break;
+                    auto q2 = arr.find('"', q1 + 1);
+                    if (q2 == std::string::npos)
+                        break;
+                    advertise.push_back(arr.substr(q1 + 1, q2 - q1 - 1));
+                    p = q2 + 1;
+                }
+            }
+        }
+    }
+
+    // Parse bootstrap_endpoints
+    pos = json.find("\"bootstrap_endpoints\"");
+    if (pos != std::string::npos)
+    {
+        auto colon = json.find(':', pos);
+        auto arr_start = json.find('[', colon);
+        if (arr_start != std::string::npos)
+        {
+            auto arr_end = json.find(']', arr_start);
+            if (arr_end != std::string::npos)
+            {
+                std::string arr = json.substr(arr_start + 1, arr_end - arr_start - 1);
+                size_t p = 0;
+                while (true)
+                {
+                    auto q1 = arr.find('"', p);
+                    if (q1 == std::string::npos)
+                        break;
+                    auto q2 = arr.find('"', q1 + 1);
+                    if (q2 == std::string::npos)
+                        break;
+                    bootstrap.push_back(arr.substr(q1 + 1, q2 - q1 - 1));
+                    p = q2 + 1;
+                }
+            }
+        }
+    }
+
+    std::printf("Mesh: %s\n", config_.mesh_dir.c_str());
+    std::printf("Status: %s\n", bootstrap_configured ? "ONLINE" : "OFFLINE");
+    std::printf("Listen:     %s\n", listen_addr.c_str());
+    for (const auto& addr : advertise)
+        std::printf("Advertise:  %s\n", addr.c_str());
+    if (bootstrap_configured)
+        std::printf("Bootstrap:  YES\n");
+    std::printf("Peers:      %zu\n", membership_.count());
+}
+
+// ===========================================================================
+// connect_to_seed() — PQ seed bootstrap (faithful port of main.cpp 1139-1227)
+// ===========================================================================
+
+void NodeRuntime::Impl::connect_to_seed()
+{
+    if (config_.seed_addr.empty())
+        return;
+
+    std::printf("[smo-node] Connecting to seed: %s\n", config_.seed_addr.c_str());
+
+    smo::Endpoint seed_ep;
+    auto ep_result = smo::Endpoint::from_string(config_.seed_addr);
+    if (!ep_result)
+    {
+        std::fprintf(stderr, "[smo-node] Invalid seed address: %s\n", config_.seed_addr.c_str());
+        return;
+    }
+
+    seed_ep = ep_result.value();
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto now_ns = static_cast<int64_t>(now) * 1000000000LL;
+
+    auto* tcp_ptr = smo::TransportRegistry::instance().get("tcp");
+
+    // 1. Raw TCP connect + version handshake
+    auto raw_session = tcp_ptr->connect(seed_ep);
+    if (!raw_session)
+    {
+        std::printf("[smo-node] Seed connection failed: %s\n", raw_session.error().message.c_str());
+        std::printf("[smo-node] Continuing as first node in mesh\n");
+        return;
+    }
+
+    auto* tcp_ses = static_cast<smo::TcpSession*>(raw_session.value().get());
+    int fd = tcp_ses->release_fd();
+
+    // 2. PQ handshake (client) - authority requires it when certed
+    smo::SecureSession::Config sec_cfg;
+    sec_cfg.role = smo::SecureSession::Role::Client;
+    sec_cfg.client_cert = server_cert_blob_;
+    sec_cfg.client_signing_secret_key = server_signing_key_;
+    sec_cfg.root_public_key = root_public_key_;
+    sec_cfg.mesh_id = mesh_id_str_;
+    smo::SecureSession sec(fd, sec_cfg, *crypto_);
+    auto hs = sec.handshake();
+    if (!hs)
+    {
+        std::printf("[smo-node] Seed PQ handshake failed: %s\n", hs.error().message.c_str());
+        std::printf("[smo-node] Continuing as first node in mesh\n");
+        return;
+    }
+
+    // 3. Send HELLO inside the secure session
+    smo::HelloMsg hello;
+    hello.node_id = local_id_;
+    auto hello_data = hello.serialize();
+    auto send_res = sec.send(smo::BytesView(hello_data));
+    if (!send_res)
+    {
+        std::printf("[smo-node] Seed HELLO send failed: %s\n", send_res.error().message.c_str());
+        return;
+    }
+
+    // 4. Read WELCOME (encrypted)
+    auto welcome_data = sec.recv();
+    if (!welcome_data)
+    {
+        std::printf("[smo-node] Seed WELCOME read failed: %s\n", welcome_data.error().message.c_str());
+        return;
+    }
+
+    auto welcome = smo::WelcomeMsg::deserialize(smo::BytesView(welcome_data.value()));
+    if (!welcome)
+    {
+        std::printf("[smo-node] Seed WELCOME parse failed: %s\n", welcome.error().message.c_str());
+        return;
+    }
+
+    auto& rec = welcome.value().peer_record;
+    std::printf("[smo-node] Seed responded: %s (%s)\n", rec.display_name.c_str(),
+                rec.endpoint.to_string().c_str());
+    discovery_.handle_welcome(smo::WelcomeMsg{local_id_, rec}, now_ns);
+    std::printf("[smo-node] Bootstrap complete. Peers: %zu\n", membership_.count());
+}
+
+// ===========================================================================
+// wire_runtime() — EventBus/session/mesh/authority/sync/contracts/routes/
+// handlers/subscriptions/registry/telemetry (port of main.cpp 1229-2138)
+// ===========================================================================
+
+void NodeRuntime::Impl::subscribe_membership_events()
+{
+    membership_sync_.subscribe([&](const smo::network::sync::MembershipEvent& ev) {
+        std::printf("[smo-node] Membership event: type=%d\n", static_cast<int>(ev.type));
+    });
+}
+
+void NodeRuntime::Impl::wire_runtime()
+{
+    auto& LOG = smo::runtime::global_logger();
+
+    // SessionManager: crash-recover the session store (RFC 0014 6)
+    {
+        int64_t now_ns = now_ns_since_epoch();
+        auto rec_ec = session_mgr_.recover(data_dir_ + "/session_store.bin", now_ns);
+        if (!rec_ec)
+        {
+            std::printf("[smo-node] Session store recover failed: %s\n", rec_ec.error().message.c_str());
+        }
+    }
+
+    // MeshAuthority for certificate signing and key management
+    if (!config_.mesh_dir.empty())
+    {
+        std::string authority_mesh_id;
+        std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
+        std::ifstream mf(mesh_json_path);
+        if (mf)
+        {
+            std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
+            auto mpos = mjson.find("\"mesh_id\"");
+            if (mpos != std::string::npos)
+            {
+                auto mcolon = mjson.find(':', mpos);
+                auto mstart = mjson.find('"', mcolon + 1);
+                auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
+                if (mstart != std::string::npos && mend != std::string::npos)
+                    authority_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
+            }
+        }
+        smo::authority::MeshAuthority::Config acfg;
+        acfg.mesh_id = authority_mesh_id;
+        acfg.data_dir = config_.mesh_dir;
+        acfg.registry_path = config_.mesh_dir + "/node_registry.db";
+        auto auth_rng = crypto_->default_rng();
+        if (auto ar = authority_.init(*crypto_, auth_rng); !ar)
+        {
+            std::printf("[smo-node] Warning: failed to init MeshAuthority: %s\n", ar.error().message.c_str());
+        }
+        else if (auto ar2 = authority_.open(acfg); !ar2)
+        {
+            std::printf("[smo-node] Warning: failed to open MeshAuthority at %s: %s\n", config_.mesh_dir.c_str(),
+                        ar2.error().message.c_str());
+        }
+        else
+        {
+            std::printf("[smo-node] MeshAuthority opened (mesh_id=%s, registry=%s)\n", acfg.mesh_id.c_str(),
+                        acfg.registry_path.c_str());
+            // Open the mesh for bootstrap sync
+            if (auto mh = mesh_manager_.open_mesh(authority_mesh_id); !mh)
+            {
+                std::printf("[smo-node] Warning: failed to open mesh %s: %s\n", authority_mesh_id.c_str(),
+                            mh.error().message.c_str());
+            }
+            else
+            {
+                std::printf("[smo-node] Mesh opened for bootstrap sync: %s\n", authority_mesh_id.c_str());
+            }
+        }
+        // Initialize mesh manager to discover meshes
+        if (auto mi = mesh_manager_.initialize(); !mi)
+        {
+            std::printf("[smo-node] Warning: failed to initialize MeshManager: %s\n", mi.error().message.c_str());
+        }
+        else
+        {
+            std::printf("[smo-node] MeshManager initialized\n");
+            // Register existing mesh in catalog for bootstrap sync
+            std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
+            std::ifstream mf(mesh_json_path);
+            if (mf)
+            {
+                std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
+                auto mpos = mjson.find("\"mesh_id\"");
+                std::string catalog_mesh_id = authority_mesh_id;
+                if (mpos != std::string::npos)
+                {
+                    auto mcolon = mjson.find(':', mpos);
+                    auto mstart = mjson.find('"', mcolon + 1);
+                    auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
+                    if (mstart != std::string::npos && mend != std::string::npos)
+                        catalog_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
+                }
+                // Insert into catalog if not present
+                std::string catalog_db =
+                    config_.mesh_dir.substr(0, config_.mesh_dir.rfind("/meshes/") + 7) + "/catalog.db";
+                sqlite3* cat_db = nullptr;
+                if (sqlite3_open(catalog_db.c_str(), &cat_db) == SQLITE_OK)
+                {
+                    std::string sql = "INSERT OR IGNORE INTO meshes (mesh_id, display_name, authority_pubkey, "
+                                      "root_pubkey, epoch, created_at, config_json) "
+                                      "VALUES (?, ?, '', '', 1, strftime('%s','now'), ?)";
+                    sqlite3_stmt* stmt = nullptr;
+                    if (sqlite3_prepare_v2(cat_db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
+                    {
+                        sqlite3_bind_text(stmt, 1, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_bind_text(stmt, 2, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_bind_text(stmt, 3, mjson.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_step(stmt);
+                        sqlite3_finalize(stmt);
+                    }
+                    sqlite3_close(cat_db);
+                }
+            }
+            // Set the mesh as active for bootstrap sync
+            if (auto sw = mesh_manager_.switch_mesh(authority_mesh_id); !sw)
+            {
+                std::printf("[smo-node] Warning: failed to switch to mesh %s: %s\n", authority_mesh_id.c_str(),
+                            sw.error().message.c_str());
+            }
+            else
+            {
+                std::printf("[smo-node] Mesh set as active: %s\n", authority_mesh_id.c_str());
+            }
+        }
+    }
+
+    _wire_sync_services();
+    _wire_contracts();
+    _wire_routes();
+    _wire_packet_handlers();
+    _wire_event_subscriptions();
+    _wire_registry_telemetry();
+}
+
+// ===========================================================================
+// _wire_sync_services() — SyncService delta publishing (main.cpp 1375-1543)
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_sync_services()
+{
+    // ManifestStore for manifest epochs
+    std::string manifest_dir = data_dir_ + "/manifests";
+    if (auto r = manifest_store_.open(manifest_dir); !r)
+    {
+        std::printf("[smo-node] Warning: failed to open ManifestStore at %s: %s\n", manifest_dir.c_str(),
+                    r.error().message.c_str());
+    }
+
+    // CRL delta: serialize entries since last known epoch
+    sync_service_.on_delta("crl", [&](const std::string&) -> smo::Result<void> {
+        auto entries = crl_.entries_since(last_crl_epoch_);
+        if (entries.empty())
+            return {};
+        for (const auto& e : entries)
+        {
+            if (e.epoch > last_crl_epoch_)
+                last_crl_epoch_ = e.epoch;
+        }
+        // Serialize only new entries
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(entries.size());
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto& e : entries)
+        {
+            auto ser = e.serialize();
+            uint32_t len = static_cast<uint32_t>(ser.size());
+            for (int i = 3; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+            buf.insert(buf.end(), ser.begin(), ser.end());
+        }
+        if (!buf.empty())
+        {
+            gossip_.queue_delta(smo::DeltaType::CRL, std::move(buf));
+        }
+        return {};
+    });
+
+    // PolicyStore for policy rule persistence
+    if (auto ec = policy_store_.open(); ec)
+    {
+        std::printf("[smo-node] Warning: failed to open PolicyStore: %s\n", ec.message().c_str());
+    }
+
+    // Policy delta: send policy records since last known version
+    sync_service_.on_delta("policy", [&](const std::string&) -> smo::Result<void> {
+        auto current = policy_store_.store_version();
+        if (current <= last_policy_version_)
+            return {};
+        last_policy_version_ = current;
+        auto names = policy_store_.list();
+        if (names.empty())
+            return {};
+        // Serialize each record with length prefix
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(names.size());
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto& name : names)
+        {
+            auto rec = policy_store_.get(name);
+            if (!rec)
+                continue;
+            auto ser = smo::PolicyStore::serialize_record(rec.value());
+            uint32_t len = static_cast<uint32_t>(ser.size());
+            for (int i = 3; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((len >> (i * 8)) & 0xFF));
+            buf.insert(buf.end(), ser.begin(), ser.end());
+        }
+        if (!buf.empty())
+        {
+            gossip_.queue_delta(smo::DeltaType::Policy, std::move(buf));
+        }
+        return {};
+    });
+
+    // Manifest delta: send new epoch list since last sync
+    sync_service_.on_delta("manifest", [&](const std::string&) -> smo::Result<void> {
+        if (!manifest_store_.is_open())
+            return {};
+        auto latest = manifest_store_.latest_epoch();
+        if (!latest || latest.value() <= last_manifest_epoch_)
+            return {};
+        auto epochs = manifest_store_.list_epochs();
+        if (!epochs)
+            return {};
+        std::vector<uint64_t> new_epochs;
+        for (auto e : epochs.value())
+        {
+            if (e > last_manifest_epoch_)
+                new_epochs.push_back(e);
+        }
+        if (new_epochs.empty())
+            return {};
+        last_manifest_epoch_ = latest.value();
+        // Serialize epoch list
+        smo::Bytes buf;
+        uint32_t count = static_cast<uint32_t>(new_epochs.size());
+        for (int i = 3; i >= 0; --i)
+            buf.push_back(static_cast<uint8_t>((count >> (i * 8)) & 0xFF));
+        for (auto e : new_epochs)
+        {
+            for (int i = 7; i >= 0; --i)
+                buf.push_back(static_cast<uint8_t>((e >> (i * 8)) & 0xFF));
+        }
+        gossip_.queue_delta(smo::DeltaType::Manifest, std::move(buf));
+        return {};
+    });
+
+    // Routing delta: stub (routing table not yet implemented)
+    sync_service_.on_delta("routing", [](const std::string&) -> smo::Result<void> {
+        return {};
+    });
+
+    // Contracts delta: stub (contracts store not yet implemented)
+    sync_service_.on_delta("contracts", [](const std::string&) -> smo::Result<void> {
+        return {};
+    });
+
+    // Register receive-side delta handlers in GossipEngine
+    gossip_.set_delta_handler(smo::DeltaType::Manifest, [&](smo::BytesView payload) -> smo::Result<void> {
+        if (payload.size() < 4)
+            return {};
+        uint32_t count = 0;
+        for (int i = 0; i < 4; ++i)
+            count = (count << 8) | payload[i];
+        std::printf("[smo-node] Gossip: received manifest delta with %u epochs\n", count);
+        return {};
+    });
+
+    gossip_.set_delta_handler(smo::DeltaType::Policy, [&](smo::BytesView payload) -> smo::Result<void> {
+        if (payload.size() < 4)
+            return {};
+        uint32_t count = 0;
+        for (int i = 0; i < 4; ++i)
+            count = (count << 8) | payload[i];
+        size_t off = 4;
+        for (uint32_t j = 0; j < count && off < payload.size(); ++j)
+        {
+            if (off + 4 > payload.size())
+                break;
+            uint32_t len = 0;
+            for (int i = 0; i < 4; ++i)
+                len = (len << 8) | payload[off++];
+            if (off + len > payload.size())
+                break;
+            std::string data(payload.begin() + off, payload.begin() + off + len);
+            off += len;
+            auto rec = smo::PolicyStore::deserialize_record(data);
+            if (rec)
+            {
+                policy_store_.put(rec.value());
+            }
+        }
+        return {};
+    });
+}
+
+// ===========================================================================
+// _wire_contracts() — register all runtime contracts (main.cpp 1549-1610)
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_contracts()
+{
+    // Echo (legacy, for backwards compat)
+    runtime_dispatcher_.register_contract("system.echo", std::make_unique<smo::runtime::EchoContract>());
+
+    // BootstrapContract: mesh bootstrap snapshots
+    runtime_dispatcher_.register_contract(
+        "system.bootstrap",
+        std::make_unique<smo::runtime::BootstrapContract>(mesh_manager_, authority_, &governance_engine_, nullptr));
+
+    // JoinContract: node enrollment
+    {
+        auto rng = crypto_->default_rng();
+        runtime_dispatcher_.register_contract(
+            "system.join", std::make_unique<smo::runtime::JoinContract>(crypto_->hash, crypto_->signer, rng));
+    }
+
+    // GovernanceContract: proposals, voting, commit
+    runtime_dispatcher_.register_contract(
+        "system.governance", std::make_unique<smo::runtime::GovernanceContract>(governance_engine_, authority_));
+
+    // RecoveryContract: recovery sessions, CRL
+    runtime_dispatcher_.register_contract(
+        "system.recovery",
+        std::make_unique<smo::runtime::RecoveryContract>(recovery_engine_, &crl_, governance_engine_));
+
+    // FileContract: filesystem operations
+    runtime_dispatcher_.register_contract("system.file", std::make_unique<smo::runtime::FileContract>());
+
+    // ProcessContract: process management
+    runtime_dispatcher_.register_contract("system.process", std::make_unique<smo::runtime::ProcessContract>());
+
+    // DeploymentContract: contract deploy/undeploy/status/trace lifecycle
+    runtime_dispatcher_.register_contract("system.contracts",
+                                          std::make_unique<smo::runtime::DeploymentContract>(data_dir_));
+
+    // TrustContract (RFC 0017): peer trust scores + witness attestation/selection.
+    {
+        auto trust_contract = std::make_unique<smo::runtime::TrustContract>(&trust_mgr_, data_dir_);
+        trust_contract->set_signer([this](smo::BytesView msg) {
+            auto rng = crypto_->default_rng();
+            auto sig = crypto_->signer.sign(
+                msg, smo::Bytes(identity_.secret_key().begin(), identity_.secret_key().end()), rng);
+            if (!sig)
+                return smo::Bytes{};
+            return sig.value();
+        });
+        trust_contract->set_membership_provider([this]() {
+            std::vector<smo::NodeID> online;
+            std::vector<smo::NodeID> all;
+            for (const auto& entry : membership_.peers())
+            {
+                all.push_back(entry.node_id);
+            }
+            for (const auto& entry : membership_.peers_with_state(smo::PeerState::Online))
+            {
+                online.push_back(entry.node_id);
+            }
+            return std::make_pair(std::move(online), std::move(all));
+        });
+        runtime_dispatcher_.register_contract("system.trust", std::move(trust_contract));
+    }
+}
+
+// ===========================================================================
+// _wire_routes() — RuntimeBridge opcode -> contract routes (main.cpp 1628-1664)
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_routes()
+{
+    // Echo
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::ECHO), "system.echo", "echo");
+
+    // BootstrapContract
+    runtime_bridge_.register_route(smo::bootstrap::kOpcodeBootstrapRequest, "system.bootstrap", "request");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT), "system.bootstrap",
+                                   "snapshot");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO), "system.bootstrap", "info");
+    runtime_bridge_.register_route(smo::join::kOpcodeBootstrapSyncReq, "system.bootstrap", "bootstrap_sync");
+
+    // JoinContract
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::JOIN), "system.join", "join");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::LEAVE), "system.join", "leave");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::JOIN_INFO), "system.join", "info");
+
+    // GovernanceContract
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE), "system.governance", "propose");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_VOTE), "system.governance", "vote");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_COMMIT), "system.governance", "commit");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_LIST), "system.governance", "list");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_STATUS), "system.governance", "status");
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_INFO), "system.governance", "info");
+
+    // RecoveryContract (single opcode, method in payload)
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::RECOVERY), "system.recovery", "invoke");
+
+    // FileContract (single opcode, method in payload)
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::FILE_OP), "system.file", "invoke");
+
+    // ProcessContract (single opcode, method in payload)
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::PROCESS), "system.process", "invoke");
+
+    // DeploymentContract (single opcode, method in payload)
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "system.contracts", "invoke");
+
+    // TrustContract (single opcode, method in payload, RFC 0017)
+    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::WITNESS), "system.trust", "invoke");
+}
+
+// ===========================================================================
+// _wire_packet_handlers() — dispatcher setup, PacketDispatcher, lifecycle FSM,
+// raw protocol handler (main.cpp 1666-1957). Note: MiddlewarePipeline setup
+// (1625-1623) is a prerequisite of the runtime handler and is inlined below.
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_packet_handlers()
+{
+    auto& LOG = smo::runtime::global_logger();
+
+    // Middleware Pipeline
+    auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr_);
+    policy_mw->set_anonymous("system.bootstrap", true);
+    policy_mw->set_anonymous("system.join", true);
+    // CLI/operator packets carry no session yet (transport is PQ-secured);
+    // keep file/process opcodes reachable without an SMO session.
+    policy_mw->set_anonymous("system.file", true);
+    policy_mw->set_anonymous("system.process", true);
+    policy_mw->set_anonymous("system.contracts", true);
+    policy_mw->set_anonymous("system.trust", true);
+    middleware_pipeline_.push(std::move(policy_mw));
+
+    // Runtime handler: session -> middleware -> bridge -> execute -> send response
+    auto runtime_handler = [this](smo::Packet&& pkt, const smo::Endpoint& remote,
+                                  smo::network::hl::Transport& t) -> smo::Result<void> {
+        std::string remote_str = remote.host + ":" + std::to_string(remote.port);
+        std::printf("[smo-node] Packet received opcode=0x%x from %s\n", pkt.opcode_id, remote_str.c_str());
+
+        // 1. Session lookup (if session_id present)
+        const smo::Session* session = nullptr;
+        bool has_session = pkt.session_id().size() >= 16;
+        if (has_session)
+        {
+            auto sid_res = smo::SessionId::from_bytes(smo::BytesView(pkt.session_id().data(), 16));
+            if (sid_res)
+            {
+                session = session_mgr_.lookup(sid_res.value());
+            }
+        }
+
+        // 2. Middleware pipeline: validate + policy
+        smo::runtime::PacketContext mw_ctx;
+        mw_ctx.session = session;
+        auto* route = runtime_bridge_.resolve(pkt.opcode_id);
+        if (route)
+        {
+            mw_ctx.contract_id = route->contract_id;
+            mw_ctx.method = route->method;
+        }
+        mw_ctx.payload = smo::BytesView(pkt.payload.data(), pkt.payload.size());
+        {
+            char hex[16];
+            std::snprintf(hex, sizeof(hex), "0x%04x", pkt.opcode_id);
+            mw_ctx.opcode_hex = hex;
+        }
+
+        auto mw_res = middleware_pipeline_.process(mw_ctx);
+        if (!mw_res)
+        {
+            std::printf("[smo-node] Middleware denied: %s\n", mw_res.error().message.c_str());
+            return mw_res.error();
+        }
+        if (mw_ctx.denied)
+        {
+            std::printf("[smo-node] Policy denied: %s\n", mw_ctx.deny_reason.c_str());
+            return smo::Error(smo::ErrorCode(smo::ErrorCategory::Session, 507, smo::Severity::Error,
+                                             smo::RetryClass::NoRetry, smo::Recovery::None),
+                              mw_ctx.deny_reason, __FILE__, __LINE__);
+        }
+
+        // 3. Bridge: Packet -> RuntimeKernel -> RuntimeResult
+        auto original_pkt = pkt;
+
+        // Send an error response packet back to the requester.
+        auto send_error_packet = [&](const std::string& message) {
+            smo::Packet err_resp;
+            err_resp.header = original_pkt.header;
+            err_resp.opcode_id = original_pkt.opcode_id;
+            err_resp.session_id() = original_pkt.session_id();
+            err_resp.intent_id = original_pkt.intent_id;
+            err_resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                       std::chrono::system_clock::now().time_since_epoch())
+                                       .count();
+            err_resp.payload.assign(message.begin(), message.end());
+            (void)t.send(std::move(err_resp), remote);
+        };
+
+        auto rt_result = runtime_bridge_.bridge(std::move(pkt));
+        if (!rt_result)
+        {
+            std::printf("[smo-node] RuntimeBridge failed: %s\n", rt_result.error().message.c_str());
+            send_error_packet("error: " + rt_result.error().message);
+            return rt_result.error();
+        }
+
+        // 4. Execute each NextAction via ActionExecutor
+        auto& next_actions = rt_result.value().next_actions;
+        if (next_actions.empty())
+        {
+            // No async actions: deliver the contract result directly as the
+            // response packet so request/response clients (CLI) get an answer.
+            if (rt_result.value().output)
+            {
+                smo::Packet resp;
+                resp.header = original_pkt.header;
+                resp.opcode_id = original_pkt.opcode_id;
+                resp.session_id() = original_pkt.session_id();
+                resp.intent_id = original_pkt.intent_id;
+                resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                       std::chrono::system_clock::now().time_since_epoch())
+                                       .count();
+
+                const auto& out = rt_result.value().output.value();
+                if (!out.binary.empty())
+                {
+                    resp.payload = out.binary;
+                }
+                else
+                {
+                    resp.payload.assign(out.data.begin(), out.data.end());
+                }
+
+                auto send_ec = t.send(std::move(resp), remote);
+                if (send_ec)
+                {
+                    std::printf("[smo-node] Response send failed: %s\n", send_ec.message().c_str());
+                    return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport,
+                                                     static_cast<uint16_t>(send_ec.value()), smo::Severity::Error,
+                                                     smo::RetryClass::RetrySafe, smo::Recovery::None),
+                                      "response send failed", __FILE__, __LINE__);
+                }
+            }
+            else
+            {
+                std::printf("[smo-node] No next actions and no output - result: %s\n",
+                            rt_result.value().output ? rt_result.value().output->data.c_str() : "(no output)");
+            }
+            return {};
+        }
+
+        for (auto& action : next_actions)
+        {
+            smo::runtime::ActionExecutor executor(
+                [&](smo::Packet&& resp) -> smo::Result<void> {
+                    auto ec = t.send(std::move(resp), remote);
+                    if (ec)
+                    {
+                        return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport,
+                                                         static_cast<uint16_t>(ec.value()), smo::Severity::Error,
+                                                         smo::RetryClass::RetrySafe, smo::Recovery::None),
+                                          "ActionExecutor send failed", __FILE__, __LINE__);
+                    }
+                    return {};
+                },
+                &event_bus_);
+            auto exec_res = executor.execute(action, original_pkt);
+            if (!exec_res)
+            {
+                std::printf("[smo-node] ActionExecutor failed: %s\n", exec_res.error().message.c_str());
+            }
+        }
+
+        return {};
+    };
+
+    // Node Lifecycle FSM
+    node_fsm_.on_event(smo::NodeLifecycleEvent::IDENTITY_CREATED);
+
+    // Authority node: transition to ACTIVE since it has a cert and is the mesh root
+    if (!server_cert_blob_.empty())
+    {
+        node_fsm_.on_event(smo::NodeLifecycleEvent::CSR_EXPORTED);
+        node_fsm_.on_event(smo::NodeLifecycleEvent::CERT_IMPORTED);
+        node_fsm_.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_START);
+        node_fsm_.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_COMPLETE);
+        node_fsm_.on_event(smo::NodeLifecycleEvent::JOIN_COMPLETE);
+        node_fsm_.on_event(smo::NodeLifecycleEvent::SYNC_COMPLETE);
+    }
+    std::printf("[smo-node] Node state: %s\n", node_fsm_.state_name().c_str());
+
+    // PacketDispatcher setup
+    dispatcher_.set_lifecycle_fsm(&node_fsm_);
+    dispatcher_.set_gossip_engine(&gossip_);
+
+    // Register runtime handler for all contract opcodes
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::ECHO), runtime_handler);
+    dispatcher_.register_handler(smo::bootstrap::kOpcodeBootstrapRequest, runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::JOIN), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::LEAVE), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::JOIN_INFO), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_VOTE), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_COMMIT), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_LIST), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_STATUS), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_INFO), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::RECOVERY), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::FILE_OP), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::PROCESS), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), runtime_handler);
+    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::WITNESS), runtime_handler);
+    dispatcher_.register_handler(smo::join::kOpcodeBootstrapSyncReq, runtime_handler);
+
+    // Raw handler: discovery protocol (HelloMsg, PingMsg, etc.)
+    auto raw_handler = [this](smo::BytesView raw, smo::TransportSession& session,
+                              const smo::Endpoint& remote) -> smo::Result<void> {
+        int64_t now_ns = now_ns_since_epoch();
+
+        // Use remote directly as smo::Endpoint
+        smo::Endpoint ep = remote;
+
+        // Try join protocol FIRST (raw CBOR)
+        auto try_join_protocol = [&]() -> bool {
+            smo::BytesView cbor_data = raw;
+
+            // Send raw CBOR (client decodes without a length prefix)
+            auto send_cbor_resp = [&](const smo::Bytes& cbor) -> bool {
+                auto send_res = session.send(smo::BytesView(cbor));
+                return static_cast<bool>(send_res);
+            };
+
+            // Try JoinRequest (opcode 0x0601)
+            auto join_req = smo::join::JoinRequest::decode_cbor(cbor_data);
+            if (join_req)
+            {
+                std::printf("[smo-node] Raw handler: JoinRequest from %s\n", remote.host.c_str());
+                auto join_resp = smo::join::process_join_request(join_req.value(), mesh_manager_, authority_);
+                if (join_resp)
+                {
+                    auto cbor = join_resp.value().encode_cbor();
+                    send_cbor_resp(cbor);
+                    return true;
+                }
+                std::printf("[smo-node] JoinRequest failed: %s\n", join_resp.error().message.c_str());
+                return false;
+            }
+
+            // Try BootstrapSyncRequest (opcode 0x0603)
+            auto sync_req = smo::join::BootstrapSyncRequest::decode_cbor(cbor_data);
+            if (sync_req)
+            {
+                std::printf("[smo-node] Raw handler: BootstrapSyncRequest from %s\n", remote.host.c_str());
+                auto sync_resp = smo::join::process_bootstrap_sync(sync_req.value(), mesh_manager_, authority_, &crl_);
+                if (sync_resp)
+                {
+                    auto cbor = sync_resp.value().encode_cbor();
+                    send_cbor_resp(cbor);
+                    return true;
+                }
+                std::printf("[smo-node] BootstrapSync failed: %s\n", sync_resp.error().message.c_str());
+                return false;
+            }
+
+            return false;
+        };
+
+        if (try_join_protocol())
+        {
+            std::printf("[smo-node] Join protocol handled successfully\n");
+            return {};
+        }
+
+        // Try HelloMsg
+        auto hello = smo::HelloMsg::deserialize(raw);
+        if (hello)
+        {
+            std::printf("[smo-node] Raw handler: HelloMsg from %s\n", remote.host.c_str());
+            auto handle_res = discovery_.handle_hello(hello.value(), ep, now_ns);
+            if (!handle_res)
+            {
+                return handle_res.error();
+            }
+
+            // Send WelcomeMsg back with our own record so the requester
+            // learns who the seed is (its node_id + reachable endpoint).
+            smo::WelcomeMsg welcome;
+            welcome.node_id = local_id_;
+            welcome.peer_record = self_record_;
+            auto welcome_data = welcome.serialize();
+            auto send_res = session.send(welcome_data);
+            if (!send_res)
+            {
+                std::printf("[smo-node] Failed to send WelcomeMsg\n");
+            }
+            return {};
+        }
+
+        // Try PingMsg
+        auto ping = smo::PingMsg::deserialize(raw);
+        if (ping)
+        {
+            smo::PongMsg pong;
+            pong.timestamp = ping.value().timestamp;
+            auto pong_data = pong.serialize();
+            session.send(pong_data);
+            return {};
+        }
+
+        // Unknown raw protocol
+        return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport, 309, smo::Severity::Warn,
+                                         smo::RetryClass::RetrySafe, smo::Recovery::None),
+                          "Unknown raw protocol", __FILE__, __LINE__);
+    };
+
+    dispatcher_.register_raw_handler(raw_handler);
+
+    (void)LOG;
+}
+
+// ===========================================================================
+// _wire_event_subscriptions() — EventBus wires (main.cpp 1958-2095)
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_event_subscriptions()
+{
+    // RecoveryProposalCreated: emitted by RecoveryContract
+    event_bus_.subscribe(smo::runtime::EventType::RecoveryProposalCreated, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] Event: RecoveryProposalCreated - %s\n", ev.details.c_str());
+    });
+
+    // RecoveryApproved: parse payload, CRL::revoke + SessionManager::invalidate
+    event_bus_.subscribe(smo::runtime::EventType::RecoveryApproved, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] Event: RecoveryApproved - %s\n", ev.details.c_str());
+
+        std::string payload = ev.details;
+        size_t brace_pos = payload.find('{');
+        if (brace_pos == std::string::npos)
+        {
+            std::printf("[smo-node] WARNING: RecoveryApproved payload missing JSON\n");
+            return;
+        }
+        std::string json_str = payload.substr(brace_pos);
+
+        // Simple JSON parsing (avoid external dependency for now)
+        auto extract_field = [&](const std::string& json, const std::string& key) -> std::string {
+            std::string search = "\"" + key + "\":\"";
+            size_t pos = json.find(search);
+            if (pos == std::string::npos)
+                return "";
+            pos += search.length();
+            size_t end = json.find('"', pos);
+            if (end == std::string::npos)
+                return "";
+            return json.substr(pos, end - pos);
+        };
+        auto extract_uint = [&](const std::string& json, const std::string& key) -> uint64_t {
+            std::string search = "\"" + key + "\":";
+            size_t pos = json.find(search);
+            if (pos == std::string::npos)
+                return 0;
+            pos += search.length();
+            size_t end = json.find_first_of(",}", pos);
+            if (end == std::string::npos)
+                return 0;
+            return std::stoull(json.substr(pos, end - pos));
+        };
+
+        std::string fingerprint = extract_field(json_str, "fingerprint");
+        std::string node_id_hex = extract_field(json_str, "node_id_hex");
+        std::string reason = extract_field(json_str, "reason");
+        uint64_t epoch = extract_uint(json_str, "epoch");
+
+        if (fingerprint.empty() || node_id_hex.empty())
+        {
+            std::printf("[smo-node] WARNING: RecoveryApproved payload incomplete\n");
+            return;
+        }
+
+        // 1. CRL::revoke(fingerprint)
+        auto now_ns = now_ns_since_epoch();
+        auto rev_res = crl_.revoke(fingerprint, node_id_hex, reason, epoch, now_ns);
+        if (!rev_res)
+        {
+            std::printf("[smo-node] CRL revoke failed: %s\n", rev_res.error().message.c_str());
+        }
+        else
+        {
+            std::printf("[smo-node] CRL: revoked cert %s (epoch=%llu)\n", fingerprint.c_str(),
+                        (unsigned long long)epoch);
+        }
+
+        // 2. SessionManager::invalidate(node_id) - convert hex to NodeID
+        if (node_id_hex.size() == 64)
+        { // 32 bytes = 64 hex chars
+            smo::NodeID node_id;
+            for (size_t i = 0; i < 32 && i * 2 + 1 < node_id_hex.size(); ++i)
+            {
+                unsigned int byte = 0;
+                std::istringstream iss(node_id_hex.substr(i * 2, 2));
+                iss >> std::hex >> byte;
+                node_id.value[i] = static_cast<uint8_t>(byte);
+            }
+            size_t invalidated = session_mgr_.invalidate(node_id);
+            std::printf("[smo-node] SessionManager: invalidated %zu sessions for node %s\n", invalidated,
+                        node_id_hex.c_str());
+        }
+
+        // 3. Discovery: gossip CRL update (trigger membership sync)
+        std::printf("[smo-node] Discovery: CRL update triggered (gossip will propagate)\n");
+
+        // 4. Audit: log revocation
+        std::printf("[smo-node] AUDIT: Certificate revoked - fingerprint=%s node=%s reason=%s epoch=%llu\n",
+                    fingerprint.c_str(), node_id_hex.c_str(), reason.c_str(), (unsigned long long)epoch);
+    });
+
+    // Trust score changes -> Audit log
+    event_bus_.subscribe(smo::runtime::EventType::SecurityAlert, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] AUDIT: Trust score change - %s\n", ev.details.c_str());
+    });
+
+    // Session disconnect -> Discovery membership update
+    event_bus_.subscribe(smo::runtime::EventType::NodeDisconnected, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] Discovery: Node disconnected - %s\n", ev.details.c_str());
+    });
+
+    // Trust score change -> Audit log
+    event_bus_.subscribe(smo::runtime::EventType::AuditLogged, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] AUDIT: %s\n", ev.details.c_str());
+    });
+
+    // Governance proposal updates -> all nodes
+    event_bus_.subscribe(smo::runtime::EventType::ProposalCreated, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] GOVERNANCE: Proposal created - %s\n", ev.details.c_str());
+    });
+    event_bus_.subscribe(smo::runtime::EventType::ProposalVoted, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] GOVERNANCE: Vote cast - %s\n", ev.details.c_str());
+    });
+    event_bus_.subscribe(smo::runtime::EventType::ProposalCommitted, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] GOVERNANCE: Proposal committed - %s\n", ev.details.c_str());
+    });
+    event_bus_.subscribe(smo::runtime::EventType::ProposalRejected, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] GOVERNANCE: Proposal rejected - %s\n", ev.details.c_str());
+    });
+
+    // Recovery events
+    event_bus_.subscribe(smo::runtime::EventType::RecoveryStarted, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] RECOVERY: Started - %s\n", ev.details.c_str());
+    });
+    event_bus_.subscribe(smo::runtime::EventType::RecoveryCompleted, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] RECOVERY: Completed - %s\n", ev.details.c_str());
+    });
+    event_bus_.subscribe(smo::runtime::EventType::RecoveryFailed, [&](const smo::runtime::Event& ev) {
+        std::printf("[smo-node] RECOVERY: Failed - %s\n", ev.details.c_str());
+    });
+}
+
+// ===========================================================================
+// _wire_registry_telemetry() — ServiceRegistry + Telemetry (main.cpp 2097-2138)
+// ===========================================================================
+
+void NodeRuntime::Impl::_wire_registry_telemetry()
+{
+    auto& LOG = smo::runtime::global_logger();
+
+    // Register core services in global registry
+    smo::runtime::ServiceRegistry& registry = smo::runtime::global_registry();
+    registry.register_service("event_bus", std::shared_ptr<smo::runtime::EventBus>(&event_bus_, [](auto*) {}));
+    registry.register_service("crl", std::make_shared<smo::recovery::CRL>(crl_));
+    registry.register_service("session_manager", std::make_shared<smo::SessionManager>(session_mgr_));
+    registry.register_service("trust_manager", std::make_shared<smo::TrustManager>(trust_mgr_));
+    registry.register_service("governance_engine", std::make_shared<smo::GovernanceEngine>(governance_engine_));
+    registry.register_service("discovery_engine", std::make_shared<smo::DiscoveryEngine>(discovery_));
+    // Note: PeerStore and GossipEngine are non-copyable, skip for now
+
+    // Telemetry + Metrics (P10)
+    smo::runtime::Telemetry& telemetry = smo::runtime::global_telemetry();
+    telemetry.set_event_bus(&event_bus_);
+
+    // Register core health checks
+    telemetry.register_health_check("crl", [](std::string& err) -> bool { return true; });
+    telemetry.register_health_check("session_mgr", [](std::string& err) -> bool { return true; });
+    telemetry.register_health_check("peer_store", [](std::string& err) -> bool { return true; });
+    telemetry.register_health_check("gossip_engine", [](std::string& err) -> bool { return true; });
+    telemetry.register_health_check("heartbeat", [](std::string& err) -> bool { return true; });
+
+    // Register daemon metrics
+    telemetry.increment_counter("node.startup", "component=main");
+    telemetry.set_gauge("node.state", 1.0, "state=running");
+    telemetry.set_gauge("smo_connected_peers", 0.0, "");
+    telemetry.set_gauge("smo_gossip_queue_depth", 0.0, "");
+    telemetry.set_gauge("smo_membership_epoch", 0.0, "");
+
+    // Print registered services using structured logger
+    {
+        std::string svc_str;
+        auto services = registry.list_services();
+        for (size_t i = 0; i < services.size(); ++i)
+        {
+            if (i > 0)
+                svc_str += ", ";
+            svc_str += services[i];
+        }
+        LOG.info("services: " + svc_str);
+    }
+}
+
+// ===========================================================================
+// start() — anti-entropy + sync service + daemon clock (main.cpp 2143-2198)
+// ===========================================================================
+
+Result<void> NodeRuntime::Impl::start()
+{
+    auto& LOG = smo::runtime::global_logger();
+    LOG.info("entering main loop");
+
+    sync_backend_ = std::make_shared<DaemonSyncBackend>(membership_, &crl_);
+    auto ae_config = smo::sync::AntiEntropyService::Config::defaults();
+    anti_entropy_ = std::make_unique<smo::sync::AntiEntropyService>(membership_, gossip_, *sync_backend_, ae_config);
+    anti_entropy_->start();
+
+    last_tick_ = 0;
+    last_peerstore_sync_ = 0;
+    daemon_start_ns_ = 0;
+
+    sync_service_.start();
+    daemon_start_ns_ = now_ns_since_epoch();
+
+    daemon_ready_logged_ = false;
+    daemon_degraded_logged_ = false;
+    return {};
+}
+
+// ===========================================================================
+// run() — daemon main loop (main.cpp 2200-2363). Blocking until running_flag
+// clears (signal handler in main sets it to false).
+// ===========================================================================
+
+int NodeRuntime::Impl::run()
+{
+    auto& LOG = smo::runtime::global_logger();
+    auto& telemetry = smo::runtime::global_telemetry();
+
+    while (config_.running_flag && *config_.running_flag)
+    {
+        int64_t now_ns = now_ns_since_epoch();
+
+        // SyncService: manages all delta intervals and triggers GossipEngine fanout
+        sync_service_.tick(now_ns);
+
+        // Periodic ticks (every 5s)
+        if (now_ns - last_tick_ > 5000000000LL)
+        {
+            discovery_.tick(now_ns);
+            heartbeat_.tick(now_ns);
+            session_mgr_.tick(now_ns);
+            session_mgr_.collect_garbage();
+            anti_entropy_->tick(now_ns); // P1: 30-min Merkle tree exchange
+
+            // Decay trust scores over time (RFC 0017 4) and persist them
+            trust_mgr_.tick(now_ns);
+
+            // Persist session store so a crash leaves recoverable state (RFC 0014 6)
+            if (auto persist_ec = session_mgr_.persist(data_dir_ + "/session_store.bin"); !persist_ec)
+            {
+                std::printf("[smo-node] Session store persist failed: %s\n", persist_ec.error().message.c_str());
+            }
+
+            // Readiness check (P2)
+            int64_t uptime_ns = now_ns - daemon_start_ns_;
+            if (!daemon_ready_logged_ && uptime_ns > 30'000'000'000LL)
+            {
+                bool hb_active = membership_.count() > 0;
+                bool gossip_tx = gossip_.gossip_sent_count() > 0;
+                bool gossip_rx = gossip_.gossip_received_count() > 0;
+
+                if (hb_active && gossip_tx && gossip_rx)
+                {
+                    LOG.info("node READY - " + std::to_string(membership_.count()) +
+                             " peer(s), gossip tx=" + std::to_string(gossip_.gossip_sent_count()) +
+                             " rx=" + std::to_string(gossip_.gossip_received_count()));
+                    daemon_ready_logged_ = true;
+                }
+                else if (!daemon_degraded_logged_)
+                {
+                    LOG.warn("node DEGRADED - waiting: heartbeat=" + std::string(hb_active ? "yes" : "no") +
+                             " gossip_tx=" + std::string(gossip_tx ? "yes" : "no") +
+                             " gossip_rx=" + std::string(gossip_rx ? "yes" : "no") +
+                             " uptime=" + std::to_string(uptime_ns / 1'000'000'000) + "s");
+                    daemon_degraded_logged_ = true;
+                }
+            }
+
+            // Telemetry tick metrics (P10)
+            telemetry.set_gauge("smo_connected_peers", static_cast<double>(membership_.count()), "");
+            telemetry.set_gauge("smo_membership_epoch", static_cast<double>(now_ns % 1'000'000), "");
+            telemetry.set_gauge("smo_anti_entropy_repairs_total",
+                                static_cast<double>(anti_entropy_->repairs_done()), "");
+
+            // Export Prometheus metrics to file for scraping
+            {
+                std::string metrics_path = data_dir_ + "/metrics.prom";
+                auto metrics_str = telemetry.export_prometheus();
+                if (!metrics_str.empty())
+                {
+                    if (auto f = std::fopen(metrics_path.c_str(), "w"))
+                    {
+                        std::fwrite(metrics_str.data(), 1, metrics_str.size(), f);
+                        std::fclose(f);
+                    }
+                }
+            }
+
+            last_tick_ = now_ns;
+        }
+
+        // UDP Discovery: read and dispatch datagrams (5.20)
+        if (udp_listener_)
+        {
+            while (true)
+            {
+                auto udp_session = udp_listener_->accept();
+                if (!udp_session)
+                    break;
+
+                auto recv_data = udp_session.value()->recv(8192);
+                if (recv_data)
+                {
+                    smo::Endpoint from = udp_session.value()->remote_endpoint();
+                    telemetry.increment_counter("udp.datagrams_received", "component=discovery");
+                    (void)smo::dispatch_discovery_datagram(recv_data.value(), discovery_, from, now_ns);
+                }
+                udp_session.value()->close();
+            }
+        }
+
+        // Periodic PeerStore sync
+        if (now_ns - last_peerstore_sync_ > 30000000000LL)
+        {
+            peer_store_.sync_from_membership(membership_);
+            last_peerstore_sync_ = now_ns;
+        }
+
+        // Accept TCP connections
+        auto tcp_session = tcp_listener_owner_->accept();
+        if (tcp_session)
+        {
+            auto remote_str = tcp_session.value()->remote_endpoint().to_string();
+            telemetry.increment_counter("tcp.connections_accepted", "component=main");
+
+            smo::Endpoint remote_ep;
+            auto colon = remote_str.rfind(':');
+            if (colon != std::string::npos)
+            {
+                remote_ep.host = remote_str.substr(0, colon);
+                remote_ep.port =
+                    static_cast<uint16_t>(std::strtoul(remote_str.substr(colon + 1).c_str(), nullptr, 10));
+            }
+            else
+            {
+                remote_ep.host = remote_str;
+                remote_ep.port = static_cast<uint16_t>(config_.port);
+            }
+
+            auto* tcp_ses = static_cast<smo::TcpSession*>(tcp_session.value().get());
+
+            // PQ handshake (if certificate available)
+            if (!server_cert_blob_.empty())
+            {
+                smo::SecureSession::Config sec_cfg;
+                sec_cfg.role = smo::SecureSession::Role::Server;
+                sec_cfg.server_cert = server_cert_blob_;
+                sec_cfg.signing_secret_key = server_signing_key_;
+                sec_cfg.root_public_key = root_public_key_;
+                sec_cfg.mesh_id = mesh_id_str_;
+
+                int client_fd = tcp_ses->release_fd();
+                smo::SecureSession sec(client_fd, sec_cfg, *crypto_);
+                auto hs = sec.handshake();
+                if (!hs)
+                {
+                    LOG.warn("PQ handshake failed: " + hs.error().message + " from " + remote_str);
+                    tcp_session.value()->close();
+                    continue;
+                }
+
+                // G3 Packet path: use dispatch_packet_session with AEAD + replay
+                auto dispatch_res = dispatcher_.dispatch_packet_session(sec, session_mgr_, remote_ep);
+                if (!dispatch_res)
+                {
+                    LOG.warn("dispatch failed: " + dispatch_res.error().message + " from " + remote_str);
+                }
+            }
+            else
+            {
+                auto dispatch_res = dispatcher_.dispatch_session(*tcp_ses, remote_ep);
+                if (!dispatch_res)
+                {
+                    LOG.warn("dispatch failed: " + dispatch_res.error().message + " from " + remote_str);
+                }
+                tcp_session.value()->close();
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    return 0;
+}
+
+// ===========================================================================
+// shutdown() — ordered teardown (main.cpp 2365-2382)
+// ===========================================================================
+
+void NodeRuntime::Impl::shutdown()
+{
+    auto& LOG = smo::runtime::global_logger();
+    LOG.info("shutting down...");
+
+    gossip_.stop();
+    sync_service_.stop();
+    if (anti_entropy_)
+        anti_entropy_->stop();
+    heartbeat_.stop();
+
+    // Drain sessions
+    session_mgr_.collect_garbage();
+
+    tcp_listener_owner_->close();
+
+    // Flush peer store last
+    peer_store_.sync_from_membership(membership_);
+    peer_store_.close();
+
+    LOG.info("shutdown complete");
+}
+
+} // namespace smo::runtime

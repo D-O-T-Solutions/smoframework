@@ -17,10 +17,12 @@ checklist marked **Phase 1–5/14 as `[✓]` (Done)**.
 This audit re-checks those marks against the **actual working tree**. Ground truth (line counts,
 file existence, inline logic) was verified directly from source — not from memory.
 
-**Headline finding:** the `[✓]` marks for Phase 1, 2, 3, 5 and 14 were **premature**. `main.cpp`
-is still **2,383 lines** and still performs the daemon-kernel work inline. Several supporting
-classes exist (`packet_dispatcher`, `bootstrap_client`, `raw_protocol_handler`, typed transport),
-but the composition root (`NodeRuntime`), `ConnectionManager`, and `UdpServer` **do not exist**.
+**Headline finding:** the `[✓]` marks for Phase 1, 2, 3, 5 and 14 were **premature** at audit time.
+Post-audit, Phase 1 has been brought to reality: `main.cpp` is now **863 lines** (down from 2,383) and
+delegates the daemon to a real composition root (`NodeRuntime`, `core/runtime/node_runtime.{hpp,cpp}`).
+Still invisible after the audit: the daemon kernel (secure accept loop, UDP loop, seed bootstrap) —
+Phase 2 (ConnectionManager), Phase 3 (UdpServer coverage), and Phase 5 (BootstrapClient wiring: both
+now owned by `NodeRuntime` internals but not yet extracted as standalone classes), plus Phase 14.
 
 ---
 
@@ -94,8 +96,8 @@ wrong.
 | Phase | Content | Verified status | Evidence |
 |---|---|---|---|
 | P0 | Freeze baseline | ⚠️ NOT frozen | pre-5fb9f16 rebuild not re-verified; 3-node not yet re-run |
-| P1 | NodeRuntime | ❌ not done | `node_runtime.hpp` missing |
-| P2 | ConnectionManager | ❌ not done | accept loop `main.cpp:2297–2360` |
+| P1 | NodeRuntime composition root | ✅ done | `core/runtime/node_runtime.{hpp,cpp}` created; `main.cpp` daemon block (835–2383) → thin delegation (NodeRuntimeConfig → NodeRuntime → initialize/start/run/shutdown), CLI modes + signal handler retained |
+| P2 | ConnectionManager extraction (accept loop → standalone class) | 🔄 in progress (internal in NodeRuntime) | accept loop now inside `node_runtime.cpp`; next step: extract `core/network/connection_manager.{hpp,cpp}` |
 | P3 | UdpServer | ❌ not done | UDP loop `main.cpp:2270–2288` |
 | P4 | BootstrapClient wiring | ❌ class exists, not used | main inlines seed connect `1139–1233` |
 | P5 | Raw dispatch removal | ❌ not done | raw handler `1853+`; only *some* demux moved to PacketDispatcher |

@@ -21,6 +21,7 @@ add_library(smo_runtime STATIC
     contracts/process_contract.cpp
     contracts/deployment_contract.cpp
     contracts/trust_contract.cpp
+    node_runtime.cpp
 )
 
 target_include_directories(smo_runtime PUBLIC
