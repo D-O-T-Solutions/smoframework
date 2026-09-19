@@ -42,6 +42,7 @@
 #include <core/storage/manifest_store.hpp>
 #include <sqlite3.h>
 #include <core/network/packet_dispatcher.hpp>
+#include <core/network/connection_manager.hpp>
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
 #include <core/join/join_protocol.hpp>
@@ -1756,66 +1757,70 @@ int NodeRuntime::Impl::run()
             last_peerstore_sync_ = now_ns;
         }
 
-        // Accept TCP connections
-        auto tcp_session = tcp_listener_owner_->accept();
-        if (tcp_session)
+        // Accept TCP connections — delegated to ConnectionManager (Phase 2).
+        // -----------------------------------------------------------------
+        // Composition root injects accept() + plain/secure dispatch hooks so
+        // crypto/identity/membership stay NodeRuntime-owned; ConnectionManager
+        // only moves bytes / parses the remote Endpoint / closes the session.
+        smo::network::ConnectionManager::Config cm_cfg;
+        cm_cfg.default_port    = static_cast<uint16_t>(config_.port);
+        cm_cfg.server_cert_blob      = server_cert_blob_;
+        cm_cfg.server_signing_key    = server_signing_key_;
+        cm_cfg.root_public_key       = root_public_key_;
+        cm_cfg.mesh_id               = mesh_id_str_;
+
+        smo::network::ConnectionManager::AcceptFn cm_accept = [&]()
         {
-            auto remote_str = tcp_session.value()->remote_endpoint().to_string();
-            telemetry.increment_counter("tcp.connections_accepted", "component=main");
+            return tcp_listener_owner_->accept();
+        };
 
-            smo::Endpoint remote_ep;
-            auto colon = remote_str.rfind(':');
-            if (colon != std::string::npos)
+        // Plain (legacy) dispatch hook — owns & closes the session.
+        smo::network::ConnectionManager::Hook cm_plain =
+            [&](smo::SessionPtr& session, const smo::Endpoint& remote_ep)
+        {
+            auto* tcp_ses = static_cast<smo::TcpSession*>(session.get());
+            auto dres = dispatcher_.dispatch_session(*tcp_ses, remote_ep);
+            if (!dres)
             {
-                remote_ep.host = remote_str.substr(0, colon);
-                remote_ep.port =
-                    static_cast<uint16_t>(std::strtoul(remote_str.substr(colon + 1).c_str(), nullptr, 10));
+                LOG.warn("dispatch failed: " + dres.error().message);
             }
-            else
+            session->close();
+            return smo::Result<void>{};
+        };
+
+        // Secure (PQ) dispatch hook — release_fd → SecureSession → PQ handshake
+        // → packet dispatch (session_mgr_ owner-closes via dispatch path).
+        smo::network::ConnectionManager::Hook cm_secure =
+            [&](smo::SessionPtr& session, const smo::Endpoint& remote_ep)
+        {
+            auto* tcp_ses = static_cast<smo::TcpSession*>(session.get());
+            int client_fd = tcp_ses->release_fd();
+
+            smo::SecureSession::Config sec_cfg;
+            sec_cfg.role = smo::SecureSession::Role::Server;
+            sec_cfg.server_cert        = server_cert_blob_;
+            sec_cfg.signing_secret_key = server_signing_key_;
+            sec_cfg.root_public_key    = root_public_key_;
+            sec_cfg.mesh_id            = mesh_id_str_;
+
+            smo::SecureSession sec(client_fd, sec_cfg, *crypto_);
+            auto hs = sec.handshake();
+            if (!hs)
             {
-                remote_ep.host = remote_str;
-                remote_ep.port = static_cast<uint16_t>(config_.port);
+                LOG.warn("PQ handshake failed: " + hs.error().message);
+                ::close(client_fd);
+                return smo::Result<void>{};
             }
-
-            auto* tcp_ses = static_cast<smo::TcpSession*>(tcp_session.value().get());
-
-            // PQ handshake (if certificate available)
-            if (!server_cert_blob_.empty())
+            auto dres = dispatcher_.dispatch_packet_session(sec, session_mgr_, remote_ep);
+            if (!dres)
             {
-                smo::SecureSession::Config sec_cfg;
-                sec_cfg.role = smo::SecureSession::Role::Server;
-                sec_cfg.server_cert = server_cert_blob_;
-                sec_cfg.signing_secret_key = server_signing_key_;
-                sec_cfg.root_public_key = root_public_key_;
-                sec_cfg.mesh_id = mesh_id_str_;
-
-                int client_fd = tcp_ses->release_fd();
-                smo::SecureSession sec(client_fd, sec_cfg, *crypto_);
-                auto hs = sec.handshake();
-                if (!hs)
-                {
-                    LOG.warn("PQ handshake failed: " + hs.error().message + " from " + remote_str);
-                    tcp_session.value()->close();
-                    continue;
-                }
-
-                // G3 Packet path: use dispatch_packet_session with AEAD + replay
-                auto dispatch_res = dispatcher_.dispatch_packet_session(sec, session_mgr_, remote_ep);
-                if (!dispatch_res)
-                {
-                    LOG.warn("dispatch failed: " + dispatch_res.error().message + " from " + remote_str);
-                }
+                LOG.warn("dispatch failed: " + dres.error().message);
             }
-            else
-            {
-                auto dispatch_res = dispatcher_.dispatch_session(*tcp_ses, remote_ep);
-                if (!dispatch_res)
-                {
-                    LOG.warn("dispatch failed: " + dispatch_res.error().message + " from " + remote_str);
-                }
-                tcp_session.value()->close();
-            }
-        }
+            return smo::Result<void>{};
+        };
+
+        smo::network::ConnectionManager conn_mgr(cm_cfg, cm_accept, cm_plain, cm_secure);
+        conn_mgr.accept_once();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }

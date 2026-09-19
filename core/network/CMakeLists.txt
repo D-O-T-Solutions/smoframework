@@ -18,6 +18,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/dns.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/nat_detect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/packet_dispatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connection_manager.cpp
 )
 
 target_sources(smo_core INTERFACE

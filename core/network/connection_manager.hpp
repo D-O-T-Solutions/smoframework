@@ -1,7 +1,8 @@
 #pragma once
 
 #include <core/errors/error.hpp>              // smo::Result
-#include <core/transport/transport.hpp>       // smo::SessionPtr, smo::Endpoint, smo::TransportSession
+#include <core/transport/transport.hpp>
+#include <core/types.hpp>  // smo::Bytes       // smo::SessionPtr, smo::Endpoint, smo::TransportSession
 
 #include <atomic>
 #include <functional>
@@ -29,9 +30,9 @@ namespace smo::network
         struct Config
         {
             uint16_t default_port = 7777; // fallback when remote string lacks :port
-            std::string server_cert_blob;   // empty ⇒ plain (legacy) path
-            std::string server_signing_key; // PQ path only
-            std::string root_public_key;    // PQ path only
+            smo::Bytes server_cert_blob;   // empty ⇒ plain (legacy) path
+            smo::Bytes server_signing_key; // PQ path only
+            smo::Bytes root_public_key;    // PQ path only
             std::string mesh_id;            // PQ path only
         };
 

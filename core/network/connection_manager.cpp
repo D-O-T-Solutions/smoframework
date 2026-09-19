@@ -1,6 +1,8 @@
 #include <core/network/connection_manager.hpp>
 
-#include <core/log/log.hpp> // smo::LOG
+#include <core/runtime/structured_logger.hpp>
+
+namespace { auto& LOG = smo::runtime::global_logger(); }
 
 #include <chrono>
 #include <cstdint>
@@ -24,7 +26,7 @@ namespace smo::network
     //      hooks rather than through this class's members.
     // =========================================================================
     ConnectionManager::ConnectionManager(Config config, AcceptFn accept,
-                                         PlainHook on_plain, SecureHook on_secure)
+                                         Hook on_plain, Hook on_secure)
         : config_(std::move(config)),
           accept_(std::move(accept)),
           on_plain_(std::move(on_plain)),
@@ -32,12 +34,7 @@ namespace smo::network
     {
     }
 
-    ConnectionManager::ConnectionManager(ConnectionManager&&) noexcept = default;
-    ConnectionManager& ConnectionManager::operator=(ConnectionManager&&) noexcept = default;
 
-    ConnectionManager::ConnectionManager(ConnectionManager&&) noexcept; // deferred default
-    // note: out-of-line default of both move members above is intentional —
-    // the hooks are std::function, so moving is safe and cheap.
 
     // One non-blocking accept attempt. Returns true if a session was accepted
     // (and handed to the plain or secure hook); false if nothing was waiting
