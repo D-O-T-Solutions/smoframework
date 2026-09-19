@@ -905,8 +905,24 @@ int main(int argc, char* argv[])
     std::string mesh_id_str = "";
     if (!mesh_dir.empty())
     {
-        // Extract mesh_id from mesh directory name
-        mesh_id_str = std::filesystem::path(mesh_dir).filename().string();
+        // Read canonical mesh_id from mesh.json (not the directory basename)
+        std::string mesh_json_path = mesh_dir + "/mesh.json";
+        std::ifstream mfd(mesh_json_path);
+        if (mfd)
+        {
+            std::string mjs((std::istreambuf_iterator<char>(mfd)), std::istreambuf_iterator<char>());
+            auto mp = mjs.find("\"mesh_id\"");
+            if (mp != std::string::npos)
+            {
+                auto mc = mjs.find(':', mp);
+                auto ms = mc != std::string::npos ? mjs.find('"', mc + 1) : std::string::npos;
+                auto me = ms != std::string::npos ? mjs.find('"', ms + 1) : std::string::npos;
+                if (ms != std::string::npos && me != std::string::npos)
+                    mesh_id_str = mjs.substr(ms + 1, me - ms - 1);
+            }
+        }
+        if (mesh_id_str.empty())
+            mesh_id_str = std::filesystem::path(mesh_dir).filename().string();
     }
     smo::Bytes mesh_id_bytes(mesh_id_str.begin(), mesh_id_str.end());
 
@@ -1156,6 +1172,10 @@ int main(int argc, char* argv[])
                 // 2. PQ handshake (client) — authority requires it when certed
                 smo::SecureSession::Config sec_cfg;
                 sec_cfg.role = smo::SecureSession::Role::Client;
+                sec_cfg.client_cert = server_cert_blob;
+                sec_cfg.client_signing_secret_key = server_signing_key;
+                sec_cfg.root_public_key = root_public_key;
+                sec_cfg.mesh_id = mesh_id_str;
                 smo::SecureSession sec(fd, sec_cfg, *crypto);
                 auto hs = sec.handshake();
                 if (!hs)
@@ -1645,9 +1665,9 @@ int main(int argc, char* argv[])
 
     // ── PacketDispatcher setup ─────────────────────────────────
     // Helper lambda: session → middleware → bridge → execute → send response
-    auto runtime_handler = [&](smo::Packet&& pkt, const smo::hl::Endpoint& remote,
-                               smo::hl::Transport& t) -> smo::Result<void> {
-        std::string remote_str = remote.address + ":" + std::to_string(remote.port);
+    auto runtime_handler = [&](smo::Packet&& pkt, const smo::Endpoint& remote,
+                               smo::network::hl::Transport& t) -> smo::Result<void> {
+        std::string remote_str = remote.host + ":" + std::to_string(remote.port);
         std::printf("[smo-node] Packet received opcode=0x%x from %s\n", pkt.opcode_id, remote_str.c_str());
 
         // 1. Session lookup (if session_id present)
@@ -1831,15 +1851,11 @@ int main(int argc, char* argv[])
     dispatcher.register_handler(smo::join::kOpcodeBootstrapSyncReq, runtime_handler);
 
     // ── Raw handler: discovery protocol (HelloMsg, PingMsg, etc.) ──
-    dispatcher.register_raw_handler(
-        [&](smo::BytesView raw, smo::TransportSession& session, const smo::hl::Endpoint& remote) -> smo::Result<void> {
-            int64_t now_ns = static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    auto raw_handler = [&](smo::BytesView raw, smo::TransportSession& session, const smo::Endpoint& remote) -> smo::Result<void> {
+        int64_t now_ns = static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
 
-            // Convert hl::Endpoint → smo::Endpoint
-            smo::Endpoint ep;
-            ep.scheme = "tcp";
-            ep.host = remote.address;
-            ep.port = remote.port;
+        // Use remote directly as smo::Endpoint
+        smo::Endpoint ep = remote;
 
             // ── Try join protocol FIRST (raw CBOR) ──
             // Used by `smo mesh join` CLI via auto_enroll.cpp.
@@ -1859,7 +1875,7 @@ int main(int argc, char* argv[])
                 auto join_req = smo::join::JoinRequest::decode_cbor(cbor_data);
                 if (join_req)
                 {
-                    std::printf("[smo-node] Raw handler: JoinRequest from %s\n", remote.address.c_str());
+                    std::printf("[smo-node] Raw handler: JoinRequest from %s\n", remote.host.c_str());
                     auto join_resp = smo::join::process_join_request(join_req.value(), mesh_manager, authority);
                     if (join_resp)
                     {
@@ -1875,7 +1891,7 @@ int main(int argc, char* argv[])
                 auto sync_req = smo::join::BootstrapSyncRequest::decode_cbor(cbor_data);
                 if (sync_req)
                 {
-                    std::printf("[smo-node] Raw handler: BootstrapSyncRequest from %s\n", remote.address.c_str());
+                    std::printf("[smo-node] Raw handler: BootstrapSyncRequest from %s\n", remote.host.c_str());
                     auto sync_resp = smo::join::process_bootstrap_sync(sync_req.value(), mesh_manager, authority, &crl);
                     if (sync_resp)
                     {
@@ -1900,7 +1916,7 @@ int main(int argc, char* argv[])
             auto hello = smo::HelloMsg::deserialize(raw);
             if (hello)
             {
-                std::printf("[smo-node] Raw handler: HelloMsg from %s\n", remote.address.c_str());
+                std::printf("[smo-node] Raw handler: HelloMsg from %s\n", remote.host.c_str());
                 auto handle_res = discovery_engine.handle_hello(hello.value(), ep, now_ns);
                 if (!handle_res)
                 {
@@ -1936,9 +1952,9 @@ int main(int argc, char* argv[])
             return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport, 309, smo::Severity::Warn,
                                              smo::RetryClass::RetrySafe, smo::Recovery::None),
                               "Unknown raw protocol", __FILE__, __LINE__);
-        });
+        };
 
-    // ── EventBus subscriptions (P4: Recovery → Governance → CRL) ────
+    dispatcher.register_raw_handler(raw_handler);
     // RecoveryProposalCreated: emitted by RecoveryContract when a revocation proposal is submitted
     event_bus.subscribe(smo::runtime::EventType::RecoveryProposalCreated, [&](const smo::runtime::Event& ev) {
         std::printf("[smo-node] Event: RecoveryProposalCreated - %s\n", ev.details.c_str());
@@ -2285,16 +2301,16 @@ int main(int argc, char* argv[])
             auto remote_str = tcp_session.value()->remote_endpoint().to_string();
             telemetry.increment_counter("tcp.connections_accepted", "component=main");
 
-            smo::hl::Endpoint remote_ep;
+            smo::Endpoint remote_ep;
             auto colon = remote_str.rfind(':');
             if (colon != std::string::npos)
             {
-                remote_ep.address = remote_str.substr(0, colon);
+                remote_ep.host = remote_str.substr(0, colon);
                 remote_ep.port = static_cast<uint16_t>(std::strtoul(remote_str.substr(colon + 1).c_str(), nullptr, 10));
             }
             else
             {
-                remote_ep.address = remote_str;
+                remote_ep.host = remote_str;
                 remote_ep.port = 7777;
             }
 

@@ -166,3 +166,254 @@ G3 Packet Auth (P0–P8) is **frozen** — 25/25 ctest + 24/24 PCT pass. No chan
 - `packet_route`
 
 **Next discussion after this:** DISCUSSION_0045 3-Node Deployment Verification (with this A↔B working as prerequisite).
+
+---
+
+## 8. ROOT CAUSE (2026-09-18) — Connection-protocol demux missing
+
+The failure was **NOT** in the PQ handshake or G3. It is a **protocol mismatch on TCP :7777**.
+
+### Evidence
+- Client join (`core/enroll/auto_enroll.cpp:417-475`): version handshake → `write_field(fd, req_cbor)`
+  → sends a **plain CBOR `JoinRequest`** (no length prefix beyond u16) with **NO PQ handshake**.
+  This was intentional as of commit `593c27c` (v0.0.7): "write_field/read_field public for join-domain".
+- Server (`cmd/smo-node/main.cpp:2338`): if `server_cert_blob` non-empty → `SecureSession::server_handshake()`
+  (mutual-auth PQ) then `dispatch_packet_session()`.
+- A freshly joining node has **no certificate** (only keypair + CSR), so it cannot do mutual-auth PQ.
+- Server reads the ~18,654-byte CBOR `JoinRequest` as the **PQ client KEM public key**, then blocks
+  waiting for a client cert that never arrives → client read times out → closes →
+  server logs `connection closed during secure read`.
+- Even if PQ succeeded, `dispatch_packet_session()` only accepts a valid G3 `Packet` and **cannot**
+  route `JoinRequest` to the raw handler; only `dispatch_session()` falls through to `raw_handler_`
+  (`core/network/packet_dispatcher.cpp:264`).
+- No discriminator exists: `version_handshake_client/server` only exchanged a single `uint32` version.
+
+### Architecture intent
+```
+TCP :7777
+  ├── JOIN / ENROLL : version + type=JOIN → plain CBOR JoinRequest
+  │                    → dispatch_session() → raw_handler
+  └── DATA          : version + type=DATA → PQ SecureSession
+                       → G3 packet → dispatch_packet_session()
+```
+
+### Fix (chosen: Option 1 — connection type in version handshake)
+1. Add `ConnectionType { Data=0, Join=1 }` to `core/transport/framing.hpp`.
+2. Version handshake exchanges `[version:4][type:1]` both directions.
+3. `auto_enroll.cpp` join path sends `ConnectionType::Join`.
+4. `smo-node` accept loop: `JOIN` → skip PQ → `dispatch_session()` (raw JoinRequest);
+   `DATA` → PQ handshake → `dispatch_packet_session()`.
+5. No changes to frozen G3 components (`packet_crypto`, `ReplayWindow`, `PacketDispatcher` G3 path).
+
+### Note on Option 2 (rejected)
+One-way PQ for enrollment was rejected: the join node has no cert, forcing it into PQ mutual-auth
+is the wrong abstraction, and `dispatch_packet_session()` cannot carry a raw `JoinRequest`.
+
+## 9. Following the demux: enrollment/bootstrap bugs + `ConnectionType::Sync` (2026-09-18)
+
+After the demux fix, A↔B reached progressively deeper and exposed three independent bugs plus one
+architectural gap. **G3 (P0–P8) is frozen and MUST NOT be touched** — this section is about the
+bootstrap/enrollment flow of DISCUSSION_0045, not G3.
+
+### 9.1 Bug: `mesh.json` `root_public_key` truncated → `Join Token signature mismatch`
+- Symptom: server rejected the token with `Join Token signature mismatch` even for a freshly issued token.
+- Root cause: `~/.smo/meshes/testmesh/mesh.json` stored a **corrupted/truncated** `root_public_key`
+  (2111 hex chars, odd) while `recovery.pkg` held the correct 3904 hex chars (1952-byte ML-DSA-65 key).
+  `MeshAuthority::open()` reads `mesh.json` because there is no `root.cert` (`core/authority/authority.cpp:185-228`).
+- The issuer fingerprint check only compares the **leading 16 hex** (8 bytes), so the truncated key
+  passed the fingerprint gate but failed actual signature verification.
+- Fix applied (data repair, not code): set `mesh.json` `root_public_key` = `recovery.pkg`
+  `root_public_key` (3904 hex). Backup kept at `mesh.json.bak`.
+- TODO (hardening): `MeshAuthority::open()` should reject a `root_public_key` whose length does not
+  match the suite's public-key size, instead of silently using a truncated key.
+
+### 9.2 Bug: bootstrap-sync client omitted cert + signing key → `ML-DSA: invalid secret key size`
+- After a successful join, Node B requests bootstrap sync (`core/enroll/auto_enroll.cpp:612-735`).
+- The bootstrap-sync client built `SecureSession::Config` **without** `client_cert` /
+  `client_signing_secret_key`, so `client_handshake()` signed the ClientHello with an empty key and
+  the ML-DSA provider threw `std::runtime_error("ML-DSA: invalid secret key size")`, aborting Node B.
+- Fix applied: load `actual_data_dir + "/cert.smoc"` and `identity->secret_key()` into the config
+  (mirrors `cmd/smo-node/main.cpp` and `cmd/smo-cli/cli_context.cpp`).
+- TODO (hardening): `SecureSession` must return an error instead of throwing for invalid key sizes,
+  and `Config` validation should reject empty mutual-auth material for `Role::Client`.
+
+### 9.3 Bug: certificate `mesh_id` hex-decoded a human name → `Certificate mesh_id mismatch`
+- `MeshAuthority::issue_certificate()` stored `cert.mesh_id = hex_to_bytes(mesh_id)`, but `mesh_id`
+  is a **human name** (`"testmesh"`), not hex. `hex_to_bytes` produced garbage bytes, while
+  `SecureSession::verify_peer_certificate()` compares the raw bytes as a plain string to
+  `config_.mesh_id` (`core/transport/secure_session.cpp:647-654`) → mismatch.
+- Fix applied: store the raw name bytes (`cert.mesh_id.assign(mesh_id.begin(), mesh_id.end())`) at all
+  three sites in `core/authority/authority.cpp` (issued cert + root cert + authority cert).
+- Certificates issued before this fix carry the garbage mesh_id and must be re-issued.
+
+### 9.4 Architectural gap: bootstrap sync vs. G3 DATA on the same connection type
+- After mutual-auth PQ succeeded, the server routed the DATA connection to
+  `dispatch_packet_session()`, which requires a valid G3 `Packet`. But the bootstrap-sync client sends
+  **raw application CBOR** (`sec.send(req_cbor)`) inside the `SecureSession`, producing
+  `Failed to parse packet: unsupported packet version`.
+- `BootstrapSyncRequest` is an **application-level** CBOR message carried inside `SecureSession`,
+  not a G3 DATA packet. Therefore `ConnectionType::Data` is the wrong path for it.
+
+### Fix (approved): add `ConnectionType::Sync`
+Decision: keep G3 frozen; introduce a dedicated connection type for raw-CBOR-over-SecureSession.
+
+```
+accept TCP
+  ├── Join ──→ plain CBOR → dispatch_session()/raw_handler
+  ├── Sync ──→ PQ handshake → SecureSession → raw CBOR BootstrapSync
+  │              └── dispatch_session()/raw_handler
+  └── Data ──→ PQ handshake → G3 packet → dispatch_packet_session()
+```
+
+Implementation:
+1. `core/transport/framing.hpp`: `ConnectionType { Data=0, Join=1, Sync=2 }`.
+2. `core/transport/framing.cpp`: map the echoed byte to `Sync` explicitly.
+3. `core/enroll/auto_enroll.cpp`: bootstrap-sync client uses `version_handshake_client(fd, ConnectionType::Sync)`.
+4. `cmd/smo-node/main.cpp`: a `SecureTransportSession` adapter exposes a post-handshake
+   `SecureSession` as a `TransportSession` (raw `send`/`recv`), so `Sync` connections can reuse
+   `dispatch_session()`/`raw_handler` without copying protocol logic or touching G3.
+5. `Data` continues to use `dispatch_packet_session()` unchanged.
+
+### Order of operations (per review)
+1. Do not modify `packet_crypto`, `ReplayWindow`, or the G3 path.
+2. Add `ConnectionType`.
+3. Route `Join`, `Sync`, `Data` by type.
+4. Re-run 25/25 ctest, 24/24 PCT, then NodeA+NodeB local, then NodeC to exercise bootstrap sync.
+5. No VPN yet — three nodes on `127.0.0.1:7777/7778/7779` is the correct first deployment check.
+
+### Clarification
+P8 ended **G3**, not the whole SMO effort. The remaining work is completing the
+DISCUSSION_0045 bootstrap/enrollment flow.
+
+### 9.5 Bug: manifest signature domain mismatch → `manifest delta signature verification failed`
+- After `ConnectionType::Sync` was wired, the bootstrap-sync request reached the server and the
+  response decoded: `OK (mf=1 mem=1 crl=1 pol=1 seeds=1)`. But the client then failed with
+  `Error: manifest delta signature verification failed`.
+- **Root cause:** signer/verifier used different byte domains.
+  - Server (`core/join/join_protocol.cpp`, `process_bootstrap_sync`) signed the CBOR envelope
+    payload `{1: manifest_data, 2: bstr(""), 3: epoch}` (placeholder signature).
+  - Client (`core/enroll/auto_enroll.cpp`, ~l.766) verified `manifest_data || epoch_be64`.
+- **Fix:** align to the documented contract (DISCUSSION_0046 Q6: `canonical(data || epoch || prev_hash)`;
+  `prev_hash` still pending). Server now signs `manifest_data || epoch_be64`; the envelope still
+  carries `{1:data, 2:sig, 3:epoch}`. Client unchanged.
+- Result: `manifest: signature VALID (epoch=1)`, `membership delta: 4198 nodes`, then
+  `Successfully enrolled!` with `Bootstrap: 1 seed(s)`.
+
+### 9.6 Operational: stale `smo-node` broke successive test runs
+- Symptom: server log `Failed to listen TCP: TCP bind failed`, large runs of NUL bytes in
+  `/tmp/nodeA_debug.log`, and Node A `shutting down` ~5 s after start (as Node B launched).
+- Cause: a `smo-node` from a previous run still held `:7777`; the new A failed to bind while the
+  stale A (old binary) served the join and then exited. Two writers to the same log produced the
+  NUL holes.
+- Fix (test harness only): `test_local_ab.sh` now runs `pkill -x smo-node` + `sleep 1` before
+  starting, so every run is clean. Use `pkill -x` (process name) to avoid matching the invoking
+  shell's own command line.
+
+### 9.7 Bug: daemon ignores SIGTERM → stale process holds the port (correcting 9.6)
+- `pkill -x smo-node` (SIGTERM) does **not** terminate the node: the signal handler only sets
+  `g_running=false`, but the main loop keeps blocking, so the process survives and keeps its
+  listening socket. The next run's server then fails to bind:
+  `Failed to listen TCP: TCP bind failed`.
+- This was the real cause behind 9.6 (not just "a stale process"); the new A then `return 1`s,
+  while the *old* A finally notices the flag and `shutting down` a few seconds later — exactly
+  when the joining node needs it, so the join/sync `read failed during version handshake`.
+- Harness workaround: `test_local_ab.sh` / `test_local_abc.sh` use `pkill -9 -x smo-node`
+  (`-x` = exact process name; never matches the invoking shell).
+- **Product TODO:** make shutdown prompt — wake/stop the accept loop (self-pipe / non-blocking
+  accept with timeout) so SIGTERM is honored. Also affects `smo-node` restart ergonomics.
+
+### 9.8 Bug: certificate filename mismatch → `no certificate ..., PQ handshake disabled`
+- Enrollment (`core/enroll/auto_enroll.cpp`) wrote the issued cert to `<data>/cert.smoc`.
+- The daemon and CLI read `<data>/node.cert.smoc` (`cmd/smo-node/main.cpp` x3,
+  `cmd/smo-cli/cli_context.cpp`). Starting an enrolled node therefore logged
+  `Warning: no certificate at .../node.cert.smoc, PQ handshake disabled` and refused mutual auth.
+- Fix: `auto_enroll.cpp` now saves/reads `<data>/node.cert.smoc` (canonical, matches daemon).
+  Success message also prints the corrected path.
+
+### 9.9 Known minor issues (not blocking)
+- Registry gains a stray node row with empty `display_name` on each enroll
+  (`nodes`: `nodea, nodeb, nodec, ''`). Likely `enroll_node` inserting the CSR's empty name;
+  should be deduped/constrained.
+- `process_bootstrap_sync` prints `membership delta: %zu nodes` but passes a **byte** count
+  (`4198`), which reads as 4198 nodes. Cosmetic.
+
+### 9.10 Status: Phase 2 (Node C) passes
+- `test_local_abc.sh`: A (`:7777`, authority) + B (`:7778`, enrolled member) + C (`:7779`, fresh
+  join). C completes PQ handshake, certificate verify, bootstrap sync
+  (`manifest: signature VALID (epoch=1)`), and `Successfully enrolled!`; A registers
+  `nodec` active. A/B/C all reach `Node state: ACTIVE` / `entering main loop`.
+- Registry after run: `nodea`, `nodeb`, `nodec`, `''` all active.
+- `25/25 ctest` and `24/24 PCT` pass after all fixes (9.5, 9.8).
+- Remaining: remove `[DEBUG]` instrumentation; fix 9.7 (shutdown) and 9.9.
+
+### 9.11 Cleanup: `[DEBUG]` instrumentation removed (2026-09-18)
+- Removed all debug `fprintf(stderr, "[DEBUG] ...")` from `core/transport/framing.cpp`,
+  `core/transport/secure_session.cpp` (`client_handshake`/`server_handshake`),
+  `cmd/smo-node/main.cpp`, `cmd/smo-cli/cli_context.cpp`, and
+  `core/enroll/join_token.cpp` (`calculate_payload_len` traces).
+- `reference/OLD_SHELLMAP/**` left untouched (not built).
+- Rebuild clean; `25/25 ctest` and `24/24 PCT` pass.
+- Re-ran `test_local_abc.sh` (B already enrolled + fresh C): A/B `ACTIVE`, C
+  `Successfully enrolled!` with `manifest: signature VALID (epoch=1)`, registry
+  `nodea/nodeb/nodec` active, zero `[DEBUG]` lines in logs, no bind/shutdown errors.
+- Baseline is clean; next hygiene items are 9.7 (prompt shutdown) and 9.9
+  (`display_name=''` row, membership printf).
+
+### 9.12 Gossip/heartbeat diagnosis — 3-node runtime (2026-09-18)
+- `smo-cli`/`smo-admin` `✓`/`✗` glyphs replaced with `[~]` (pass) / `[!]` (error).
+- Added typed TCP connect: `Transport::connect(ep, ConnectionType)` +
+  `TcpTransport` override (defaults to `Data`); the daemon `--seed` bootstrap now
+  connects with `ConnectionType::Sync` so the seed routes it to the raw handler
+  (`cmd/smo-node/main.cpp:~1161`).
+- Verified with `smo-node --daemon --seed 127.0.0.1:7777`:
+  - A (seed) logs `Raw handler: HelloMsg` for B and C; B/C log
+    `Seed responded: NodeA (tcp://127.0.0.1:7777)` + `Bootstrap complete. Peers: 1`.
+  - B/C peer.db each contain `NodeA` (state=Online). A's peer.db stays empty.
+- Root cause of "no peer/gossip/heartbeat progress": the runtime loop is
+  architecturally incomplete:
+  1. **Main loop blocks on TCP `accept()`** (`cmd/smo-node/main.cpp:2321`) — all
+     periodic work (`sync_service.tick`, discovery/heartbeat `tick`, 5 s telemetry,
+     30 s `peer_store.sync_from_membership`, UDP datagram dispatch) only runs while
+     a new TCP connection is being accepted. Idle nodes do nothing.
+  2. **`gossip_engine.start()` never called** (only `stop()` at cleanup).
+  3. **No `sync_service.on_delta("membership", …)`** — membership changes are
+     never queued/broadcast via gossip (only crl/policy/manifest registered).
+  4. **HelloMsg carries no endpoint** (`node_id`+fingerprint+version only) — the
+     seed records the joiner at its ephemeral outbound TCP port, so it cannot be
+     reached for heartbeat; real endpoints (7778/7779) never propagate.
+  5. **Heartbeat PING/PONG UDP path is broken**: pongs reply to the pinger's
+     ephemeral connect socket (no reader), and `handle_pong` matches membership by
+     endpoint, which never equals the ephemeral source UDP port — so pongs never
+     count, and liveness timeout would never resolve.
+- Concrete next step: repair 5.1 + 5.3 + 5.2 (poll-based main loop, membership
+  delta wiring, gossip start) and 5.4 (advertise endpoint in HelloMsg), then fix
+  the heartbeat UDP round-trip (5.5). Kill/restart liveness test afterwards:
+  A/B/C ACTIVE → kill one → peers mark offline → restart → reappears.
+
+### 9.13 Phase 1-2: main loop + gossip enable (2026-09-18)
+- **Phase 1 — main loop no longer starves.** Replaced the blocking
+  `lstnr->accept()` with `poll(...,250ms)` + accept-on-POLLIN
+  (`cmd/smo-node/main.cpp:2321`); added `TransportListener::fd()` (virtual, -1
+  for non-fd) + `TcpListener::fd()` override. Now the per-iteration work always
+  runs while idle: `sync_service.tick`, 5 s discovery/heartbeat tick, 30 s
+  `peer_store.sync_from_membership`, UDP datagram dispatch, telemetry export.
+  Verified: all 3 daemons log `node DEGRADED — heartbeat=yes ... uptime=31s`
+  (readiness check now fires), `metrics.prom` mtime fresh, A's peer.db gains B/C
+  and heartbeat marks them `Offline (state=3)` after 3 missed pings.
+- **Phase 2 — gossip engine started**: `gossip_engine.start()` after
+  `sync_service.start()`; B/C report `gossip_tx=yes` at the 30 s readiness check.
+
+### 9.14 Phase 3 — gossip transport works (2026-09-18)
+- Gossip sender (`core/discovery/gossip.cpp::send_gossip_to_peer`) now does a
+  version handshake as `ConnectionType::Join` and delivers its GOSP frame via
+  `write_field` (2-byte length prefix). The receiver already routed GOSP through
+  `PacketDispatcher::dispatch_session` (`packet_dispatcher.cpp:223-235`), so the
+  frame now reaches `GossipEngine::apply_gossip`.
+- `DiscoveryEngine::set_membership_sync()` + emit `PeerAdded` events from
+  `handle_hello`/`handle_welcome` so discovered peers enter the gossip event log
+  (`core/discovery/discovery.cpp`).
+- Verified (25/25 ctest, 24/24 PCT): A logs `node READY — 3 peer(s),
+  gossip tx=3 rx=2`; B and C deliver gossip to A (`gossip_tx=yes`), A receives
+  and applies 2 frames (Membership events re-emitted). A→B/C fan-out still dead
+  this phase because A only holds B/C at their ephemeral source ports — endpoint
+  advertisement is Phase 4.

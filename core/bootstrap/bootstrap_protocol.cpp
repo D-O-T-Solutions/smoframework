@@ -23,6 +23,8 @@ namespace smo::bootstrap {
         constexpr uint64_t K_RESP_SNAPSHOT = 3;
     } // namespace
 
+namespace hl = smo::network::hl;
+
     // ── BootstrapRequest ──────────────────────────────────────────────────
 
     Bytes BootstrapRequest::encode_cbor() const
@@ -318,7 +320,7 @@ namespace smo::bootstrap {
                                     recovery::CRL* crl, hl::Transport* transport)
     {
         dispatcher.register_handler(kOpcodeBootstrapRequest,
-                                    [&mesh_mgr, &authority, governance, crl](Packet&& pkt, const hl::Endpoint& remote,
+                                    [&mesh_mgr, &authority, governance, crl](Packet&& pkt, const smo::Endpoint& remote,
                                                                              hl::Transport& t) -> Result<void> {
                                         (void)remote;
                                         auto req = BootstrapRequest::decode_cbor(pkt.payload);
@@ -341,7 +343,7 @@ namespace smo::bootstrap {
                                         resp_pkt.header.nonce = pkt.header.nonce;
                                         resp_pkt.payload = std::move(resp_bytes);
 
-                                        std::error_code ec = t.send(std::move(resp_pkt), remote);
+                                        std::error_code ec = t.send(std::move(resp_pkt), static_cast<const hl::Endpoint&>(remote));
                                         if (ec)
                                         {
                                             return SMO_ERR_TRANSPORT(static_cast<int>(ec.value()), Error, RetrySafe,

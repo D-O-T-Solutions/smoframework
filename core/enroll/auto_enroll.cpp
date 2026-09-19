@@ -414,7 +414,7 @@ namespace smo {
                     }
 
                     // ── Version handshake (must precede join request) ──
-                    auto ver_result = smo::version_handshake_client(fd);
+                    auto ver_result = smo::version_handshake_client(fd, smo::ConnectionType::Join);
                     if (!ver_result)
                     {
                         std::printf("FAIL (version handshake: %s)\n", ver_result.error().message.c_str());
@@ -519,7 +519,7 @@ namespace smo {
                 const auto& cert = cert_result.value();
 
                 // Save certificate
-                std::string cert_path = actual_data_dir + "/cert.smoc";
+                std::string cert_path = actual_data_dir + "/node.cert.smoc";
                 {
                     std::ofstream f(cert_path, std::ios::binary);
                     if (!f)
@@ -656,8 +656,8 @@ namespace smo {
                         continue;
                     }
 
-                    // ── Version handshake (must precede PQ SecureSession) ──
-                    auto ver_result = smo::version_handshake_client(fd);
+                    // ── Version handshake (Sync: PQ + raw app-CBOR, not G3) ──
+                    auto ver_result = smo::version_handshake_client(fd, smo::ConnectionType::Sync);
                     if (!ver_result)
                     {
                         std::printf("FAIL (version handshake: %s)\n", ver_result.error().message.c_str());
@@ -666,9 +666,17 @@ namespace smo {
                         continue;
                     }
 
-                    // ── PQ handshake ──────────────────────────────────────
+                    // ── PQ handshake (mutual auth: present node cert + key) ──
                     SecureSession::Config sec_cfg;
                     sec_cfg.role = SecureSession::Role::Client;
+                    sec_cfg.client_signing_secret_key =
+                        Bytes(identity->secret_key().begin(), identity->secret_key().end());
+                    {
+                        std::ifstream cf(actual_data_dir + "/node.cert.smoc", std::ios::binary);
+                        if (cf)
+                            sec_cfg.client_cert.assign(std::istreambuf_iterator<char>(cf),
+                                                       std::istreambuf_iterator<char>());
+                    }
                     SecureSession sec(fd, sec_cfg, *crypto);
                     auto hs = sec.handshake();
                     if (!hs)
@@ -884,7 +892,7 @@ else
             {
                 std::string node_id_str = resp.mesh_id.empty() ? token.mesh_id : resp.mesh_id;
 
-                std::printf("\n✓ Successfully enrolled!\n");
+                std::printf("\n[~] Successfully enrolled!\n");
                 std::printf("  Mesh:         %s\n", token.mesh_id.c_str());
                 std::printf("  Role:         %s\n", token.admission.role.c_str());
                 std::printf("  Profile:      %s\n",

@@ -145,6 +145,21 @@ static std::string json_read_string(const std::string& json, const std::string& 
     return json.substr(start + 1, end - start - 1);
 }
 
+// Read the canonical mesh_id from mesh.json (fallback: directory basename)
+static std::string read_mesh_id(const std::string& mesh_dir)
+{
+    std::string json_path = mesh_dir + "/mesh.json";
+    std::ifstream f(json_path);
+    if (f)
+    {
+        std::string json((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        std::string mesh_id = json_read_string(json, "mesh_id");
+        if (!mesh_id.empty())
+            return mesh_id;
+    }
+    return fs::path(mesh_dir).filename().string();
+}
+
 // Read integer field from JSON
 static int64_t json_read_int(const std::string& json, const std::string& key, int64_t def)
 {
@@ -397,7 +412,7 @@ static int cmd_sign(const std::vector<std::string>& args, const std::string& mes
     }
 
     smo::authority::MeshAuthority::Config cfg;
-    cfg.mesh_id = fs::path(mesh_dir).filename().string();
+    cfg.mesh_id = read_mesh_id(mesh_dir);
     cfg.data_dir = mesh_dir;
     cfg.registry_path = mesh_dir + "/node_registry.db";
 
@@ -911,18 +926,18 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
     bool port_free = smo::net::check_port_available(listen_addr.substr(0, listen_addr.find(':')), port, ec);
     if (port_free)
     {
-        std::printf("  ✓ Port %u is available\n", port);
+        std::printf("  [~] Port %u is available\n", port);
     }
     else
     {
         std::string who = smo::net::who_is_on_port(port);
         if (who.empty())
         {
-            std::fprintf(stderr, "  ✗ Port %u in use\n", port);
+            std::fprintf(stderr, "  [!] Port %u in use\n", port);
         }
         else
         {
-            std::fprintf(stderr, "  ✗ Port %u in use by %s\n", port, who.c_str());
+            std::fprintf(stderr, "  [!] Port %u in use by %s\n", port, who.c_str());
         }
         // Don't exit - just warn
     }
@@ -981,7 +996,7 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
         std::string resolved = smo::net::resolve_hostname(manual_dns, dns_ec);
         if (dns_ec)
         {
-            std::fprintf(stderr, "  ✗ Failed to resolve %s: %s\n", manual_dns.c_str(), dns_ec.message().c_str());
+            std::fprintf(stderr, "  [!] Failed to resolve %s: %s\n", manual_dns.c_str(), dns_ec.message().c_str());
             return 1;
         }
         std::string endpoint = resolved + ":" + std::to_string(port);
@@ -1009,7 +1024,7 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
         {
             std::string endpoint = public_ip + ":" + std::to_string(port);
             advertise_addresses.push_back(endpoint);
-            std::printf("  ✓ Public IP detected: %s\n", public_ip.c_str());
+            std::printf("  [~] Public IP detected: %s\n", public_ip.c_str());
         }
         else
         {
@@ -1021,7 +1036,7 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
         {
             std::string endpoint = iface.address + ":" + std::to_string(port);
             advertise_addresses.push_back(endpoint);
-            std::printf("  ✓ Private IP: %s\n", endpoint.c_str());
+            std::printf("  [~] Private IP: %s\n", endpoint.c_str());
         }
 
         if (advertise_addresses.empty())
@@ -1055,7 +1070,7 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
         }
         else
         {
-            std::printf("  ✓ No NAT detected (direct connectivity)\n");
+            std::printf("  [~] No NAT detected (direct connectivity)\n");
         }
     }
 
@@ -1167,7 +1182,7 @@ static int cmd_mesh_publish(const std::vector<std::string>& args, const std::str
         mf << "]\n";
         mf << "}\n";
 
-        std::printf("\n✓ Mesh '%s' is now online.\n",
+        std::printf("\n[~] Mesh '%s' is now online.\n",
                     config.display_name.empty() ? config.mesh_id.c_str() : config.display_name.c_str());
         return 0;
     }

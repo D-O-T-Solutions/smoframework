@@ -11,6 +11,7 @@ namespace smo {
     {
     public:
         TcpSession(int fd, Endpoint remote);
+        TcpSession(int fd, Endpoint remote, ConnectionType conn_type);
         ~TcpSession() noexcept override;
 
         TcpSession(const TcpSession&) = delete;
@@ -30,9 +31,12 @@ namespace smo {
             return f;
         }
 
+        ConnectionType connection_type() const { return conn_type_; }
+
     private:
         int fd_;
         Endpoint remote_;
+        ConnectionType conn_type_;
         bool open_;
     };
 
@@ -67,6 +71,7 @@ namespace smo {
 
         Result<ListenerPtr> listen(const Endpoint& ep) override;
         Result<SessionPtr> connect(const Endpoint& ep) override;
+        Result<SessionPtr> connect(const Endpoint& ep, ConnectionType conn_type);
     };
 
 } // namespace smo

@@ -34,10 +34,24 @@ namespace smo {
     // Version handshake constants
     inline constexpr uint32_t kTransportVersion = 1;
 
+    // Connection purpose negotiated during the version handshake.
+    //   Join = enrollment (plain CBOR JoinRequest, no certificate yet)
+    //   Sync = authenticated PQ SecureSession + raw application CBOR
+    //          (e.g. BootstrapSyncRequest); NOT G3 packets
+    //   Data = authenticated PQ SecureSession + G3 packets
+    enum class ConnectionType : uint8_t
+    {
+        Data = 0,
+        Join = 1,
+        Sync = 2,
+    };
+
     // Perform a version handshake on an already-connected socket fd.
+    // Wire: [version:4][connection_type:1] both directions.
+    // Client declares the type; server reports the received type via out_type.
     // Returns the negotiated version on success.
-    Result<uint32_t> version_handshake_client(int fd);
-    Result<uint32_t> version_handshake_server(int fd);
+    Result<uint32_t> version_handshake_client(int fd, ConnectionType type = ConnectionType::Data);
+    Result<uint32_t> version_handshake_server(int fd, ConnectionType* out_type = nullptr);
 
     // Length-prefixed field framing over a raw socket (u16 BE length + payload).
     // Used by the join domain to send JoinRequest/JoinResponse CBOR before a

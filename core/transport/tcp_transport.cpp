@@ -86,7 +86,10 @@ namespace smo {
 
     // ── TcpSession ──────────────────────────────────────────────────────────
 
-    TcpSession::TcpSession(int fd, Endpoint remote) : fd_(fd), remote_(std::move(remote)), open_(true) {}
+    TcpSession::TcpSession(int fd, Endpoint remote) : fd_(fd), remote_(std::move(remote)), open_(true), conn_type_(ConnectionType::Data) {}
+
+TcpSession::TcpSession(int fd, Endpoint remote, ConnectionType conn_type)
+    : fd_(fd), remote_(std::move(remote)), open_(true), conn_type_(conn_type) {}
 
     TcpSession::~TcpSession() noexcept
     {
@@ -397,6 +400,68 @@ namespace smo {
 
         Endpoint remote = ep;
         return std::unique_ptr<TransportSession>(new TcpSession(fd, std::move(remote)));
+    }
+
+    Result<SessionPtr> TcpTransport::connect(const Endpoint& ep, ConnectionType conn_type)
+    {
+        int fd;
+        SMO_TRY_VAL(fd, create_tcp_socket());
+
+        auto addr = resolve_endpoint(ep);
+        if (!addr)
+        {
+            ::close(fd);
+            return std::move(addr.error());
+        }
+
+        // Non-blocking connect with timeout
+        int flags = fcntl(fd, F_GETFL, 0);
+        fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+        int rc = ::connect(fd, (struct sockaddr*)&addr.value(), sizeof(addr.value()));
+        if (rc < 0 && errno != EINPROGRESS)
+        {
+            int ec = socket_error_to_code();
+            ::close(fd);
+            return SMO_ERR_TRANSPORT(ec, Error, NoRetry, Reconnect, "TCP connect failed");
+        }
+
+        if (rc < 0)
+        {
+            // Wait for connection with poll
+            struct pollfd pfd;
+            pfd.fd = fd;
+            pfd.events = POLLOUT;
+            int prc = ::poll(&pfd, 1, 2000); // 2s timeout
+            if (prc <= 0)
+            {
+                ::close(fd);
+                return SMO_ERR_TRANSPORT(301, Error, RetryBackoff, Reconnect, "TCP connect timed out");
+            }
+            // Check for socket error
+            int so_error = 0;
+            socklen_t errlen = sizeof(so_error);
+            getsockopt(fd, SOL_SOCKET, SO_ERROR, &so_error, &errlen);
+            if (so_error != 0)
+            {
+                ::close(fd);
+                return SMO_ERR_TRANSPORT(300, Error, RetryBackoff, Reconnect, "TCP connection refused");
+            }
+        }
+
+        // Restore blocking mode
+        fcntl(fd, F_SETFL, flags);
+
+        // Version handshake with connection type
+        auto ver = version_handshake_client(fd, conn_type);
+        if (!ver)
+        {
+            ::close(fd);
+            return std::move(ver.error());
+        }
+
+        Endpoint remote = ep;
+        return std::unique_ptr<TransportSession>(new TcpSession(fd, std::move(remote), conn_type));
     }
 
 } // namespace smo

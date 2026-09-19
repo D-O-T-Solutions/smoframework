@@ -2,6 +2,7 @@
 
 #include "../errors/error.hpp"
 #include "../types.hpp"
+#include "framing.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -140,6 +141,9 @@ namespace smo {
 
         // Connect to a remote endpoint. Returns a Session.
         virtual Result<SessionPtr> connect(const Endpoint& ep) = 0;
+        virtual Result<SessionPtr> connect(const Endpoint& ep, ConnectionType conn_type) {
+            return connect(ep);
+        }
     };
 
     // ---------------------------------------------------------------------------

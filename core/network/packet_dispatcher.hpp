@@ -20,6 +20,23 @@ namespace smo {
 
 namespace smo::network {
 
+    // High-level transport interface for packet dispatch
+    namespace hl {
+        using Endpoint = smo::Endpoint;
+
+        using PacketHandler = std::function<void(Packet&&)>;
+        using ErrorHandler = std::function<void(std::error_code)>;
+
+        class Transport {
+        public:
+            virtual ~Transport() = default;
+            virtual std::error_code listen(const Endpoint&, PacketHandler, ErrorHandler) = 0;
+            virtual std::error_code connect(const Endpoint&) = 0;
+            virtual std::error_code send(Packet&&, const smo::Endpoint&) = 0;
+            virtual void close() noexcept = 0;
+        };
+    }
+
     // Gossip frame magic: "GOSP" (big-endian uint32) — marks raw gossip payloads
     inline constexpr uint32_t kGossipFrameMagic = 0x474F5350;
 
@@ -39,9 +56,9 @@ namespace smo::network {
     class PacketDispatcher
     {
     public:
-        using HandlerFunc = std::function<Result<void>(Packet&&, const hl::Endpoint&, hl::Transport&)>;
+        using HandlerFunc = std::function<Result<void>(Packet&&, const smo::Endpoint&, hl::Transport&)>;
         // RawHandler receives raw unframed bytes for protocols that don't use the Packet format
-        using RawHandler = std::function<Result<void>(BytesView, TransportSession&, const hl::Endpoint&)>;
+        using RawHandler = std::function<Result<void>(BytesView, TransportSession&, const smo::Endpoint&)>;
 
         PacketDispatcher() = default;
 
@@ -62,7 +79,7 @@ namespace smo::network {
         //   ACTIVE → allow all opcodes
         //   BOOTSTRAPPING/JOINING/SYNCHRONIZING → allow only bootstrap/join opcodes
         //   other → DENY
-        Result<void> dispatch(Packet&& pkt, const hl::Endpoint& remote, hl::Transport& transport);
+        Result<void> dispatch(Packet&& pkt, const smo::Endpoint& remote, hl::Transport& transport);
 
         // Dispatch a frame from a low-level TransportSession.
         // First tries framed Packet format; if that fails, falls back to raw handler.

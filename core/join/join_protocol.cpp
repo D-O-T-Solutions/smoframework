@@ -1070,19 +1070,12 @@ namespace smo::join {
                 enc.encode_string(ep);
             Bytes manifest_data = enc.take();
 
-            // Create manifest envelope: {1: data, 2: signature, 3: epoch}
-            cbor::Encoder enc_env;
-            enc_env.encode_map(3);
-            enc_env.encode_uint(1);
-            enc_env.encode_bytes(BytesView(manifest_data));
-            enc_env.encode_uint(2);
-            enc_env.encode_bytes(Bytes{}); // placeholder for signature
-            enc_env.encode_uint(3);
-            enc_env.encode_uint(current_epoch);
-            Bytes env_payload = enc_env.take();
+            // Sign canonical(data || epoch) — spec Q6; prev_hash pending
+            Bytes sign_msg = manifest_data;
+            for (int b = 7; b >= 0; --b)
+                sign_msg.push_back(static_cast<uint8_t>((current_epoch >> (b * 8)) & 0xFF));
 
-            // Sign the envelope payload
-            auto sig_res = authority.sign_data(BytesView(env_payload), authority.rng());
+            auto sig_res = authority.sign_data(BytesView(sign_msg), authority.rng());
             if (!sig_res)
             {
                 return sig_res.error();

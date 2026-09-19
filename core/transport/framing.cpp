@@ -90,15 +90,20 @@ namespace smo {
         return {};
     }
 
-    Result<uint32_t> version_handshake_client(int fd)
+    Result<uint32_t> version_handshake_client(int fd, ConnectionType type)
     {
-        // Client sends supported version
+        // Client sends supported version + connection type
         uint32_t client_ver = kTransportVersion;
         SMO_TRY(write_all(fd, &client_ver, sizeof(client_ver)));
+        uint8_t type_byte = static_cast<uint8_t>(type);
+        SMO_TRY(write_all(fd, &type_byte, sizeof(type_byte)));
 
         // Read server response
         uint32_t server_ver = 0;
         SMO_TRY(read_all(fd, &server_ver, sizeof(server_ver)));
+
+        uint8_t server_type = 0;
+        SMO_TRY(read_all(fd, &server_type, sizeof(server_type)));
 
         if (server_ver == 0)
         {
@@ -112,11 +117,21 @@ namespace smo {
         return server_ver;
     }
 
-    Result<uint32_t> version_handshake_server(int fd)
+    Result<uint32_t> version_handshake_server(int fd, ConnectionType* out_type)
     {
-        // Read client version
+        // Read client version + connection type
         uint32_t client_ver = 0;
         SMO_TRY(read_all(fd, &client_ver, sizeof(client_ver)));
+
+        uint8_t type_byte = 0;
+        SMO_TRY(read_all(fd, &type_byte, sizeof(type_byte)));
+        ConnectionType conn_type = ConnectionType::Data;
+        if (type_byte == static_cast<uint8_t>(ConnectionType::Join))
+            conn_type = ConnectionType::Join;
+        else if (type_byte == static_cast<uint8_t>(ConnectionType::Sync))
+            conn_type = ConnectionType::Sync;
+        if (out_type)
+            *out_type = conn_type;
 
         uint32_t negotiated = 0;
         if (client_ver >= 1 && client_ver <= kTransportVersion)
@@ -124,8 +139,9 @@ namespace smo {
             negotiated = client_ver;
         }
 
-        // Send negotiated version (0 = reject)
+        // Send negotiated version (0 = reject) + echoed connection type
         SMO_TRY(write_all(fd, &negotiated, sizeof(negotiated)));
+        SMO_TRY(write_all(fd, &type_byte, sizeof(type_byte)));
 
         if (negotiated == 0)
         {

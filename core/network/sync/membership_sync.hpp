@@ -37,6 +37,7 @@ namespace smo::network::sync {
         Role new_role = Role::Reader;             // for CapabilityChange
         std::vector<std::string> added_caps;      // for CapabilityChange
         std::vector<std::string> removed_caps;    // for CapabilityChange
+        smo::Endpoint endpoint;                   // for PeerAdded/PeerUpdated
         PeerState new_state = PeerState::Unknown; // for StateChange
         Certificate new_cert;                     // for CertificateRotate
     };

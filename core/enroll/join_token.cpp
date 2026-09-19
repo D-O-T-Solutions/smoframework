@@ -633,7 +633,6 @@ namespace smo::enroll {
                 else if (mt == 5)
                 {
                     size_t n = decode_map(data, off);
-                    std::fprintf(stderr, "[DEBUG calculate_payload_len] nested map at key=%llu, pairs=%zu, off=%zu\n", (unsigned long long)key, n, off);
                     for (size_t j = 0; j < n; ++j)
                     {
                         if (off >= data.size())
@@ -643,8 +642,6 @@ namespace smo::enroll {
                             return SMO_ERR_CERT(212, Error, NoRetry, ManualIntervention, "Truncated nested map value");
                         uint8_t ib3 = data[off];
                         uint8_t mt3 = ib3 >> 5;
-std::fprintf(stderr, "[DEBUG calculate_payload_len] nested key=%llu, mt=%u, off=%zu\n", (unsigned long long)nested_key, mt3, off);
-        std::fflush(stderr);
                         if (mt3 == 0 || mt3 == 1)
                             decode_uint(data, off);
                         else if (mt3 == 3)
@@ -654,7 +651,6 @@ std::fprintf(stderr, "[DEBUG calculate_payload_len] nested key=%llu, mt=%u, off=
                         else if (mt3 == 5)
                         {
                             size_t m = decode_map(data, off);
-                            std::fprintf(stderr, "[DEBUG calculate_payload_len]     deep nested map pairs=%zu\n", m);
                             for (size_t k = 0; k < m; ++k)
                             {
                                 if (off >= data.size())

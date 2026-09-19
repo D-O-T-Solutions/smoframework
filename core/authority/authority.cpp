@@ -95,7 +95,7 @@ namespace smo::authority {
             Certificate cert;
             cert.subject_pubkey = csr.new_public_key;
             cert.issuer_pubkey = authority_public_key_;
-            cert.mesh_id = hex_to_bytes(mesh_id);
+            cert.mesh_id.assign(mesh_id.begin(), mesh_id.end());
             cert.display_name = csr.display_name;
             cert.role = Role::Reader; // Default; could be set from CSR in production
             cert.epoch = epoch_;
@@ -269,7 +269,7 @@ namespace smo::authority {
         Certificate root_cert;
         root_cert.subject_pubkey = impl_->root_public_key_;
         root_cert.issuer_pubkey = impl_->root_public_key_; // self-signed
-        root_cert.mesh_id = hex_to_bytes(config.mesh_id);
+        root_cert.mesh_id.assign(config.mesh_id.begin(), config.mesh_id.end());
         root_cert.display_name = config.mesh_id + "-root";
         root_cert.role = Role::Root;
         root_cert.epoch = 1;
@@ -289,7 +289,7 @@ namespace smo::authority {
         Certificate auth_cert;
         auth_cert.subject_pubkey = impl_->authority_public_key_;
         auth_cert.issuer_pubkey = impl_->root_public_key_;
-        auth_cert.mesh_id = hex_to_bytes(config.mesh_id);
+        auth_cert.mesh_id.assign(config.mesh_id.begin(), config.mesh_id.end());
         auth_cert.display_name = config.mesh_id + "-authority";
         auth_cert.role = Role::Authority;
         auth_cert.epoch = 1;
@@ -310,9 +310,29 @@ namespace smo::authority {
             std::ofstream pk_file(config.data_dir + "/authority.pub", std::ios::binary);
             pk_file.write(reinterpret_cast<const char*>(impl_->authority_public_key_.data()),
                           impl_->authority_public_key_.size());
+
+            // Encrypt the authority secret key with the recovery passphrase
+            const char* env_pw = std::getenv("SMO_RECOVERY_PASSPHRASE");
+            std::string passphrase = env_pw ? env_pw : "smo-recovery-passphrase";
+
+            kdf::Argon2idParams argon_params; // use defaults
+            BytesView aad(reinterpret_cast<const uint8_t*>(config.mesh_id.data()), config.mesh_id.size());
+
+            auto enc_res = crypto::RecoveryCryptoProvider::seal(
+                BytesView(impl_->authority_secret_key_.data(), impl_->authority_secret_key_.size()),
+                aad,
+                BytesView(reinterpret_cast<const uint8_t*>(passphrase.data()), passphrase.size()),
+                argon_params,
+                rng);
+
+            if (!enc_res)
+            {
+                return enc_res.error();
+            }
+
             std::ofstream sk_file(config.data_dir + "/authority.sec", std::ios::binary);
-            sk_file.write(reinterpret_cast<const char*>(impl_->authority_secret_key_.data()),
-                          impl_->authority_secret_key_.size());
+            sk_file.write(reinterpret_cast<const char*>(enc_res.value().data()),
+                          enc_res.value().size());
         }
 
         // 5. Save root cert + authority cert

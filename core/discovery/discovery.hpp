@@ -13,6 +13,10 @@
 
 namespace smo {
 
+    namespace network::sync {
+        class MembershipSync;
+    }
+
     // ===========================================================================
     // Discovery error codes (400-409)
     // ===========================================================================
@@ -143,6 +147,7 @@ namespace smo {
         NodeID node_id;
         uint64_t pubkey_fingerprint = 0; // first 8 bytes of pubkey hash
         uint16_t protocol_version = 1;
+        Endpoint endpoint; // advertised reachable endpoint (tcp://host:port)
 
         Bytes serialize() const;
         static Result<HelloMsg> deserialize(BytesView data);
@@ -161,6 +166,7 @@ namespace smo {
     {
         int64_t timestamp = 0;
         uint64_t sequence = 0;
+        NodeID sender_id; // node that sent the PING
 
         Bytes serialize() const;
         static Result<PingMsg> deserialize(BytesView data);
@@ -169,6 +175,7 @@ namespace smo {
     struct PongMsg
     {
         int64_t timestamp = 0; // echo of PingMsg.timestamp
+        NodeID sender_id;      // node that sent the PONG
 
         Bytes serialize() const;
         static Result<PongMsg> deserialize(BytesView data);
@@ -273,6 +280,10 @@ namespace smo {
     public:
         DiscoveryEngine(MembershipTable& table, HealthMonitor& monitor, Transport& transport);
 
+        // Receive a pointer to the membership event sync so membership changes
+        // discovered here are emitted as events for gossip propagation.
+        void set_membership_sync(network::sync::MembershipSync* ms) noexcept { membership_sync_ = ms; }
+
         // Handle incoming discovery messages
         Result<void> handle_hello(const HelloMsg& msg, const Endpoint& from, int64_t now);
         Result<void> handle_welcome(const WelcomeMsg& msg, int64_t now);
@@ -292,6 +303,7 @@ namespace smo {
         MembershipTable& table_;
         HealthMonitor& monitor_;
         Transport& transport_;
+        network::sync::MembershipSync* membership_sync_ = nullptr;
 
         void send_node_info(const Endpoint& to) const;
     };

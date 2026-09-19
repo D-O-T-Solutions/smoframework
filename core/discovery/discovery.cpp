@@ -1,4 +1,5 @@
 #include "discovery.hpp"
+#include "core/network/sync/membership_sync.hpp"
 
 #include <cstring>
 #include <limits>
@@ -514,6 +515,7 @@ namespace smo {
         out.insert(out.end(), node_id.value.begin(), node_id.value.end());
         write_u64(out, pubkey_fingerprint);
         write_u16(out, protocol_version);
+        write_endpoint(out, endpoint);
         return out;
     }
 
@@ -529,6 +531,7 @@ namespace smo {
         off += 32;
         msg.pubkey_fingerprint = read_u64(data, off);
         msg.protocol_version = read_u16(data, off);
+        msg.endpoint = read_endpoint(data, off);
         return msg;
     }
 
@@ -574,6 +577,7 @@ namespace smo {
     {
         Bytes out;
         write_u64(out, static_cast<uint64_t>(timestamp));
+        out.insert(out.end(), sender_id.value.begin(), sender_id.value.end());
         return out;
     }
 
@@ -582,6 +586,11 @@ namespace smo {
         PingMsg msg;
         size_t off = 0;
         msg.timestamp = static_cast<int64_t>(read_u64(data, off));
+        if (off + 32 <= data.size())
+        {
+            std::memcpy(msg.sender_id.value.data(), data.data() + off, 32);
+            off += 32;
+        }
         return msg;
     }
 
@@ -592,6 +601,7 @@ namespace smo {
     {
         Bytes out;
         write_u64(out, static_cast<uint64_t>(timestamp));
+        out.insert(out.end(), sender_id.value.begin(), sender_id.value.end());
         return out;
     }
 
@@ -600,6 +610,11 @@ namespace smo {
         PongMsg msg;
         size_t off = 0;
         msg.timestamp = static_cast<int64_t>(read_u64(data, off));
+        if (off + 32 <= data.size())
+        {
+            std::memcpy(msg.sender_id.value.data(), data.data() + off, 32);
+            off += 32;
+        }
         return msg;
     }
 
@@ -721,12 +736,17 @@ namespace smo {
 
         PeerRecord rec;
         rec.node_id = msg.node_id;
-        rec.endpoint = from;
+        rec.endpoint = (msg.endpoint.port != 0 && !msg.endpoint.host.empty()) ? msg.endpoint : from;
         rec.state = PeerState::Online;
         rec.last_seen = now;
         rec.ping_misses = 0;
 
-        return table_.upsert(std::move(rec));
+        auto r = table_.upsert(std::move(rec));
+        if (r && membership_sync_)
+        {
+            membership_sync_->emit_peer_added(rec);
+        }
+        return r;
     }
 
     Result<void> DiscoveryEngine::handle_welcome(const WelcomeMsg& msg, int64_t now)
@@ -735,7 +755,12 @@ namespace smo {
         rec.state = PeerState::Online;
         rec.last_seen = now;
         rec.ping_misses = 0;
-        return table_.upsert(std::move(rec));
+        auto r = table_.upsert(std::move(rec));
+        if (r && membership_sync_)
+        {
+            membership_sync_->emit_peer_added(rec);
+        }
+        return r;
     }
 
     Result<void> DiscoveryEngine::handle_ping(const PingMsg& msg, int64_t now)

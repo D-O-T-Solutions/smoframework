@@ -9,21 +9,22 @@
 
 namespace smo::network {
 
-    // ── PacketSessionTransport — wraps SecureSession as hl::Transport for packet path ─
+using smo::Packet;
+
     // Uses send_framed/recv_framed + packet AEAD (no inner FrameHeader, B5)
     class PacketSessionTransport final : public hl::Transport
     {
     public:
         PacketSessionTransport(SecureSession& sec, const hl::Endpoint& remote) : sec_(&sec), remote_(remote) {}
 
-        std::error_code listen(const hl::Endpoint&, hl::Transport::PacketHandler, hl::Transport::ErrorHandler) override
+        std::error_code listen(const hl::Endpoint&, hl::PacketHandler, hl::ErrorHandler) override
         {
             return {};
         }
 
         std::error_code connect(const hl::Endpoint&) override { return {}; }
 
-        std::error_code send(Packet&& pkt, const hl::Endpoint&) override
+        std::error_code send(Packet&& pkt, const smo::Endpoint&) override
         {
             // Packet path: seal with AEAD, send framed
             auto route_opt = smo::packet_route::to_packet_route(pkt.opcode_id);
@@ -81,14 +82,14 @@ namespace smo::network {
     public:
         SessionTransport(TransportSession& session, const hl::Endpoint& remote) : session_(&session), remote_(remote) {}
 
-        std::error_code listen(const hl::Endpoint&, hl::Transport::PacketHandler, hl::Transport::ErrorHandler) override
+        std::error_code listen(const hl::Endpoint&, hl::PacketHandler, hl::ErrorHandler) override
         {
             return {};
         } // not used
 
         std::error_code connect(const hl::Endpoint&) override { return {}; } // not used
 
-        std::error_code send(Packet&& pkt, const hl::Endpoint&) override
+        std::error_code send(Packet&& pkt, const smo::Endpoint&) override
         {
             // P5: Packet path — seal with AEAD, send framed (no inner FrameHeader, B5)
             // Determine if this is a packet-capable opcode
@@ -184,7 +185,7 @@ namespace smo::network {
         raw_handler_ = std::move(handler);
     }
 
-    Result<void> PacketDispatcher::dispatch(Packet&& pkt, const hl::Endpoint& remote, hl::Transport& transport)
+    Result<void> PacketDispatcher::dispatch(Packet&& pkt, const smo::Endpoint& remote, hl::Transport& transport)
     {
         // Node lifecycle state check
         if (lifecycle_fsm_)
@@ -200,7 +201,11 @@ namespace smo::network {
             return SMO_ERR_PROTOCOL(604, Error, NoRetry, None,
                                     "No handler registered for opcode 0x" + std::to_string(pkt.opcode_id));
         }
-        return it->second(std::move(pkt), remote, transport);
+        smo::Endpoint smo_remote;
+        smo_remote.scheme = "tcp";
+        smo_remote.host = remote.host;
+        smo_remote.port = remote.port;
+        return it->second(std::move(pkt), smo_remote, transport);
     }
 
     Result<void> PacketDispatcher::dispatch_session(TransportSession& session, const hl::Endpoint& remote)
@@ -263,7 +268,11 @@ namespace smo::network {
         // 6. Fallback: raw (non-Packet) protocol handler
         if (raw_handler_)
         {
-            return raw_handler_(raw, session, remote);
+            smo::Endpoint smo_remote;
+            smo_remote.scheme = "tcp";
+            smo_remote.host = remote.host;
+            smo_remote.port = remote.port;
+            return raw_handler_(raw, session, smo_remote);
         }
 
         if (frame_sz == 0)

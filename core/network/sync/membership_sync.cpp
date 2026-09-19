@@ -51,6 +51,7 @@ namespace smo::network::sync {
         MembershipEvent ev;
         ev.type = MembershipEventType::PeerAdded;
         ev.node_id = rec.node_id;
+        ev.endpoint = rec.endpoint;
         emit(std::move(ev));
     }
 
@@ -67,6 +68,7 @@ namespace smo::network::sync {
         MembershipEvent ev;
         ev.type = MembershipEventType::PeerUpdated;
         ev.node_id = new_rec.node_id;
+        ev.endpoint = new_rec.endpoint;
         emit(std::move(ev));
     }
 
@@ -135,13 +137,21 @@ namespace smo::network::sync {
             put_u16(buf, static_cast<uint16_t>(s.size()));
             buf.insert(buf.end(), s.begin(), s.end());
         }
+        void put_endpoint(Bytes& buf, const Endpoint& ep)
+        {
+            put_str(buf, ep.scheme);
+            put_str(buf, ep.host);
+            put_u16(buf, ep.port);
+        }
         void serialize_event_payload(Bytes& payload, const MembershipEvent& ev)
         {
             switch (ev.type)
             {
             case MembershipEventType::PeerAdded:
-            case MembershipEventType::PeerRemoved:
             case MembershipEventType::PeerUpdated:
+                put_endpoint(payload, ev.endpoint);
+                break;
+            case MembershipEventType::PeerRemoved:
                 break;
             case MembershipEventType::PeerRenamed:
                 put_str(payload, ev.old_display_name);
@@ -242,6 +252,14 @@ namespace smo::network::sync {
             data = data.subspan(len);
             return s;
         }
+        Endpoint read_endpoint(BytesView& data)
+        {
+            Endpoint ep;
+            ep.scheme = read_str(data);
+            ep.host = read_str(data);
+            ep.port = read_u16(data);
+            return ep;
+        }
     } // namespace
 
     Result<void> MembershipSync::apply_events(const Bytes& data)
@@ -276,8 +294,10 @@ namespace smo::network::sync {
             switch (ev.type)
             {
             case MembershipEventType::PeerAdded:
-            case MembershipEventType::PeerRemoved:
             case MembershipEventType::PeerUpdated:
+                ev.endpoint = read_endpoint(payload);
+                break;
+            case MembershipEventType::PeerRemoved:
                 break;
 
             case MembershipEventType::PeerRenamed:
@@ -321,33 +341,17 @@ namespace smo::network::sync {
             case MembershipEventType::PeerUpdated:
             case MembershipEventType::StateChange: {
                 auto existing = membership_.lookup(ev.node_id);
+                PeerRecord rec;
                 if (existing)
-                {
-                    auto rec = existing.value();
-                    rec.state = ev.new_state != PeerState::Unknown ? ev.new_state : rec.state;
-                    rec.last_seen = ev.timestamp_ns;
-                    if (ev.type == MembershipEventType::PeerAdded)
-                    {
-                        // PeerAdded: upsert with minimal record
-                        PeerRecord new_rec;
-                        new_rec.node_id = ev.node_id;
-                        new_rec.state = PeerState::Online;
-                        new_rec.last_seen = ev.timestamp_ns;
-                        (void)membership_.upsert(new_rec);
-                    }
-                    else
-                    {
-                        (void)membership_.upsert(rec);
-                    }
-                }
-                else
-                {
-                    PeerRecord rec;
-                    rec.node_id = ev.node_id;
-                    rec.state = ev.type == MembershipEventType::StateChange ? ev.new_state : PeerState::Online;
-                    rec.last_seen = ev.timestamp_ns;
-                    (void)membership_.upsert(rec);
-                }
+                    rec = existing.value();
+                rec.node_id = ev.node_id;
+                rec.state = ev.type == MembershipEventType::StateChange
+                                ? (ev.new_state != PeerState::Unknown ? ev.new_state : PeerState::Online)
+                                : PeerState::Online;
+                rec.last_seen = ev.timestamp_ns;
+                if (ev.endpoint.port != 0 && !ev.endpoint.host.empty())
+                    rec.endpoint = ev.endpoint;
+                (void)membership_.upsert(rec);
                 break;
             }
             case MembershipEventType::PeerRemoved:

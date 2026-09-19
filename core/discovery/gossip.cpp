@@ -229,6 +229,16 @@ namespace smo {
         if (!fd)
             return;
 
+        // Version handshake as a plain JOIN connection so the receiver routes
+        // the frame through dispatch_session, which already recognizes GOSP
+        // frames (avoids the PQ path; gossip is wrapped by higher layers later).
+        auto ver = version_handshake_client(fd.value(), ConnectionType::Join);
+        if (!ver)
+        {
+            ::close(fd.value());
+            return;
+        }
+
         // Assemble all pending deltas into typed GOSP payload
         Bytes payload = assemble_gossip_payload();
         if (payload.empty())
@@ -248,7 +258,7 @@ namespace smo {
         Bytes frame;
         frame_write(framed_payload, kFrameFlagNone, frame);
 
-        auto ok = tcp_send(fd.value(), frame);
+        auto ok = write_field(fd.value(), frame);
         if (ok)
         {
             if (membership_sync_)
