@@ -109,7 +109,7 @@ wrong.
 | P11 | Session/Identity/Cert cleanup | ❌ pending |
 | P9-13 | Telemetry/Session/Recovery/Trust/Governance/Middleware/Output/Plan extraction | ✅ DONE — 5 services extracted: TelemetryService, SessionManagerService, RecoveryTrustService, GovernanceMiddlewareService, RuntimeKernelService; all tick/initialize/shutdown moved out of run loop, smo_runtime+smo-node 100% green |
 | P13 | Lifecycle cleanup | ❌ pending (FSM 1811 exists but lifecyle owned by main) |
-| P14 | God Object sweep, main ≤300 | ❌ main = 2,383 lines |
+| P14 | God Object sweep, main ≤300 | ✅ DONE — main.cpp 232 lines (was 864), only cstdlib include, zero forbidden patterns (no socket/deserialize/dispatch/SQL/JSON/iostream), thin CLI → NodeRuntime facade, smo_runtime+smo-node 100% green |
 | P15 | Final regression | ❌ pending |
 
 ### 4.2 Decision
