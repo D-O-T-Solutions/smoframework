@@ -5,21 +5,12 @@
 #include <core/transport/transport.hpp>
 #include <core/discovery/discovery.hpp>
 #include <core/identity/identity.hpp>
-
-#include <cstdio>
-#include <fstream>
+#include <core/runtime/structured_logger.hpp>
 
 namespace smo::bootstrap {
 
-    // Helper to load binary file
-    static smo::Bytes load_file_binary(const std::string& path) {
-        std::ifstream f(path, std::ios::binary | std::ios::ate);
-        if (!f) return {};
-        size_t size = f.tellg();
-        f.seekg(0);
-        Bytes data(size);
-        f.read(reinterpret_cast<char*>(data.data()), size);
-        return data;
+    namespace {
+        auto& LOG = smo::runtime::global_logger();
     }
 
     BootstrapClient::Result BootstrapClient::bootstrap(const Endpoint& seed_ep,
@@ -27,12 +18,14 @@ namespace smo::bootstrap {
                                                         const Identity& local_identity,
                                                         const PeerRecord& self_record,
                                                         DiscoveryEngine& discovery_engine,
-                                                        const std::string& data_dir,
+                                                        const Bytes& server_cert_blob,
+                                                        const Bytes& server_signing_key,
+                                                        const Bytes& root_public_key,
                                                         const std::string& mesh_id) {
         // 1. Raw TCP connect + version handshake (Sync connection type)
         auto raw_session = TransportRegistry::instance().get("tcp")->connect(seed_ep, ConnectionType::Sync);
         if (!raw_session) {
-            std::printf("[smo-node] Seed connection failed: %s\n", "connection failed");
+            LOG.warn("Seed connection failed: connection failed");
             return {PeerRecord{}, false};
         }
 
@@ -42,30 +35,15 @@ namespace smo::bootstrap {
         // 2. PQ handshake (client) - authority requires it when certed
         SecureSession::Config sec_cfg;
         sec_cfg.role = SecureSession::Role::Client;
-
-        // Load client certificate and secret key for mutual auth
-        std::string cert_path = data_dir + "/node.cert.smoc";
-        smo::Bytes client_cert_blob = load_file_binary(cert_path);
-        if (client_cert_blob.empty()) {
-            std::fprintf(stderr, "[smo-node] Warning: client certificate not found at %s, PQ handshake may fail\n", cert_path.c_str());
-        } else {
-            sec_cfg.client_cert = client_cert_blob;
-        }
-
-        std::string id_path = data_dir + "/identity.json";
-        auto id_res = Identity::load_from_file(id_path, crypto);
-        if (!id_res) {
-            std::fprintf(stderr, "[smo-node] Warning: identity not found at %s, PQ handshake may fail\n", id_path.c_str());
-        } else {
-            sec_cfg.client_signing_secret_key = Bytes(id_res.value().secret_key().begin(), id_res.value().secret_key().end());
-        }
-
+        sec_cfg.client_cert = server_cert_blob;
+        sec_cfg.client_signing_secret_key = server_signing_key;
+        sec_cfg.root_public_key = root_public_key;
         sec_cfg.mesh_id = mesh_id;
 
         SecureSession sec(fd, sec_cfg, crypto);
         auto hs = sec.handshake();
         if (!hs) {
-            std::printf("[smo-node] Seed PQ handshake failed: %s\n", hs.error().message.c_str());
+            LOG.warn("Seed PQ handshake failed: " + hs.error().message);
             return {PeerRecord{}, false};
         }
 
@@ -76,24 +54,27 @@ namespace smo::bootstrap {
         auto hello_data = hello.serialize();
         auto send_res = sec.send(BytesView(hello_data));
         if (!send_res) {
-            std::printf("[smo-node] Seed HELLO send failed: %s\n", send_res.error().message.c_str());
+            LOG.warn("Seed HELLO send failed: " + send_res.error().message);
             return {PeerRecord{}, false};
         }
 
         // 4. Read WELCOME (encrypted)
         auto welcome_data = sec.recv();
         if (!welcome_data) {
-            std::printf("[smo-node] Seed WELCOME read failed: %s\n", "recv failed");
+            LOG.warn("Seed WELCOME read failed: recv failed");
             return {PeerRecord{}, false};
         }
         auto welcome = WelcomeMsg::deserialize(BytesView(welcome_data.value()));
         if (!welcome) {
-            std::fprintf(stderr, "[smo-node] Seed WELCOME parse failed: %s\n", "parse failed");
+            LOG.warn("Seed WELCOME parse failed: parse failed");
             return {PeerRecord{}, false};
         }
 
         auto& rec = welcome.value().peer_record;
-        std::printf("[smo-node] Seed responded: %s (%s)\n", rec.display_name.c_str(), rec.endpoint.to_string().c_str());
+        LOG.info("Seed responded: " + rec.display_name + " (" + rec.endpoint.to_string() + ")");
+
+        // 5. Wire into discovery engine
+        discovery_engine.handle_welcome(WelcomeMsg{local_identity.node_id(), rec}, 0);
 
         return {rec, true};
     }

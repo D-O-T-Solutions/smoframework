@@ -44,6 +44,7 @@
 #include <core/network/packet_dispatcher.hpp>
 #include <core/network/connection_manager.hpp>
 #include <core/network/udp_server.hpp>
+#include <core/bootstrap/bootstrap_client.hpp>
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
 #include <core/join/join_protocol.hpp>
@@ -625,12 +626,14 @@ void NodeRuntime::Impl::print_mesh_bootstrap_summary()
 // connect_to_seed() — PQ seed bootstrap (faithful port of main.cpp 1139-1227)
 // ===========================================================================
 
+// ===========================================================================
+// connect_to_seed() — PQ seed bootstrap via BootstrapClient (Phase 4)
+// ===========================================================================
+
 void NodeRuntime::Impl::connect_to_seed()
 {
     if (config_.seed_addr.empty())
         return;
-
-    std::printf("[smo-node] Connecting to seed: %s\n", config_.seed_addr.c_str());
 
     smo::Endpoint seed_ep;
     auto ep_result = smo::Endpoint::from_string(config_.seed_addr);
@@ -641,69 +644,30 @@ void NodeRuntime::Impl::connect_to_seed()
     }
 
     seed_ep = ep_result.value();
-    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    auto now_ns = static_cast<int64_t>(now) * 1000000000LL;
 
-    auto* tcp_ptr = smo::TransportRegistry::instance().get("tcp");
+    // Build self PeerRecord for HELLO
+    smo::PeerRecord self_record;
+    self_record.node_id = local_id_;
+    self_record.endpoint = smo::Endpoint{"tcp", "0.0.0.0", static_cast<uint16_t>(config_.port)};
 
-    // 1. Raw TCP connect + version handshake
-    auto raw_session = tcp_ptr->connect(seed_ep);
-    if (!raw_session)
+    auto bs_res = smo::bootstrap::BootstrapClient::bootstrap(
+        seed_ep,
+        *crypto_,
+        identity_,
+        self_record,
+        discovery_,
+        server_cert_blob_,
+        server_signing_key_,
+        root_public_key_,
+        mesh_id_str_
+    );
+
+    if (!bs_res.success)
     {
-        std::printf("[smo-node] Seed connection failed: %s\n", raw_session.error().message.c_str());
-        std::printf("[smo-node] Continuing as first node in mesh\n");
+        std::printf("[smo-node] Bootstrap failed, continuing as first node in mesh\n");
         return;
     }
 
-    auto* tcp_ses = static_cast<smo::TcpSession*>(raw_session.value().get());
-    int fd = tcp_ses->release_fd();
-
-    // 2. PQ handshake (client) - authority requires it when certed
-    smo::SecureSession::Config sec_cfg;
-    sec_cfg.role = smo::SecureSession::Role::Client;
-    sec_cfg.client_cert = server_cert_blob_;
-    sec_cfg.client_signing_secret_key = server_signing_key_;
-    sec_cfg.root_public_key = root_public_key_;
-    sec_cfg.mesh_id = mesh_id_str_;
-    smo::SecureSession sec(fd, sec_cfg, *crypto_);
-    auto hs = sec.handshake();
-    if (!hs)
-    {
-        std::printf("[smo-node] Seed PQ handshake failed: %s\n", hs.error().message.c_str());
-        std::printf("[smo-node] Continuing as first node in mesh\n");
-        return;
-    }
-
-    // 3. Send HELLO inside the secure session
-    smo::HelloMsg hello;
-    hello.node_id = local_id_;
-    auto hello_data = hello.serialize();
-    auto send_res = sec.send(smo::BytesView(hello_data));
-    if (!send_res)
-    {
-        std::printf("[smo-node] Seed HELLO send failed: %s\n", send_res.error().message.c_str());
-        return;
-    }
-
-    // 4. Read WELCOME (encrypted)
-    auto welcome_data = sec.recv();
-    if (!welcome_data)
-    {
-        std::printf("[smo-node] Seed WELCOME read failed: %s\n", welcome_data.error().message.c_str());
-        return;
-    }
-
-    auto welcome = smo::WelcomeMsg::deserialize(smo::BytesView(welcome_data.value()));
-    if (!welcome)
-    {
-        std::printf("[smo-node] Seed WELCOME parse failed: %s\n", welcome.error().message.c_str());
-        return;
-    }
-
-    auto& rec = welcome.value().peer_record;
-    std::printf("[smo-node] Seed responded: %s (%s)\n", rec.display_name.c_str(),
-                rec.endpoint.to_string().c_str());
-    discovery_.handle_welcome(smo::WelcomeMsg{local_id_, rec}, now_ns);
     std::printf("[smo-node] Bootstrap complete. Peers: %zu\n", membership_.count());
 }
 

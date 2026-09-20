@@ -18,27 +18,31 @@ namespace smo::bootstrap {
     // 2. PQ handshake (SecureSession)
     // 3. Send HELLO with local identity and endpoint
     // 4. Receive WELCOME with seed's peer record
-    // 5. Update discovery engine with seed's peer record
+    // 5. Return seed's peer record for discovery engine wiring
     struct BootstrapClient {
         struct Result {
             PeerRecord seed_record;
             bool success;
         };
 
-        // Perform bootstrap with seed
+        // Perform bootstrap with seed using provided PQ material
+        // (avoids re-loading from disk when already available in memory)
         static Result bootstrap(const Endpoint& seed_ep,
                                 const CryptoProvider& crypto,
                                 const Identity& local_identity,
                                 const PeerRecord& self_record,
                                 DiscoveryEngine& discovery_engine,
-                                const std::string& data_dir,
+                                const Bytes& server_cert_blob,
+                                const Bytes& server_signing_key,
+                                const Bytes& root_public_key,
                                 const std::string& mesh_id);
 
     private:
         static Result perform_handshake(int fd,
                                         const CryptoProvider& crypto,
-                                        const Identity& local_identity,
-                                        const std::string& data_dir,
+                                        const Bytes& server_cert_blob,
+                                        const Bytes& server_signing_key,
+                                        const Bytes& root_public_key,
                                         const std::string& mesh_id);
     };
 
