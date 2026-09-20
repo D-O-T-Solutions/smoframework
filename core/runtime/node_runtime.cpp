@@ -92,122 +92,204 @@
 #include <providers/suite3_purepqc/suite3_purepqc_provider.hpp>
 
 #include <chrono>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <poll.h>
 #include <sstream>
 #include <string>
 #include <thread>
+#include <unistd.h>
 #include <vector>
+
+#include <tooling/clipboard.hpp>
 
 namespace smo::runtime {
 
-namespace {
+// ===========================================================================
+// Shared helpers (used by Impl and CLI commands)
+// ===========================================================================
 
-    void node_id_to_hex(const smo::NodeID& id, std::string& out)
+static void node_id_to_hex(const smo::NodeID& id, std::string& out)
+{
+    std::ostringstream oss;
+    for (uint8_t b : id.value)
     {
-        std::ostringstream oss;
-        for (uint8_t b : id.value)
+        oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+    }
+    out = oss.str();
+}
+
+static smo::Bytes load_file_binary(const std::string& path)
+{
+    std::ifstream f(path, std::ios::binary | std::ios::ate);
+    if (!f)
+        return {};
+    auto size = f.tellg();
+    f.seekg(0);
+    smo::Bytes data(static_cast<size_t>(size));
+    f.read(reinterpret_cast<char*>(data.data()), size);
+    return data;
+}
+
+static bool write_file_binary(const std::string& path, smo::BytesView data)
+{
+    std::ofstream f(path, std::ios::binary);
+    if (!f)
+        return false;
+    f.write(reinterpret_cast<const char*>(data.data()), data.size());
+    return f.good();
+}
+
+static std::string read_stdin()
+{
+    std::string data;
+    char buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), stdin)) > 0)
+    {
+        data.append(buf, n);
+    }
+    return data;
+}
+
+static bool has_stdin_data()
+{
+    struct pollfd pfd = {STDIN_FILENO, POLLIN, 0};
+    return poll(&pfd, 1, 0) > 0 && (pfd.revents & POLLIN);
+}
+
+static smo::Bytes load_cert_blob(const std::string& path_or_empty)
+{
+    // Try stdin first
+    if (has_stdin_data())
+    {
+        auto data = read_stdin();
+        if (!data.empty())
         {
-            oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+            std::fprintf(stderr, "[smo-node] Reading certificate from stdin...\n");
+            return smo::Bytes(data.begin(), data.end());
         }
-        out = oss.str();
     }
-
-    smo::Bytes load_file_binary(const std::string& path)
+    // Try clipboard
+    if (path_or_empty.empty() && smo::clipboard_available())
     {
-        std::ifstream f(path, std::ios::binary | std::ios::ate);
-        if (!f)
-            return {};
-        auto size = f.tellg();
-        f.seekg(0);
-        smo::Bytes data(static_cast<size_t>(size));
-        f.read(reinterpret_cast<char*>(data.data()), size);
-        return data;
+        auto data = smo::clipboard_paste();
+        if (!data.empty())
+        {
+            std::fprintf(stderr, "[smo-node] Reading certificate from clipboard...\n");
+            return smo::Bytes(data.begin(), data.end());
+        }
     }
-
-    void ensure_crypto()
+    // Try file
+    if (!path_or_empty.empty())
     {
-        smo::Blake3Provider::register_as_default();
-        smo::providers::register_suite1_classical();
-        smo::providers::register_suite2_modern();
+        return load_file_binary(path_or_empty);
+    }
+    return {};
+}
+
+static void ensure_crypto()
+{
+    smo::Blake3Provider::register_as_default();
+    smo::providers::register_suite1_classical();
+    smo::providers::register_suite2_modern();
 #ifdef SMO_WITH_PQC
-        smo::providers::register_suite3_purepqc();
+    smo::providers::register_suite3_purepqc();
 #endif
-    }
+}
 
-    const smo::CryptoProvider* get_crypto(smo::CryptoSuiteID suite_id)
+static const smo::CryptoProvider* get_crypto(smo::CryptoSuiteID suite_id)
+{
+    auto& reg = smo::CryptoRegistry::instance();
+    auto prov_result = reg.get_suite(suite_id);
+    if (!prov_result)
     {
-        auto& reg = smo::CryptoRegistry::instance();
-        auto prov_result = reg.get_suite(suite_id);
-        if (!prov_result)
-        {
-            std::fprintf(stderr, "Error: cipher suite %u not registered\n", (unsigned)suite_id);
-            return nullptr;
-        }
-        return prov_result.value();
+        std::fprintf(stderr, "Error: cipher suite %u not registered\n", (unsigned)suite_id);
+        return nullptr;
     }
+    return prov_result.value();
+}
 
-    int64_t now_ns_since_epoch()
+static int64_t now_ns_since_epoch()
+{
+    return static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
+static smo::network::udp::HeartbeatService::Config make_hb_config(int port)
+{
+    smo::network::udp::HeartbeatService::Config hb_config;
+    hb_config.ping_interval_ms = 5000;
+    hb_config.ping_timeout_ms = 3000;
+    hb_config.max_misses = 3;
+    hb_config.local_port = port;
+    return hb_config;
+}
+
+static std::string bytes_to_base64(smo::BytesView data)
+{
+    static const char kEnc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    for (size_t i = 0; i < data.size(); i += 3)
     {
-        return static_cast<int64_t>(std::chrono::system_clock::now().time_since_epoch().count());
+        uint32_t v = (uint32_t)data[i] << 16;
+        if (i + 1 < data.size())
+            v |= (uint32_t)data[i + 1] << 8;
+        if (i + 2 < data.size())
+            v |= (uint32_t)data[i + 2];
+        out += kEnc[(v >> 18) & 0x3f];
+        out += kEnc[(v >> 12) & 0x3f];
+        out += (i + 1 < data.size()) ? kEnc[(v >> 6) & 0x3f] : '=';
+        out += (i + 2 < data.size()) ? kEnc[v & 0x3f] : '=';
     }
+    return out;
+}
 
-    smo::network::udp::HeartbeatService::Config make_hb_config(int port)
+// Sync backend bridging MembershipTable/CRL to the anti-entropy engine.
+struct DaemonSyncBackend : smo::sync::SyncBackend
+{
+    smo::MembershipTable* memb_ptr;
+    smo::recovery::CRL* crl_ptr;
+
+    DaemonSyncBackend(smo::MembershipTable& tbl, smo::recovery::CRL* c) : memb_ptr(&tbl), crl_ptr(c) {}
+
+    smo::sync::Delta get_membership_delta(const smo::sync::VersionVector& vv) override
     {
-        smo::network::udp::HeartbeatService::Config hb_config;
-        hb_config.ping_interval_ms = 5000;
-        hb_config.ping_timeout_ms = 3000;
-        hb_config.max_misses = 3;
-        hb_config.local_port = port;
-        return hb_config;
+        (void)vv;
+        return {};
     }
-
-    // Sync backend bridging MembershipTable/CRL to the anti-entropy engine.
-    struct DaemonSyncBackend : smo::sync::SyncBackend
+    smo::sync::Delta get_crl_delta(const smo::sync::VersionVector& vv) override
     {
-        smo::MembershipTable* memb_ptr;
-        smo::recovery::CRL* crl_ptr;
-
-        DaemonSyncBackend(smo::MembershipTable& tbl, smo::recovery::CRL* c) : memb_ptr(&tbl), crl_ptr(c) {}
-
-        smo::sync::Delta get_membership_delta(const smo::sync::VersionVector& vv) override
-        {
-            (void)vv;
-            return {};
-        }
-        smo::sync::Delta get_crl_delta(const smo::sync::VersionVector& vv) override
-        {
-            (void)vv;
-            return {};
-        }
-        smo::sync::Delta get_policy_delta(const smo::sync::VersionVector& vv) override
-        {
-            (void)vv;
-            return {};
-        }
-        smo::sync::Delta get_contract_delta(const smo::sync::VersionVector& vv) override
-        {
-            (void)vv;
-            return {};
-        }
-        smo::sync::Delta get_full_snapshot(smo::sync::TreeID id) override
-        {
-            (void)id;
-            return {};
-        }
-        smo::sync::MerkleTree compute_tree(smo::sync::TreeID id) override
-        {
-            auto tree = smo::sync::MerkleTree(id);
-            tree.epoch = 1;
-            tree.rebuild();
-            return tree;
-        }
-    };
-
-} // anonymous namespace
+        (void)vv;
+        return {};
+    }
+    smo::sync::Delta get_policy_delta(const smo::sync::VersionVector& vv) override
+    {
+        (void)vv;
+        return {};
+    }
+    smo::sync::Delta get_contract_delta(const smo::sync::VersionVector& vv) override
+    {
+        (void)vv;
+        return {};
+    }
+    smo::sync::Delta get_full_snapshot(smo::sync::TreeID id) override
+    {
+        (void)id;
+        return {};
+    }
+    smo::sync::MerkleTree compute_tree(smo::sync::TreeID id) override
+    {
+        auto tree = smo::sync::MerkleTree(id);
+        tree.epoch = 1;
+        tree.rebuild();
+        return tree;
+    }
+};
 
 NodeRuntime* NodeRuntime::current_ = nullptr;
 
@@ -1226,6 +1308,363 @@ void NodeRuntime::Impl::shutdown()
     peer_store_.close();
 
     LOG.info("shutdown complete");
+}
+
+// Public API forwarding methods
+Result<void> NodeRuntime::initialize()
+{
+    return impl_->initialize();
+}
+
+Result<void> NodeRuntime::start()
+{
+    return impl_->start();
+}
+
+void NodeRuntime::shutdown()
+{
+    impl_->shutdown();
+}
+
+int NodeRuntime::run()
+{
+    return impl_->run();
+}
+
+} // namespace smo::runtime
+
+// ===========================================================================
+// Static CLI command handlers
+// ===========================================================================
+
+namespace smo::runtime {
+
+int NodeRuntime::cmd_init(const std::string& name, const std::string& data_dir)
+{
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto)
+        return 1;
+    auto rng = crypto->default_rng();
+
+    // Create identity (generates keypair)
+    auto id_result = smo::Identity::create(*crypto, rng);
+    if (!id_result)
+    {
+        std::fprintf(stderr, "Error: identity creation failed: %s\n", id_result.error().message.c_str());
+        return 1;
+    }
+    auto identity = std::move(id_result.value());
+
+    // Save identity to file
+    std::string id_path = data_dir + "/identity.json";
+    if (auto r = identity.save_to_file(id_path); !r)
+    {
+        std::fprintf(stderr, "Error: cannot save identity: %s\n", r.error().message.c_str());
+        return 1;
+    }
+
+    // Build CSR
+    smo::CertificateSigningRequest csr;
+    csr.new_public_key = smo::Bytes(identity.public_key().begin(), identity.public_key().end());
+    csr.display_name = name;
+    csr.platform = "linux";
+    csr.version = "0.1.0";
+    csr.timestamp =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    // For initial CSR, sign with the new key itself
+    auto sign_result = csr.sign(crypto->signer, identity.secret_key(), rng);
+    if (!sign_result)
+    {
+        std::fprintf(stderr, "Error: CSR signing failed: %s\n", sign_result.error().message.c_str());
+        return 1;
+    }
+
+    // Save CSR
+    std::string csr_path = data_dir + "/node.csr.smor";
+    auto csr_serialized = csr.serialize();
+    if (!write_file_binary(csr_path, csr_serialized))
+    {
+        std::fprintf(stderr, "Error: cannot write CSR file: %s\n", csr_path.c_str());
+        return 1;
+    }
+
+    std::string nid_hex;
+    node_id_to_hex(identity.node_id(), nid_hex);
+    std::printf("Identity created:\n");
+    std::printf("  NodeID:       %s\n", nid_hex.c_str());
+    std::printf("  Display name: %s\n", name.c_str());
+    std::printf("  Identity:     %s\n", id_path.c_str());
+    std::printf("  CSR:          %s\n", csr_path.c_str());
+    std::printf("\n");
+    std::printf("Next: Submit %s to the mesh authority for signing.\n", csr_path.c_str());
+    std::printf("      Then run: smo-node --import <signed-cert>.smoc --data %s\n", data_dir.c_str());
+    return 0;
+}
+
+int NodeRuntime::cmd_export(const std::string& output_path, const std::string& data_dir, bool copy_to_clipboard)
+{
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto)
+        return 1;
+
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result)
+    {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n", id_result.error().message.c_str());
+        return 1;
+    }
+    auto& identity = id_result.value();
+    auto rng = crypto->default_rng();
+
+    // Read existing CSR if present
+    std::string csr_path = data_dir + "/node.csr.smor";
+    auto existing = load_file_binary(csr_path);
+    if (!existing.empty() && !copy_to_clipboard)
+    {
+        // Copy existing CSR to output
+        if (!write_file_binary(output_path, existing))
+        {
+            std::fprintf(stderr, "Error: cannot write CSR file: %s\n", output_path.c_str());
+            return 1;
+        }
+        std::printf("CSR exported: %s -> %s\n", csr_path.c_str(), output_path.c_str());
+        return 0;
+    }
+
+    // Build new CSR
+    smo::CertificateSigningRequest csr;
+    csr.new_public_key = smo::Bytes(identity.public_key().begin(), identity.public_key().end());
+
+    // Try to read display name from existing cert or use "unnamed"
+    csr.display_name = "unnamed-node";
+    csr.platform = "linux";
+    csr.version = "0.1.0";
+    csr.timestamp =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+    auto sign_result = csr.sign(crypto->signer, identity.secret_key(), rng);
+    if (!sign_result)
+    {
+        std::fprintf(stderr, "Error: CSR signing failed: %s\n", sign_result.error().message.c_str());
+        return 1;
+    }
+
+    auto csr_serialized = csr.serialize();
+
+    if (copy_to_clipboard)
+    {
+        // Copy to clipboard (base64-encoded for text safety)
+        std::string b64 = bytes_to_base64(csr_serialized);
+        if (smo::clipboard_copy(b64))
+        {
+            std::printf("CSR copied to clipboard (%zu bytes).\n", csr_serialized.size());
+            std::printf("  On the Authority machine, run:\n");
+            std::printf("    smo-admin sign --paste\n");
+            return 0;
+        }
+        std::fprintf(stderr, "Error: clipboard not available\n");
+        return 1;
+    }
+
+    if (!write_file_binary(output_path, csr_serialized))
+    {
+        std::fprintf(stderr, "Error: cannot write CSR file: %s\n", output_path.c_str());
+        return 1;
+    }
+
+    // Also save to data dir for convenience
+    write_file_binary(csr_path, csr_serialized);
+
+    std::printf("CSR exported: %s (%zu bytes)\n", output_path.c_str(), csr_serialized.size());
+    return 0;
+}
+
+int NodeRuntime::cmd_import(const std::string& cert_path_or_empty, const std::string& data_dir)
+{
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto)
+        return 1;
+
+    // Load identity
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result)
+    {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n", id_result.error().message.c_str());
+        return 1;
+    }
+    auto identity = std::move(id_result.value());
+
+    // Auto-detect transport: stdin → clipboard → file
+    auto cert_blob = load_cert_blob(cert_path_or_empty);
+    if (cert_blob.empty())
+    {
+        std::fprintf(stderr, "Error: no certificate data found.\n"
+                             "  Try: smo node import <file.smoc>\n"
+                             "   or: cat cert.smoc | smo node import\n"
+                             "   or: smo node import (with certificate in clipboard)\n");
+        return 1;
+    }
+
+    auto cert_result = smo::Certificate::deserialize(cert_blob);
+    if (!cert_result)
+    {
+        std::fprintf(stderr, "Error: invalid certificate: %s\n", cert_result.error().message.c_str());
+        return 1;
+    }
+    auto& cert = cert_result.value();
+
+    // Verify certificate signature
+    auto verify_result = cert.verify(crypto->signer);
+    if (!verify_result)
+    {
+        std::fprintf(stderr, "Error: certificate verification failed: %s\n", verify_result.error().message.c_str());
+        return 1;
+    }
+    if (!verify_result.value())
+    {
+        std::fprintf(stderr, "Error: certificate signature is invalid\n");
+        return 1;
+    }
+
+    // Update identity state
+    identity.transition_to(smo::IdentityState::Enrolled);
+
+    // Save updated identity
+    if (auto r = identity.save_to_file(data_dir + "/identity.json"); !r)
+    {
+        std::fprintf(stderr, "Error: cannot save identity: %s\n", r.error().message.c_str());
+        return 1;
+    }
+
+    // Save certificate
+    std::string cert_out = data_dir + "/node.cert.smoc";
+    if (!write_file_binary(cert_out, cert_blob))
+    {
+        std::fprintf(stderr, "Error: cannot save certificate: %s\n", cert_out.c_str());
+        return 1;
+    }
+
+    // Post-import summary
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    char expiry_buf[32] = {};
+    if (cert.not_after > 0)
+    {
+        std::tm* tm = std::gmtime(&cert.not_after);
+        if (tm)
+            std::strftime(expiry_buf, sizeof(expiry_buf), "%Y-%m-%d", tm);
+    }
+
+    std::printf("\n");
+    std::printf("  Enrollment successful.\n");
+    std::printf("\n");
+    std::printf("  NodeID:          %s\n", identity.node_id().to_string().c_str());
+    {
+        auto fp_hash = crypto->hash.hash(smo::BytesView(cert_blob));
+        std::string fp_hex = fp_hash ? smo::bytes_to_hex(fp_hash.value()).substr(0, 16) : "???";
+        std::printf("  Certificate:     %s\n", fp_hex.c_str());
+    }
+    std::printf("  Cipher Suite:    Suite %d\n", (int)crypto->suite_id);
+    std::printf("  Display Name:    %s\n", cert.display_name.c_str());
+    std::printf("  Role:            %s\n", smo::to_string(cert.role));
+    std::printf("  Epoch:           %llu\n", (unsigned long long)cert.epoch);
+    if (expiry_buf[0])
+        std::printf("  Valid until:     %s\n", expiry_buf);
+    std::printf("\n");
+    std::printf("  Node is now enrolled. Run with --daemon to start.\n");
+    return 0;
+}
+
+int NodeRuntime::cmd_pubkey(const std::string& data_dir, bool copy_to_clipboard, bool show_fingerprint)
+{
+    ensure_crypto();
+
+    const auto* crypto = get_crypto(smo::kSuitePurePQC);
+    if (!crypto)
+        return 1;
+
+    auto id_result = smo::Identity::load_from_file(data_dir + "/identity.json", *crypto);
+    if (!id_result)
+    {
+        std::fprintf(stderr, "Error: cannot load identity: %s\n", id_result.error().message.c_str());
+        std::fprintf(stderr, "  Run 'smo-node --init --name <name>' first\n");
+        return 1;
+    }
+    auto& identity = id_result.value();
+
+    if (show_fingerprint)
+    {
+        auto hash = crypto->hash.hash(identity.public_key());
+        if (!hash)
+        {
+            std::fprintf(stderr, "Error: fingerprint computation failed\n");
+            return 1;
+        }
+        std::string hex = smo::bytes_to_hex(hash.value());
+        // Format as colon-separated pairs
+        for (size_t i = 0; i < hex.size(); i += 2)
+        {
+            if (i > 0)
+                std::putchar(':');
+            std::printf("%c%c", hex[i], hex[i + 1]);
+            if (i >= 18)
+                break; // show first 20 hex chars = 10 bytes
+        }
+        std::putchar('\n');
+        return 0;
+    }
+
+    // Base64url-encode public key with SMO-PUBKEY- prefix
+    auto pk = identity.public_key();
+    std::string b64;
+    static const char kEnc[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz0123456789-_";
+    for (size_t i = 0; i < pk.size(); i += 3)
+    {
+        uint32_t v = (uint32_t)pk[i] << 16;
+        if (i + 1 < pk.size())
+            v |= (uint32_t)pk[i + 1] << 8;
+        if (i + 2 < pk.size())
+            v |= (uint32_t)pk[i + 2];
+        b64 += kEnc[(v >> 18) & 0x3f];
+        b64 += kEnc[(v >> 12) & 0x3f];
+        if (i + 1 < pk.size())
+            b64 += kEnc[(v >> 6) & 0x3f];
+        if (i + 2 < pk.size())
+            b64 += kEnc[v & 0x3f];
+    }
+    std::string output = "SMO-PUBKEY-" + b64;
+
+    if (copy_to_clipboard)
+    {
+        if (smo::clipboard_copy(output))
+        {
+            std::printf("Public key copied to clipboard.\n");
+            return 0;
+        }
+        std::fprintf(stderr, "Error: clipboard not available\n");
+        return 1;
+    }
+
+    std::printf("%s\n", output.c_str());
+    return 0;
+}
+
+int NodeRuntime::cmd_join(const std::string& join_token, const std::string& data_dir, const std::string& node_name, int port)
+{
+    ensure_crypto();
+    auto result = smo::enroll::run_join_command(join_token, data_dir, node_name, static_cast<uint16_t>(port), "");
+    if (!result)
+    {
+        std::fprintf(stderr, "Error: %s\n", result.error().message.c_str());
+        return 1;
+    }
+    return 0;
 }
 
 } // namespace smo::runtime

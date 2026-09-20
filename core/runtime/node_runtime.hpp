@@ -47,6 +47,13 @@ public:
 
     static NodeRuntime* current() noexcept { return current_; }
 
+    // ── CLI command handlers (thin wrappers, no daemon startup) ──────────
+    static int cmd_init(const std::string& name, const std::string& data_dir);
+    static int cmd_export(const std::string& output_path, const std::string& data_dir, bool copy_to_clipboard);
+    static int cmd_import(const std::string& cert_path_or_empty, const std::string& data_dir);
+    static int cmd_pubkey(const std::string& data_dir, bool copy_to_clipboard, bool show_fingerprint);
+    static int cmd_join(const std::string& join_token, const std::string& data_dir, const std::string& node_name, int port);
+
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
