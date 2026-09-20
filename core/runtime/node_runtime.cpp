@@ -72,6 +72,7 @@
 #include <core/runtime/service_registry.hpp>
 #include <core/runtime/telemetry.hpp>
 #include <core/runtime/structured_logger.hpp>
+#include <core/runtime/event_registry_service.hpp>
 #include <core/network/sync/anti_entropy.hpp>
 #include <core/network/sync/sync_backend.hpp>
 
@@ -242,10 +243,9 @@ public:
     void _wire_contracts();
     void _wire_routes();
     void _wire_packet_handlers();
-    void _wire_event_subscriptions();
-    void _wire_registry_telemetry();
 
 private:
+    smo::runtime::EventRegistryService event_registry_service_;
     NodeRuntimeConfig config_;
     std::string data_dir_;
 
@@ -339,6 +339,22 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , sync_delta_service_(smo::runtime::SyncDeltaService::Config{data_dir_},
                           sync_service_, gossip_, crl_,
                           manifest_store_, policy_store_)
+    , event_registry_service_(smo::runtime::EventRegistryService::Dependencies{
+          .event_bus = event_bus_,
+          .session_mgr = session_mgr_,
+          .peer_store = peer_store_,
+          .mesh_manager = mesh_manager_,
+          .authority = authority_,
+          .crl = crl_,
+          .discovery = discovery_,
+          .gossip = gossip_,
+          .telemetry = smo::runtime::global_telemetry(),
+          .output_mgr = output_mgr_,
+          .trust_mgr = trust_mgr_,
+          .governance_engine = governance_engine_,
+          .address_resolver = address_resolver_,
+          .heartbeat = heartbeat_,
+          .membership = membership_})
 {
 }
 
@@ -817,8 +833,7 @@ void NodeRuntime::Impl::wire_runtime()
     _wire_contracts();
     _wire_routes();
     _wire_packet_handlers();
-    _wire_event_subscriptions();
-    _wire_registry_telemetry();
+    event_registry_service_.register_all();
 }
 
 // ===========================================================================
@@ -1310,193 +1325,6 @@ void NodeRuntime::Impl::_wire_packet_handlers()
 }
 
 // ===========================================================================
-// _wire_event_subscriptions() — EventBus wires (main.cpp 1958-2095)
-// ===========================================================================
-
-void NodeRuntime::Impl::_wire_event_subscriptions()
-{
-    // RecoveryProposalCreated: emitted by RecoveryContract
-    event_bus_.subscribe(smo::runtime::EventType::RecoveryProposalCreated, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] Event: RecoveryProposalCreated - %s\n", ev.details.c_str());
-    });
-
-    // RecoveryApproved: parse payload, CRL::revoke + SessionManager::invalidate
-    event_bus_.subscribe(smo::runtime::EventType::RecoveryApproved, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] Event: RecoveryApproved - %s\n", ev.details.c_str());
-
-        std::string payload = ev.details;
-        size_t brace_pos = payload.find('{');
-        if (brace_pos == std::string::npos)
-        {
-            std::printf("[smo-node] WARNING: RecoveryApproved payload missing JSON\n");
-            return;
-        }
-        std::string json_str = payload.substr(brace_pos);
-
-        // Simple JSON parsing (avoid external dependency for now)
-        auto extract_field = [&](const std::string& json, const std::string& key) -> std::string {
-            std::string search = "\"" + key + "\":\"";
-            size_t pos = json.find(search);
-            if (pos == std::string::npos)
-                return "";
-            pos += search.length();
-            size_t end = json.find('"', pos);
-            if (end == std::string::npos)
-                return "";
-            return json.substr(pos, end - pos);
-        };
-        auto extract_uint = [&](const std::string& json, const std::string& key) -> uint64_t {
-            std::string search = "\"" + key + "\":";
-            size_t pos = json.find(search);
-            if (pos == std::string::npos)
-                return 0;
-            pos += search.length();
-            size_t end = json.find_first_of(",}", pos);
-            if (end == std::string::npos)
-                return 0;
-            return std::stoull(json.substr(pos, end - pos));
-        };
-
-        std::string fingerprint = extract_field(json_str, "fingerprint");
-        std::string node_id_hex = extract_field(json_str, "node_id_hex");
-        std::string reason = extract_field(json_str, "reason");
-        uint64_t epoch = extract_uint(json_str, "epoch");
-
-        if (fingerprint.empty() || node_id_hex.empty())
-        {
-            std::printf("[smo-node] WARNING: RecoveryApproved payload incomplete\n");
-            return;
-        }
-
-        // 1. CRL::revoke(fingerprint)
-        auto now_ns = now_ns_since_epoch();
-        auto rev_res = crl_.revoke(fingerprint, node_id_hex, reason, epoch, now_ns);
-        if (!rev_res)
-        {
-            std::printf("[smo-node] CRL revoke failed: %s\n", rev_res.error().message.c_str());
-        }
-        else
-        {
-            std::printf("[smo-node] CRL: revoked cert %s (epoch=%llu)\n", fingerprint.c_str(),
-                        (unsigned long long)epoch);
-        }
-
-        // 2. SessionManager::invalidate(node_id) - convert hex to NodeID
-        if (node_id_hex.size() == 64)
-        { // 32 bytes = 64 hex chars
-            smo::NodeID node_id;
-            for (size_t i = 0; i < 32 && i * 2 + 1 < node_id_hex.size(); ++i)
-            {
-                unsigned int byte = 0;
-                std::istringstream iss(node_id_hex.substr(i * 2, 2));
-                iss >> std::hex >> byte;
-                node_id.value[i] = static_cast<uint8_t>(byte);
-            }
-            size_t invalidated = session_mgr_.invalidate(node_id);
-            std::printf("[smo-node] SessionManager: invalidated %zu sessions for node %s\n", invalidated,
-                        node_id_hex.c_str());
-        }
-
-        // 3. Discovery: gossip CRL update (trigger membership sync)
-        std::printf("[smo-node] Discovery: CRL update triggered (gossip will propagate)\n");
-
-        // 4. Audit: log revocation
-        std::printf("[smo-node] AUDIT: Certificate revoked - fingerprint=%s node=%s reason=%s epoch=%llu\n",
-                    fingerprint.c_str(), node_id_hex.c_str(), reason.c_str(), (unsigned long long)epoch);
-    });
-
-    // Trust score changes -> Audit log
-    event_bus_.subscribe(smo::runtime::EventType::SecurityAlert, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] AUDIT: Trust score change - %s\n", ev.details.c_str());
-    });
-
-    // Session disconnect -> Discovery membership update
-    event_bus_.subscribe(smo::runtime::EventType::NodeDisconnected, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] Discovery: Node disconnected - %s\n", ev.details.c_str());
-    });
-
-    // Trust score change -> Audit log
-    event_bus_.subscribe(smo::runtime::EventType::AuditLogged, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] AUDIT: %s\n", ev.details.c_str());
-    });
-
-    // Governance proposal updates -> all nodes
-    event_bus_.subscribe(smo::runtime::EventType::ProposalCreated, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] GOVERNANCE: Proposal created - %s\n", ev.details.c_str());
-    });
-    event_bus_.subscribe(smo::runtime::EventType::ProposalVoted, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] GOVERNANCE: Vote cast - %s\n", ev.details.c_str());
-    });
-    event_bus_.subscribe(smo::runtime::EventType::ProposalCommitted, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] GOVERNANCE: Proposal committed - %s\n", ev.details.c_str());
-    });
-    event_bus_.subscribe(smo::runtime::EventType::ProposalRejected, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] GOVERNANCE: Proposal rejected - %s\n", ev.details.c_str());
-    });
-
-    // Recovery events
-    event_bus_.subscribe(smo::runtime::EventType::RecoveryStarted, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] RECOVERY: Started - %s\n", ev.details.c_str());
-    });
-    event_bus_.subscribe(smo::runtime::EventType::RecoveryCompleted, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] RECOVERY: Completed - %s\n", ev.details.c_str());
-    });
-    event_bus_.subscribe(smo::runtime::EventType::RecoveryFailed, [&](const smo::runtime::Event& ev) {
-        std::printf("[smo-node] RECOVERY: Failed - %s\n", ev.details.c_str());
-    });
-}
-
-// ===========================================================================
-// _wire_registry_telemetry() — ServiceRegistry + Telemetry (main.cpp 2097-2138)
-// ===========================================================================
-
-void NodeRuntime::Impl::_wire_registry_telemetry()
-{
-    auto& LOG = smo::runtime::global_logger();
-
-    // Register core services in global registry
-    smo::runtime::ServiceRegistry& registry = smo::runtime::global_registry();
-    registry.register_service("event_bus", std::shared_ptr<smo::runtime::EventBus>(&event_bus_, [](auto*) {}));
-    registry.register_service("crl", std::make_shared<smo::recovery::CRL>(crl_));
-    registry.register_service("session_manager", std::make_shared<smo::SessionManager>(session_mgr_));
-    registry.register_service("trust_manager", std::make_shared<smo::TrustManager>(trust_mgr_));
-    registry.register_service("governance_engine", std::make_shared<smo::GovernanceEngine>(governance_engine_));
-    registry.register_service("discovery_engine", std::make_shared<smo::DiscoveryEngine>(discovery_));
-    // Note: PeerStore and GossipEngine are non-copyable, skip for now
-
-    // Telemetry + Metrics (P10)
-    smo::runtime::Telemetry& telemetry = smo::runtime::global_telemetry();
-    telemetry.set_event_bus(&event_bus_);
-
-    // Register core health checks
-    telemetry.register_health_check("crl", [](std::string& err) -> bool { return true; });
-    telemetry.register_health_check("session_mgr", [](std::string& err) -> bool { return true; });
-    telemetry.register_health_check("peer_store", [](std::string& err) -> bool { return true; });
-    telemetry.register_health_check("gossip_engine", [](std::string& err) -> bool { return true; });
-    telemetry.register_health_check("heartbeat", [](std::string& err) -> bool { return true; });
-
-    // Register daemon metrics
-    telemetry.increment_counter("node.startup", "component=main");
-    telemetry.set_gauge("node.state", 1.0, "state=running");
-    telemetry.set_gauge("smo_connected_peers", 0.0, "");
-    telemetry.set_gauge("smo_gossip_queue_depth", 0.0, "");
-    telemetry.set_gauge("smo_membership_epoch", 0.0, "");
-
-    // Print registered services using structured logger
-    {
-        std::string svc_str;
-        auto services = registry.list_services();
-        for (size_t i = 0; i < services.size(); ++i)
-        {
-            if (i > 0)
-                svc_str += ", ";
-            svc_str += services[i];
-        }
-        LOG.info("services: " + svc_str);
-    }
-}
-
-// ===========================================================================
 // start() — anti-entropy + sync service + daemon clock (main.cpp 2143-2198)
 // ===========================================================================
 
@@ -1506,9 +1334,8 @@ Result<void> NodeRuntime::Impl::start()
     LOG.info("entering main loop");
 
     sync_backend_ = std::make_shared<DaemonSyncBackend>(membership_, &crl_);
-    auto ae_config = smo::sync::AntiEntropyService::Config::defaults();
-    anti_entropy_ = std::make_unique<smo::sync::AntiEntropyService>(membership_, gossip_, *sync_backend_, ae_config);
-    anti_entropy_->start();
+    event_registry_service_.start_anti_entropy(*sync_backend_);
+    anti_entropy_ = std::move(event_registry_service_.anti_entropy());
 
     last_tick_ = 0;
     last_peerstore_sync_ = 0;

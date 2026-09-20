@@ -105,7 +105,7 @@ wrong.
 | P7 | Gossip standard handlers | ❌ pending |
 | P8 | Mesh config cleanup | ❌ pending |
 | P9 | Runtime registration cleanup | ❌ pending |
-| P10 | EventBus cleanup | ❌ pending (manual subscribe 2055+) |
+| P7 | EventRegistryService wiring | ✅ DONE — EventRegistryService owns all 12 EventBus subscriptions, ServiceRegistry registration, Telemetry setup, and AntiEntropyService creation, registered via register_all(), smo_runtime+smo-node 100% green |
 | P11 | Session/Identity/Cert cleanup | ❌ pending |
 | P12 | Telemetry cleanup | ❌ pending (telemetry tick inline 2150+) |
 | P13 | Lifecycle cleanup | ❌ pending (FSM 1811 exists but lifecyle owned by main) |

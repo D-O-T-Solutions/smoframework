@@ -13,6 +13,7 @@ add_library(smo_runtime STATIC
     contract_registry.cpp
     telemetry.cpp
     structured_logger.cpp
+    event_registry_service.cpp
     contracts/join_contract.cpp
     contracts/bootstrap_contract.cpp
     contracts/governance_contract.cpp
