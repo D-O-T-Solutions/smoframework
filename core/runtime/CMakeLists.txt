@@ -27,6 +27,11 @@ add_library(smo_runtime STATIC
     node_runtime.cpp
     protocol_service.cpp
     sync_delta_service.cpp
+    telemetry_service.cpp
+    session_manager_service.cpp
+    recovery_trust_service.cpp
+    governance_middleware_service.cpp
+    runtime_kernel_service.cpp
 )
 
 target_include_directories(smo_runtime PUBLIC

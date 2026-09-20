@@ -75,6 +75,12 @@
 #include <core/runtime/event_registry_service.hpp>
 #include <core/runtime/authority_mesh_service.hpp>
 #include <core/runtime/contract_registry_service.hpp>
+#include <core/runtime/telemetry_service.hpp>
+#include <core/runtime/session_manager_service.hpp>
+#include <core/runtime/recovery_trust_service.hpp>
+#include <core/runtime/governance_middleware_service.hpp>
+#include <core/runtime/runtime_kernel_service.hpp>
+#include <core/acl/policy_engine.hpp>
 #include <core/network/sync/anti_entropy.hpp>
 #include <core/network/sync/sync_backend.hpp>
 
@@ -301,10 +307,18 @@ private:
     smo::runtime::ProtocolService protocol_service_;
     smo::runtime::SyncDeltaService sync_delta_service_;
     smo::NodeLifecycleFSM node_fsm_;
+    smo::acl::PolicyEngine policy_engine_;
 
     // anti-entropy
     std::shared_ptr<DaemonSyncBackend> sync_backend_;
     std::unique_ptr<smo::sync::AntiEntropyService> anti_entropy_;
+
+    // services (extracted from run() loop)
+    std::unique_ptr<smo::runtime::TelemetryService> telemetry_service_;
+    std::unique_ptr<smo::runtime::SessionManagerService> session_manager_service_;
+    std::unique_ptr<smo::runtime::RecoveryTrustService> recovery_trust_service_;
+    std::unique_ptr<smo::runtime::GovernanceMiddlewareService> governance_middleware_service_;
+    std::unique_ptr<smo::runtime::RuntimeKernelService> runtime_kernel_service_;
 
     // delta bookkeeping (persisted across initialize/run cycles)
     uint64_t last_crl_epoch_ = 0;
@@ -340,6 +354,7 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , sync_delta_service_(smo::runtime::SyncDeltaService::Config{data_dir_},
                           sync_service_, gossip_, crl_,
                           manifest_store_, policy_store_)
+    , policy_engine_(smo::acl::PolicyEngine::Config{.policy_dir = data_dir_})
     , event_registry_service_(smo::runtime::EventRegistryService::Dependencies{
           .event_bus = event_bus_,
           .session_mgr = session_mgr_,
@@ -357,6 +372,25 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
           .heartbeat = heartbeat_,
           .membership = membership_})
 {
+    // Services constructed after all dependencies are available
+    telemetry_service_ = std::make_unique<smo::runtime::TelemetryService>(
+        smo::runtime::global_telemetry(), smo::runtime::global_logger(), data_dir_);
+    session_manager_service_ = std::make_unique<smo::runtime::SessionManagerService>(session_mgr_, data_dir_);
+    recovery_trust_service_ = std::make_unique<smo::runtime::RecoveryTrustService>(trust_mgr_, recovery_engine_);
+    governance_middleware_service_ = std::make_unique<smo::runtime::GovernanceMiddlewareService>(
+        middleware_pipeline_,
+        smo::runtime::GovernanceMiddlewareService::Dependencies{
+            .governance_engine = &governance_engine_,
+            .trust_mgr = &trust_mgr_,
+            .policy_engine = &policy_engine_,
+            .lifecycle_fsm = &node_fsm_
+        });
+    runtime_kernel_service_ = std::make_unique<smo::runtime::RuntimeKernelService>(
+        smo::runtime::RuntimeKernelService::Dependencies{
+            .event_bus = event_bus_,
+            .output_mgr = output_mgr_,
+            .dispatcher = runtime_dispatcher_,
+            .plan_resolver = plan_resolver_});
 }
 
 // ===========================================================================
@@ -749,12 +783,13 @@ void NodeRuntime::Impl::wire_runtime()
     auto& LOG = smo::runtime::global_logger();
 
     // SessionManager: crash-recover the session store (RFC 0014 6)
+    if (session_manager_service_)
     {
-        int64_t now_ns = now_ns_since_epoch();
-        auto rec_ec = session_mgr_.recover(data_dir_ + "/session_store.bin", now_ns);
-        if (!rec_ec)
+        auto res = session_manager_service_->initialize();
+        if (!res)
         {
-            std::printf("[smo-node] Session store recover failed: %s\n", rec_ec.error().message.c_str());
+            std::printf("[smo-node] SessionManagerService initialization failed: %s\n",
+                        res.error().message.c_str());
         }
     }
 
@@ -778,6 +813,16 @@ void NodeRuntime::Impl::wire_runtime()
     }
 
     event_registry_service_.register_all();
+
+    // Initialize extracted services
+    if (telemetry_service_)
+        telemetry_service_->initialize();
+    if (recovery_trust_service_)
+        recovery_trust_service_->initialize();
+    if (governance_middleware_service_)
+        governance_middleware_service_->initialize();
+    if (runtime_kernel_service_)
+        runtime_kernel_service_->initialize();
 }
 
 // ===========================================================================
@@ -991,20 +1036,21 @@ int NodeRuntime::Impl::run()
         {
             discovery_.tick(now_ns);
             heartbeat_.tick(now_ns);
-            session_mgr_.tick(now_ns);
-            session_mgr_.collect_garbage();
             anti_entropy_->tick(now_ns); // P1: 30-min Merkle tree exchange
 
-            // Decay trust scores over time (RFC 0017 4) and persist them
-            trust_mgr_.tick(now_ns);
+            // Use extracted services for periodic ticks
+            if (session_manager_service_)
+                session_manager_service_->tick(now_ns);
+            if (recovery_trust_service_)
+                recovery_trust_service_->tick(now_ns);
+            if (governance_middleware_service_)
+                governance_middleware_service_->tick(now_ns);
+            if (runtime_kernel_service_)
+                runtime_kernel_service_->tick(now_ns);
+            if (telemetry_service_)
+                telemetry_service_->tick(now_ns, membership_.count(), now_ns - daemon_start_ns_, anti_entropy_->repairs_done());
 
-            // Persist session store so a crash leaves recoverable state (RFC 0014 6)
-            if (auto persist_ec = session_mgr_.persist(data_dir_ + "/session_store.bin"); !persist_ec)
-            {
-                std::printf("[smo-node] Session store persist failed: %s\n", persist_ec.error().message.c_str());
-            }
-
-            // Readiness check (P2)
+            // Readiness check (P2) - keep inline for now as it involves logging
             int64_t uptime_ns = now_ns - daemon_start_ns_;
             if (!daemon_ready_logged_ && uptime_ns > 30'000'000'000LL)
             {
@@ -1026,26 +1072,6 @@ int NodeRuntime::Impl::run()
                              " gossip_rx=" + std::string(gossip_rx ? "yes" : "no") +
                              " uptime=" + std::to_string(uptime_ns / 1'000'000'000) + "s");
                     daemon_degraded_logged_ = true;
-                }
-            }
-
-            // Telemetry tick metrics (P10)
-            telemetry.set_gauge("smo_connected_peers", static_cast<double>(membership_.count()), "");
-            telemetry.set_gauge("smo_membership_epoch", static_cast<double>(now_ns % 1'000'000), "");
-            telemetry.set_gauge("smo_anti_entropy_repairs_total",
-                                static_cast<double>(anti_entropy_->repairs_done()), "");
-
-            // Export Prometheus metrics to file for scraping
-            {
-                std::string metrics_path = data_dir_ + "/metrics.prom";
-                auto metrics_str = telemetry.export_prometheus();
-                if (!metrics_str.empty())
-                {
-                    if (auto f = std::fopen(metrics_path.c_str(), "w"))
-                    {
-                        std::fwrite(metrics_str.data(), 1, metrics_str.size(), f);
-                        std::fclose(f);
-                    }
                 }
             }
 
@@ -1171,6 +1197,18 @@ void NodeRuntime::Impl::shutdown()
 {
     auto& LOG = smo::runtime::global_logger();
     LOG.info("shutting down...");
+
+    // Shutdown extracted services
+    if (telemetry_service_)
+        telemetry_service_->shutdown();
+    if (session_manager_service_)
+        session_manager_service_->shutdown();
+    if (recovery_trust_service_)
+        recovery_trust_service_->shutdown();
+    if (governance_middleware_service_)
+        governance_middleware_service_->shutdown();
+    if (runtime_kernel_service_)
+        runtime_kernel_service_->shutdown();
 
     gossip_.stop();
     sync_service_.stop();
