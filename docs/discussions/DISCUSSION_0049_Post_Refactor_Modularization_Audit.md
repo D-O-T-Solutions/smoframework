@@ -72,7 +72,7 @@ Committed sections found inline (line numbers from `git show 5fb9f16` / working 
 | Phase 2 | `core/network/connection_manager.{hpp,cpp}` | ✅ DONE — ConnectionManager owns accept loop (Config/AcceptFn/Hook plain/secure + accept_once()), compiles into smo_core, wired into NodeRuntime::Impl::run() with real PQ hooks (crypto_/dispatcher_/session_mgr_), smo_runtime+smo-node 100% green |
 | Phase 3 | `core/network/udp_server.{hpp,cpp}` | ✅ DONE — UdpServer owns UDP datagram loop (Config/RecvFn/Hook + recv_once()), compiles into smo_core, wired into NodeRuntime::Impl::run() with DiscoveryEngine dispatch hook, smo_runtime+smo-node 100% green |
 | Phase 4 | `BootstrapClient` USED by main | ✅ DONE — BootstrapClient wired into NodeRuntime::connect_to_seed() with real PQ handshake + HELLO/WELCOME protocol, uses in-memory crypto material (server_cert_blob_, server_signing_key_, root_public_key_, mesh_id_str_), smo_runtime+smo-node 100% green |
-| Phase 5 | Raw protocol dispatch removal | **NOT done** — raw handler at 1853+ inline |
+| Phase 5 | Raw protocol dispatch removal | ✅ DONE — ProtocolService owns raw CBOR/discovery dispatch (JoinRequest, BootstrapSyncRequest, HelloMsg, PingMsg), registered with PacketDispatcher as raw handler, smo_runtime+smo-node 100% green |
 
 ---
 
