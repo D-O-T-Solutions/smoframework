@@ -14,6 +14,8 @@ add_library(smo_runtime STATIC
     telemetry.cpp
     structured_logger.cpp
     event_registry_service.cpp
+    authority_mesh_service.cpp
+    contract_registry_service.cpp
     contracts/join_contract.cpp
     contracts/bootstrap_contract.cpp
     contracts/governance_contract.cpp

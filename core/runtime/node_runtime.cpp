@@ -73,6 +73,8 @@
 #include <core/runtime/telemetry.hpp>
 #include <core/runtime/structured_logger.hpp>
 #include <core/runtime/event_registry_service.hpp>
+#include <core/runtime/authority_mesh_service.hpp>
+#include <core/runtime/contract_registry_service.hpp>
 #include <core/network/sync/anti_entropy.hpp>
 #include <core/network/sync/sync_backend.hpp>
 
@@ -240,12 +242,11 @@ public:
     void subscribe_membership_events();
     void wire_runtime();
     void _wire_sync_services();
-    void _wire_contracts();
-    void _wire_routes();
-    void _wire_packet_handlers();
 
 private:
     smo::runtime::EventRegistryService event_registry_service_;
+    std::unique_ptr<smo::runtime::AuthorityMeshService> authority_mesh_service_;
+    std::unique_ptr<smo::runtime::ContractRegistryService> contract_registry_service_;
     NodeRuntimeConfig config_;
     std::string data_dir_;
 
@@ -530,6 +531,40 @@ Result<void> NodeRuntime::Impl::initialize()
     self_record_.state = smo::PeerState::Online;
     self_record_.last_seen = now_ns_since_epoch();
 
+    // Construct services now that crypto_ and identity_ are available
+    std::string mesh_base_dir = config_.mesh_dir.empty() ? "" :
+        config_.mesh_dir.substr(0, config_.mesh_dir.rfind("/meshes/") + 7);
+    authority_mesh_service_ = std::make_unique<smo::runtime::AuthorityMeshService>(
+        smo::runtime::AuthorityMeshService::Config{
+            .mesh_dir = config_.mesh_dir,
+            .data_dir = mesh_base_dir},
+        smo::runtime::AuthorityMeshService::Dependencies{
+            .crypto = crypto_,
+            .mesh_manager = mesh_manager_,
+            .authority = authority_});
+
+    contract_registry_service_ = std::make_unique<smo::runtime::ContractRegistryService>(
+        smo::runtime::ContractRegistryService::Config{
+            .data_dir = config_.data_dir},
+        smo::runtime::ContractRegistryService::Dependencies{
+            .mesh_manager = mesh_manager_,
+            .authority = authority_,
+            .governance_engine = governance_engine_,
+            .crl = crl_,
+            .session_mgr = session_mgr_,
+            .trust_mgr = trust_mgr_,
+            .recovery_engine = recovery_engine_,
+            .runtime_dispatcher = runtime_dispatcher_,
+            .runtime_bridge = runtime_bridge_,
+            .middleware_pipeline = middleware_pipeline_,
+            .packet_dispatcher = dispatcher_,
+            .node_fsm = node_fsm_,
+            .protocol_service = protocol_service_,
+            .event_bus = event_bus_,
+            .membership = membership_,
+            .crypto = crypto_,
+            .identity = identity_});
+
     print_mesh_bootstrap_summary();
     connect_to_seed();
     subscribe_membership_events();
@@ -723,116 +758,25 @@ void NodeRuntime::Impl::wire_runtime()
         }
     }
 
-    // MeshAuthority for certificate signing and key management
-    if (!config_.mesh_dir.empty())
+    // Initialize Authority and MeshManager via service
+    if (authority_mesh_service_)
     {
-        std::string authority_mesh_id;
-        std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
-        std::ifstream mf(mesh_json_path);
-        if (mf)
+        auto res = authority_mesh_service_->initialize();
+        if (!res)
         {
-            std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
-            auto mpos = mjson.find("\"mesh_id\"");
-            if (mpos != std::string::npos)
-            {
-                auto mcolon = mjson.find(':', mpos);
-                auto mstart = mjson.find('"', mcolon + 1);
-                auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
-                if (mstart != std::string::npos && mend != std::string::npos)
-                    authority_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
-            }
-        }
-        smo::authority::MeshAuthority::Config acfg;
-        acfg.mesh_id = authority_mesh_id;
-        acfg.data_dir = config_.mesh_dir;
-        acfg.registry_path = config_.mesh_dir + "/node_registry.db";
-        auto auth_rng = crypto_->default_rng();
-        if (auto ar = authority_.init(*crypto_, auth_rng); !ar)
-        {
-            std::printf("[smo-node] Warning: failed to init MeshAuthority: %s\n", ar.error().message.c_str());
-        }
-        else if (auto ar2 = authority_.open(acfg); !ar2)
-        {
-            std::printf("[smo-node] Warning: failed to open MeshAuthority at %s: %s\n", config_.mesh_dir.c_str(),
-                        ar2.error().message.c_str());
-        }
-        else
-        {
-            std::printf("[smo-node] MeshAuthority opened (mesh_id=%s, registry=%s)\n", acfg.mesh_id.c_str(),
-                        acfg.registry_path.c_str());
-            // Open the mesh for bootstrap sync
-            if (auto mh = mesh_manager_.open_mesh(authority_mesh_id); !mh)
-            {
-                std::printf("[smo-node] Warning: failed to open mesh %s: %s\n", authority_mesh_id.c_str(),
-                            mh.error().message.c_str());
-            }
-            else
-            {
-                std::printf("[smo-node] Mesh opened for bootstrap sync: %s\n", authority_mesh_id.c_str());
-            }
-        }
-        // Initialize mesh manager to discover meshes
-        if (auto mi = mesh_manager_.initialize(); !mi)
-        {
-            std::printf("[smo-node] Warning: failed to initialize MeshManager: %s\n", mi.error().message.c_str());
-        }
-        else
-        {
-            std::printf("[smo-node] MeshManager initialized\n");
-            // Register existing mesh in catalog for bootstrap sync
-            std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
-            std::ifstream mf(mesh_json_path);
-            if (mf)
-            {
-                std::string mjson((std::istreambuf_iterator<char>(mf)), std::istreambuf_iterator<char>());
-                auto mpos = mjson.find("\"mesh_id\"");
-                std::string catalog_mesh_id = authority_mesh_id;
-                if (mpos != std::string::npos)
-                {
-                    auto mcolon = mjson.find(':', mpos);
-                    auto mstart = mjson.find('"', mcolon + 1);
-                    auto mend = mstart != std::string::npos ? mjson.find('"', mstart + 1) : std::string::npos;
-                    if (mstart != std::string::npos && mend != std::string::npos)
-                        catalog_mesh_id = mjson.substr(mstart + 1, mend - mstart - 1);
-                }
-                // Insert into catalog if not present
-                std::string catalog_db =
-                    config_.mesh_dir.substr(0, config_.mesh_dir.rfind("/meshes/") + 7) + "/catalog.db";
-                sqlite3* cat_db = nullptr;
-                if (sqlite3_open(catalog_db.c_str(), &cat_db) == SQLITE_OK)
-                {
-                    std::string sql = "INSERT OR IGNORE INTO meshes (mesh_id, display_name, authority_pubkey, "
-                                      "root_pubkey, epoch, created_at, config_json) "
-                                      "VALUES (?, ?, '', '', 1, strftime('%s','now'), ?)";
-                    sqlite3_stmt* stmt = nullptr;
-                    if (sqlite3_prepare_v2(cat_db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK)
-                    {
-                        sqlite3_bind_text(stmt, 1, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
-                        sqlite3_bind_text(stmt, 2, catalog_mesh_id.c_str(), -1, SQLITE_STATIC);
-                        sqlite3_bind_text(stmt, 3, mjson.c_str(), -1, SQLITE_STATIC);
-                        sqlite3_step(stmt);
-                        sqlite3_finalize(stmt);
-                    }
-                    sqlite3_close(cat_db);
-                }
-            }
-            // Set the mesh as active for bootstrap sync
-            if (auto sw = mesh_manager_.switch_mesh(authority_mesh_id); !sw)
-            {
-                std::printf("[smo-node] Warning: failed to switch to mesh %s: %s\n", authority_mesh_id.c_str(),
-                            sw.error().message.c_str());
-            }
-            else
-            {
-                std::printf("[smo-node] Mesh set as active: %s\n", authority_mesh_id.c_str());
-            }
+            std::printf("[smo-node] Warning: AuthorityMeshService initialization failed: %s\n",
+                        res.error().message.c_str());
         }
     }
 
     sync_delta_service_.register_delta_handlers();
-    _wire_contracts();
-    _wire_routes();
-    _wire_packet_handlers();
+
+    // Register contracts, routes, and packet handlers via service
+    if (contract_registry_service_)
+    {
+        contract_registry_service_->register_all();
+    }
+
     event_registry_service_.register_all();
 }
 
@@ -998,330 +942,6 @@ void NodeRuntime::Impl::_wire_sync_services()
         }
         return {};
     });
-}
-
-// ===========================================================================
-// _wire_contracts() — register all runtime contracts (main.cpp 1549-1610)
-// ===========================================================================
-
-void NodeRuntime::Impl::_wire_contracts()
-{
-    // Echo (legacy, for backwards compat)
-    runtime_dispatcher_.register_contract("system.echo", std::make_unique<smo::runtime::EchoContract>());
-
-    // BootstrapContract: mesh bootstrap snapshots
-    runtime_dispatcher_.register_contract(
-        "system.bootstrap",
-        std::make_unique<smo::runtime::BootstrapContract>(mesh_manager_, authority_, &governance_engine_, nullptr));
-
-    // JoinContract: node enrollment
-    {
-        auto rng = crypto_->default_rng();
-        runtime_dispatcher_.register_contract(
-            "system.join", std::make_unique<smo::runtime::JoinContract>(crypto_->hash, crypto_->signer, rng));
-    }
-
-    // GovernanceContract: proposals, voting, commit
-    runtime_dispatcher_.register_contract(
-        "system.governance", std::make_unique<smo::runtime::GovernanceContract>(governance_engine_, authority_));
-
-    // RecoveryContract: recovery sessions, CRL
-    runtime_dispatcher_.register_contract(
-        "system.recovery",
-        std::make_unique<smo::runtime::RecoveryContract>(recovery_engine_, &crl_, governance_engine_));
-
-    // FileContract: filesystem operations
-    runtime_dispatcher_.register_contract("system.file", std::make_unique<smo::runtime::FileContract>());
-
-    // ProcessContract: process management
-    runtime_dispatcher_.register_contract("system.process", std::make_unique<smo::runtime::ProcessContract>());
-
-    // DeploymentContract: contract deploy/undeploy/status/trace lifecycle
-    runtime_dispatcher_.register_contract("system.contracts",
-                                          std::make_unique<smo::runtime::DeploymentContract>(data_dir_));
-
-    // TrustContract (RFC 0017): peer trust scores + witness attestation/selection.
-    {
-        auto trust_contract = std::make_unique<smo::runtime::TrustContract>(&trust_mgr_, data_dir_);
-        trust_contract->set_signer([this](smo::BytesView msg) {
-            auto rng = crypto_->default_rng();
-            auto sig = crypto_->signer.sign(
-                msg, smo::Bytes(identity_.secret_key().begin(), identity_.secret_key().end()), rng);
-            if (!sig)
-                return smo::Bytes{};
-            return sig.value();
-        });
-        trust_contract->set_membership_provider([this]() {
-            std::vector<smo::NodeID> online;
-            std::vector<smo::NodeID> all;
-            for (const auto& entry : membership_.peers())
-            {
-                all.push_back(entry.node_id);
-            }
-            for (const auto& entry : membership_.peers_with_state(smo::PeerState::Online))
-            {
-                online.push_back(entry.node_id);
-            }
-            return std::make_pair(std::move(online), std::move(all));
-        });
-        runtime_dispatcher_.register_contract("system.trust", std::move(trust_contract));
-    }
-}
-
-// ===========================================================================
-// _wire_routes() — RuntimeBridge opcode -> contract routes (main.cpp 1628-1664)
-// ===========================================================================
-
-void NodeRuntime::Impl::_wire_routes()
-{
-    // Echo
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::ECHO), "system.echo", "echo");
-
-    // BootstrapContract
-    runtime_bridge_.register_route(smo::bootstrap::kOpcodeBootstrapRequest, "system.bootstrap", "request");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT), "system.bootstrap",
-                                   "snapshot");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO), "system.bootstrap", "info");
-    runtime_bridge_.register_route(smo::join::kOpcodeBootstrapSyncReq, "system.bootstrap", "bootstrap_sync");
-
-    // JoinContract
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::JOIN), "system.join", "join");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::LEAVE), "system.join", "leave");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::JOIN_INFO), "system.join", "info");
-
-    // GovernanceContract
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE), "system.governance", "propose");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_VOTE), "system.governance", "vote");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_COMMIT), "system.governance", "commit");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_LIST), "system.governance", "list");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_STATUS), "system.governance", "status");
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::GOV_INFO), "system.governance", "info");
-
-    // RecoveryContract (single opcode, method in payload)
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::RECOVERY), "system.recovery", "invoke");
-
-    // FileContract (single opcode, method in payload)
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::FILE_OP), "system.file", "invoke");
-
-    // ProcessContract (single opcode, method in payload)
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::PROCESS), "system.process", "invoke");
-
-    // DeploymentContract (single opcode, method in payload)
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), "system.contracts", "invoke");
-
-    // TrustContract (single opcode, method in payload, RFC 0017)
-    runtime_bridge_.register_route(static_cast<uint32_t>(smo::Opcode::WITNESS), "system.trust", "invoke");
-}
-
-// ===========================================================================
-// _wire_packet_handlers() — dispatcher setup, PacketDispatcher, lifecycle FSM,
-// raw protocol handler (main.cpp 1666-1957). Note: MiddlewarePipeline setup
-// (1625-1623) is a prerequisite of the runtime handler and is inlined below.
-// ===========================================================================
-
-void NodeRuntime::Impl::_wire_packet_handlers()
-{
-    auto& LOG = smo::runtime::global_logger();
-
-    // Middleware Pipeline
-    auto policy_mw = std::make_unique<smo::runtime::PolicyMiddleware>(&trust_mgr_);
-    policy_mw->set_anonymous("system.bootstrap", true);
-    policy_mw->set_anonymous("system.join", true);
-    // CLI/operator packets carry no session yet (transport is PQ-secured);
-    // keep file/process opcodes reachable without an SMO session.
-    policy_mw->set_anonymous("system.file", true);
-    policy_mw->set_anonymous("system.process", true);
-    policy_mw->set_anonymous("system.contracts", true);
-    policy_mw->set_anonymous("system.trust", true);
-    middleware_pipeline_.push(std::move(policy_mw));
-
-    // Runtime handler: session -> middleware -> bridge -> execute -> send response
-    auto runtime_handler = [this](smo::Packet&& pkt, const smo::Endpoint& remote,
-                                  smo::network::hl::Transport& t) -> smo::Result<void> {
-        std::string remote_str = remote.host + ":" + std::to_string(remote.port);
-        std::printf("[smo-node] Packet received opcode=0x%x from %s\n", pkt.opcode_id, remote_str.c_str());
-
-        // 1. Session lookup (if session_id present)
-        const smo::Session* session = nullptr;
-        bool has_session = pkt.session_id().size() >= 16;
-        if (has_session)
-        {
-            auto sid_res = smo::SessionId::from_bytes(smo::BytesView(pkt.session_id().data(), 16));
-            if (sid_res)
-            {
-                session = session_mgr_.lookup(sid_res.value());
-            }
-        }
-
-        // 2. Middleware pipeline: validate + policy
-        smo::runtime::PacketContext mw_ctx;
-        mw_ctx.session = session;
-        auto* route = runtime_bridge_.resolve(pkt.opcode_id);
-        if (route)
-        {
-            mw_ctx.contract_id = route->contract_id;
-            mw_ctx.method = route->method;
-        }
-        mw_ctx.payload = smo::BytesView(pkt.payload.data(), pkt.payload.size());
-        {
-            char hex[16];
-            std::snprintf(hex, sizeof(hex), "0x%04x", pkt.opcode_id);
-            mw_ctx.opcode_hex = hex;
-        }
-
-        auto mw_res = middleware_pipeline_.process(mw_ctx);
-        if (!mw_res)
-        {
-            std::printf("[smo-node] Middleware denied: %s\n", mw_res.error().message.c_str());
-            return mw_res.error();
-        }
-        if (mw_ctx.denied)
-        {
-            std::printf("[smo-node] Policy denied: %s\n", mw_ctx.deny_reason.c_str());
-            return smo::Error(smo::ErrorCode(smo::ErrorCategory::Session, 507, smo::Severity::Error,
-                                             smo::RetryClass::NoRetry, smo::Recovery::None),
-                              mw_ctx.deny_reason, __FILE__, __LINE__);
-        }
-
-        // 3. Bridge: Packet -> RuntimeKernel -> RuntimeResult
-        auto original_pkt = pkt;
-
-        // Send an error response packet back to the requester.
-        auto send_error_packet = [&](const std::string& message) {
-            smo::Packet err_resp;
-            err_resp.header = original_pkt.header;
-            err_resp.opcode_id = original_pkt.opcode_id;
-            err_resp.session_id() = original_pkt.session_id();
-            err_resp.intent_id = original_pkt.intent_id;
-            err_resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                       std::chrono::system_clock::now().time_since_epoch())
-                                       .count();
-            err_resp.payload.assign(message.begin(), message.end());
-            (void)t.send(std::move(err_resp), remote);
-        };
-
-        auto rt_result = runtime_bridge_.bridge(std::move(pkt));
-        if (!rt_result)
-        {
-            std::printf("[smo-node] RuntimeBridge failed: %s\n", rt_result.error().message.c_str());
-            send_error_packet("error: " + rt_result.error().message);
-            return rt_result.error();
-        }
-
-        // 4. Execute each NextAction via ActionExecutor
-        auto& next_actions = rt_result.value().next_actions;
-        if (next_actions.empty())
-        {
-            // No async actions: deliver the contract result directly as the
-            // response packet so request/response clients (CLI) get an answer.
-            if (rt_result.value().output)
-            {
-                smo::Packet resp;
-                resp.header = original_pkt.header;
-                resp.opcode_id = original_pkt.opcode_id;
-                resp.session_id() = original_pkt.session_id();
-                resp.intent_id = original_pkt.intent_id;
-                resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                       std::chrono::system_clock::now().time_since_epoch())
-                                       .count();
-
-                const auto& out = rt_result.value().output.value();
-                if (!out.binary.empty())
-                {
-                    resp.payload = out.binary;
-                }
-                else
-                {
-                    resp.payload.assign(out.data.begin(), out.data.end());
-                }
-
-                auto send_ec = t.send(std::move(resp), remote);
-                if (send_ec)
-                {
-                    std::printf("[smo-node] Response send failed: %s\n", send_ec.message().c_str());
-                    return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport,
-                                                     static_cast<uint16_t>(send_ec.value()), smo::Severity::Error,
-                                                     smo::RetryClass::RetrySafe, smo::Recovery::None),
-                                      "response send failed", __FILE__, __LINE__);
-                }
-            }
-            else
-            {
-                std::printf("[smo-node] No next actions and no output - result: %s\n",
-                            rt_result.value().output ? rt_result.value().output->data.c_str() : "(no output)");
-            }
-            return {};
-        }
-
-        for (auto& action : next_actions)
-        {
-            smo::runtime::ActionExecutor executor(
-                [&](smo::Packet&& resp) -> smo::Result<void> {
-                    auto ec = t.send(std::move(resp), remote);
-                    if (ec)
-                    {
-                        return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport,
-                                                         static_cast<uint16_t>(ec.value()), smo::Severity::Error,
-                                                         smo::RetryClass::RetrySafe, smo::Recovery::None),
-                                          "ActionExecutor send failed", __FILE__, __LINE__);
-                    }
-                    return {};
-                },
-                &event_bus_);
-            auto exec_res = executor.execute(action, original_pkt);
-            if (!exec_res)
-            {
-                std::printf("[smo-node] ActionExecutor failed: %s\n", exec_res.error().message.c_str());
-            }
-        }
-
-        return {};
-    };
-
-    // Node Lifecycle FSM
-    node_fsm_.on_event(smo::NodeLifecycleEvent::IDENTITY_CREATED);
-
-    // Authority node: transition to ACTIVE since it has a cert and is the mesh root
-    if (!server_cert_blob_.empty())
-    {
-        node_fsm_.on_event(smo::NodeLifecycleEvent::CSR_EXPORTED);
-        node_fsm_.on_event(smo::NodeLifecycleEvent::CERT_IMPORTED);
-        node_fsm_.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_START);
-        node_fsm_.on_event(smo::NodeLifecycleEvent::BOOTSTRAP_COMPLETE);
-        node_fsm_.on_event(smo::NodeLifecycleEvent::JOIN_COMPLETE);
-        node_fsm_.on_event(smo::NodeLifecycleEvent::SYNC_COMPLETE);
-    }
-    std::printf("[smo-node] Node state: %s\n", node_fsm_.state_name().c_str());
-
-    // PacketDispatcher setup
-    dispatcher_.set_lifecycle_fsm(&node_fsm_);
-    dispatcher_.set_gossip_engine(&gossip_);
-
-    // Register runtime handler for all contract opcodes
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::ECHO), runtime_handler);
-    dispatcher_.register_handler(smo::bootstrap::kOpcodeBootstrapRequest, runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_SNAPSHOT), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::BOOTSTRAP_INFO), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::JOIN), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::LEAVE), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::JOIN_INFO), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_PROPOSE), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_VOTE), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_COMMIT), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_LIST), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_STATUS), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::GOV_INFO), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::RECOVERY), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::FILE_OP), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::PROCESS), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::CONTRACT_MGMT), runtime_handler);
-    dispatcher_.register_handler(static_cast<uint32_t>(smo::Opcode::WITNESS), runtime_handler);
-    dispatcher_.register_handler(smo::join::kOpcodeBootstrapSyncReq, runtime_handler);
-
-        // Raw handler delegated to ProtocolService (Phase 5).
-    protocol_service_.register_raw_handler(dispatcher_);
-
-    (void)LOG;
 }
 
 // ===========================================================================
