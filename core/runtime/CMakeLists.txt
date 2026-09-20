@@ -23,6 +23,7 @@ add_library(smo_runtime STATIC
     contracts/trust_contract.cpp
     node_runtime.cpp
     protocol_service.cpp
+    sync_delta_service.cpp
 )
 
 target_include_directories(smo_runtime PUBLIC

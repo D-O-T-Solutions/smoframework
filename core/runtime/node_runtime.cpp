@@ -43,6 +43,7 @@
 #include <sqlite3.h>
 #include <core/network/packet_dispatcher.hpp>
 #include <core/runtime/protocol_service.hpp>
+#include <core/runtime/sync_delta_service.hpp>
 #include <core/network/connection_manager.hpp>
 #include <core/network/udp_server.hpp>
 #include <core/bootstrap/bootstrap_client.hpp>
@@ -297,6 +298,7 @@ private:
     smo::runtime::RuntimeBridge runtime_bridge_;
     smo::network::PacketDispatcher dispatcher_;
     smo::runtime::ProtocolService protocol_service_;
+    smo::runtime::SyncDeltaService sync_delta_service_;
     smo::NodeLifecycleFSM node_fsm_;
 
     // anti-entropy
@@ -334,6 +336,9 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , protocol_service_(smo::runtime::ProtocolService::Config{},
                         discovery_, mesh_manager_, authority_, crl_,
                         local_id_, self_record_)
+    , sync_delta_service_(smo::runtime::SyncDeltaService::Config{data_dir_},
+                          sync_service_, gossip_, crl_,
+                          manifest_store_, policy_store_)
 {
 }
 
@@ -808,7 +813,7 @@ void NodeRuntime::Impl::wire_runtime()
         }
     }
 
-    _wire_sync_services();
+    sync_delta_service_.register_delta_handlers();
     _wire_contracts();
     _wire_routes();
     _wire_packet_handlers();

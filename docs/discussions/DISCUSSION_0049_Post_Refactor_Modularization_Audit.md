@@ -101,7 +101,7 @@ wrong.
 | P3 | UdpServer | ❌ not done | UDP loop `main.cpp:2270–2288` |
 | P4 | BootstrapClient wiring | ❌ class exists, not used | main inlines seed connect `1139–1233` |
 | P5 | Raw dispatch removal | ❌ not done | raw handler `1853+`; only *some* demux moved to PacketDispatcher |
-| P6 | SyncService standard wiring | ❌ pending (lambdas inline 1375+) |
+| P6 | SyncService standard wiring | ✅ DONE — SyncDeltaService owns all delta callbacks (CRL, Policy, Manifest, Routing, Contracts) and GossipEngine delta handlers, registered via register_delta_handlers(), smo_runtime+smo-node 100% green |
 | P7 | Gossip standard handlers | ❌ pending |
 | P8 | Mesh config cleanup | ❌ pending |
 | P9 | Runtime registration cleanup | ❌ pending |
