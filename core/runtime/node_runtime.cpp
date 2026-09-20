@@ -43,6 +43,7 @@
 #include <sqlite3.h>
 #include <core/network/packet_dispatcher.hpp>
 #include <core/network/connection_manager.hpp>
+#include <core/network/udp_server.hpp>
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
 #include <core/join/join_protocol.hpp>
@@ -1730,25 +1731,38 @@ int NodeRuntime::Impl::run()
             last_tick_ = now_ns;
         }
 
-        // UDP Discovery: read and dispatch datagrams (5.20)
-        if (udp_listener_)
-        {
-            while (true)
-            {
-                auto udp_session = udp_listener_->accept();
-                if (!udp_session)
-                    break;
+        // UDP Discovery: read and dispatch datagrams (5.20) — delegated to UdpServer (Phase 3).
+        // -----------------------------------------------------------------
+        // Composition root injects recvfrom() + discovery dispatch hook so
+        // DiscoveryEngine stays NodeRuntime-owned; UdpServer only moves bytes /
+        // parses the remote Endpoint / closes the session.
+        smo::network::UdpServer::Config udp_cfg;
+        udp_cfg.default_port     = static_cast<uint16_t>(config_.port);
+        udp_cfg.max_datagram_size = 8192;
 
-                auto recv_data = udp_session.value()->recv(8192);
-                if (recv_data)
-                {
-                    smo::Endpoint from = udp_session.value()->remote_endpoint();
-                    telemetry.increment_counter("udp.datagrams_received", "component=discovery");
-                    (void)smo::dispatch_discovery_datagram(recv_data.value(), discovery_, from, now_ns);
-                }
-                udp_session.value()->close();
+        smo::network::UdpServer::RecvFn udp_recv = [&]()
+        {
+            if (!udp_listener_)
+                return smo::Result<smo::SessionPtr>{};
+            return udp_listener_->accept();
+        };
+
+        // Discovery dispatch hook — owns & closes the session.
+        smo::network::UdpServer::Hook udp_dispatch =
+            [&](smo::SessionPtr& session, const smo::Endpoint& remote_ep)
+        {
+            auto recv_data = session->recv(8192);
+            if (recv_data)
+            {
+                telemetry.increment_counter("udp.datagrams_received", "component=discovery");
+                (void)smo::dispatch_discovery_datagram(recv_data.value(), discovery_, remote_ep, now_ns);
             }
-        }
+            session->close();
+            return smo::Result<void>{};
+        };
+
+        smo::network::UdpServer udp_server(udp_cfg, udp_recv, udp_dispatch);
+        udp_server.recv_once();
 
         // Periodic PeerStore sync
         if (now_ns - last_peerstore_sync_ > 30000000000LL)

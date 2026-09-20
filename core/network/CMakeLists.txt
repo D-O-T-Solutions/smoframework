@@ -19,6 +19,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/nat_detect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/packet_dispatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connection_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/udp_server.cpp
 )
 
 target_sources(smo_core INTERFACE
