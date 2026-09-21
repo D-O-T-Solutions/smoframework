@@ -95,8 +95,11 @@ namespace smo::network
         stop_requested_.store(true);
     }
 
-    bool ConnectionManager::stop_requested() const
-    {
-        return stop_requested_.load();
-    }
+bool ConnectionManager::stop_requested() const
+{
+    return stop_requested_.load();
+}
+
+ConnectionManager::~ConnectionManager() = default;
+
 } // namespace smo::network

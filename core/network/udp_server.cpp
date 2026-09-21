@@ -77,9 +77,11 @@ namespace smo::network
         stop_requested_.store(true);
     }
 
-    bool UdpServer::stop_requested() const
-    {
-        return stop_requested_.load();
-    }
+bool UdpServer::stop_requested() const
+{
+    return stop_requested_.load();
+}
+
+UdpServer::~UdpServer() = default;
 
 } // namespace smo::network
