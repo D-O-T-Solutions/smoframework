@@ -191,6 +191,7 @@ void write_endpoint(Bytes& out, const Endpoint& ep)
 
         write_endpoint(out, endpoint);
         write_mapped_address(out, mapped_address);
+        out.push_back(relay_capable ? 1 : 0); // N3: relay capability
         // rtt_ms after endpoint for backward compat
         write_u64(out, static_cast<uint64_t>(rtt_ms * 1000.0)); // store as microseconds
         return out;
@@ -259,6 +260,11 @@ void write_endpoint(Bytes& out, const Endpoint& ep)
         rec.endpoint = read_endpoint(data, off);
 
         rec.mapped_address = read_mapped_address(data, off);
+
+        if (off < data.size())
+        {
+            rec.relay_capable = (data[off++] != 0);
+        }
 
         if (off + 8 <= data.size())
         {

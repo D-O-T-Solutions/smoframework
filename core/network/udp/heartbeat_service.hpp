@@ -5,6 +5,7 @@
 #include "../../types.hpp"
 #include "../udp/udp_transport.hpp"
 #include "../../runtime/telemetry.hpp"
+#include "../../network/relay/relay_service.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -40,7 +41,8 @@ namespace smo::network::udp {
         // Start heartbeat service on the daemon's already-bound UDP listener.
         // The service does NOT bind its own socket — it sends PING/PONG datagrams
         // through the shared bound listener (single socket per daemon, NAT-punching).
-        Result<void> start(UdpListener& udp_listener, smo::MembershipTable& membership, smo::HealthMonitor& health);
+        Result<void> start(UdpListener& udp_listener, smo::MembershipTable& membership, smo::HealthMonitor& health,
+                           smo::network::relay::RelayService* relay_service = nullptr);
 
         void stop();
 
@@ -75,6 +77,7 @@ namespace smo::network::udp {
         smo::MembershipTable* membership_ = nullptr;
         smo::HealthMonitor* health_ = nullptr;
         NodeID local_id_;
+        smo::network::relay::RelayService* relay_service_ = nullptr;
 
         std::atomic<bool> running_{false};
         int64_t last_ping_ns_ = 0;

@@ -85,6 +85,7 @@ namespace smo {
         std::vector<std::string> aliases; // alternative names
         Endpoint endpoint;
         MappedAddress mapped_address;     // STUN-discovered public address
+        bool relay_capable = false;       // N3: node can act as relay (relay:true)
         PeerState state = PeerState::Unknown;
         int64_t last_seen = 0;
         int ping_misses = 0;

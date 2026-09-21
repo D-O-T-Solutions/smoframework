@@ -27,12 +27,14 @@ namespace smo::network::udp {
     HeartbeatService::HeartbeatService() : config_(default_config()) {}
 
     Result<void> HeartbeatService::start(UdpListener& udp_listener, smo::MembershipTable& membership,
-                                         smo::HealthMonitor& health)
+                                         smo::HealthMonitor& health,
+                                         smo::network::relay::RelayService* relay_service)
     {
         // No bind: reuse the daemon's single UDP socket (bound by the main listener).
         udp_ = &udp_listener;
         membership_ = &membership;
         health_ = &health;
+        relay_service_ = relay_service;
 
         running_ = true;
         last_ping_ns_ = std::chrono::system_clock::now().time_since_epoch().count();
@@ -166,8 +168,19 @@ namespace smo::network::udp {
                 // Fall through to relay fallback
             }
 
-            // N2: Fall back to relay (TCP) or direct to physical endpoint
-            // For now, send to physical endpoint as fallback
+            // N3: Try relay fallback if hole punch failed or not enabled
+            if (relay_service_)
+            {
+                auto relay_result = try_relay_fallback(rec, now_ns);
+                if (relay_result)
+                {
+                    // Relay ping sent successfully
+                    health_->record_ping(rec.node_id, now_ns);
+                    continue;
+                }
+            }
+
+            // Final fallback: send to physical endpoint via UDP
             smo::PingMsg ping;
             ping.timestamp = now_ns;
             ping.sender_id = local_id_;
@@ -292,6 +305,54 @@ namespace smo::network::udp {
 
         std::printf("[smo-node] heartbeat: hole punch %s for %s via %s\n",
                     success ? "SUCCESS" : "FAILURE", node_id_hex(id).c_str(), path.c_str());
+    }
+
+    // N3: Relay fallback - send ping through relay service
+    Result<void> HeartbeatService::try_relay_fallback(const smo::PeerRecord& rec, int64_t now_ns)
+    {
+        if (!relay_service_)
+        {
+            return SMO_ERR_DISCOVERY(500, Info, RetrySafe, None, "RelayService not available");
+        }
+
+        // Allocate relay session for this peer
+        auto relay_ep_result = relay_service_->allocate_relay_session(rec.node_id);
+        if (!relay_ep_result)
+        {
+            std::printf("[smo-node] heartbeat: No relay available for %s\n", rec.node_id.to_string().c_str());
+            record_hole_punch_result(rec.node_id, false, "relay_unavailable");
+            return relay_ep_result.error();
+        }
+        auto relay_ep = relay_ep_result.value();
+
+        // Create ping message
+        smo::PingMsg ping;
+        ping.timestamp = now_ns;
+        ping.sender_id = local_id_;
+        ++ping_sequence_;
+        ping.sequence = ping_sequence_;
+
+        auto ping_data = ping.serialize();
+        auto framed = wrap_discovery_msg(smo::DiscoveryMsgType::Ping, ping_data);
+
+        // Forward through relay service (preserves AEAD encryption)
+        auto res = relay_service_->forward_frame(rec.node_id, framed);
+        if (res)
+        {
+            std::printf("[smo-node] heartbeat: PING -> %s via relay (%s:%u)\n",
+                        rec.node_id.to_string().c_str(),
+                        relay_ep.host.c_str(),
+                        static_cast<unsigned>(relay_ep.port));
+            record_hole_punch_result(rec.node_id, true, "relay");
+        }
+        else
+        {
+            std::printf("[smo-node] heartbeat: Relay forward failed for %s: %s\n",
+                        rec.node_id.to_string().c_str(), res.error().message.c_str());
+            record_hole_punch_result(rec.node_id, false, "relay_failed");
+        }
+
+        return res;
     }
 
 } // namespace smo::network::udp

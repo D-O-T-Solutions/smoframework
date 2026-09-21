@@ -27,6 +27,7 @@
 #include <core/network/udp/udp_transport.hpp>
 #include <core/select/selector.hpp>
 #include <core/network/udp/heartbeat_service.hpp>
+#include <core/network/relay/relay_service.hpp>
 #include <core/discovery/gossip.hpp>
 #include <core/network/sync/membership_sync.hpp>
 #include <core/network/sync/sync_service.hpp>
@@ -311,6 +312,20 @@ NodeRuntime::~NodeRuntime()
 //
 // Owns every subsystem. Construction order mirrors the daemon-mode block in
 // main.cpp (transports -> engines -> runtime -> mesh/trust/recovery -> sync).
+// N3: RelayService metrics callback implementation
+class RelayMetricsCallback : public smo::network::relay::RelayService::MetricsCallback
+{
+public:
+    void increment_counter(const std::string& name, const std::string& labels, int64_t delta) override
+    {
+        smo::runtime::global_telemetry().increment_counter(name, labels, delta);
+    }
+    void set_gauge(const std::string& name, double value, const std::string& labels) override
+    {
+        smo::runtime::global_telemetry().set_gauge(name, value, labels);
+    }
+};
+
 class NodeRuntime::Impl
 {
 public:
@@ -333,6 +348,7 @@ public:
     void _wire_sync_services();
 
 private:
+    RelayMetricsCallback relay_metrics_cb_;
     smo::runtime::EventRegistryService event_registry_service_;
     std::unique_ptr<smo::runtime::AuthorityMeshService> authority_mesh_service_;
     std::unique_ptr<smo::runtime::ContractRegistryService> contract_registry_service_;
@@ -366,6 +382,7 @@ private:
     smo::PeerStore peer_store_;
     smo::network::transport::AddressResolver address_resolver_;
     smo::network::udp::HeartbeatService heartbeat_;
+    smo::network::relay::RelayService relay_service_;
     smo::PeerRecord self_record_;
 
     // runtime
@@ -424,6 +441,7 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , gossip_(membership_, smo::GossipEngine::default_config())
     , membership_sync_(membership_, health_monitor_)
     , heartbeat_(make_hb_config(cfg.port))
+    , relay_service_(smo::network::relay::RelayService::default_config())
     , runtime_kernel_(event_bus_, output_mgr_, runtime_dispatcher_, plan_resolver_)
     , mesh_manager_(smo::MeshManager::Config{
           .base_data_dir = cfg.mesh_dir.empty() ? "" : cfg.mesh_dir.substr(0, cfg.mesh_dir.rfind("/meshes/") + 7)})
@@ -614,7 +632,7 @@ Result<void> NodeRuntime::Impl::initialize()
     if (udp_listener_owner_)
     {
         auto* hb_listener = static_cast<smo::network::udp::UdpListener*>(udp_listener_owner_.get());
-        auto hb_start = heartbeat_.start(*hb_listener, membership_, health_monitor_);
+        auto hb_start = heartbeat_.start(*hb_listener, membership_, health_monitor_, &relay_service_);
         if (!hb_start)
         {
             std::fprintf(stderr, "[smo-node] Failed to start heartbeat: %s\n", hb_start.error().message.c_str());
@@ -646,6 +664,26 @@ std::printf("[smo-node] N2: hole punch %s for %s via %s\n",
                 telemetry.increment_counter("smo_hole_punch_failure_total", "path=" + path);
             }
         });
+    }
+
+    // N3: Start RelayService
+    {
+        auto relay_start = relay_service_.start(membership_, *udp_transport_, &relay_metrics_cb_);
+        if (!relay_start)
+        {
+            std::fprintf(stderr, "[smo-node] Failed to start relay service: %s\n", relay_start.error().message.c_str());
+        }
+        else
+        {
+            auto relay_cfg = relay_service_.default_config();
+            std::printf("[smo-node] Relay service started (bandwidth=%llu bps/peer, timeout=%ums)\n",
+                        (unsigned long long)relay_cfg.bandwidth_bps_per_peer,
+                        relay_cfg.session_timeout_ms);
+        }
+
+        // Set self as relay capable if configured (for now, always false unless explicitly set)
+        // This would be set via config in the future
+        self_record_.relay_capable = false;
     }
 
     // TCP listening endpoint
@@ -1185,6 +1223,7 @@ int NodeRuntime::Impl::run()
         {
             discovery_.tick(now_ns);
             heartbeat_.tick(now_ns);
+            relay_service_.tick(now_ns);
             anti_entropy_->tick(now_ns); // P1: 30-min Merkle tree exchange
 
             // Use extracted services for periodic ticks
