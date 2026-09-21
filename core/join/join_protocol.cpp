@@ -11,6 +11,8 @@
 #include "core/authority/authority.hpp"
 #include "core/recovery/crl.hpp"
 #include "core/certificate/certificate.hpp"
+#include "core/network/ice/ice_candidate.hpp"
+#include "core/mesh/mesh_manager.hpp"
 
 #include <mutex>
 #include <random>
@@ -31,6 +33,7 @@ namespace smo::join {
         constexpr uint64_t K_REQ_SIG = 6;
         constexpr uint64_t K_REQ_PROTOCOL_VER = 7;
         constexpr uint64_t K_REQ_CAPABILITIES = 8;
+        constexpr uint64_t K_REQ_ICE_CANDIDATES = 9; // N4: ICE candidates
 
         // JoinResponse keys
         constexpr uint64_t K_RESP_CERT = 1;
@@ -39,6 +42,7 @@ namespace smo::join {
         constexpr uint64_t K_RESP_NONCE = 6;
         constexpr uint64_t K_RESP_SERVER_TIME = 7;
         constexpr uint64_t K_RESP_CAPABILITIES = 8;
+        constexpr uint64_t K_RESP_ICE_CANDIDATES = 9; // N4: ICE candidates
 
         // SeedInfo sub-keys (encoded as CBOR map within seeds array)
         constexpr uint64_t K_SEED_ENDPOINT = 1;
@@ -84,6 +88,8 @@ namespace smo::join {
         fields++; // protocol_version always present
         if (capability_bitmap > 0)
             fields++;
+        if (ice_candidates_cbor.size() > 0)
+            fields++;
         enc.encode_map(fields);
         enc.encode_uint(K_REQ_PROTOCOL_VER);
         enc.encode_uint(protocol_version);
@@ -112,6 +118,11 @@ namespace smo::join {
         {
             enc.encode_uint(K_REQ_CAPABILITIES);
             enc.encode_uint(capability_bitmap);
+        }
+        if (ice_candidates_cbor.size() > 0)
+        {
+            enc.encode_uint(K_REQ_ICE_CANDIDATES);
+            enc.encode_bytes(BytesView(ice_candidates_cbor));
         }
         return enc.take();
     }
@@ -186,6 +197,13 @@ namespace smo::join {
                 if (!v)
                     return v.error();
                 req.capability_bitmap = v.value();
+                break;
+            }
+            case K_REQ_ICE_CANDIDATES: {
+                auto v = dec.decode_bytes();
+                if (!v)
+                    return v.error();
+                req.ice_candidates_cbor = Bytes(v.value().begin(), v.value().end());
                 break;
             }
             default: {
@@ -282,6 +300,8 @@ namespace smo::join {
             fields++;
         if (capability_bitmap > 0)
             fields++;
+        if (ice_candidates_cbor.size() > 0)
+            fields++;
         if (fields == 0)
             fields = 1;
         enc.encode_map(fields);
@@ -311,6 +331,11 @@ namespace smo::join {
         {
             enc.encode_uint(K_RESP_CAPABILITIES);
             enc.encode_uint(capability_bitmap);
+        }
+        if (ice_candidates_cbor.size() > 0)
+        {
+            enc.encode_uint(K_RESP_ICE_CANDIDATES);
+            enc.encode_bytes(BytesView(ice_candidates_cbor));
         }
         return enc.take();
     }
@@ -371,6 +396,13 @@ namespace smo::join {
                 if (!v)
                     return v.error();
                 resp.capability_bitmap = v.value();
+                break;
+            }
+            case K_RESP_ICE_CANDIDATES: {
+                auto v = dec.decode_bytes();
+                if (!v)
+                    return v.error();
+                resp.ice_candidates_cbor = Bytes(v.value().begin(), v.value().end());
                 break;
             }
             default: {
@@ -991,6 +1023,39 @@ namespace smo::join {
         resp.nonce = req.nonce;
         resp.certificate_pem = bytes_to_hex(cert.serialize_full());
         resp.mesh_id = token.mesh_id;
+        resp.capability_bitmap = req.capability_bitmap & (join::CAP_DELTA_SYNC | join::CAP_COMPRESSION | join::CAP_CRT | join::CAP_CONTRACT_SYNC | join::CAP_ANTI_ENTROPY | join::CAP_COMPRESSION_ZSTD | join::CAP_COMPRESSION_BROTLI | join::CAP_STREAM_CONTRACT | join::CAP_FILE_VAULT | join::CAP_GPU_COMPUTE | join::CAP_RUNTIME_NEGOTIATE | join::CAP_ICE_LITE);
+
+        // N4: Include authority's ICE candidates in response if client supports ICE
+        if (req.capability_bitmap & join::CAP_ICE_LITE)
+        {
+            // For now, include a minimal set - in production the authority would gather its own candidates
+            // This is a placeholder; the actual ICE candidates would come from the authority's IceAgent
+            network::ice::IceConfig ice_cfg;
+            network::ice::IceAgent ice_agent(ice_cfg);
+            // Gather with minimal endpoints (authority's public endpoints)
+            std::vector<Endpoint> auth_endpoints;
+            for (const auto& bep : mesh_mgr.get_current_mesh().value()->config.bootstrap_endpoints)
+            {
+                Endpoint ep;
+                // Parse bootstrap endpoint string
+                size_t colon = bep.find(':');
+                if (colon != std::string::npos)
+                {
+                    ep.scheme = "tcp";
+                    ep.host = bep.substr(0, colon);
+                    ep.port = static_cast<uint16_t>(std::stoi(bep.substr(colon + 1)));
+                    auth_endpoints.push_back(ep);
+                }
+            }
+            if (!auth_endpoints.empty())
+            {
+                auto gather_res = ice_agent.gather(auth_endpoints);
+                if (gather_res)
+                {
+                    resp.ice_candidates_cbor = ice_agent.encode_candidates_cbor();
+                }
+            }
+        }
 
         // Bootstrap ticket: opaque CBOR with {mesh_id, node_id, timestamp, hmac}
         // Used by BOOTSTRAP_SYNC to authenticate the node.

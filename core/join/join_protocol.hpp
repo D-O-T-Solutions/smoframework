@@ -57,6 +57,8 @@ namespace smo::join {
     inline constexpr uint64_t CAP_FILE_VAULT = 1ULL << 8;         // supports file vault
     inline constexpr uint64_t CAP_GPU_COMPUTE = 1ULL << 9;        // supports GPU compute
     inline constexpr uint64_t CAP_RUNTIME_NEGOTIATE = 1ULL << 10; // node supports extended runtime negotiation
+    // N4: ICE-Lite capability
+    inline constexpr uint64_t CAP_ICE_LITE = 1ULL << 11;
 
     struct JoinRequest
     {
@@ -69,6 +71,7 @@ namespace smo::join {
         std::array<uint8_t, 8> nonce{}; // 64-bit random per-request
         Bytes csr_hash;                 // sha256(csr_pem)
         Bytes request_signature;        // signature over (token || timestamp || nonce || csr_hash)
+        Bytes ice_candidates_cbor;      // N4: ICE candidates (CBOR encoded)
 
         Bytes encode_cbor() const;
         static Result<JoinRequest> decode_cbor(BytesView data);
@@ -78,19 +81,21 @@ namespace smo::join {
     // Lightweight response: JOIN gives identity + bootstrap ticket, not world state.
     // Full mesh sync (manifest, policy, seeds) is done via BOOTSTRAP_SYNC.
     // CBOR keys:
-    //   1: certificate      (string — PEM-encoded certificate)
-    //   2: mesh_id          (string — mesh identifier)
-    //   3: bootstrap_ticket (bytes — opaque ticket for BOOTSTRAP_SYNC auth)
+    //   1: certificate         (string — PEM-encoded certificate)
+    //   2: mesh_id             (string — mesh identifier)
+    //   3: bootstrap_ticket    (bytes — opaque ticket for BOOTSTRAP_SYNC auth)
+    //   7: ice_candidates_cbor (bytes — N4: ICE candidates from authority)
 
     struct JoinResponse
     {
         uint8_t version = 1;
-        std::array<uint8_t, 8> nonce{}; // echoes request nonce
-        std::string certificate_pem;    // PEM-encoded certificate
-        std::string mesh_id;            // assigned mesh_id
-        Bytes bootstrap_ticket;         // opaque ticket for BOOTSTRAP_SYNC
-        int64_t server_time = 0;        // UNIX ms — Authority's clock (for drift correction)
-        uint64_t capability_bitmap = 0; // echoed from request, filtered by Authority
+        std::array<uint8_t, 8> nonce{};         // echoes request nonce
+        std::string certificate_pem;            // PEM-encoded certificate
+        std::string mesh_id;                    // assigned mesh_id
+        Bytes bootstrap_ticket;                 // opaque ticket for BOOTSTRAP_SYNC
+        int64_t server_time = 0;                // UNIX ms — Authority's clock (for drift correction)
+        uint64_t capability_bitmap = 0;         // echoed from request, filtered by Authority
+        Bytes ice_candidates_cbor;              // N4: ICE candidates (CBOR encoded)
 
         Bytes encode_cbor() const;
         static Result<JoinResponse> decode_cbor(BytesView data);

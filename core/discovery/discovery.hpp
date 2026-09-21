@@ -5,6 +5,7 @@
 #include "../identity/identity.hpp"
 #include "../transport/transport.hpp"
 #include "../types.hpp"
+#include "core/network/ice/ice_candidate.hpp"
 
 #include <cstdint>
 #include <string>
@@ -89,7 +90,8 @@ namespace smo {
         PeerState state = PeerState::Unknown;
         int64_t last_seen = 0;
         int ping_misses = 0;
-        double rtt_ms = 0.0; // moving average RTT
+        double rtt_ms = 0.0;              // moving average RTT
+        std::vector<network::ice::Candidate> ice_candidates; // N4: ICE candidates
 
         Bytes serialize() const;
         static Result<PeerRecord> deserialize(BytesView data);

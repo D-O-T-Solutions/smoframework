@@ -1,5 +1,7 @@
 #include "discovery.hpp"
 #include "core/network/sync/membership_sync.hpp"
+#include "core/network/ice/ice_candidate.hpp"
+#include "core/bootstrap/cbor.hpp"
 
 #include <cstring>
 #include <limits>
@@ -152,6 +154,101 @@ void write_endpoint(Bytes& out, const Endpoint& ep)
     // ===========================================================================
     // PeerRecord
     // ===========================================================================
+    // Helper: serialize ICE candidates using CBOR
+    static void write_ice_candidates(Bytes& out, const std::vector<network::ice::Candidate>& candidates)
+    {
+        // Use CBOR encoding from IceAgent
+        if (candidates.empty())
+        {
+            write_u32(out, 0);
+            return;
+        }
+
+        // Encode as CBOR array and prefix with length
+        // For simplicity, we'll use a custom binary format: [count][candidate1_len][candidate1_data]...
+        // But since candidates are complex, use CBOR via IceAgent's encoder logic
+        // We'll serialize each candidate as a small CBOR map and concatenate
+
+        cbor::Encoder enc;
+        enc.encode_array(candidates.size());
+
+        for (const auto& cand : candidates)
+        {
+            int fields = 6;
+            if (!cand.related_addr.empty())
+                fields++;
+            if (cand.related_port != 0)
+                fields++;
+            if (cand.discovered_at != 0)
+                fields++;
+
+            enc.encode_map(fields);
+
+            enc.encode_uint(1);
+            enc.encode_uint(static_cast<uint64_t>(cand.type));
+
+            enc.encode_uint(2);
+            enc.encode_string(cand.foundation);
+
+            enc.encode_uint(3);
+            enc.encode_string(cand.ip);
+
+            enc.encode_uint(4);
+            enc.encode_uint(cand.port);
+
+            enc.encode_uint(5);
+            enc.encode_uint(cand.is_ipv6 ? 1 : 0);
+
+            enc.encode_uint(6);
+            enc.encode_uint(cand.priority);
+
+            if (!cand.related_addr.empty())
+            {
+                enc.encode_uint(7);
+                enc.encode_string(cand.related_addr);
+            }
+
+            if (cand.related_port != 0)
+            {
+                enc.encode_uint(8);
+                enc.encode_uint(cand.related_port);
+            }
+
+            if (cand.discovered_at != 0)
+            {
+                enc.encode_uint(9);
+                enc.encode_uint(static_cast<uint64_t>(cand.discovered_at));
+            }
+        }
+
+        Bytes cbor_data = enc.take();
+        write_u32(out, static_cast<uint32_t>(cbor_data.size()));
+        out.insert(out.end(), cbor_data.begin(), cbor_data.end());
+    }
+
+    // Helper: deserialize ICE candidates
+    static std::vector<network::ice::Candidate> read_ice_candidates(BytesView& data, size_t& offset)
+    {
+        std::vector<network::ice::Candidate> candidates;
+        if (offset + 4 > data.size())
+            return candidates;
+
+        uint32_t cbor_len = read_u32(data, offset);
+        if (cbor_len == 0 || offset + cbor_len > data.size())
+            return candidates;
+
+        BytesView cbor_view(data.data() + static_cast<ptrdiff_t>(offset), cbor_len);
+        offset += cbor_len;
+
+        auto decoded = network::ice::IceAgent::decode_candidates_cbor(cbor_view);
+        if (decoded)
+        {
+            candidates = std::move(decoded.value());
+        }
+
+        return candidates;
+    }
+
     Bytes PeerRecord::serialize() const
     {
         Bytes out;
@@ -194,6 +291,10 @@ void write_endpoint(Bytes& out, const Endpoint& ep)
         out.push_back(relay_capable ? 1 : 0); // N3: relay capability
         // rtt_ms after endpoint for backward compat
         write_u64(out, static_cast<uint64_t>(rtt_ms * 1000.0)); // store as microseconds
+
+        // N4: ICE candidates
+        write_ice_candidates(out, ice_candidates);
+
         return out;
     }
 
@@ -270,6 +371,9 @@ void write_endpoint(Bytes& out, const Endpoint& ep)
         {
             rec.rtt_ms = static_cast<double>(read_u64(data, off)) / 1000.0;
         }
+
+        // N4: ICE candidates
+        rec.ice_candidates = read_ice_candidates(data, off);
 
         return rec;
     }

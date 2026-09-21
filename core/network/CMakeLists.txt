@@ -3,8 +3,9 @@
 # Sprint 5C: Interface enumeration, public IP detection, port check, DNS, NAT detect
 # Sprint 5D: STUN client (RFC 5389)
 # N3: Relay service (TURN-Lite)
+# N4: ICE-Lite candidate gathering & connectivity checks
 
-# UDP transport + heartbeat + gossip + sync + relay are part of smo_core
+# UDP transport + heartbeat + gossip + sync + relay + ice are part of smo_core
 target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/udp/udp_transport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/udp/heartbeat_service.cpp
@@ -24,6 +25,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/udp_server.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stun/stun_client.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/relay/relay_service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ice/ice_candidate.cpp
 )
 
 target_sources(smo_core INTERFACE
@@ -42,4 +44,5 @@ target_sources(smo_core INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_service.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stun/stun_client.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/relay/relay_service.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ice/ice_candidate.hpp
 )
