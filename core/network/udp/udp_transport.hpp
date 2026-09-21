@@ -11,11 +11,15 @@ namespace smo::network::udp {
     class UdpSession final : public TransportSession
     {
     public:
-        explicit UdpSession(int fd, Endpoint remote);
+        // owns_fd=false: the session borrows a shared listener fd (datagram
+        // accept() path); close() must NOT close the underlying listener.
+        explicit UdpSession(int fd, Endpoint remote, bool owns_fd = true);
         ~UdpSession() noexcept override;
 
         UdpSession(const UdpSession&) = delete;
         UdpSession& operator=(const UdpSession&) = delete;
+
+        friend class UdpListener;
 
         Result<void> send(BytesView data) override;
         Result<Bytes> recv(size_t max_bytes) override;
@@ -27,6 +31,8 @@ namespace smo::network::udp {
         int fd_;
         Endpoint remote_;
         bool open_ = true;
+        bool owns_fd_ = true;
+        Bytes pending_; // datagram consumed by the listener accept() path; drained on first recv()
     };
 
     class UdpListener final : public TransportListener
@@ -41,6 +47,9 @@ namespace smo::network::udp {
         Result<std::unique_ptr<TransportSession>> accept() override;
         Result<void> close() override;
         Endpoint local_endpoint() const override;
+
+        // Send a datagram from the already-bound socket (no ephemeral socket).
+        Result<void> send_to(const Endpoint& remote, BytesView data) const;
 
     private:
         int fd_;

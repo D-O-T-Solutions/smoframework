@@ -32,28 +32,31 @@ namespace smo::network::udp {
 
         ~HeartbeatService() { stop(); }
 
-        // Start heartbeat service on given UDP transport
-        Result<void> start(UdpTransport& udp_transport, smo::MembershipTable& membership, smo::HealthMonitor& health);
+        // Set this node's own NodeID (used in PingMsg.sender_id / PongMsg.sender_id).
+        void set_local_node_id(const NodeID& id) noexcept { local_id_ = id; }
+
+        // Start heartbeat service on the daemon's already-bound UDP listener.
+        // The service does NOT bind its own socket — it sends PING/PONG datagrams
+        // through the shared bound listener (single socket per daemon, NAT-punching).
+        Result<void> start(UdpListener& udp_listener, smo::MembershipTable& membership, smo::HealthMonitor& health);
 
         void stop();
 
         // Call periodically (e.g., from main loop) to send PINGs and check timeouts
         void tick(int64_t now_ns);
 
-        // Handle incoming PONG from a peer
+        // Handle incoming PONG from a peer (matches by sender NodeID)
         Result<void> handle_pong(const smo::PongMsg& msg, int64_t now_ns, const smo::Endpoint& from);
 
-        // Handle incoming PING from a peer (respond with PONG)
-        Result<void> handle_ping(const smo::PingMsg& msg, int64_t now_ns, const smo::Endpoint& from,
-                                 UdpTransport& udp_transport);
+        // Handle incoming PING from a peer (respond with PONG via bound socket)
+        Result<void> handle_ping(const smo::PingMsg& msg, int64_t now_ns, const smo::Endpoint& from);
 
     private:
         Config config_;
-        UdpTransport* udp_ = nullptr;
+        UdpListener* udp_ = nullptr;
         smo::MembershipTable* membership_ = nullptr;
         smo::HealthMonitor* health_ = nullptr;
-
-        std::unique_ptr<TransportListener> listener_;
+        NodeID local_id_;
 
         std::atomic<bool> running_{false};
         int64_t last_ping_ns_ = 0;

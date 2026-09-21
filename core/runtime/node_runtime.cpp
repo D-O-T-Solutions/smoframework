@@ -608,17 +608,22 @@ Result<void> NodeRuntime::Impl::initialize()
         peer_store_.sync_to_membership(membership_);
     }
 
-    // HeartbeatService
-    auto hb_start = heartbeat_.start(*udp_transport_, membership_, health_monitor_);
-    if (!hb_start)
+    // HeartbeatService — reuse the daemon's bound UDP socket; do NOT bind again.
+    heartbeat_.set_local_node_id(local_id_);
+    if (udp_listener_owner_)
     {
-        std::fprintf(stderr, "[smo-node] Failed to start heartbeat: %s\n", hb_start.error().message.c_str());
-    }
-    else
-    {
-        auto hb_cfg = make_hb_config(config_.port);
-        std::printf("[smo-node] Heartbeat service started (interval=%ums, timeout=%ums, max_misses=%u)\n",
-                    hb_cfg.ping_interval_ms, hb_cfg.ping_timeout_ms, hb_cfg.max_misses);
+        auto* hb_listener = static_cast<smo::network::udp::UdpListener*>(udp_listener_owner_.get());
+        auto hb_start = heartbeat_.start(*hb_listener, membership_, health_monitor_);
+        if (!hb_start)
+        {
+            std::fprintf(stderr, "[smo-node] Failed to start heartbeat: %s\n", hb_start.error().message.c_str());
+        }
+        else
+        {
+            auto hb_cfg = make_hb_config(config_.port);
+            std::printf("[smo-node] Heartbeat service started (interval=%ums, timeout=%ums, max_misses=%u)\n",
+                        hb_cfg.ping_interval_ms, hb_cfg.ping_timeout_ms, hb_cfg.max_misses);
+        }
     }
 
     // TCP listening endpoint
@@ -1176,7 +1181,9 @@ int NodeRuntime::Impl::run()
             return udp_listener_->accept();
         };
 
-        // Discovery dispatch hook — owns & closes the session.
+        // Discovery dispatch hook — owns & closes the session. Ping/Pong frames
+        // carry the heartbeat path and are routed to HeartbeatService directly;
+        // all other frames flow to DiscoveryEngine.
         smo::network::UdpServer::Hook udp_dispatch =
             [&](smo::SessionPtr& session, const smo::Endpoint& remote_ep)
         {
@@ -1184,7 +1191,33 @@ int NodeRuntime::Impl::run()
             if (recv_data)
             {
                 telemetry.increment_counter("udp.datagrams_received", "component=discovery");
-                (void)smo::dispatch_discovery_datagram(recv_data.value(), discovery_, remote_ep, now_ns);
+                smo::BytesView data = recv_data.value();
+                if (smo::is_discovery_msg(data))
+                {
+                    auto type = smo::discovery_msg_type(data);
+                    auto payload = smo::discovery_payload(data);
+                    if (type == smo::DiscoveryMsgType::Ping)
+                    {
+                        auto ping = smo::PingMsg::deserialize(payload);
+                        if (ping)
+                        {
+                            (void)heartbeat_.handle_ping(ping.value(), now_ns, remote_ep);
+                        }
+                        session->close();
+                        return smo::Result<void>{};
+                    }
+                    if (type == smo::DiscoveryMsgType::Pong)
+                    {
+                        auto pong = smo::PongMsg::deserialize(payload);
+                        if (pong)
+                        {
+                            (void)heartbeat_.handle_pong(pong.value(), now_ns, remote_ep);
+                        }
+                        session->close();
+                        return smo::Result<void>{};
+                    }
+                }
+                (void)smo::dispatch_discovery_datagram(data, discovery_, remote_ep, now_ns);
             }
             session->close();
             return smo::Result<void>{};
