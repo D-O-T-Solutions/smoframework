@@ -553,7 +553,7 @@ The following were verified by `/tmp/opencode/e2e-full.sh` on 2026-08-12:
 | join mesh.json valid JSON | ✅ PASS | No duplicate bootstrap_endpoints key |
 | All unit tests | ✅ PASS | CTest 19/19, PCT 23/23, cert tests |
 
-**Gap Report (12 stubbed features):** See RFC 0032 "Implementation Gap Report" for exec, deploy, undeploy, contract status, policy show, trace, filesystem, process, transfer, discover, export, governance list.
+**Gap Report (12 stubbed features):** See RFC 0032 "Implementation Gap Report" for exec, deploy, undeploy, contract status, policy show, trace, filesystem, process, transfer, discover, export, governance list. — All 12 implemented in `cmd/smo-cli` (see DISCUSSION_0045 v0.0.3 Implementation Plan §10).
 
 ---
 

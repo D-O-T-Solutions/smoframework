@@ -525,8 +525,8 @@ Parsing features:
 | `handle_select` | Select | Filter by name/role/tag/where/mesh/OS/arch/trust, save selections |
 | `handle_exec` | Execute | Execute command on connected session (PROCESS opcode, network exec) |
 | `handle_transfer` | Transfer | File transfer put/get/sync over network (FILE_OP write/read/mkdir) |
-| `handle_filesystem` | Filesystem | ls/cat/mkdir/rm/cp/mv/echo — stub |
-| `handle_process` | Process | ps/kill/top — stub |
+| `handle_filesystem` | Filesystem | ls/cat/mkdir/rm/cp/mv/echo/touch/pwd/cd/stat — network FILE_OP when connected, local dispatch offline (GAP-007, see DISCUSSION_0045) |
+| `handle_process` | Process | ps/kill/top — network PROCESS opcode when connected, local dispatch offline (GAP-008, see DISCUSSION_0045) |
 | `handle_deploy` | Deploy | Deploy contract to connected node (CONTRACT_MGMT deploy) |
 | `handle_undeploy` | Undeploy | Undeploy contract from connected node (CONTRACT_MGMT undeploy) |
 | `handle_status` | Status | Show current context (mesh, selection, control, scope, session) or `status <id>` contract lifecycle |

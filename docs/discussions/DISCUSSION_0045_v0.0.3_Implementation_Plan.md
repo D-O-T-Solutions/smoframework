@@ -297,7 +297,7 @@ Lý do: STUN/ICE là feature mới — nên để v0.0.4. v0.0.3 là verify core
 | BUG-005 | Member daemon seed bootstrap dùng raw TCP → block authority PQ handshake | 3-node E2E fail: node-c join refused | ✅ Fixed (PQ client handshake) |
 | BUG-006 | `mesh publish` ghi đè mesh.json mất `root_public_key` | `genesis status` / `mesh health` fail | ✅ Fixed (preserve manifest fields) |
 | BUG-007 | `trace` parser map sang IntentType::History | `smo trace abc` in ra history | ✅ Fixed (map to Trace) |
-| GAP-001–012 | 12 features documented nhưng stub `(not yet implemented)` | Sprint B Operations / Sprint C Observability | ❌ OPEN (see RFC 0032 gap report) |
+| GAP-001–012 | 12 features documented nhưng stub `(not yet implemented)` | Sprint B Operations / Sprint C Observability | ✅ Implemented (12/12: exec, deploy, undeploy, contract status, policy show, trace, filesystem, process, transfer, discover, export, governance list) — see DISCUSSION_0045 |
 
 ### File map
 
