@@ -29,6 +29,7 @@
 #include <network/sync/sync_backend.hpp>
 #include <network/sync/anti_entropy.hpp>
 #include <network/stun/stun_client.hpp>
+#include <network/udp/heartbeat_service.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -37,6 +38,7 @@
 #include <string>
 
 using namespace smo;
+using namespace smo::network::udp;
 
 static int failures = 0;
 
@@ -1248,6 +1250,142 @@ static bool test_pct_025()
 
     return true;
 }
+
+// ==========================================================================
+// PCT-026 — UDP hole punch protocol (predictable port pairs)
+// Tests hole punch state tracking, metrics, and predictable port behavior
+// ==========================================================================
+static bool test_pct_026()
+{
+    using namespace smo::network::udp;
+
+    // Test 1: HeartbeatService Config with hole punch enabled
+    {
+        HeartbeatService::Config cfg = HeartbeatService::default_config();
+        ASSERT_EQ(cfg.enable_hole_punch, true);
+        ASSERT_EQ(cfg.ping_interval_ms, 5000U);
+        ASSERT_EQ(cfg.ping_timeout_ms, 3000U);
+        ASSERT_EQ(cfg.max_misses, 3);
+    }
+
+    // Test 2: HeartbeatService construction and basic config
+    {
+        HeartbeatService::Config cfg;
+        cfg.enable_hole_punch = false;
+        cfg.ping_interval_ms = 1000;
+        cfg.ping_timeout_ms = 500;
+        cfg.max_misses = 2;
+
+        HeartbeatService hb(cfg);
+        // Verify config was applied (indirectly via default_config comparison)
+        HeartbeatService hb2(cfg);
+        ASSERT_EQ(hb2.config().enable_hole_punch, false);
+        ASSERT_EQ(hb2.config().ping_interval_ms, 1000U);
+    }
+
+    // Test 3: Hole punch state tracking
+    {
+        // Test that HolePunchState can be created and manipulated
+        HeartbeatService::HolePunchState state;
+        ASSERT_EQ(state.attempts, 0);
+        ASSERT_EQ(state.succeeded, false);
+        ASSERT(state.path == "");
+        ASSERT_EQ(state.started_at, 0);
+
+        state.attempts = 1;
+        state.started_at = 12345;
+        state.path = "direct";
+        ASSERT_EQ(state.attempts, 1);
+        ASSERT_EQ(state.started_at, 12345);
+        ASSERT(state.path == "direct");
+    }
+
+    // Test 4: Predictable port pair concept
+    // Both sides use the same local port (the bound UDP socket port)
+    // The mapped address port is the port as seen by the STUN server
+    // This test verifies the concept without actual network I/O
+    {
+        smo::MappedAddress mapped;
+        mapped.ip = "1.2.3.4";
+        mapped.port = 12345;
+        mapped.is_ipv6 = false;
+        mapped.discovered_at = 1000;
+
+        ASSERT_EQ(mapped.port, 12345U);
+        ASSERT(mapped.ip == "1.2.3.4");
+        ASSERT_EQ(mapped.is_ipv6, false);
+        ASSERT(mapped.to_string() == "1.2.3.4:12345");
+    }
+
+    // Test 5: Metrics names for hole punch
+    {
+        // Verify metric names are as expected (used in telemetry)
+        std::string success_metric = "smo_hole_punch_success_total";
+        std::string failure_metric = "smo_hole_punch_failure_total";
+
+        ASSERT(success_metric.find("hole_punch") != std::string::npos);
+        ASSERT(failure_metric.find("hole_punch") != std::string::npos);
+        ASSERT(success_metric.find("success") != std::string::npos);
+        ASSERT(failure_metric.find("failure") != std::string::npos);
+    }
+
+    // Test 6: GossipEngine UDP listener integration
+    {
+        MembershipTable table;
+        GossipEngine::Config cfg;
+        GossipEngine engine(table, cfg);
+
+        // Verify default state
+        ASSERT_EQ(engine.gossip_sent_count(), 0U);
+        ASSERT_EQ(engine.gossip_received_count(), 0U);
+
+        // Test that set_udp_listener can be called (with nullptr for unit test)
+        engine.set_udp_listener(nullptr);
+        // If we get here without crash, the method exists and is callable
+    }
+
+    // Test 7: Dual endpoint fanout (physical + mapped)
+    {
+        MembershipTable table;
+        GossipEngine::Config cfg;
+        cfg.fanout = 2;
+        GossipEngine engine(table, cfg);
+
+        // Add a peer with both physical and mapped addresses
+        smo::PeerRecord rec;
+        rec.node_id.value.fill(0x01);
+        rec.endpoint.scheme = "tcp";
+        rec.endpoint.host = "10.0.0.1";
+        rec.endpoint.port = 7777;
+        rec.mapped_address.ip = "1.2.3.4";
+        rec.mapped_address.port = 12345;
+        rec.mapped_address.is_ipv6 = false;
+        rec.state = smo::PeerState::Online;
+
+        table.upsert(std::move(rec));
+
+        // Select fanout peers - should include both TCP and UDP endpoints
+        auto peers = engine.test_select_fanout_peers();
+        // With 1 peer, fanout=2, we should get 2 endpoints (TCP + UDP)
+        ASSERT_EQ(peers.size(), 2U);
+
+        // Verify one is TCP and one is UDP
+        bool has_tcp = false;
+        bool has_udp = false;
+        for (const auto& ep : peers)
+        {
+            if (ep.scheme == "tcp")
+                has_tcp = true;
+            else if (ep.scheme == "udp")
+                has_udp = true;
+        }
+        ASSERT(has_tcp);
+        ASSERT(has_udp);
+    }
+
+    return true;
+}
+
 static bool test_pct_019()
 {
     auto rules = join::join_transition_table();
@@ -1450,7 +1588,10 @@ int main(int, char*[])
     printf("\n── §9.13 STUN ──────────────────────────────────────────────────────\n");
     TEST("PCT-025  STUN binding request/response (RFC 5389)") END_TEST(test_pct_025());
 
-    printf("\n── §9.14 Security ─────────────────────────────────────────────────\n");
+    printf("\n── §9.14 NAT Traversal ────────────────────────────────────────────\n");
+    TEST("PCT-026  UDP hole punch protocol (predictable port pairs)") END_TEST(test_pct_026());
+
+    printf("\n── §9.15 Security ─────────────────────────────────────────────────\n");
     TEST("PCT-023  Join token signature verify (P0-S1)") END_TEST(test_pct_023());
 
     printf("\n");

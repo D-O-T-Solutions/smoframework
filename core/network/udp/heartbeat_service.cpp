@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <unordered_map>
 
 namespace smo::network::udp {
 
@@ -105,6 +106,12 @@ namespace smo::network::udp {
             membership_->upsert(std::move(updated));
         }
 
+        // N2: If we were attempting hole punch to this peer, mark success via callback
+        if (config_.enable_hole_punch)
+        {
+            record_hole_punch_result(matched->node_id, true, "direct");
+        }
+
         std::printf("[smo-node] heartbeat: PONG from %s (rtt=%.2fms, last_seen updated, state=Online)\n",
                     node_id_hex(matched->node_id).c_str(), static_cast<double>(rtt_ns) / 1'000'000.0);
         return {};
@@ -146,8 +153,21 @@ namespace smo::network::udp {
             if (rec.endpoint.port == 0)
                 continue;
 
-            // Send PING framed as a discovery datagram so the receiver's dispatch
-            // loop can route it to the receiver's heartbeat handler.
+            // N2: Try direct UDP hole punch first (to mapped address if available)
+            if (config_.enable_hole_punch && !rec.mapped_address.empty())
+            {
+                auto hp_result = try_direct_hole_punch(rec, now_ns);
+                if (hp_result)
+                {
+                    // Hole punch succeeded, continue to next peer
+                    health_->record_ping(rec.node_id, now_ns);
+                    continue;
+                }
+                // Fall through to relay fallback
+            }
+
+            // N2: Fall back to relay (TCP) or direct to physical endpoint
+            // For now, send to physical endpoint as fallback
             smo::PingMsg ping;
             ping.timestamp = now_ns;
             ping.sender_id = local_id_;
@@ -165,8 +185,16 @@ namespace smo::network::udp {
             auto res = udp_->send_to(target, framed);
             if (res)
             {
-                std::printf("[smo-node] heartbeat: PING -> %s:%u\n", target.host.c_str(),
+                std::printf("[smo-node] heartbeat: PING -> %s:%u (physical)\n", target.host.c_str(),
                             static_cast<unsigned>(target.port));
+            }
+            else
+            {
+                // N2: Record hole punch failure if we tried
+                if (config_.enable_hole_punch && !rec.mapped_address.empty())
+                {
+                    record_hole_punch_result(rec.node_id, false, "failed");
+                }
             }
 
             // Record ping sent
@@ -181,6 +209,89 @@ namespace smo::network::udp {
 
         health_->tick(*membership_, now_ns, static_cast<int64_t>(config_.ping_timeout_ms) * 1'000'000,
                       config_.max_misses);
+    }
+
+    // N2: Hole punch implementation
+
+    uint64_t HeartbeatService::peer_key(const NodeID& id) const
+    {
+        // Simple hash of node_id for unordered_map key
+        uint64_t key = 0;
+        for (size_t i = 0; i < id.value.size() && i < 8; ++i)
+        {
+            key = (key << 8) | id.value[i];
+        }
+        return key;
+    }
+
+    Result<void> HeartbeatService::try_direct_hole_punch(const smo::PeerRecord& rec, int64_t now_ns)
+    {
+        if (!udp_ || rec.mapped_address.empty())
+        {
+            return SMO_ERR_DISCOVERY(400, Info, RetrySafe, None, "no mapped address for hole punch");
+        }
+
+        uint64_t key = peer_key(rec.node_id);
+        auto& state = hole_punch_states_[key];
+
+        // Initialize hole punch state on first attempt
+        if (state.attempts == 0)
+        {
+            state.started_at = now_ns;
+            state.path = "direct";
+        }
+        state.attempts++;
+
+        // Predictable port pair: both sides use the same local port for hole punching
+        // The mapped_address.port is the port as seen by STUN server
+        // We send to the mapped address using our bound socket (same local port)
+        smo::PingMsg ping;
+        ping.timestamp = now_ns;
+        ping.sender_id = local_id_;
+        ++ping_sequence_;
+        ping.sequence = ping_sequence_;
+
+        auto ping_data = ping.serialize();
+        auto framed = wrap_discovery_msg(smo::DiscoveryMsgType::Ping, ping_data);
+
+        smo::Endpoint target;
+        target.scheme = "udp";
+        target.host = rec.mapped_address.ip;
+        target.port = rec.mapped_address.port;
+
+        auto res = udp_->send_to(target, framed);
+        if (res)
+        {
+            std::printf("[smo-node] heartbeat: HOLE PUNCH attempt %d -> %s:%u (mapped)\n",
+                        state.attempts, target.host.c_str(), static_cast<unsigned>(target.port));
+        }
+
+        // Record ping sent for health tracking
+        health_->record_ping(rec.node_id, now_ns);
+
+        // Note: Actual success is determined when we receive PONG in handle_pong
+        // For now, we consider the send attempt as "in progress"
+        return res;
+    }
+
+    void HeartbeatService::record_hole_punch_result(const NodeID& id, bool success, const std::string& path)
+    {
+        uint64_t key = peer_key(id);
+        auto it = hole_punch_states_.find(key);
+        if (it != hole_punch_states_.end())
+        {
+            it->second.succeeded = success;
+            it->second.path = path;
+        }
+
+        // Emit metrics via callback (telemetry is in runtime layer)
+        if (hole_punch_cb_)
+        {
+            hole_punch_cb_(id, success, path);
+        }
+
+        std::printf("[smo-node] heartbeat: hole punch %s for %s via %s\n",
+                    success ? "SUCCESS" : "FAILURE", node_id_hex(id).c_str(), path.c_str());
     }
 
 } // namespace smo::network::udp

@@ -17,6 +17,11 @@ namespace smo::network::sync {
     class MembershipSync;
 }
 
+// Forward declaration for UDP listener (N2)
+namespace smo::network::udp {
+    class UdpListener;
+}
+
 namespace smo {
 
     // Delta types for typed gossip payloads (Phase 8a)
@@ -77,6 +82,9 @@ namespace smo {
         // Handle an incoming gossip message from a peer
         static Result<void> handle_gossip_message(BytesView payload, GossipEngine& engine);
 
+        // N2: Test accessor for fanout peer selection
+        std::vector<Endpoint> test_select_fanout_peers() { return select_fanout_peers(); }
+
         // ── Typed delta support (Phase 8a) ─────────────────────────────
 
         // Queue a typed delta for sending on next gossip fanout cycle
@@ -105,8 +113,12 @@ namespace smo {
             gossip_received_ = 0;
         }
 
+        // N2: Set UDP listener for hole-punched gossip fanout
+        void set_udp_listener(smo::network::udp::UdpListener* listener) { udp_listener_ = listener; }
+
     private:
         void send_gossip_to_peer(const Endpoint& target);
+        void send_gossip_to_peer_udp(const Endpoint& target, smo::network::udp::UdpListener& udp_listener);
         std::vector<Endpoint> select_fanout_peers();
 
         // Combine all pending deltas into a single framed payload
@@ -121,6 +133,9 @@ namespace smo {
         int64_t gossip_interval_ns_{5'000'000'000};
         int64_t last_gossip_{0};
         std::atomic<bool> running_{false};
+
+        // N2: UDP listener for hole-punched gossip
+        smo::network::udp::UdpListener* udp_listener_ = nullptr;
 
         recovery::CRL* crl_ = nullptr;
 

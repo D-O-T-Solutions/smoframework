@@ -625,6 +625,27 @@ Result<void> NodeRuntime::Impl::initialize()
             std::printf("[smo-node] Heartbeat service started (interval=%ums, timeout=%ums, max_misses=%u)\n",
                         hb_cfg.ping_interval_ms, hb_cfg.ping_timeout_ms, hb_cfg.max_misses);
         }
+
+        // N2: Wire UDP listener to GossipEngine for UDP gossip fanout (hole-punched peers)
+        gossip_.set_udp_listener(hb_listener);
+
+        // N2: Set hole punch callback to update metrics
+        heartbeat_.set_hole_punch_callback([&](const NodeID& peer_id, bool success, const std::string& path) {
+            // Metrics are recorded inside heartbeat_, but we can add additional logging here
+std::printf("[smo-node] N2: hole punch %s for %s via %s\n",
+                    success ? "SUCCESS" : "FAILURE", peer_id.to_string().c_str(), path.c_str());
+
+            // N2: Record hole punch metrics
+            auto& telemetry = smo::runtime::global_telemetry();
+            if (success)
+            {
+                telemetry.increment_counter("smo_hole_punch_success_total", "path=" + path);
+            }
+            else
+            {
+                telemetry.increment_counter("smo_hole_punch_failure_total", "path=" + path);
+            }
+        });
     }
 
     // TCP listening endpoint
@@ -1253,6 +1274,17 @@ int NodeRuntime::Impl::run()
                         if (pong)
                         {
                             (void)heartbeat_.handle_pong(pong.value(), now_ns, remote_ep);
+                        }
+                        session->close();
+                        return smo::Result<void>{};
+                    }
+                    // N2: Handle UDP gossip messages (custom type 0x08)
+                    if (type == static_cast<smo::DiscoveryMsgType>(0x08))
+                    {
+                        auto res = smo::GossipEngine::handle_gossip_message(payload, gossip_);
+                        if (!res)
+                        {
+                            std::fprintf(stderr, "[smo-node] UDP gossip apply failed: %s\n", res.error().message.c_str());
                         }
                         session->close();
                         return smo::Result<void>{};

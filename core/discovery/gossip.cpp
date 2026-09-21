@@ -2,6 +2,7 @@
 #include "core/network/sync/membership_sync.hpp"
 #include "core/transport/framing.hpp"
 #include "core/transport/tcp_transport.hpp"
+#include "core/network/udp/udp_transport.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -47,7 +48,14 @@ namespace smo {
         auto peers = select_fanout_peers();
         for (auto& ep : peers)
         {
-            send_gossip_to_peer(ep);
+            if (ep.scheme == "udp" && udp_listener_)
+            {
+                send_gossip_to_peer_udp(ep, *udp_listener_);
+            }
+            else
+            {
+                send_gossip_to_peer(ep);
+            }
         }
     }
 
@@ -277,6 +285,40 @@ namespace smo {
         ::close(fd.value());
     }
 
+    // N2: Send gossip via UDP to mapped address for hole-punched peers
+    void GossipEngine::send_gossip_to_peer_udp(const Endpoint& target, smo::network::udp::UdpListener& udp_listener)
+    {
+        gossip_sent_++;
+        if (target.host.empty() || target.port == 0)
+            return;
+
+        // Assemble all pending deltas into typed GOSP payload
+        Bytes payload = assemble_gossip_payload();
+        if (payload.empty())
+            return;
+
+        // Frame: [magic:1='D'][type:1=Gossip][payload]
+        Bytes framed_payload;
+        framed_payload.reserve(2 + payload.size());
+        framed_payload.push_back(0x44); // 'D' magic
+        framed_payload.push_back(0x08); // Gossip type (custom)
+        framed_payload.insert(framed_payload.end(), payload.begin(), payload.end());
+
+        auto res = udp_listener.send_to(target, framed_payload);
+        if (res)
+        {
+            if (membership_sync_)
+            {
+                auto events = membership_sync_->pending_events(local_sequence_);
+                if (!events.empty())
+                {
+                    local_sequence_ = events.back().sequence;
+                }
+            }
+            pending_deltas_.clear();
+        }
+    }
+
     std::vector<Endpoint> GossipEngine::select_fanout_peers()
     {
         std::vector<Endpoint> result;
@@ -290,11 +332,23 @@ namespace smo {
 
         for (size_t i = 0; i < count; ++i)
         {
-            Endpoint ep;
-            ep.scheme = "tcp";
-            ep.host = peers[i].endpoint.host;
-            ep.port = peers[i].endpoint.port;
-            result.push_back(ep);
+            // N2: Add both physical and mapped endpoints for each peer
+            // Physical endpoint (TCP)
+            Endpoint ep_tcp;
+            ep_tcp.scheme = "tcp";
+            ep_tcp.host = peers[i].endpoint.host;
+            ep_tcp.port = peers[i].endpoint.port;
+            result.push_back(ep_tcp);
+
+            // Mapped endpoint (UDP) - if available from STUN
+            if (!peers[i].mapped_address.empty())
+            {
+                Endpoint ep_udp;
+                ep_udp.scheme = "udp";
+                ep_udp.host = peers[i].mapped_address.ip;
+                ep_udp.port = peers[i].mapped_address.port;
+                result.push_back(ep_udp);
+            }
         }
         return result;
     }
