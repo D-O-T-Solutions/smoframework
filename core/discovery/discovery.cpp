@@ -53,35 +53,79 @@ namespace smo {
             return v;
         }
 
-        void write_endpoint(Bytes& out, const Endpoint& ep)
-        {
-            write_u16(out, static_cast<uint16_t>(ep.scheme.size()));
-            out.insert(out.end(), ep.scheme.begin(), ep.scheme.end());
-            write_u16(out, static_cast<uint16_t>(ep.host.size()));
-            out.insert(out.end(), ep.host.begin(), ep.host.end());
-            write_u16(out, ep.port);
-            write_u16(out, static_cast<uint16_t>(ep.path.size()));
-            out.insert(out.end(), ep.path.begin(), ep.path.end());
-        }
+void write_endpoint(Bytes& out, const Endpoint& ep)
+    {
+        write_u16(out, static_cast<uint16_t>(ep.scheme.size()));
+        out.insert(out.end(), ep.scheme.begin(), ep.scheme.end());
+        write_u16(out, static_cast<uint16_t>(ep.host.size()));
+        out.insert(out.end(), ep.host.begin(), ep.host.end());
+        write_u16(out, ep.port);
+        write_u16(out, static_cast<uint16_t>(ep.path.size()));
+        out.insert(out.end(), ep.path.begin(), ep.path.end());
+    }
 
-        Endpoint read_endpoint(BytesView& data, size_t& offset)
+    Endpoint read_endpoint(BytesView& data, size_t& offset)
+    {
+        Endpoint ep;
+        uint16_t slen = read_u16(data, offset);
+        ep.scheme = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
+                                data.begin() + static_cast<ptrdiff_t>(offset + slen));
+        offset += slen;
+        uint16_t hlen = read_u16(data, offset);
+        ep.host = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
+                              data.begin() + static_cast<ptrdiff_t>(offset + hlen));
+        offset += hlen;
+        ep.port = read_u16(data, offset);
+        uint16_t plen = read_u16(data, offset);
+        ep.path = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
+                              data.begin() + static_cast<ptrdiff_t>(offset + plen));
+        offset += plen;
+        return ep;
+    }
+
+    void write_mapped_address(Bytes& out, const MappedAddress& ma)
+    {
+        uint8_t has_addr = ma.empty() ? 0 : 1;
+        out.push_back(has_addr);
+        if (has_addr)
         {
-            Endpoint ep;
-            uint16_t slen = read_u16(data, offset);
-            ep.scheme = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
-                                    data.begin() + static_cast<ptrdiff_t>(offset + slen));
-            offset += slen;
-            uint16_t hlen = read_u16(data, offset);
-            ep.host = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
-                                  data.begin() + static_cast<ptrdiff_t>(offset + hlen));
-            offset += hlen;
-            ep.port = read_u16(data, offset);
-            uint16_t plen = read_u16(data, offset);
-            ep.path = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
-                                  data.begin() + static_cast<ptrdiff_t>(offset + plen));
-            offset += plen;
-            return ep;
+            write_u16(out, static_cast<uint16_t>(ma.ip.size()));
+            out.insert(out.end(), ma.ip.begin(), ma.ip.end());
+            write_u16(out, ma.port);
+            out.push_back(ma.is_ipv6 ? 1 : 0);
+            write_u64(out, static_cast<uint64_t>(ma.discovered_at));
         }
+    }
+
+    MappedAddress read_mapped_address(BytesView& data, size_t& offset)
+    {
+        MappedAddress ma;
+        if (offset >= data.size())
+            return ma;
+        uint8_t has_addr = data[offset++];
+        if (has_addr)
+        {
+            if (offset + 2 > data.size())
+                return ma;
+            uint16_t ip_len = read_u16(data, offset);
+            if (offset + ip_len > data.size())
+                return ma;
+            ma.ip = std::string(data.begin() + static_cast<ptrdiff_t>(offset),
+                                data.begin() + static_cast<ptrdiff_t>(offset + ip_len));
+            offset += ip_len;
+            if (offset + 2 > data.size())
+                return ma;
+            ma.port = read_u16(data, offset);
+            if (offset >= data.size())
+                return ma;
+            ma.is_ipv6 = (data[offset++] != 0);
+            if (offset + 8 <= data.size())
+            {
+                ma.discovered_at = static_cast<int64_t>(read_u64(data, offset));
+            }
+        }
+        return ma;
+    }
 
     } // anonymous namespace
 
@@ -146,6 +190,7 @@ namespace smo {
         }
 
         write_endpoint(out, endpoint);
+        write_mapped_address(out, mapped_address);
         // rtt_ms after endpoint for backward compat
         write_u64(out, static_cast<uint64_t>(rtt_ms * 1000.0)); // store as microseconds
         return out;
@@ -212,6 +257,8 @@ namespace smo {
         rec.aliases = read_str_vec();
 
         rec.endpoint = read_endpoint(data, off);
+
+        rec.mapped_address = read_mapped_address(data, off);
 
         if (off + 8 <= data.size())
         {

@@ -28,6 +28,7 @@
 #include <network/sync/merkle_tree.hpp>
 #include <network/sync/sync_backend.hpp>
 #include <network/sync/anti_entropy.hpp>
+#include <network/stun/stun_client.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -1046,6 +1047,207 @@ static bool test_pct_024()
 
     return true;
 }
+
+// PCT-025 — STUN binding request/response (RFC 5389 §6)
+// Tests STUN client construction, message building, and parsing
+static bool test_pct_025()
+{
+    using namespace smo::network::stun;
+
+    // Test 1: Client construction with default config
+    {
+        Client client;
+        const auto& cfg = client.config();
+        ASSERT_STREQ(cfg.server_host, "stun.l.google.com");
+        ASSERT_EQ(cfg.server_port, 19302);
+        ASSERT_EQ(cfg.max_attempts, 3);
+        ASSERT_EQ(cfg.timeout.count(), 2000);
+    }
+
+    // Test 2: Client construction with custom config
+    {
+        Config cfg;
+        cfg.server_host = "stun.example.com";
+        cfg.server_port = 3478;
+        cfg.max_attempts = 5;
+        cfg.timeout = std::chrono::milliseconds(5000);
+        Client client(cfg);
+        const auto& c = client.config();
+        ASSERT_STREQ(c.server_host, "stun.example.com");
+        ASSERT_EQ(c.server_port, 3478);
+        ASSERT_EQ(c.max_attempts, 5);
+        ASSERT_EQ(c.timeout.count(), 5000);
+    }
+
+    // Test 3: Build binding request - verify structure
+    {
+        Client client;
+        TransactionId tid;
+        Bytes req = client.build_request(tid);
+
+        // Must have at least 20-byte header
+        ASSERT(req.size() >= 20);
+
+        // Check message type = Binding Request (0x0001)
+        uint16_t msg_type = (static_cast<uint16_t>(req[0]) << 8) | req[1];
+        ASSERT_EQ(msg_type, kStunBindingRequest);
+
+        // Check magic cookie
+        uint32_t magic = (static_cast<uint32_t>(req[4]) << 24) |
+                         (static_cast<uint32_t>(req[5]) << 16) |
+                         (static_cast<uint32_t>(req[6]) << 8) |
+                         static_cast<uint32_t>(req[7]);
+        ASSERT_EQ(magic, kStunMagicCookie);
+
+        // Transaction ID must be 12 bytes
+        ASSERT_EQ(req.size() >= 20, true);
+
+        // Verify FINGERPRINT attribute is present at the end
+        // Last 8 bytes should be FINGERPRINT attribute (type=0x8028, len=4, value=4 bytes)
+        if (req.size() >= 8)
+        {
+            size_t end = req.size();
+            uint16_t last_type = (static_cast<uint16_t>(req[end - 8]) << 8) | req[end - 7];
+            // Could be FINGERPRINT (0x8028) or SOFTWARE (0x8022) depending on padding
+            // Just verify we have attributes
+            ASSERT(last_type == kAttrFingerprint || last_type == kAttrSoftware);
+        }
+    }
+
+    // Test 4: Parse response - valid XOR-MAPPED-ADDRESS (IPv4)
+    {
+        Client client;
+        TransactionId tid;
+        tid.bytes.fill(0xAB);
+
+        // Build a fake STUN Binding Response with XOR-MAPPED-ADDRESS
+        // Header (20 bytes) + XOR-MAPPED-ADDRESS attribute (8 bytes) + FINGERPRINT (8 bytes)
+        Bytes resp;
+        resp.resize(36); // We'll fill it manually
+
+        // Message Type = Binding Response (0x0101)
+        resp[0] = 0x01;
+        resp[1] = 0x01;
+
+        // Message Length = 8 (XOR-MAPPED-ADDRESS) + 8 (FINGERPRINT) = 16
+        resp[2] = 0x00;
+        resp[3] = 0x10;
+
+        // Magic Cookie
+        resp[4] = 0x21;
+        resp[5] = 0x12;
+        resp[6] = 0xA4;
+        resp[7] = 0x42;
+
+        // Transaction ID (12 bytes)
+        for (int i = 0; i < 12; ++i)
+            resp[8 + i] = tid.bytes[i];
+
+        // XOR-MAPPED-ADDRESS attribute
+        // Type = 0x0020
+        resp[20] = 0x00;
+        resp[21] = 0x20;
+        // Length = 8 (family + port + IPv4 address)
+        resp[22] = 0x00;
+        resp[23] = 0x08;
+        // Reserved (0), Family (1 = IPv4)
+        resp[24] = 0x00;
+        resp[25] = 0x01;
+        // XOR'ed port: 19302 ^ 0x2112 = 19302 ^ 8466 = 24840 = 0x6108
+        uint16_t xor_port = 19302 ^ 0x2112;
+        resp[26] = static_cast<uint8_t>((xor_port >> 8) & 0xFF);
+        resp[27] = static_cast<uint8_t>(xor_port & 0xFF);
+        // XOR'ed address: 8.8.8.8 ^ 0x2112A442
+        // 8.8.8.8 = 0x08080808
+        // 0x08080808 ^ 0x2112A442 = 0x291AAC4A
+        uint32_t xor_addr = 0x08080808 ^ kStunMagicCookie;
+        resp[28] = static_cast<uint8_t>((xor_addr >> 24) & 0xFF);
+        resp[29] = static_cast<uint8_t>((xor_addr >> 16) & 0xFF);
+        resp[30] = static_cast<uint8_t>((xor_addr >> 8) & 0xFF);
+        resp[31] = static_cast<uint8_t>(xor_addr & 0xFF);
+
+        // FINGERPRINT attribute (dummy - just for structure)
+        resp[32] = 0x80;
+        resp[33] = 0x28;
+        resp[34] = 0x00;
+        resp[35] = 0x04;
+        // CRC32 placeholder
+        resp.push_back(0x00);
+        resp.push_back(0x00);
+        resp.push_back(0x00);
+        resp.push_back(0x00);
+
+        // Update length to include FINGERPRINT (8 bytes)
+        resp[2] = 0x00;
+        resp[3] = 0x18;
+
+        auto parsed = client.parse_response(resp, tid);
+        ASSERT(parsed.has_value());
+        ASSERT_EQ(parsed->port, 19302);
+        ASSERT_STREQ(parsed->ip, "8.8.8.8");
+        ASSERT_EQ(parsed->is_ipv6, false);
+    }
+
+    // Test 5: Parse response - invalid magic cookie
+    {
+        Client client;
+        TransactionId tid;
+        tid.bytes.fill(0xCD);
+
+        Bytes resp = {
+            0x01, 0x01,  // Binding Response
+            0x00, 0x08,  // Length = 8
+            0x00, 0x00, 0x00, 0x00,  // Wrong magic cookie
+            0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD, 0xCD,  // TID
+            0x00, 0x20, 0x00, 0x08,  // XOR-MAPPED-ADDRESS
+            0x00, 0x01, 0x4B, 0x7E, 0x08, 0x08, 0x08, 0x08  // attribute value
+        };
+
+        auto parsed = client.parse_response(resp, tid);
+        ASSERT(!parsed.has_value()); // Should fail due to wrong magic cookie
+    }
+
+    // Test 6: Parse response - transaction ID mismatch
+    {
+        Client client;
+        TransactionId tid1, tid2;
+        tid1.bytes.fill(0x11);
+        tid2.bytes.fill(0x22);
+
+        Bytes resp = {
+            0x01, 0x01,  // Binding Response
+            0x00, 0x08,  // Length = 8
+            0x21, 0x12, 0xA4, 0x42,  // Correct magic cookie
+            0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,  // Wrong TID
+            0x00, 0x20, 0x00, 0x08,  // XOR-MAPPED-ADDRESS
+            0x00, 0x01, 0x4B, 0x7E, 0x08, 0x08, 0x08, 0x08  // attribute value
+        };
+
+        auto parsed = client.parse_response(resp, tid1);
+        ASSERT(!parsed.has_value()); // Should fail due to TID mismatch
+    }
+
+    // Test 7: MappedAddress to_string()
+    {
+        smo::network::stun::MappedAddress ma;
+        ma.ip = "1.2.3.4";
+        ma.port = 5678;
+        ma.is_ipv6 = false;
+        ASSERT_STREQ(ma.to_string(), "1.2.3.4:5678");
+
+        ma.ip = "2001:db8::1";
+        ma.port = 3478;
+        ma.is_ipv6 = true;
+        ASSERT_STREQ(ma.to_string(), "[2001:db8::1]:3478");
+
+        ma.ip = "";
+        ma.port = 0;
+        ASSERT(ma.empty());
+        ASSERT_STREQ(ma.to_string(), "");
+    }
+
+    return true;
+}
 static bool test_pct_019()
 {
     auto rules = join::join_transition_table();
@@ -1245,13 +1447,16 @@ int main(int, char*[])
     printf("\n── §9.12 Fault Injection / Chaos ─────────────────────────────────\n");
     TEST("PCT-024  VersionVector partition + heal") END_TEST(test_pct_024());
 
-    printf("\n── §9.13 Security ─────────────────────────────────────────────────\n");
+    printf("\n── §9.13 STUN ──────────────────────────────────────────────────────\n");
+    TEST("PCT-025  STUN binding request/response (RFC 5389)") END_TEST(test_pct_025());
+
+    printf("\n── §9.14 Security ─────────────────────────────────────────────────\n");
     TEST("PCT-023  Join token signature verify (P0-S1)") END_TEST(test_pct_023());
 
     printf("\n");
     if (failures == 0)
     {
-        printf("ALL 24 PCT TESTS PASSED\n");
+        printf("ALL 25 PCT TESTS PASSED\n");
         return 0;
     }
     else

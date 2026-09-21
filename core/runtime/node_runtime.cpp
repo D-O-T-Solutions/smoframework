@@ -83,6 +83,7 @@
 #include <core/acl/policy_engine.hpp>
 #include <core/network/sync/anti_entropy.hpp>
 #include <core/network/sync/sync_backend.hpp>
+#include <core/network/stun/stun_client.hpp>
 
 #include <storage/policy_store/policy_store.h>
 
@@ -651,6 +652,46 @@ Result<void> NodeRuntime::Impl::initialize()
     self_record_.endpoint.port = static_cast<uint16_t>(config_.port);
     self_record_.state = smo::PeerState::Online;
     self_record_.last_seen = now_ns_since_epoch();
+
+    // STUN discovery (N1) — run before joining mesh to learn mapped address
+    // Uses default STUN server (stun.l.google.com:19302) with 3 retries, 2s timeout
+    {
+        auto& LOG = smo::runtime::global_logger();
+        LOG.info("starting STUN discovery...");
+        smo::network::stun::Config stun_cfg;
+        stun_cfg.server_host = "stun.l.google.com";
+        stun_cfg.server_port = 19302;
+        stun_cfg.max_attempts = 3;
+        stun_cfg.timeout = std::chrono::milliseconds(2000);
+
+        auto stun_start = std::chrono::steady_clock::now();
+        auto stun_result = smo::network::stun::discover_mapped_address(stun_cfg);
+        auto stun_elapsed = std::chrono::steady_clock::now() - stun_start;
+        auto stun_latency_sec = std::chrono::duration<double>(stun_elapsed).count();
+
+        // Record STUN latency metric
+        smo::runtime::global_telemetry().record_histogram("smo_stun_latency_seconds", stun_latency_sec);
+
+        if (stun_result)
+        {
+            auto& mapped = stun_result.value();
+            self_record_.mapped_address.ip = mapped.ip;
+            self_record_.mapped_address.port = mapped.port;
+            self_record_.mapped_address.is_ipv6 = mapped.is_ipv6;
+            self_record_.mapped_address.discovered_at = now_ns_since_epoch();
+
+            std::printf("[smo-node] STUN discovery: mapped address = %s (latency: %.3fs)\n",
+                        self_record_.mapped_address.to_string().c_str(), stun_latency_sec);
+            LOG.info("STUN discovery success: " + self_record_.mapped_address.to_string() +
+                     " latency=" + std::to_string(stun_latency_sec) + "s");
+        }
+        else
+        {
+            std::fprintf(stderr, "[smo-node] STUN discovery failed: %s\n", stun_result.error().message.c_str());
+            LOG.warn("STUN discovery failed: " + stun_result.error().message);
+            // Not fatal — continue without mapped address
+        }
+    }
 
     // Construct services now that crypto_ and identity_ are available
     std::string mesh_base_dir = config_.mesh_dir.empty() ? "" :

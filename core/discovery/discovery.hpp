@@ -51,6 +51,25 @@ namespace smo {
     // ===========================================================================
     // PeerRecord
     // ===========================================================================
+    // Mapped address from STUN (RFC 5389) — the public IP:port as seen by STUN server
+    struct MappedAddress
+    {
+        std::string ip;       // IPv4 or IPv6
+        uint16_t port = 0;
+        bool is_ipv6 = false;
+        int64_t discovered_at = 0; // timestamp when discovered
+
+        bool empty() const noexcept { return ip.empty() || port == 0; }
+        std::string to_string() const
+        {
+            if (empty())
+                return "";
+            if (is_ipv6)
+                return "[" + ip + "]:" + std::to_string(port);
+            return ip + ":" + std::to_string(port);
+        }
+    };
+
     struct PeerRecord
     {
         NodeID node_id;
@@ -65,6 +84,7 @@ namespace smo {
         std::string location;             // optional physical/logical location
         std::vector<std::string> aliases; // alternative names
         Endpoint endpoint;
+        MappedAddress mapped_address;     // STUN-discovered public address
         PeerState state = PeerState::Unknown;
         int64_t last_seen = 0;
         int ping_misses = 0;

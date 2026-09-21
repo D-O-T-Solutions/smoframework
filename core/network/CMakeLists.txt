@@ -1,6 +1,7 @@
 # Network Layer — connectivity, bootstrap, topology management
 # Sprint 4: UDP transport, heartbeat, bootstrap integration
 # Sprint 5C: Interface enumeration, public IP detection, port check, DNS, NAT detect
+# Sprint 5D: STUN client (RFC 5389)
 
 # UDP transport + heartbeat + gossip + sync are part of smo_core
 target_sources(smo_core PRIVATE
@@ -20,6 +21,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/packet_dispatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connection_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/udp_server.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stun/stun_client.cpp
 )
 
 target_sources(smo_core INTERFACE
@@ -36,4 +38,5 @@ target_sources(smo_core INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/transport/dispatcher.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/membership_sync.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_service.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stun/stun_client.hpp
 )
