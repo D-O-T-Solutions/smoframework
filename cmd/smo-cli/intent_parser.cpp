@@ -61,6 +61,8 @@ namespace smo {
                 {{"lines", "Number of lines"}, {"follow", "Follow output"}});
             add("touch", "Create empty file", IntentType::Filesystem, {"path"}, {});
             add("echo", "Echo text", IntentType::Filesystem, {"text"}, {{"newline", "Add newline"}});
+            add("cd", "Change local working directory", IntentType::Filesystem, {"path"}, {});
+            add("stat", "Show file status", IntentType::Filesystem, {"path"}, {});
             add("get", "Get file from node", IntentType::Transfer, {"remote", "local"},
                 {{"overwrite", "Overwrite local"}, {"resume", "Resume transfer"}});
             add("put", "Put file to node", IntentType::Transfer, {"local", "remote"},
@@ -336,8 +338,8 @@ namespace smo {
             }
         }
 
-        // Validate required args count
-        if (positional.size() < def.required_args.size())
+        // Validate required args count (--help/-h never requires them)
+        if (intent.flags.count("help") == 0 && positional.size() < def.required_args.size())
         {
             return SMO_ERR(Protocol, 102, Error, NoRetry, None,
                            "Missing required argument: " + def.required_args[positional.size()]);
@@ -593,6 +595,15 @@ namespace smo {
             for (const auto& arg : def.required_args)
             {
                 oss << "  " << arg << "\n";
+            }
+        }
+
+        if (!def.optional_flags.empty())
+        {
+            oss << "\nFlags:\n";
+            for (const auto& [flag, desc] : def.optional_flags)
+            {
+                oss << "  --" << flag << "    " << desc << "\n";
             }
         }
 

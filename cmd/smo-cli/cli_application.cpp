@@ -41,6 +41,8 @@
 #include <cstring>
 #include <cmath>
 #include <cerrno>
+#include <cctype>
+#include <pwd.h>
 
 namespace smo {
 
@@ -58,7 +60,8 @@ namespace smo {
             "top",     "deploy",  "undeploy", "status",  "history",    "trace",    "select",  "use",
             "policy",  "control", "mesh",     "genesis", "governance", "recovery", "connect", "disconnect",
             "context", "help",    "exit",     "quit",    "clear",      "get",      "put",     "sync",
-            "cat",     "echo",    "touch",    "mkdir",   "rm",         "cp",       "mv",      nullptr};
+            "cat",     "echo",    "touch",    "mkdir",   "rm",         "cp",       "mv",      "stat",
+            nullptr};
 
         Impl() { parser_ = std::make_unique<IntentParser>(); }
 
@@ -259,15 +262,101 @@ namespace smo {
 
         Result<int> handle_help(const Intent& intent)
         {
-            if (!intent.flags.empty() && intent.flags.begin()->first != "command")
+            if (intent.flags.count("command"))
             {
-                std::cout << parser_->generate_usage(intent.flags.begin()->first);
+                std::cout << parser_->generate_usage(intent.flags.at("command"));
             }
             else
             {
                 std::cout << parser_->generate_help();
             }
             return 0;
+        }
+
+        // ---- Per-command --help ----
+
+        bool wants_help(const Intent& intent) const { return intent.flags.count("help") != 0; }
+
+        std::string command_help(const std::string& cmd) const
+        {
+            if (cmd == "exec")
+                return "Usage: exec <command> [args...] [--timeout MS]\n"
+                       "  Execute a command on the connected node over a secure session.\n\n"
+                       "Flags:\n"
+                       "  --timeout MS    Command timeout in milliseconds\n";
+            if (cmd == "deploy")
+                return "Usage: deploy <contract_name> [--version V] [--publisher P] [--description D] "
+                       "[--entry-point E]\n"
+                       "  Deploy a contract to the connected node.\n\n"
+                       "Flags:\n"
+                       "  --version V      Contract version\n"
+                       "  --publisher P    Publisher identity\n"
+                       "  --description D  Human-readable description\n"
+                       "  --entry-point E  Entry point name\n";
+            if (cmd == "undeploy")
+                return "Usage: undeploy <contract_id> [--force]\n"
+                       "  Remove a deployed contract from the connected node.\n";
+            if (cmd == "status")
+                return "Usage:\n"
+                       "  status                Show current context (mesh, selection, control, scope, session)\n"
+                       "  status <contract_id>  Show contract lifecycle status on the connected node\n";
+            if (cmd == "policy")
+                return "Usage: policy [list|show <name>|preset <name>]\n"
+                       "  list            List available policy presets\n"
+                       "  show <name>     Show preset details (default|enterprise|emergency)\n"
+                       "  preset <name>   Apply a preset to the execution context\n";
+            if (cmd == "trace")
+                return "Usage: trace <contract_id> [--detail]\n"
+                       "  Show the deployment lifecycle trace for a contract on the connected node.\n";
+            if (cmd == "ls")
+                return "Usage: ls <path> [--recursive] [--long]\n  List directory contents.\n";
+            if (cmd == "cat")
+                return "Usage: cat <path>\n  Display file contents.\n";
+            if (cmd == "mkdir")
+                return "Usage: mkdir <path> [--parents] [--mode MODE]\n  Create a directory.\n";
+            if (cmd == "rm")
+                return "Usage: rm <path> [--recursive] [--force]\n  Remove a file or directory.\n";
+            if (cmd == "cp")
+                return "Usage: cp <src> <dst> [--recursive] [--preserve]\n  Copy a file or directory.\n";
+            if (cmd == "mv")
+                return "Usage: mv <src> <dst> [--force]\n  Move or rename a file or directory.\n";
+            if (cmd == "touch")
+                return "Usage: touch <path>\n  Create an empty file.\n";
+            if (cmd == "echo")
+                return "Usage: echo <text>\n  Print text to the output.\n";
+            if (cmd == "pwd")
+                return "Usage: pwd\n  Print the current working directory.\n";
+            if (cmd == "cd")
+                return "Usage: cd <path>\n  Change the current working directory.\n";
+            if (cmd == "stat")
+                return "Usage: stat <path>\n  Show file or directory status.\n";
+            if (cmd == "ps")
+                return "Usage: ps [--user USER] [--all]\n  List local processes.\n";
+            if (cmd == "kill")
+                return "Usage: kill <pid> [--signal SIG] [--force]\n  Send a signal to a process.\n";
+            if (cmd == "top")
+                return "Usage: top [--delay MS] [--sort FIELD]\n  Show a process snapshot sorted by CPU ticks.\n";
+            if (cmd == "get")
+                return "Usage: get <remote> <local>\n  Fetch a file from the connected node to the local node.\n";
+            if (cmd == "put")
+                return "Usage: put <local> <remote>\n  Copy a local file to the connected node.\n";
+            if (cmd == "sync")
+                return "Usage: sync <local> <remote> [--dry-run]\n  Mirror a local directory tree to the connected "
+                       "node.\n";
+            if (cmd == "discover")
+                return "Usage: discover [--live]\n"
+                       "  Discover mesh peers and bootstrap endpoints.\n"
+                       "  --live    Query the connected node's liveness over the secure session.\n";
+            if (cmd == "export")
+                return "Usage:\n"
+                       "  export --context --file <path>\n"
+                       "  export --mesh <name> --file <path>\n";
+            if (cmd == "governance")
+                return "Usage:\n"
+                       "  governance propose <action> [--tier membership|constitution]\n"
+                       "  governance list\n"
+                       "  governance status\n";
+            return parser_->generate_usage(cmd);
         }
 
         Result<int> handle_select(const Intent& intent)
@@ -323,6 +412,11 @@ namespace smo {
 
         Result<int> handle_exec(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("exec");
+                return 0;
+            }
             if (intent.args.empty())
             {
                 std::cerr << "Usage: exec <command> [args...]\n";
@@ -370,6 +464,11 @@ namespace smo {
 
         Result<int> handle_transfer(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("get") << "\n" << command_help("put") << "\n" << command_help("sync");
+                return 0;
+            }
             if (intent.args.size() < 2)
             {
                 std::cerr << "Usage: put <local> <remote>\n"
@@ -554,14 +653,24 @@ namespace smo {
                 return 0;
             }
 
-            std::cout << "(Transfer not yet implemented)\n";
-            return 0;
+            std::cerr << "Unknown transfer operation: " << op << "\n";
+            std::cerr << "Supported: put <local> <remote>, get <remote> <local>, sync <local> <remote>\n";
+            return 1;
         }
 
         Result<int> handle_filesystem(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help(intent.opcode);
+                return 0;
+            }
             if (context_.is_connected())
             {
+                if (intent.opcode == "cd")
+                {
+                    return handle_local_filesystem(intent);
+                }
                 auto [method, args] = map_cli_to_contract(intent);
                 auto net_res = context_.network_execute(context_.get_connected_node(), 0x2B, // FILE_OP opcode
                                                         method, args);
@@ -575,23 +684,26 @@ namespace smo {
             }
             else
             {
-                // Local dispatch via selection
+                // Local dispatch without an active session
                 auto sel = context_.get_selection();
-                if (!sel)
+                if (sel)
                 {
-                    std::cout << "(Filesystem operations not yet implemented)\n";
-                    return 0;
+                    std::cerr
+                        << "Filesystem operation requires an active session for the selected nodes. "
+                           "Use 'connect <host>:<port>' first.\n";
+                    return 1;
                 }
-                std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
-                std::cout << "[" << scope_str << " over " << sel.value().node_names.size() << " node(s)]"
-                          << " fs:" << intent.opcode << "\n";
-                std::cout << "(Filesystem operations not yet implemented)\n";
-                return 0;
+                return handle_local_filesystem(intent);
             }
         }
 
         Result<int> handle_process(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help(intent.opcode);
+                return 0;
+            }
             if (context_.is_connected())
             {
                 auto [method, args] = map_cli_to_contract(intent);
@@ -607,22 +719,26 @@ namespace smo {
             }
             else
             {
+                // Local dispatch without an active session
                 auto sel = context_.get_selection();
-                if (!sel)
+                if (sel)
                 {
-                    std::cout << "(Process operations not yet implemented)\n";
-                    return 0;
+                    std::cerr
+                        << "Process operation requires an active session for the selected nodes. "
+                           "Use 'connect <host>:<port>' first.\n";
+                    return 1;
                 }
-                std::string scope_str = intent.scope.empty() ? "single" : intent.scope;
-                std::cout << "[" << scope_str << " over " << sel.value().node_names.size() << " node(s)]"
-                          << " proc:" << intent.opcode << "\n";
-                std::cout << "(Process operations not yet implemented)\n";
-                return 0;
+                return handle_local_process(intent);
             }
         }
 
         Result<int> handle_deploy(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("deploy");
+                return 0;
+            }
             if (intent.args.empty())
             {
                 std::cerr << "Usage: deploy <contract_name> [--version V] [--publisher P] [--description D] "
@@ -660,6 +776,11 @@ namespace smo {
 
         Result<int> handle_undeploy(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("undeploy");
+                return 0;
+            }
             if (intent.args.empty())
             {
                 std::cerr << "Usage: undeploy <contract_id>\n";
@@ -688,6 +809,11 @@ namespace smo {
 
         Result<int> handle_status(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("status");
+                return 0;
+            }
             if (intent.args.empty())
             {
                 std::cout << "Context status:\n";
@@ -734,6 +860,11 @@ namespace smo {
 
         Result<int> handle_policy(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("policy");
+                return 0;
+            }
             if (intent.flags.count("list"))
             {
                 std::cout << "Available policies:\n";
@@ -1594,6 +1725,11 @@ namespace smo {
 
         Result<int> handle_governance(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("governance");
+                return 0;
+            }
             std::string home = smo::mesh::smo_home();
             auto current = context_.get_current_mesh();
             std::string mesh_name = current ? current.value() : "";
@@ -1872,6 +2008,11 @@ namespace smo {
 
         Result<int> handle_discover(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("discover");
+                return 0;
+            }
             std::string home = smo::mesh::smo_home();
             auto current = context_.get_current_mesh();
             std::string mesh_name = current ? current.value() : "";
@@ -1956,6 +2097,11 @@ namespace smo {
 
         Result<int> handle_export(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("export");
+                return 0;
+            }
             std::string home = smo::mesh::smo_home();
             auto current = context_.get_current_mesh();
             std::string mesh_name = current ? current.value() : "";
@@ -2056,6 +2202,11 @@ namespace smo {
 
         Result<int> handle_trace(const Intent& intent)
         {
+            if (wants_help(intent))
+            {
+                std::cout << command_help("trace");
+                return 0;
+            }
             if (intent.args.empty())
             {
                 std::cout << "Usage: trace <contract_id>\n";
@@ -2158,6 +2309,397 @@ namespace smo {
             std::cout << net_res.value() << "\n";
             return 0;
         }
+        // ---- Local (offline) filesystem operations ----
+
+        Result<int> handle_local_filesystem(const Intent& intent)
+        {
+            namespace fs = std::filesystem;
+            const std::string& cmd = intent.opcode;
+            auto arg = [&](size_t i) -> std::string { return i < intent.args.size() ? intent.args[i] : ""; };
+
+            if (cmd == "pwd")
+            {
+                auto cwd = fs::current_path();
+                std::cout << cwd.string() << "\n";
+                return 0;
+            }
+
+            if (cmd == "cd")
+            {
+                std::error_code ec;
+                fs::current_path(arg(0), ec);
+                if (ec)
+                {
+                    std::cerr << "Error: cannot change directory to '" << arg(0) << "': " << ec.message() << "\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "echo")
+            {
+                for (size_t i = 0; i < intent.args.size(); ++i)
+                {
+                    if (i > 0)
+                        std::cout << " ";
+                    std::cout << intent.args[i];
+                }
+                std::cout << "\n";
+                return 0;
+            }
+
+            if (cmd == "cat")
+            {
+                std::ifstream in(arg(0), std::ios::binary);
+                if (!in)
+                {
+                    std::cerr << "Error: cannot open '" << arg(0) << "'\n";
+                    return 1;
+                }
+                std::cout << in.rdbuf();
+                return 0;
+            }
+
+            if (cmd == "touch")
+            {
+                std::error_code ec;
+                fs::create_directories(fs::path(arg(0)).parent_path(), ec);
+                std::ofstream out(arg(0), std::ios::app);
+                out.close();
+                if (!out)
+                {
+                    std::cerr << "Error: cannot create '" << arg(0) << "'\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "mkdir")
+            {
+                std::error_code ec;
+                if (intent.flags.count("parents"))
+                    fs::create_directories(arg(0), ec);
+                else
+                    fs::create_directory(arg(0), ec);
+                if (ec)
+                {
+                    std::cerr << "Error: cannot create directory '" << arg(0) << "': " << ec.message() << "\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "rm")
+            {
+                std::error_code ec;
+                if (intent.flags.count("recursive"))
+                    fs::remove_all(arg(0), ec);
+                else
+                    fs::remove(arg(0), ec);
+                if (ec && !intent.flags.count("force"))
+                {
+                    std::cerr << "Error: cannot remove '" << arg(0) << "': " << ec.message() << "\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "cp")
+            {
+                std::error_code ec;
+                auto opts = fs::copy_options::overwrite_existing;
+                if (intent.flags.count("recursive"))
+                    opts |= fs::copy_options::recursive;
+                fs::copy(arg(0), arg(1), opts, ec);
+                if (ec)
+                {
+                    std::cerr << "Error: cannot copy '" << arg(0) << "' -> '" << arg(1) << "': " << ec.message() << "\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "mv")
+            {
+                std::error_code ec;
+                fs::rename(arg(0), arg(1), ec);
+                if (ec)
+                {
+                    std::cerr << "Error: cannot move '" << arg(0) << "' -> '" << arg(1) << "': " << ec.message() << "\n";
+                    return 1;
+                }
+                return 0;
+            }
+
+            if (cmd == "ls")
+            {
+                fs::path target = arg(0).empty() ? "." : arg(0);
+                std::error_code ec;
+                if (!fs::exists(target, ec))
+                {
+                    std::cerr << "Error: '" << target.string() << "': no such file or directory\n";
+                    return 1;
+                }
+                const bool recursive = intent.flags.count("recursive");
+                const bool long_fmt = intent.flags.count("long");
+
+                auto entry_line = [&](const fs::path& p) -> std::string {
+                    std::error_code lec;
+                    bool is_dir = fs::is_directory(p, lec);
+                    if (!long_fmt)
+                        return p.filename().string() + (is_dir ? "/" : "");
+                    auto size = fs::is_directory(p, lec) ? 0 : fs::file_size(p, lec);
+                    std::ostringstream oss;
+                    oss << (is_dir ? 'd' : '-') << ' ' << std::setw(12) << (lec ? 0 : size) << ' '
+                        << p.filename().string();
+                    return oss.str();
+                };
+
+                if (recursive)
+                {
+                    std::function<void(const fs::path&)> walk = [&](const fs::path& p) {
+                        std::cout << p.string() << ":\n";
+                        std::error_code dec;
+                        for (const auto& entry :
+                             fs::directory_iterator(p, fs::directory_options::skip_permission_denied, dec))
+                        {
+                            if (dec)
+                                break;
+                            std::cout << "  " << entry_line(entry.path()) << "\n";
+                        }
+                        for (const auto& entry :
+                             fs::directory_iterator(p, fs::directory_options::skip_permission_denied, dec))
+                        {
+                            if (dec)
+                                break;
+                            if (entry.is_directory())
+                                walk(entry.path());
+                        }
+                    };
+                    walk(target);
+                }
+                else
+                {
+                    std::error_code dec;
+                    for (const auto& entry :
+                         fs::directory_iterator(target, fs::directory_options::skip_permission_denied, dec))
+                    {
+                        if (dec)
+                            break;
+                        std::cout << entry_line(entry.path()) << "\n";
+                    }
+                }
+                return 0;
+            }
+
+            if (cmd == "stat")
+            {
+                fs::path p = arg(0);
+                std::error_code ec;
+                if (!fs::exists(p, ec))
+                {
+                    std::cerr << "Error: '" << p.string() << "' does not exist\n";
+                    return 1;
+                }
+                bool is_dir = fs::is_directory(p, ec);
+                std::cout << "  File: " << p.string() << "\n";
+                std::cout << "  Type: " << (is_dir ? "directory" : "regular file") << "\n";
+                if (!is_dir)
+                    std::cout << "  Size: " << fs::file_size(p, ec) << " bytes\n";
+                auto perms = fs::status(p, ec).permissions() & fs::perms::mask;
+                std::ostringstream mode_oss;
+                mode_oss << std::oct << static_cast<int>(perms);
+                std::cout << "  Mode: " << std::setw(6) << std::setfill('0') << mode_oss.str() << std::setfill(' ')
+                          << "\n";
+                return 0;
+            }
+
+            std::cerr << "Unknown filesystem operation: " << cmd << "\n";
+            return 1;
+        }
+
+        // ---- Local (offline) process operations ----
+
+        struct LocalProcStat
+        {
+            long pid = 0;
+            long ppid = 0;
+            char state = '?';
+            std::string command;
+            unsigned long long utime = 0;
+            unsigned long long stime = 0;
+            long rss_pages = 0;
+        };
+
+        static bool read_proc_stat(long pid, LocalProcStat& out)
+        {
+            std::ifstream in("/proc/" + std::to_string(pid) + "/stat");
+            if (!in)
+                return false;
+            std::string line;
+            std::getline(in, line);
+            auto open_paren = line.find('(');
+            auto close_paren = line.rfind(')');
+            if (open_paren == std::string::npos || close_paren == std::string::npos || close_paren <= open_paren)
+                return false;
+            out.pid = pid;
+            out.command = line.substr(open_paren + 1, close_paren - open_paren - 1);
+            if (out.command.empty())
+                out.command = "[" + std::to_string(pid) + "]";
+            std::istringstream fields(line.substr(close_paren + 2));
+            std::string tok;
+            std::vector<std::string> f;
+            while (fields >> tok)
+                f.push_back(tok);
+            if (f.size() < 22)
+                return false;
+            out.state = f[0].empty() ? '?' : f[0][0];
+            out.ppid = std::atol(f[1].c_str());
+            out.utime = std::strtoull(f[11].c_str(), nullptr, 10);
+            out.stime = std::strtoull(f[12].c_str(), nullptr, 10);
+            out.rss_pages = std::atol(f[21].c_str());
+            return true;
+        }
+
+        static uid_t proc_uid(long pid)
+        {
+            std::ifstream in("/proc/" + std::to_string(pid) + "/status");
+            std::string line;
+            while (std::getline(in, line))
+            {
+                if (line.rfind("Uid:", 0) == 0)
+                {
+                    std::istringstream ss(line);
+                    std::string key;
+                    long uid = 0;
+                    ss >> key >> uid;
+                    return static_cast<uid_t>(uid);
+                }
+            }
+            return 0;
+        }
+
+        static std::string uid_to_name(uid_t uid)
+        {
+            struct passwd* pw = ::getpwuid(uid);
+            if (pw && pw->pw_name)
+                return pw->pw_name;
+            return std::to_string(uid);
+        }
+
+        static std::vector<long> numeric_proc_pids()
+        {
+            std::vector<long> pids;
+            for (const auto& entry : std::filesystem::directory_iterator("/proc"))
+            {
+                if (!entry.is_directory())
+                    continue;
+                const std::string name = entry.path().filename().string();
+                if (name.empty() || name.find_first_not_of("0123456789") != std::string::npos)
+                    continue;
+                pids.push_back(std::atol(name.c_str()));
+            }
+            std::sort(pids.begin(), pids.end());
+            return pids;
+        }
+
+        Result<int> handle_local_process(const Intent& intent)
+        {
+            const std::string& cmd = intent.opcode;
+
+            if (cmd == "ps")
+            {
+                std::cout << std::left << std::setw(8) << "PID" << std::setw(8) << "PPID" << std::setw(10) << "USER"
+                          << std::setw(6) << "STAT" << "COMMAND\n";
+                for (long pid : numeric_proc_pids())
+                {
+                    LocalProcStat st;
+                    if (!read_proc_stat(pid, st))
+                        continue;
+                    std::string user = uid_to_name(proc_uid(pid));
+                    if (intent.flags.count("user") && intent.flags.at("user") != user)
+                        continue;
+                    std::cout << std::left << std::setw(8) << pid << std::setw(8) << st.ppid << std::setw(10) << user
+                              << std::setw(6) << st.state << st.command << "\n";
+                }
+                return 0;
+            }
+
+            if (cmd == "kill")
+            {
+                if (intent.args.empty())
+                {
+                    std::cerr << "Usage: kill <pid> [--signal SIG] [--force]\n";
+                    return 1;
+                }
+                long pid = std::atol(intent.args[0].c_str());
+                if (pid <= 0)
+                {
+                    std::cerr << "Error: invalid pid '" << intent.args[0] << "'\n";
+                    return 1;
+                }
+                int sig = SIGTERM;
+                if (intent.flags.count("signal"))
+                    sig = std::atoi(intent.flags.at("signal").c_str());
+                if (intent.flags.count("force"))
+                    sig = SIGKILL;
+                if (::kill(static_cast<pid_t>(pid), sig) != 0)
+                {
+                    std::cerr << "Error: kill(" << pid << ", " << sig << ") failed: " << std::strerror(errno) << "\n";
+                    return 1;
+                }
+                std::cout << "[local] sent signal " << sig << " to pid " << pid << "\n";
+                return 0;
+            }
+
+            if (cmd == "top")
+            {
+                struct TopEntry
+                {
+                    long pid = 0;
+                    long ppid = 0;
+                    char state = '?';
+                    std::string command;
+                    unsigned long long ticks = 0;
+                };
+                std::vector<TopEntry> entries;
+                for (long pid : numeric_proc_pids())
+                {
+                    LocalProcStat st;
+                    if (!read_proc_stat(pid, st))
+                        continue;
+                    TopEntry e;
+                    e.pid = pid;
+                    e.ppid = st.ppid;
+                    e.state = st.state;
+                    e.command = st.command;
+                    e.ticks = st.utime + st.stime;
+                    entries.push_back(std::move(e));
+                }
+                std::sort(entries.begin(), entries.end(), [](const TopEntry& a, const TopEntry& b) {
+                    return a.ticks > b.ticks;
+                });
+                std::cout << "PID     PPID    STAT  TICKS     COMMAND\n";
+                const size_t limit = std::min<size_t>(10, entries.size());
+                for (size_t i = 0; i < limit; ++i)
+                {
+                    const auto& e = entries[i];
+                    std::cout << std::left << std::setw(8) << e.pid << std::setw(7) << e.ppid << std::setw(6) << e.state
+                              << std::setw(9) << e.ticks << e.command << "\n";
+                }
+                return 0;
+            }
+
+            if (cmd == "info")
+            {
+                std::cout << "Local process monitor: ps, kill, top\n";
+                return 0;
+            }
+
+            std::cerr << "Unknown process operation: " << cmd << "\n";
+            return 1;
+        }
+
         static std::pair<std::string, std::unordered_map<std::string, std::string>>
         map_cli_to_contract(const Intent& intent)
         {
