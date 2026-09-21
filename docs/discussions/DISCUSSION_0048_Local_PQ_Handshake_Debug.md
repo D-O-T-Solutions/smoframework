@@ -389,6 +389,9 @@ DISCUSSION_0045 bootstrap/enrollment flow.
   delta wiring, gossip start) and 5.4 (advertise endpoint in HelloMsg), then fix
   the heartbeat UDP round-trip (5.5). Kill/restart liveness test afterwards:
   A/B/C ACTIVE → kill one → peers mark offline → restart → reappears.
+- **5.5 heartbeat UDP round-trip: ✅ FIXED by `b2531b7` (see §9.15)** — pongs
+  now count and the liveness timeout resolves; the 3-node kill/restart liveness
+  test passes (root-cause analysis above remains valid as diagnosis history).
 
 ### 9.13 Phase 1-2: main loop + gossip enable (2026-09-18)
 - **Phase 1 — main loop no longer starves.** Replaced the blocking
@@ -417,3 +420,20 @@ DISCUSSION_0045 bootstrap/enrollment flow.
   and applies 2 frames (Membership events re-emitted). A→B/C fan-out still dead
   this phase because A only holds B/C at their ephemeral source ports — endpoint
   advertisement is Phase 4.
+
+### 9.15 Phase 4 — heartbeat UDP round-trip + 3-node liveness DONE (2026-09-21)
+- **DONE** heartbeat UDP PING/PONG round-trip fixed by commit `b2531b7`
+  (`fix(heartbeat): repair UDP PING/PONG round-trip + 3-node liveness`):
+  - **Endpoint advertisement (5.4 §9.12)** — HelloMsg now carries the sender's
+    endpoint; real endpoints (7778/7779) propagate instead of the ephemeral
+    outbound TCP/UDP source port.
+  - **PONG reply target** — B/C reply PONG to **A's advertised send endpoint**
+    rather than A's ephemeral connect socket (fix match-by-endpoint), so the
+    PONG reaches a reader.
+  - **PONG accounting** — A counts PONG via peer match by `node_id`
+    (`handle_pong`); pongs now count and the liveness timeout resolves.
+- **DONE** 3-node liveness test: A/B/C all `ACTIVE` after kill/restart; kill one
+  node → the 2 remaining mark it `OFFLINE` after N missed pings → restart →
+  reappears `Online`.
+- Build state: `smo_runtime` + `smo-node` build 100% green; heartbeat behavioral
+  PASS verified on the physical 3-node setup.
