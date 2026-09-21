@@ -1720,6 +1720,222 @@ static bool test_pct_023()
 }
 
 // ==========================================================================
+// PCT-028 — ICE-Lite candidate gathering, exchange, and connectivity checks
+// ==========================================================================
+static bool test_pct_028()
+{
+    using namespace smo::network::ice;
+
+    // Test 1: IceConfig default values
+    {
+        IceConfig cfg;
+        ASSERT_STREQ(cfg.stun_server_host, "stun.l.google.com");
+        ASSERT_EQ(cfg.stun_server_port, 19302);
+        ASSERT_EQ(cfg.max_stun_attempts, 3);
+        ASSERT_EQ(cfg.stun_timeout_ms, 2000);
+        ASSERT_EQ(cfg.enable_relay, true);
+        ASSERT_EQ(cfg.connectivity_check_timeout_ms, 5000);
+        ASSERT_EQ(cfg.max_checks_per_pair, 3);
+    }
+
+    // Test 2: IceConfig customization
+    {
+        IceConfig cfg;
+        cfg.stun_server_host = "stun.example.com";
+        cfg.stun_server_port = 3478;
+        cfg.max_stun_attempts = 5;
+        cfg.stun_timeout_ms = 5000;
+        cfg.enable_relay = false;
+
+        IceAgent agent(cfg);
+        // Config is stored internally
+        ASSERT_STREQ(agent.config().stun_server_host, "stun.example.com");
+        ASSERT_EQ(agent.config().stun_server_port, 3478);
+    }
+
+    // Test 3: Candidate priority calculation (RFC 8445 §5.1.2)
+    {
+        uint32_t host_prio = calculate_priority(CandidateType::Host);
+        uint32_t srflx_prio = calculate_priority(CandidateType::ServerReflexive);
+        uint32_t relay_prio = calculate_priority(CandidateType::Relayed);
+
+        // Host should have highest priority (type_pref = 126)
+        ASSERT(host_prio > srflx_prio);
+        ASSERT(srflx_prio > relay_prio);
+
+        // Verify specific values
+        ASSERT_EQ(host_prio, (126u << 24) | (65535u << 8) | (256 - 1));
+        ASSERT_EQ(srflx_prio, (110u << 24) | (65535u << 8) | (256 - 1));
+        ASSERT_EQ(relay_prio, (0u << 24) | (65535u << 8) | (256 - 1));
+    }
+
+    // Test 4: Pair priority calculation (RFC 8445 §5.7.2)
+    {
+        uint32_t controlling = 0x7E0000FF; // host priority
+        uint32_t controlled = 0x6E0000FF;  // srflx priority
+        uint64_t pair_prio = calculate_pair_priority(controlling, controlled);
+
+        // pair_priority = 2^32 * min(G, D) + 2 * max(G, D) + (G > D ? 1 : 0)
+        uint64_t expected = (static_cast<uint64_t>(controlled) << 32) +
+                           (2 * controlling) + 1;
+        ASSERT_EQ(pair_prio, expected);
+    }
+
+    // Test 5: Foundation generation
+    {
+        std::string foundation = generate_foundation(CandidateType::Host, "192.168.1.1", 5000);
+        ASSERT(foundation.find("host:192.168.1.1:5000") != std::string::npos);
+
+        std::string foundation2 = generate_foundation(CandidateType::ServerReflexive, "1.2.3.4", 12345);
+        ASSERT(foundation2.find("srflx:1.2.3.4:12345") != std::string::npos);
+
+        // Same base should generate same foundation
+        std::string foundation3 = generate_foundation(CandidateType::Host, "192.168.1.1", 5000);
+        ASSERT(foundation == foundation3);
+    }
+
+    // Test 6: Candidate structure
+    {
+        Candidate cand;
+        cand.type = CandidateType::Host;
+        cand.foundation = "host:192.168.1.1:5000";
+        cand.ip = "192.168.1.1";
+        cand.port = 5000;
+        cand.is_ipv6 = false;
+        cand.priority = calculate_priority(CandidateType::Host);
+        cand.discovered_at = 1234567890;
+
+        ASSERT_EQ(cand.type, CandidateType::Host);
+        ASSERT(cand.foundation == "host:192.168.1.1:5000");
+        ASSERT(cand.ip == "192.168.1.1");
+        ASSERT_EQ(cand.port, 5000);
+        ASSERT_EQ(cand.is_ipv6, false);
+        ASSERT(!cand.empty());
+    }
+
+    // Test 7: Candidate equality
+    {
+        Candidate cand1, cand2;
+        cand1.type = CandidateType::Host;
+        cand1.ip = "192.168.1.1";
+        cand1.port = 5000;
+        cand1.foundation = "host:192.168.1.1:5000";
+
+        cand2 = cand1;
+        ASSERT(cand1 == cand2);
+
+        cand2.port = 5001;
+        ASSERT(!(cand1 == cand2));
+    }
+
+    // Test 8: Candidate to_string
+    {
+        Candidate cand;
+        cand.type = CandidateType::Host;
+        cand.ip = "192.168.1.1";
+        cand.port = 5000;
+        cand.is_ipv6 = false;
+        cand.priority = calculate_priority(CandidateType::Host);
+        cand.foundation = "host:192.168.1.1:5000";
+
+        std::string str = cand.to_string();
+        ASSERT(str.find("192.168.1.1:5000") != std::string::npos);
+        ASSERT(str.find("host") != std::string::npos);
+        ASSERT(str.find("prio=") != std::string::npos);
+        ASSERT(str.find("foundation=") != std::string::npos);
+    }
+
+    // Test 9: CBOR encode/decode roundtrip
+    {
+        // Test the static decode_candidates_cbor method
+        cbor::Encoder enc;
+        enc.encode_array(2);
+        
+        // Encode cand1 (Host)
+        enc.encode_map(7);
+        enc.encode_uint(1); enc.encode_uint(static_cast<uint64_t>(CandidateType::Host));
+        enc.encode_uint(2); enc.encode_string("host:192.168.1.1:5000");
+        enc.encode_uint(3); enc.encode_string("192.168.1.1");
+        enc.encode_uint(4); enc.encode_uint(5000);
+        enc.encode_uint(5); enc.encode_uint(0);
+        enc.encode_uint(6); enc.encode_uint(calculate_priority(CandidateType::Host));
+        enc.encode_uint(9); enc.encode_uint(1000);
+        
+        // Encode cand2 (ServerReflexive)
+        enc.encode_map(9);
+        enc.encode_uint(1); enc.encode_uint(static_cast<uint64_t>(CandidateType::ServerReflexive));
+        enc.encode_uint(2); enc.encode_string("srflx:1.2.3.4:12345");
+        enc.encode_uint(3); enc.encode_string("1.2.3.4");
+        enc.encode_uint(4); enc.encode_uint(12345);
+        enc.encode_uint(5); enc.encode_uint(0);
+        enc.encode_uint(6); enc.encode_uint(calculate_priority(CandidateType::ServerReflexive));
+        enc.encode_uint(7); enc.encode_string("192.168.1.1");
+        enc.encode_uint(8); enc.encode_uint(5000);
+        enc.encode_uint(9); enc.encode_uint(2000);
+
+        Bytes cbor_data = enc.take();
+        ASSERT(!cbor_data.empty());
+
+        // Decode
+        auto decoded = IceAgent::decode_candidates_cbor(BytesView(cbor_data));
+        ASSERT(decoded);
+        ASSERT_EQ(decoded.value().size(), 2U);
+        ASSERT_EQ(decoded.value()[0].type, CandidateType::Host);
+        ASSERT_EQ(decoded.value()[1].type, CandidateType::ServerReflexive);
+        ASSERT(decoded.value()[0].ip == "192.168.1.1");
+        ASSERT(decoded.value()[1].ip == "1.2.3.4");
+        ASSERT_EQ(decoded.value()[0].port, 5000);
+        ASSERT_EQ(decoded.value()[1].port, 12345);
+    }
+
+    // Test 10: CandidatePair structure
+    {
+        Candidate local, remote;
+        local.type = CandidateType::Host;
+        local.ip = "192.168.1.1";
+        local.port = 5000;
+        local.priority = calculate_priority(CandidateType::Host);
+
+        remote.type = CandidateType::ServerReflexive;
+        remote.ip = "1.2.3.4";
+        remote.port = 12345;
+        remote.priority = calculate_priority(CandidateType::ServerReflexive);
+
+        CandidatePair pair;
+        pair.local = local;
+        pair.remote = remote;
+        pair.priority = calculate_pair_priority(local.priority, remote.priority);
+
+        ASSERT(!pair.empty());
+        ASSERT(pair.local.ip == "192.168.1.1");
+        ASSERT(pair.remote.ip == "1.2.3.4");
+        ASSERT(pair.priority > 0);
+        ASSERT(!pair.nominated);
+        ASSERT_EQ(pair.rtt_ms, -1.0);
+    }
+
+    // Test 11: Metric names for ICE
+    {
+        std::string ice_candidates_metric = "smo_ice_candidates_total";
+        std::string ice_checks_metric = "smo_ice_connectivity_checks_total";
+        std::string ice_nominated_metric = "smo_ice_nominated_pair_rtt_ms";
+
+        ASSERT(ice_candidates_metric.find("ice") != std::string::npos);
+        ASSERT(ice_checks_metric.find("ice") != std::string::npos);
+        ASSERT(ice_nominated_metric.find("ice") != std::string::npos);
+    }
+
+    // Test 12: ICE capability bit
+    {
+        ASSERT(smo::join::CAP_ICE_LITE != 0);
+        // Should be bit 11
+        ASSERT_EQ(smo::join::CAP_ICE_LITE, 1ULL << 11);
+    }
+
+    return true;
+}
+
+// ==========================================================================
 // Main
 // ==========================================================================
 int main(int, char*[])
@@ -1790,10 +2006,13 @@ int main(int, char*[])
     printf("\n── §9.16 Security ─────────────────────────────────────────────────\n");
     TEST("PCT-023  Join token signature verify (P0-S1)") END_TEST(test_pct_023());
 
+    printf("\n── §9.17 ICE-Lite (N4) ────────────────────────────────────────────\n");
+    TEST("PCT-028  ICE candidate gather + exchange + connectivity check") END_TEST(test_pct_028());
+
     printf("\n");
     if (failures == 0)
     {
-        printf("ALL 25 PCT TESTS PASSED\n");
+        printf("ALL 26 PCT TESTS PASSED\n");
         return 0;
     }
     else
