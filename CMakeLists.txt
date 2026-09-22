@@ -137,6 +137,13 @@ install(EXPORT SMO
     NAMESPACE smo::
 )
 
+# ── Systemd service ──────────────────────────────────────────────────
+install(FILES
+    ${CMAKE_SOURCE_DIR}/scripts/smo-node.service
+    DESTINATION lib/systemd/system
+    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ
+)
+
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     ${CMAKE_SOURCE_DIR}/cmake/SMOConfig.cmake.in
@@ -166,5 +173,8 @@ set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.35)")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "docker.io, docker-compose")
 
-set(CPACK_GENERATOR "DEB;TGZ")
+# Include RPM configuration (reuses shared CPack variables)
+include(cmake/CPackRpm.cmake)
+
+set(CPACK_GENERATOR "DEB;RPM;TGZ")
 include(CPack)

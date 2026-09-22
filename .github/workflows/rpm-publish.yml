@@ -1,0 +1,199 @@
+name: RPM Build & Publish
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., 0.0.5)'
+        required: true
+        type: string
+
+env:
+  RPM_VERSION: 0.0.5
+  RPM_RELEASE: 1
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build-rpm:
+    name: Build RPM on Fedora ${{ matrix.fedora }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        fedora: [39, 40]
+    container:
+      image: fedora:${{ matrix.fedora }}
+      options: --user root
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          dnf install -y \
+            cmake ninja-build gcc-c++ \
+            openssl-devel fmt-devel spdlog-devel simdjson-devel \
+            liboqs-devel yaml-cpp-devel \
+            rpm-build rpm-sign \
+            git
+
+      - name: Configure CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DWITH_PQC=ON \
+            ..
+
+      - name: Build
+        run: |
+          cd build
+          ninja
+
+      - name: Build RPM with CPack
+        run: |
+          cd build
+          cpack -G RPM
+
+      - name: Find RPM artifact
+        id: rpm
+        run: |
+          cd build
+          RPM_FILE=$(find . -name "*.rpm" -type f | head -1)
+          echo "rpm_file=$RPM_FILE" >> $GITHUB_OUTPUT
+          echo "Found RPM: $RPM_FILE"
+          ls -la $RPM_FILE
+
+      - name: Upload RPM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smo-rpm-f${{ matrix.fedora }}
+          path: build/*.rpm
+          retention-days: 30
+
+  sign-rpm:
+    name: Sign RPM packages
+    needs: build-rpm
+    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Download RPM artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: smo-rpm-*
+          path: rpms/
+          merge-multiple: true
+
+      - name: Import GPG key
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.RPM_SIGNING_KEY }}
+          gpg_passphrase: ${{ secrets.RPM_SIGNING_KEY_PASSPHRASE }}
+
+      - name: Sign RPMs
+        run: |
+          for rpm in rpms/*.rpm; do
+            echo "Signing $rpm"
+            rpm --addsign "$rpm"
+          done
+
+      - name: Verify signatures
+        run: |
+          for rpm in rpms/*.rpm; do
+            rpm --checksig "$rpm"
+          done
+
+      - name: Upload signed RPMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: smo-rpm-signed
+          path: rpms/*.rpm
+          retention-days: 30
+
+  publish-copr:
+    name: Publish to COPR
+    needs: sign-rpm
+    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Download signed RPMs
+        uses: actions/download-artifact@v4
+        with:
+          name: smo-rpm-signed
+          path: rpms/
+
+      - name: Install COPR CLI
+        run: |
+          pip install copr-cli --user
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure COPR
+        run: |
+          mkdir -p ~/.config
+          cat > ~/.config/copr <<EOF
+          [copr-cli]
+          login = ${{ secrets.COPR_LOGIN }}
+          username = ${{ secrets.COPR_USERNAME }}
+          token = ${{ secrets.COPR_TOKEN }}
+          copr_url = https://copr.fedorainfracloud.org
+          EOF
+
+      - name: Create COPR project (if not exists)
+        run: |
+          copr-cli create-project smo-framework --chroot fedora-39-x86_64 --chroot fedora-40-x86_64 || true
+
+      - name: Build in COPR
+        run: |
+          for rpm in rpms/*.rpm; do
+            copr-cli build smo-framework "$rpm" --nowait
+          done
+
+  publish-ghcr:
+    name: Publish RPM to GHCR
+    needs: sign-rpm
+    runs-on: ubuntu-22.04
+    if: github.event_name != 'pull_request'
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Download signed RPMs
+        uses: actions/download-artifact@v4
+        with:
+          name: smo-rpm-signed
+          path: rpms/
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload RPMs to GHCR
+        run: |
+          VERSION=${{ github.event.inputs.version || github.ref_name }}
+          VERSION=${VERSION#v}
+          for rpm in rpms/*.rpm; do
+            BASENAME=$(basename "$rpm")
+            # Tag as version and latest
+            ORAS_ARTIFACT="ghcr.io/${{ github.repository }}/smo-rpm:${VERSION}-${BASENAME}"
+            ORAS_ARTIFACT_LATEST="ghcr.io/${{ github.repository }}/smo-rpm:latest-${BASENAME}"
+            # Use ORAS to push RPM as artifact
+            oras push "$ORAS_ARTIFACT" "$rpm:application/x-rpm"
+            oras push "$ORAS_ARTIFACT_LATEST" "$rpm:application/x-rpm"
+          done

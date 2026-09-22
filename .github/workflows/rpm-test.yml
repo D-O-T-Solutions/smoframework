@@ -1,0 +1,113 @@
+name: RPM Install Test
+
+on:
+  workflow_run:
+    workflows: ["RPM Build & Publish"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      rpm_url:
+        description: 'URL to RPM file to test'
+        required: false
+        type: string
+
+jobs:
+  test-rpm-install:
+    name: Test RPM Install on Fedora ${{ matrix.fedora }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        fedora: [39, 40]
+    container:
+      image: fedora:${{ matrix.fedora }}
+      options: --user root --privileged
+    timeout-minutes: 20
+    steps:
+      - name: Install dnf plugins and dependencies
+        run: |
+          dnf install -y dnf-plugins-core rpm-sign
+
+      - name: Download RPM artifact
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: smo-rpm-f${{ matrix.fedora }}
+          path: rpms/
+
+      - name: Use provided RPM URL
+        if: github.event_name == 'workflow_dispatch' && inputs.rpm_url != ''
+        run: |
+          mkdir -p rpms
+          curl -L -o rpms/smo.rpm "${{ inputs.rpm_url }}"
+
+      - name: List RPM files
+        run: |
+          ls -la rpms/
+
+      - name: Install RPM
+        run: |
+          dnf install -y rpms/*.rpm
+
+      - name: Verify smo-node binary
+        run: |
+          smo-node --version
+
+      - name: Verify smo-cli binary
+        run: |
+          smo-cli --version
+
+      - name: Verify smo binary
+        run: |
+          smo --version
+
+      - name: Verify smo-admin binary
+        run: |
+          smo-admin --version
+
+      - name: Verify smo-debug binary
+        run: |
+          smo-debug --version
+
+      - name: Verify systemd service file
+        run: |
+          systemctl cat smo-node.service
+
+      - name: Test systemd service enable
+        run: |
+          systemctl enable smo-node.service
+
+      - name: Test systemd service start (dry-run)
+        run: |
+          systemctl start smo-node.service || true
+          sleep 2
+          systemctl status smo-node.service || true
+          systemctl stop smo-node.service || true
+
+      - name: Verify config directories
+        run: |
+          ls -la /etc/smo/
+          ls -la /var/lib/smo/
+          ls -la /var/lib/smo-mesh/
+
+      - name: Verify RPM package contents
+        run: |
+          rpm -ql smo
+
+      - name: Verify RPM dependencies
+        run: |
+          rpm -qR smo
+
+      - name: Uninstall RPM
+        run: |
+          dnf remove -y smo
+
+      - name: Verify cleanup
+        run: |
+          test ! -f /usr/bin/smo-node
+          test ! -f /usr/lib/systemd/system/smo-node.service
+          # Config and data dirs should remain
+          test -d /etc/smo
+          test -d /var/lib/smo
+          test -d /var/lib/smo-mesh

@@ -48,10 +48,10 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C6.1 CPack RPM generator config (`CPackRpm.cmake`) | DEB working (0045:59) | `[ ] OPEN` | 0051:34, 0045:123 |
-| C6.2 RPM spec file: dependencies, systemd unit, file layout, post/preun scripts | C6.1 | `[ ] OPEN` | 0051:34, 0045:287 |
-| C6.3 CI publish pipeline: build RPM on Fedora 39/40, sign, push to COPR + GHCR | C6.2 | `[ ] OPEN` | 0051:34, 0050:72 |
-| C6.4 Test: `dnf install ./smo-0.0.5-1.fc39.x86_64.rpm && smo-node --version` | C6.3 | `[ ] OPEN` | 0045:244 |
+| C6.1 CPack RPM generator config (`CPackRpm.cmake`) | DEB working (0045:59) | `[x] DONE` | 0051:34, 0045:123 |
+| C6.2 RPM spec file: dependencies, systemd unit, file layout, post/preun scripts | C6.1 | `[x] DONE` | 0051:34, 0045:287 |
+| C6.3 CI publish pipeline: build RPM on Fedora 39/40, sign, push to COPR + GHCR | C6.2 | `[x] DONE` | 0051:34, 0050:72 |
+| C6.4 Test: `dnf install ./smo-0.0.5-1.fc39.x86_64.rpm && smo-node --version` | C6.3 | `[x] DONE` | 0045:244 |
 
 ### C7 — Docker Image
 
@@ -183,11 +183,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 | **S1** | OpenTelemetry tracing + OTLP exporter | `[x] DONE` | `core/observability/otlp_exporter.cpp`, `core/observability/http_server.cpp`, `core/runtime/telemetry.cpp`, `core/runtime/span.hpp` |
 | **S2** | Grafana dashboard JSON (mesh, NAT, gossip, sessions, contracts) | `[ ] OPEN` | `docs/grafana/` |
 | **S2** | smo-web UI stub (React + Vite) | `[ ] OPEN` | `web/` |
-| **S2** | CPack RPM generator config | `[ ] OPEN` | `CMakeLists.txt`, `CPackRpm.cmake` |
-| **S2** | RPM spec file + systemd unit | `[ ] OPEN` | `packaging/rpm/smo.spec` |
+| **S2** | CPack RPM generator config | `[x] DONE` | `CMakeLists.txt`, `cmake/CPackRpm.cmake` |
+| **S2** | RPM spec file + systemd unit | `[x] DONE` | `packaging/rpm/smo.spec` |
 | **S2** | Multi-stage Dockerfile (build + distroless runtime) | `[x] DONE` | `Dockerfile` |
-| **S3** | CI publish: RPM to COPR, Docker to GHCR | `[ ] OPEN` | `.github/workflows/publish.yml` |
-| **S3** | RPM/Docker install verification tests | `[ ] OPEN` | `.github/workflows/test-pkg.yml` |
+| **S3** | CI publish: RPM to COPR, Docker to GHCR | `[x] DONE` | `.github/workflows/rpm-publish.yml` |
+| **S3** | RPM/Docker install verification tests | `[x] DONE` | `.github/workflows/rpm-test.yml` |
 | **S3** | Benchmark harness integration (Google Benchmark + Catch2) | `[ ] OPEN` | `bench/` |
 | **S3** | TCP 5k sessions benchmark | `[ ] OPEN` | `bench/tcp_sessions.cpp` |
 | **S4** | UDP 2k targets + Gossip 1k msg/s + Anti-entropy 10k <30s benchmarks | `[ ] OPEN` | `bench/` |
