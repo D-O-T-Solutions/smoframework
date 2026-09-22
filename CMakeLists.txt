@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(smo
-    VERSION 0.0.2
+    VERSION 0.0.5
     DESCRIPTION "Secure Mesh Operation — capability-scoped distributed execution runtime"
     LANGUAGES C CXX ASM
 )

@@ -9,3 +9,6 @@ smo_link_dependencies(smo-node)
 
 # Suppress unused-function warnings for static command functions
 target_compile_options(smo-node PRIVATE -Wno-unused-function -Wno-error=old-style-cast)
+
+# Version from project
+target_compile_definitions(smo-node PRIVATE SMO_VERSION=\"${PROJECT_VERSION}\")

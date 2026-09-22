@@ -16,6 +16,11 @@
 #include <filesystem>
 #include <string>
 
+// Version from CMake
+#ifndef SMO_VERSION
+#define SMO_VERSION "0.0.5"
+#endif
+
 // Global flag for graceful shutdown
 static volatile bool g_running = true;
 extern "C" void handle_signal(int)
@@ -35,6 +40,7 @@ Usage:
   %s --join <token> --data <dir> [--name <name>] [--port <port>]
   %s --daemon --port <port> --data <data-dir> [--name <name>]
                  [--seed <host:port>] [--admin-port <port>]
+  %s --version
 
 Options:
   --init            Generate identity and save to data directory
@@ -51,9 +57,10 @@ Options:
   --port <port>     Listen port (default: 7777)
   --admin-port <port>  Admin/metrics port (default: 9090)
   --seed <host:port>  Bootstrap seed node for discovery
+  --version         Show version
   --help            Show this help
 )",
-                   prog, prog, prog, prog, prog, prog);
+                   prog, prog, prog, prog, prog, prog, prog);
 }
 
 int main(int argc, char* argv[])
@@ -71,6 +78,7 @@ int main(int argc, char* argv[])
     bool pubkey_fingerprint = false;
     bool export_copy = false;
     bool join_mode = false;
+    bool version_mode = false;
     std::string join_token;
     int port = 7777;
     int admin_port = 9090;
@@ -135,6 +143,10 @@ int main(int argc, char* argv[])
             print_usage(argv[0]);
             return 0;
         }
+        else if (arg == "--version")
+        {
+            version_mode = true;
+        }
     }
 
     // Initialize data directory
@@ -146,6 +158,12 @@ int main(int argc, char* argv[])
     };
 
     // Mode dispatch - CLI commands (no daemon)
+    if (version_mode)
+    {
+        std::printf("smo-node version %s\n", SMO_VERSION);
+        return 0;
+    }
+
     if (pubkey_mode)
     {
         if (!data_dir.empty())
@@ -212,6 +230,7 @@ int main(int argc, char* argv[])
     // Daemon mode — delegate to NodeRuntime composition root
     smo::runtime::NodeRuntimeConfig rt_cfg;
     rt_cfg.port = port;
+    rt_cfg.admin_port = admin_port;
     rt_cfg.data_dir = data_dir;
     rt_cfg.mesh_dir = mesh_dir;
     rt_cfg.node_name = node_name;
