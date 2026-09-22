@@ -161,8 +161,6 @@ void EventRegistryService::register_all()
 
     // ── Telemetry + Metrics (P10) ──────────────────────────────────────────
 
-    deps_.telemetry.set_event_bus(&deps_.event_bus);
-
     // Register core health checks
     deps_.telemetry.register_health_check("crl", [](std::string& err) -> bool { return true; });
     deps_.telemetry.register_health_check("session_mgr", [](std::string& err) -> bool { return true; });
@@ -195,7 +193,7 @@ void EventRegistryService::start_anti_entropy(sync::SyncBackend& backend)
 {
     sync_backend_ = &backend;
     auto ae_config = smo::sync::AntiEntropyService::Config::defaults();
-    anti_entropy_ = std::make_unique<smo::sync::AntiEntropyService>(deps_.membership, deps_.gossip, backend, ae_config);
+    anti_entropy_ = std::make_unique<smo::sync::AntiEntropyService>(deps_.membership, deps_.gossip, backend, ae_config, &deps_.telemetry);
     anti_entropy_->start();
 }
 

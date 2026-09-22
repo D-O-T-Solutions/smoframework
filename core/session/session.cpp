@@ -341,10 +341,14 @@ namespace smo {
             auto revoked = crl_->is_revoked(session.cert_fingerprint());
             if (!revoked)
             {
+                if (telemetry_)
+                    telemetry_->increment_counter("smo_sessions_open_total", "result=crl_check_failed");
                 return SMO_ERR_SESSION(507, Error, NoRetry, Reconnect, "CRL check failed: " + revoked.error().message);
             }
             if (revoked.value())
             {
+                if (telemetry_)
+                    telemetry_->increment_counter("smo_sessions_open_total", "result=revoked");
                 return SMO_ERR_SESSION(508, Error, NoRetry, Reconnect, "session rejected: certificate is revoked");
             }
         }
@@ -352,12 +356,21 @@ namespace smo {
         auto key = to_key(session.id());
         if (sessions_.find(key) != sessions_.end())
         {
+            if (telemetry_)
+                telemetry_->increment_counter("smo_sessions_open_total", "result=duplicate");
             return SMO_ERR_SESSION(504, Warn, NoRetry, None, "session already exists");
         }
         auto [it, inserted] = sessions_.emplace(key, std::move(session));
         if (!inserted)
         {
+            if (telemetry_)
+                telemetry_->increment_counter("smo_sessions_open_total", "result=insert_failed");
             return SMO_ERR_SESSION(504, Warn, NoRetry, None, "failed to insert session");
+        }
+        if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_sessions_open_total", "result=success");
+            telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
         }
         return &it->second;
     }
@@ -386,6 +399,11 @@ namespace smo {
                 ++it;
             }
         }
+        if (telemetry_ && count > 0)
+        {
+            telemetry_->increment_counter("smo_sessions_invalidated_total", "count=" + std::to_string(count));
+            telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
+        }
         return count;
     }
 
@@ -394,9 +412,22 @@ namespace smo {
         auto* session = lookup(id);
         if (!session)
         {
+            if (telemetry_)
+                telemetry_->increment_counter("smo_sessions_close_total", "result=not_found");
             return SMO_ERR_SESSION(501, Info, RetrySafe, Reconnect, "session not found");
         }
-        return session->on_event(SessionEvent::Close, now);
+        auto state_before = session->state();
+        auto result = session->on_event(SessionEvent::Close, now);
+        if (result && telemetry_)
+        {
+            telemetry_->increment_counter("smo_sessions_close_total", "result=success,state_before=" + std::string(to_string(state_before)));
+            telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
+        }
+        else if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_sessions_close_total", "result=failed");
+        }
+        return result;
     }
 
     Result<void> SessionManager::transition(const SessionId& id, SessionEvent event, int64_t now)
@@ -404,33 +435,59 @@ namespace smo {
         auto* session = lookup(id);
         if (!session)
         {
+            if (telemetry_)
+                telemetry_->increment_counter("smo_sessions_transition_total", "result=not_found,event=" + std::to_string(static_cast<int>(event)));
             return SMO_ERR_SESSION(501, Info, RetrySafe, Reconnect, "session not found");
         }
-        return session->on_event(event, now);
+        auto state_before = session->state();
+        auto result = session->on_event(event, now);
+        if (result && telemetry_)
+        {
+            telemetry_->increment_counter("smo_sessions_transition_total", "result=success,from=" + std::string(to_string(state_before)) + ",to=" + std::string(to_string(session->state())));
+        }
+        else if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_sessions_transition_total", "result=failed,event=" + std::to_string(static_cast<int>(event)));
+        }
+        return result;
     }
 
     void SessionManager::tick(int64_t now)
     {
+        size_t expired_count = 0;
         for (auto& [key, session] : sessions_)
         {
             if (session.is_valid_at(now))
                 continue;
             session.on_event(SessionEvent::Timeout, now);
+            expired_count++;
+        }
+        if (telemetry_ && expired_count > 0)
+        {
+            telemetry_->increment_counter("smo_sessions_expired_total", "count=" + std::to_string(expired_count));
+            telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
         }
     }
 
     void SessionManager::collect_garbage()
     {
+        size_t collected = 0;
         for (auto it = sessions_.begin(); it != sessions_.end();)
         {
             if (it->second.state() == SessionState::Closed)
             {
                 it = sessions_.erase(it);
+                collected++;
             }
             else
             {
                 ++it;
             }
+        }
+        if (telemetry_ && collected > 0)
+        {
+            telemetry_->increment_counter("smo_sessions_garbage_collected_total", "count=" + std::to_string(collected));
+            telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
         }
     }
 

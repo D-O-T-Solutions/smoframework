@@ -79,21 +79,8 @@ namespace smo::runtime {
             it->second.end_ns = end_ns;
             it->second.status = status;
 
-            // Emit span event if EventBus available
-            if (event_bus_)
-            {
-                Event ev;
-                ev.type = EventType::ExecutionCompleted;
-                ev.timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                      std::chrono::system_clock::now().time_since_epoch())
-                                      .count();
-                ev.source_id = "telemetry";
-                ev.correlation_id = it->second.trace_id;
-                ev.details = it->second.operation_name +
-                             " duration=" + std::to_string(it->second.end_ns - it->second.start_ns) +
-                             "ns status=" + status;
-                event_bus_->publish(ev);
-            }
+            // EventBus integration removed to avoid circular dependency
+            // Spans are exported via get_completed_spans() for OTLP
         }
     }
 
@@ -107,6 +94,32 @@ namespace smo::runtime {
                 ids.push_back(span.span_id);
         }
         return ids;
+    }
+
+    std::vector<Span> Telemetry::get_completed_spans()
+    {
+        std::lock_guard<std::mutex> lock(spans_mutex_);
+        std::vector<Span> completed;
+        for (auto it = spans_.begin(); it != spans_.end();)
+        {
+            if (it->second.end_ns > 0)
+            {
+                completed.push_back(it->second);
+                it = spans_.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        return completed;
+    }
+
+    void Telemetry::export_spans_to_otlp()
+    {
+        // OTLP export is handled externally by the OTLP exporter service
+        // which calls get_completed_spans() and exports them.
+        // This method is a no-op to avoid circular dependencies.
     }
 
     // ── Health Endpoint ─────────────────────────────────────────────────────
@@ -151,12 +164,16 @@ namespace smo::runtime {
         // Counters
         for (const auto& [name, counter] : counters_)
         {
+            oss << "# HELP " << name << " Counter metric\n";
+            oss << "# TYPE " << name << " counter\n";
             oss << name << " " << counter.value.load() << "\n";
         }
 
         // Gauges
         for (const auto& [name, gauge] : gauges_)
         {
+            oss << "# HELP " << name << " Gauge metric\n";
+            oss << "# TYPE " << name << " gauge\n";
             oss << name << " " << gauge.value.load() << "\n";
         }
 
@@ -173,6 +190,8 @@ namespace smo::runtime {
                 double min = *std::min_element(hist.observations.begin(), hist.observations.end());
                 double max = *std::max_element(hist.observations.begin(), hist.observations.end());
 
+                oss << "# HELP " << name << " Histogram metric\n";
+                oss << "# TYPE " << name << " summary\n";
                 oss << name << "_count " << hist.observations.size() << "\n";
                 oss << name << "_sum " << sum << "\n";
                 oss << name << "_avg " << avg << "\n";

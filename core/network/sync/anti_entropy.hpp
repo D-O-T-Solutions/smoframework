@@ -3,6 +3,7 @@
 #include "merkle_tree.hpp"
 #include "sync_backend.hpp"
 #include <core/discovery/gossip.hpp>
+#include <core/runtime/telemetry.hpp>
 #include <cstdint>
 #include <memory>
 #include <random>
@@ -26,7 +27,7 @@ namespace smo {
             };
 
             AntiEntropyService(MembershipTable& table, GossipEngine& gossip, SyncBackend& backend,
-                               Config cfg = Config::defaults());
+                               Config cfg = Config::defaults(), runtime::Telemetry* telemetry = nullptr);
             ~AntiEntropyService();
 
             void start();
@@ -49,6 +50,7 @@ namespace smo {
             Config config_;
             std::mt19937_64 rng_;
             std::atomic<uint64_t> repairs_done_{0};
+            runtime::Telemetry* telemetry_ = nullptr;
         };
 
     } // namespace sync

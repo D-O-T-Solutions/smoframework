@@ -85,6 +85,8 @@
 #include <core/network/sync/anti_entropy.hpp>
 #include <core/network/sync/sync_backend.hpp>
 #include <core/network/stun/stun_client.hpp>
+#include <core/observability/metrics_server.hpp>
+#include <core/observability/otlp_exporter.hpp>
 
 #include <storage/policy_store/policy_store.h>
 
@@ -419,6 +421,8 @@ private:
     std::unique_ptr<smo::runtime::RecoveryTrustService> recovery_trust_service_;
     std::unique_ptr<smo::runtime::GovernanceMiddlewareService> governance_middleware_service_;
     std::unique_ptr<smo::runtime::RuntimeKernelService> runtime_kernel_service_;
+    std::unique_ptr<smo::observability::MetricsServer> metrics_server_;
+    std::unique_ptr<smo::observability::OtlpExporter> otlp_exporter_;
 
     // delta bookkeeping (persisted across initialize/run cycles)
     uint64_t last_crl_epoch_ = 0;
@@ -438,7 +442,7 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , data_dir_(cfg.data_dir)
     , udp_transport_(std::make_unique<smo::network::udp::UdpTransport>())
     , discovery_(membership_, health_monitor_, *udp_transport_)
-    , gossip_(membership_, smo::GossipEngine::default_config())
+    , gossip_(membership_, smo::GossipEngine::default_config(), &smo::runtime::global_telemetry())
     , membership_sync_(membership_, health_monitor_)
     , heartbeat_(make_hb_config(cfg.port))
     , relay_service_(smo::network::relay::RelayService::default_config())
@@ -492,6 +496,20 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
             .output_mgr = output_mgr_,
             .dispatcher = runtime_dispatcher_,
             .plan_resolver = plan_resolver_});
+    metrics_server_ = std::make_unique<smo::observability::MetricsServer>(smo::runtime::global_telemetry());
+
+    // Initialize OTLP exporter with default config (can be overridden via env vars)
+    smo::observability::OtlpExporter::Config otlp_config;
+    const char* otlp_endpoint = std::getenv("SMO_OTLP_ENDPOINT");
+    if (otlp_endpoint)
+        otlp_config.endpoint = otlp_endpoint;
+    const char* otlp_service_name = std::getenv("SMO_OTLP_SERVICE_NAME");
+    if (otlp_service_name)
+        otlp_config.service_name = otlp_service_name;
+    const char* otlp_protocol = std::getenv("SMO_OTLP_PROTOCOL");
+    if (otlp_protocol)
+        otlp_config.protocol = otlp_protocol;
+    otlp_exporter_ = std::make_unique<smo::observability::OtlpExporter>(otlp_config);
 }
 
 // ===========================================================================
@@ -797,6 +815,44 @@ Result<void> NodeRuntime::Impl::initialize()
     connect_to_seed();
     subscribe_membership_events();
     wire_runtime();
+
+    // Set telemetry for session manager
+    session_mgr_.set_telemetry(&smo::runtime::global_telemetry());
+    session_mgr_.set_crl(&crl_);
+
+    // Start metrics server on admin port
+    if (metrics_server_)
+    {
+        auto metrics_result = metrics_server_->start(static_cast<uint16_t>(config_.admin_port));
+        if (!metrics_result)
+        {
+            LOG.warn("Failed to start metrics server on port " + std::to_string(config_.admin_port) +
+                     ": " + metrics_result.error().message);
+        }
+        else
+        {
+            LOG.info("Metrics server started on port " + std::to_string(config_.admin_port));
+            std::printf("[smo-node] Metrics endpoint: http://0.0.0.0:%d/metrics\n", config_.admin_port);
+        }
+    }
+
+    // Start OTLP exporter for distributed tracing
+    if (otlp_exporter_)
+    {
+        auto otlp_result = otlp_exporter_->start();
+        if (!otlp_result)
+        {
+            LOG.warn("Failed to start OTLP exporter: " + otlp_result.error().message);
+        }
+        else
+        {
+            LOG.info("OTLP exporter started: " + otlp_exporter_->get_stats().spans_exported);
+            std::printf("[smo-node] OTLP exporter: %s\n", otlp_exporter_->get_stats().spans_exported > 0 ? "running" : "started");
+        }
+    }
+
+    // Set telemetry for dispatcher (contract execution metrics)
+    runtime_dispatcher_.set_telemetry(&smo::runtime::global_telemetry());
 
     return {};
 }
@@ -1443,6 +1499,10 @@ void NodeRuntime::Impl::shutdown()
         governance_middleware_service_->shutdown();
     if (runtime_kernel_service_)
         runtime_kernel_service_->shutdown();
+    if (metrics_server_)
+        metrics_server_->stop();
+    if (otlp_exporter_)
+        otlp_exporter_->stop();
 
     gossip_.stop();
     sync_service_.stop();

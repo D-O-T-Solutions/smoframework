@@ -3,6 +3,7 @@
 #include "core/errors/error.hpp"
 #include "core/types.hpp"
 #include "core/runtime/event_bus.hpp"
+#include "core/runtime/span.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -50,6 +51,12 @@ namespace smo::runtime {
         // Get active spans
         std::vector<std::string> active_spans() const;
 
+        // Get completed spans for export
+        std::vector<Span> get_completed_spans();
+
+        // Export completed spans to OTLP (no-op, handled externally)
+        void export_spans_to_otlp();
+
         // ── Health Endpoint ─────────────────────────────────────────────────
         // Register health check
         using HealthCheck = std::function<bool(std::string& error_msg)>;
@@ -60,10 +67,6 @@ namespace smo::runtime {
 
         // Health status for endpoint
         std::string health_status() const;
-
-        // ── EventBus Integration ────────────────────────────────────────────
-        // Publish telemetry events
-        void set_event_bus(EventBus* bus) { event_bus_ = bus; }
 
         // ── Export ──────────────────────────────────────────────────────────
         // Export metrics in Prometheus text format
@@ -90,17 +93,6 @@ namespace smo::runtime {
             std::string labels;
         };
 
-        struct Span
-        {
-            std::string span_id;
-            std::string trace_id;
-            std::string parent_span_id;
-            std::string operation_name;
-            int64_t start_ns = 0;
-            int64_t end_ns = 0;
-            std::string status;
-        };
-
         struct HealthCheckEntry
         {
             std::string name;
@@ -116,8 +108,6 @@ namespace smo::runtime {
         mutable std::mutex spans_mutex_;
 
         std::vector<HealthCheckEntry> health_checks_;
-
-        EventBus* event_bus_ = nullptr;
     };
 
     // ── Global telemetry accessor ───────────────────────────────────────────

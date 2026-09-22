@@ -1,4 +1,8 @@
-add_library(smo_core STATIC)
+add_library(smo_core STATIC
+    runtime/telemetry.cpp
+    runtime/span.hpp
+    runtime/telemetry.hpp
+)
 target_include_directories(smo_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
@@ -39,3 +43,4 @@ add_subdirectory(runtime)
 add_subdirectory(join)
 add_subdirectory(consensus)
 add_subdirectory(acl)
+add_subdirectory(observability)

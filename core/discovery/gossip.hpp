@@ -12,6 +12,7 @@
 #include "core/identity/identity.hpp"
 #include "core/recovery/crl.hpp"
 #include "runtime/event_bus.hpp"
+#include "runtime/telemetry.hpp"
 
 namespace smo::network::sync {
     class MembershipSync;
@@ -50,7 +51,7 @@ namespace smo {
             uint32_t max_payload = 65536;
         };
 
-        explicit GossipEngine(MembershipTable& table, const Config& cfg);
+        explicit GossipEngine(MembershipTable& table, const Config& cfg, runtime::Telemetry* telemetry = nullptr);
 
         void set_crl(recovery::CRL* crl);
 
@@ -116,6 +117,9 @@ namespace smo {
         // N2: Set UDP listener for hole-punched gossip fanout
         void set_udp_listener(smo::network::udp::UdpListener* listener) { udp_listener_ = listener; }
 
+        // Queue depth for metrics
+        size_t pending_delta_count() const noexcept { return pending_deltas_.size(); }
+
     private:
         void send_gossip_to_peer(const Endpoint& target);
         void send_gossip_to_peer_udp(const Endpoint& target, smo::network::udp::UdpListener& udp_listener);
@@ -123,6 +127,8 @@ namespace smo {
 
         // Combine all pending deltas into a single framed payload
         Bytes assemble_gossip_payload();
+
+        void record_gossip_metrics(const std::string& transport, bool success);
 
         MembershipTable& table_;
         network::sync::MembershipSync* membership_sync_ = nullptr;
@@ -147,6 +153,9 @@ namespace smo {
         // Readiness counters (P2)
         std::atomic<uint64_t> gossip_sent_{0};
         std::atomic<uint64_t> gossip_received_{0};
+
+        // Metrics
+        runtime::Telemetry* telemetry_ = nullptr;
 
         // TCP connect helper
         Result<int> tcp_connect_to(const Endpoint& ep) const;

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <random>
 #include <chrono>
+#include "core/runtime/telemetry.hpp"
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
@@ -44,6 +45,7 @@ namespace stun {
         int sock = create_socket(config_.server_host, config_.server_port, server_addr);
         if (sock == INVALID_SOCKET)
         {
+            smo::runtime::global_telemetry().increment_counter("smo_stun_discover_total", "result=socket_failed");
             return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport, 308, smo::Severity::Error,
                                              smo::RetryClass::NoRetry, smo::Recovery::None),
                               "Failed to create/resolve socket for STUN server: " + config_.server_host);
@@ -83,12 +85,22 @@ namespace stun {
 
         closesocket(sock);
 
+        auto total_latency = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_overall);
+        double total_latency_sec = total_latency.count() / 1000.0;
+
         if (!mapped_addr)
         {
+            smo::runtime::global_telemetry().increment_counter("smo_stun_discover_total", "result=failed");
+            smo::runtime::global_telemetry().record_histogram("smo_stun_latency_seconds", total_latency_sec, "result=failed");
             return smo::Error(smo::ErrorCode(smo::ErrorCategory::Transport, 301, smo::Severity::Error,
                                              smo::RetryClass::RetryBackoff, smo::Recovery::Reconnect),
                               "STUN binding failed after " + std::to_string(config_.max_attempts) + " attempts");
         }
+
+        smo::runtime::global_telemetry().increment_counter("smo_stun_discover_total", "result=success");
+        smo::runtime::global_telemetry().record_histogram("smo_stun_latency_seconds", total_latency_sec, "result=success");
+        smo::runtime::global_telemetry().set_gauge("smo_stun_mapped_port", static_cast<double>(mapped_addr->port), "");
+        smo::runtime::global_telemetry().increment_counter("smo_stun_attempts_total", "", result.attempts_used);
 
         result.mapped_address = *mapped_addr;
         return result;

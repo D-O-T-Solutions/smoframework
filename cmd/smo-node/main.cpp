@@ -34,7 +34,7 @@ Usage:
   %s --pubkey [--copy | --fingerprint] [--data <dir>]
   %s --join <token> --data <dir> [--name <name>] [--port <port>]
   %s --daemon --port <port> --data <data-dir> [--name <name>]
-                 [--seed <host:port>]
+                 [--seed <host:port>] [--admin-port <port>]
 
 Options:
   --init            Generate identity and save to data directory
@@ -49,10 +49,11 @@ Options:
   --join <token>    Join mesh using Join Token (auto-enrollment)
   --daemon          Run as mesh node daemon
   --port <port>     Listen port (default: 7777)
+  --admin-port <port>  Admin/metrics port (default: 9090)
   --seed <host:port>  Bootstrap seed node for discovery
   --help            Show this help
 )",
-                  prog, prog, prog, prog, prog, prog);
+                   prog, prog, prog, prog, prog, prog);
 }
 
 int main(int argc, char* argv[])
@@ -72,6 +73,7 @@ int main(int argc, char* argv[])
     bool join_mode = false;
     std::string join_token;
     int port = 7777;
+    int admin_port = 9090;
     std::string data_dir = smo::mesh::smo_home() + "/node";
     std::string mesh_dir;
     std::string node_name;
@@ -88,6 +90,8 @@ int main(int argc, char* argv[])
             init_mode = true;
         else if (arg == "--port" && i + 1 < argc)
             port = std::atoi(argv[++i]);
+        else if (arg == "--admin-port" && i + 1 < argc)
+            admin_port = std::atoi(argv[++i]);
         else if (arg == "--data" && i + 1 < argc)
             data_dir = argv[++i];
         else if (arg == "--mesh-dir" && i + 1 < argc)

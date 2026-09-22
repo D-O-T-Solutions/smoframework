@@ -3,11 +3,13 @@
 #include "runtime_types.hpp"
 #include "runtime_context.hpp"
 #include "contract_interface.hpp"
+#include "telemetry.hpp"
 
 #include <string>
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include <chrono>
 
 namespace smo::runtime {
 
@@ -17,6 +19,9 @@ namespace smo::runtime {
     public:
         Dispatcher() = default;
         ~Dispatcher() = default;
+
+        // Set telemetry for metrics (optional)
+        void set_telemetry(Telemetry* telemetry) { telemetry_ = telemetry; }
 
         // Register a contract implementation
         void register_contract(const std::string& id, std::unique_ptr<ContractInterface> impl);
@@ -43,6 +48,7 @@ namespace smo::runtime {
 
     private:
         std::unordered_map<std::string, std::unique_ptr<ContractInterface>> contracts_;
+        Telemetry* telemetry_ = nullptr;
     };
 
 } // namespace smo::runtime

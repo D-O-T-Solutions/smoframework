@@ -13,6 +13,7 @@ namespace smo::runtime {
 struct NodeRuntimeConfig
 {
     int port = 7777;
+    int admin_port = 9090;
     std::string data_dir;
     std::string mesh_dir;
     std::string node_name;

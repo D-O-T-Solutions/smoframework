@@ -2,6 +2,7 @@
 #include "contract_interface.hpp"
 #include "runtime_types.hpp"
 #include "runtime_context.hpp"
+#include "telemetry.hpp"
 
 namespace smo::runtime {
 
@@ -52,10 +53,20 @@ namespace smo::runtime {
     Result<ContractResult> Dispatcher::execute(const std::string& contract_id, const ContractInput& input,
                                                const RuntimeContext& ctx)
     {
+        auto start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::steady_clock::now().time_since_epoch())
+                            .count();
 
         auto* contract = get_contract(contract_id);
         if (!contract)
         {
+            if (telemetry_)
+            {
+                telemetry_->increment_counter("smo_contract_execution_total",
+                                              "contract=" + contract_id + ",result=not_found");
+                telemetry_->record_histogram("smo_contract_execution_duration_seconds",
+                                             0.0, "contract=" + contract_id + ",result=not_found");
+            }
             return Result<ContractResult>(
                 static_cast<Error>(RuntimeError::not_found("contract not found: " + contract_id)));
         }
@@ -64,12 +75,35 @@ namespace smo::runtime {
         auto val_res = contract->validate(input);
         if (!val_res)
         {
+            if (telemetry_)
+            {
+                telemetry_->increment_counter("smo_contract_execution_total",
+                                              "contract=" + contract_id + ",result=validation_failed");
+                telemetry_->record_histogram("smo_contract_execution_duration_seconds",
+                                             0.0, "contract=" + contract_id + ",result=validation_failed");
+            }
             return Result<ContractResult>(
                 static_cast<Error>(RuntimeError::validation("input validation failed: " + val_res.error().message)));
         }
 
         // Execute
-        return contract->execute(input, ctx);
+        auto result = contract->execute(input, ctx);
+
+        auto end_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          std::chrono::steady_clock::now().time_since_epoch())
+                          .count();
+        double duration_sec = static_cast<double>(end_ns - start_ns) / 1e9;
+
+        if (telemetry_)
+        {
+            std::string result_label = result ? "success" : "failure";
+            telemetry_->increment_counter("smo_contract_execution_total",
+                                          "contract=" + contract_id + ",result=" + result_label);
+            telemetry_->record_histogram("smo_contract_execution_duration_seconds",
+                                         duration_sec, "contract=" + contract_id + ",result=" + result_label);
+        }
+
+        return result;
     }
 
 } // namespace smo::runtime

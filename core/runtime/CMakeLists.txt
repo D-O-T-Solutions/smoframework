@@ -11,7 +11,6 @@ add_library(smo_runtime STATIC
     middleware.cpp
     plan_executor.cpp
     contract_registry.cpp
-    telemetry.cpp
     structured_logger.cpp
     event_registry_service.cpp
     authority_mesh_service.cpp
@@ -44,6 +43,7 @@ target_link_libraries(smo_runtime PUBLIC
     smo_storage
     smo_contract
     smo_acl
+    smo_observability
 )
 
 target_compile_features(smo_runtime PUBLIC cxx_std_20)

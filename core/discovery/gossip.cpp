@@ -3,6 +3,7 @@
 #include "core/transport/framing.hpp"
 #include "core/transport/tcp_transport.hpp"
 #include "core/network/udp/udp_transport.hpp"
+#include "runtime/telemetry.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -20,8 +21,8 @@ namespace smo {
         return Config{};
     }
 
-    GossipEngine::GossipEngine(MembershipTable& table, const Config& cfg)
-        : table_(table), config_(cfg), rng_(std::random_device{}())
+    GossipEngine::GossipEngine(MembershipTable& table, const Config& cfg, runtime::Telemetry* telemetry)
+        : table_(table), config_(cfg), rng_(std::random_device{}()), telemetry_(telemetry)
     {
     }
 
@@ -46,6 +47,8 @@ namespace smo {
         incarnation_++;
 
         auto peers = select_fanout_peers();
+        size_t fanout_count = peers.size();
+
         for (auto& ep : peers)
         {
             if (ep.scheme == "udp" && udp_listener_)
@@ -57,6 +60,21 @@ namespace smo {
                 send_gossip_to_peer(ep);
             }
         }
+
+        // Record queue depth and fanout metrics
+        if (telemetry_)
+        {
+            telemetry_->set_gauge("smo_gossip_pending_deltas", static_cast<double>(pending_deltas_.size()), "");
+            telemetry_->set_gauge("smo_gossip_fanout_peers", static_cast<double>(fanout_count), "");
+            telemetry_->increment_counter("smo_gossip_cycles_total", "");
+        }
+    }
+
+    void GossipEngine::record_gossip_metrics(const std::string& transport, bool success)
+    {
+        if (!telemetry_)
+            return;
+        telemetry_->increment_counter("smo_gossip_messages_total", "transport=" + transport + ",result=" + (success ? "success" : "failure"));
     }
 
     Bytes GossipEngine::pending_updates(uint64_t since_sequence) const
@@ -139,6 +157,10 @@ namespace smo {
     Result<void> GossipEngine::apply_gossip(BytesView data)
     {
         gossip_received_++;
+        if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_gossip_received_total", "");
+        }
         if (data.empty())
             return {};
 
@@ -230,12 +252,19 @@ namespace smo {
     void GossipEngine::send_gossip_to_peer(const Endpoint& target)
     {
         gossip_sent_++;
+        if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_gossip_sent_total", "");
+        }
         if (target.host.empty() || target.port == 0)
             return;
 
         auto fd = tcp_connect_to(target);
         if (!fd)
+        {
+            record_gossip_metrics("tcp", false);
             return;
+        }
 
         // Version handshake as a plain JOIN connection so the receiver routes
         // the frame through dispatch_session, which already recognizes GOSP
@@ -244,6 +273,7 @@ namespace smo {
         if (!ver)
         {
             ::close(fd.value());
+            record_gossip_metrics("tcp", false);
             return;
         }
 
@@ -252,7 +282,14 @@ namespace smo {
         if (payload.empty())
         {
             ::close(fd.value());
+            record_gossip_metrics("tcp", false);
             return;
+        }
+
+        if (telemetry_)
+        {
+            telemetry_->record_histogram("smo_gossip_payload_size_bytes",
+                                         static_cast<double>(payload.size()), "transport=tcp");
         }
 
         // Frame: SMO FrameHeader + [GOSP magic:4] + typed payload
@@ -280,6 +317,11 @@ namespace smo {
             pending_deltas_.clear();
             // Re-queue membership for next tick (always driven by SyncService intervals)
             // Other deltas are queued on each interval callback
+            record_gossip_metrics("tcp", true);
+        }
+        else
+        {
+            record_gossip_metrics("tcp", false);
         }
 
         ::close(fd.value());
@@ -289,13 +331,26 @@ namespace smo {
     void GossipEngine::send_gossip_to_peer_udp(const Endpoint& target, smo::network::udp::UdpListener& udp_listener)
     {
         gossip_sent_++;
+        if (telemetry_)
+        {
+            telemetry_->increment_counter("smo_gossip_sent_total", "");
+        }
         if (target.host.empty() || target.port == 0)
             return;
 
         // Assemble all pending deltas into typed GOSP payload
         Bytes payload = assemble_gossip_payload();
         if (payload.empty())
+        {
+            record_gossip_metrics("udp", false);
             return;
+        }
+
+        if (telemetry_)
+        {
+            telemetry_->record_histogram("smo_gossip_payload_size_bytes",
+                                         static_cast<double>(payload.size()), "transport=udp");
+        }
 
         // Frame: [magic:1='D'][type:1=Gossip][payload]
         Bytes framed_payload;
@@ -316,6 +371,11 @@ namespace smo {
                 }
             }
             pending_deltas_.clear();
+            record_gossip_metrics("udp", true);
+        }
+        else
+        {
+            record_gossip_metrics("udp", false);
         }
     }
 

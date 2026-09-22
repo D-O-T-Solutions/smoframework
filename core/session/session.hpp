@@ -3,6 +3,7 @@
 #include "../capability/capability.h"
 #include "../certificate/certificate.hpp"
 #include "runtime/event_bus.hpp"
+#include "runtime/telemetry.hpp"
 #include "../recovery/crl.hpp"
 #include "../crypto/impl.hpp"
 #include "../errors/error.hpp"
@@ -145,6 +146,9 @@ namespace smo {
         // If nullptr, no CRL check is performed (permissive).
         void set_crl(recovery::CRL* crl) { crl_ = crl; }
 
+        // Set telemetry for metrics
+        void set_telemetry(runtime::Telemetry* telemetry) { telemetry_ = telemetry; }
+
         // Create a new session and add to manager
         // If CRL is set and the peer certificate is revoked, returns error.
         Result<Session*> open(Session session);
@@ -194,6 +198,7 @@ namespace smo {
     private:
         std::unordered_map<uint64_t, Session> sessions_;
         recovery::CRL* crl_ = nullptr;
+        runtime::Telemetry* telemetry_ = nullptr;
 
         static uint64_t to_key(const SessionId& id);
     };
