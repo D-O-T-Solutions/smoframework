@@ -38,10 +38,10 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C1.1 Add Prometheus metrics endpoint (`/metrics` HTTP) on smo-node admin port | v0.0.4 metrics (smo_stun_latency, smo_hole_punch_*, smo_relay_*, smo_nat_test_status) | `[ ] OPEN` | 0051:29, 0050:68 |
-| C1.2 Instrument core paths: gossip, anti-entropy, session, contract exec, NAT traversal | C1.1 | `[ ] OPEN` | 0051:29 |
+| C1.1 Add Prometheus metrics endpoint (`/metrics` HTTP) on smo-node admin port | v0.0.4 metrics (smo_stun_latency, smo_hole_punch_*, smo_relay_*, smo_nat_test_status) | `[x] DONE` | 0051:29, 0050:68 |
+| C1.2 Instrument core paths: gossip, anti-entropy, session, contract exec, NAT traversal | C1.1 | `[x] DONE` | 0051:29 |
 | C1.3 Grafana dashboard JSON: mesh health, NAT traversal, gossip, sessions, contracts | C1.1 | `[ ] OPEN` | 0051:29 |
-| C1.4 OpenTelemetry tracing: W3C tracecontext, OTLP exporter (Jaeger/Tempo) | C1.1 | `[ ] OPEN` | 0051:29, 0046:193 |
+| C1.4 OpenTelemetry tracing: W3C tracecontext, OTLP exporter (Jaeger/Tempo) | C1.1 | `[x] DONE` | 0051:29, 0046:193 |
 | C1.5 smo-web UI stub: React + Vite, reads `/metrics`, shows node status, mesh topology | C1.1, C1.3 | `[ ] OPEN` | 0051:29, 0045:210 |
 
 ### C6 — RPM Package
@@ -178,9 +178,9 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Sprint | Task | Trạng thái | File |
 |--------|------|-----------|------|
-| **S1** | Prometheus `/metrics` endpoint on admin port | `[ ] OPEN` | `cmd/smo-node/main.cpp` |
-| **S1** | Core path instrumentation (gossip, anti-entropy, session, exec, NAT) | `[ ] OPEN` | `src/mesh/`, `src/runtime/` |
-| **S1** | OpenTelemetry tracing + OTLP exporter | `[ ] OPEN` | `src/observability/` |
+| **S1** | Prometheus `/metrics` endpoint on admin port | `[x] DONE` | `cmd/smo-node/main.cpp` |
+| **S1** | Core path instrumentation (gossip, anti-entropy, session, exec, NAT) | `[x] DONE` | `src/mesh/`, `src/runtime/` |
+| **S1** | OpenTelemetry tracing + OTLP exporter | `[x] DONE` | `src/observability/` |
 | **S2** | Grafana dashboard JSON (mesh, NAT, gossip, sessions, contracts) | `[ ] OPEN` | `docs/grafana/` |
 | **S2** | smo-web UI stub (React + Vite) | `[ ] OPEN` | `web/` |
 | **S2** | CPack RPM generator config | `[ ] OPEN` | `CMakeLists.txt`, `CPackRpm.cmake` |
