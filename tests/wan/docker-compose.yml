@@ -1,0 +1,219 @@
+# N5 WAN Test Topology: 1 Public (A), 2 NAT (B, C)
+# Simulates: A on public network, B & C behind separate NATs (CGNAT - no port forwarding, no UPnP)
+# Network layout:
+#   - public_net: 172.30.0.0/16 (Node A - public)
+#   - nat_b_net: 172.31.0.0/16 (Node B - behind NAT)
+#   - nat_c_net: 172.32.0.0/16 (Node C - behind NAT)
+#   - All NAT traffic goes through router containers with iptables MASQUERADE
+
+networks:
+  public_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+  nat_b_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
+  nat_c_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.32.0.0/16
+
+services:
+  # ── Node A: Public node (no NAT) ──────────────────────────────────────
+  node-a:
+    build:
+      context: ../../
+      dockerfile: deployments/demo/Dockerfile
+    hostname: node-a
+    container_name: smo-wan-node-a
+    networks:
+      public_net:
+        ipv4_address: 172.30.0.10
+    ports:
+      - "27777:7777"
+    environment:
+      SMO_NODE_NAME: "wan-public-a"
+      SMO_NODE_ROLE: "Authority"
+      SMO_NODE_PORT: "7777"
+      SMO_MESH_NAME: "WAN-Test-Mesh"
+      SMO_IS_AUTHORITY: "true"
+    volumes:
+      - smo-wan-data-a:/var/lib/smo
+      - smo-wan-etc-a:/etc/smo
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    command: ["node-a"]
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "7777"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Router B: NAT gateway for Node B (CGNAT - MASQUERADE only) ─────────
+  router-b:
+    image: ubuntu:24.04
+    hostname: router-b
+    container_name: smo-wan-router-b
+    networks:
+      public_net:
+        ipv4_address: 172.30.0.100
+      nat_b_net:
+        ipv4_address: 172.31.0.1
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    command: >
+      bash -c "
+        apt-get update -qq && apt-get install -y -qq iptables iproute2 netcat-openbsd curl jq 2>/dev/null &&
+        sysctl -w net.ipv4.ip_forward=1 &&
+        iptables -t nat -A POSTROUTING -s 172.31.0.0/16 -o eth0 -j MASQUERADE &&
+        iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT &&
+        iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT &&
+        # Block incoming connections to NATed nodes (CGNAT simulation - no port forwarding)
+        iptables -A FORWARD -i eth0 -o eth1 -m state --state NEW -j DROP &&
+        echo 'Router B (NAT for Node B) ready - CGNAT mode: no port forwarding, no UPnP' &&
+        tail -f /dev/null
+      "
+    depends_on:
+      - node-a
+
+  # ── Node B: Behind NAT (router-b) ──────────────────────────────────────
+  node-b:
+    build:
+      context: ../../
+      dockerfile: deployments/demo/Dockerfile
+    hostname: node-b
+    container_name: smo-wan-node-b
+    networks:
+      nat_b_net:
+        ipv4_address: 172.31.0.10
+    environment:
+      SMO_NODE_NAME: "wan-nat-b"
+      SMO_NODE_ROLE: "Member"
+      SMO_NODE_PORT: "7777"
+      SMO_MESH_NAME: "WAN-Test-Mesh"
+      SMO_SEED_NODE: "node-a:7777"
+    volumes:
+      - smo-wan-data-b:/var/lib/smo
+      - smo-wan-etc-b:/etc/smo
+    cap_add:
+      - NET_ADMIN
+    command: ["node-b"]
+    depends_on:
+      router-b:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "7777"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Router C: NAT gateway for Node C (CGNAT - MASQUERADE only) ─────────
+  router-c:
+    image: ubuntu:24.04
+    hostname: router-c
+    container_name: smo-wan-router-c
+    networks:
+      public_net:
+        ipv4_address: 172.30.0.101
+      nat_c_net:
+        ipv4_address: 172.32.0.1
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    command: >
+      bash -c "
+        apt-get update -qq && apt-get install -y -qq iptables iproute2 netcat-openbsd curl jq 2>/dev/null &&
+        sysctl -w net.ipv4.ip_forward=1 &&
+        iptables -t nat -A POSTROUTING -s 172.32.0.0/16 -o eth0 -j MASQUERADE &&
+        iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT &&
+        iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT &&
+        # Block incoming connections to NATed nodes (CGNAT simulation - no port forwarding)
+        iptables -A FORWARD -i eth0 -o eth1 -m state --state NEW -j DROP &&
+        echo 'Router C (NAT for Node C) ready - CGNAT mode: no port forwarding, no UPnP' &&
+        tail -f /dev/null
+      "
+    depends_on:
+      - node-a
+
+  # ── Node C: Behind NAT (router-c) ──────────────────────────────────────
+  node-c:
+    build:
+      context: ../../
+      dockerfile: deployments/demo/Dockerfile
+    hostname: node-c
+    container_name: smo-wan-node-c
+    networks:
+      nat_c_net:
+        ipv4_address: 172.32.0.10
+    environment:
+      SMO_NODE_NAME: "wan-nat-c"
+      SMO_NODE_ROLE: "Contributor"
+      SMO_NODE_PORT: "7777"
+      SMO_MESH_NAME: "WAN-Test-Mesh"
+      SMO_SEED_NODE: "node-a:7777"
+    volumes:
+      - smo-wan-data-c:/var/lib/smo
+      - smo-wan-etc-c:/etc/smo
+    cap_add:
+      - NET_ADMIN
+    command: ["node-c"]
+    depends_on:
+      router-c:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "7777"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Test Runner: Executes WAN test suite ───────────────────────────────
+  test-runner:
+    build:
+      context: ../../
+      dockerfile: deployments/demo/Dockerfile
+    hostname: test-runner
+    container_name: smo-wan-test-runner
+    networks:
+      public_net:
+        ipv4_address: 172.30.0.200
+      nat_b_net:
+        ipv4_address: 172.31.0.200
+      nat_c_net:
+        ipv4_address: 172.32.0.200
+    volumes:
+      - ./scripts:/test-scripts:ro
+      - smo-wan-data-a:/var/lib/smo-a:ro
+      - smo-wan-data-b:/var/lib/smo-b:ro
+      - smo-wan-data-c:/var/lib/smo-c:ro
+    cap_add:
+      - NET_ADMIN
+    command: ["tail", "-f", "/dev/null"]
+    depends_on:
+      node-a:
+        condition: service_healthy
+      node-b:
+        condition: service_healthy
+      node-c:
+        condition: service_healthy
+      router-b:
+        condition: service_started
+      router-c:
+        condition: service_started
+
+volumes:
+  smo-wan-data-a:
+  smo-wan-data-b:
+  smo-wan-data-c:
+  smo-wan-etc-a:
+  smo-wan-etc-b:
+  smo-wan-etc-c:

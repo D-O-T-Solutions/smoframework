@@ -297,14 +297,58 @@ namespace smo::network::udp {
             it->second.path = path;
         }
 
+        // N5: Determine NAT test status
+        NatTestStatus nat_status = NatTestStatus::Unknown;
+        if (success)
+        {
+            if (path == "direct")
+                nat_status = NatTestStatus::Direct;
+            else if (path == "relay")
+                nat_status = NatTestStatus::Relay;
+        }
+        else
+        {
+            if (path == "relay_unavailable" || path == "relay_failed" || path == "failed")
+                nat_status = NatTestStatus::Blocked;
+        }
+
+        // Emit NAT test status via callback (runtime layer handles metric)
+        if (nat_test_status_cb_)
+        {
+            nat_test_status_cb_(id, static_cast<uint8_t>(nat_status));
+        }
+
         // Emit metrics via callback (telemetry is in runtime layer)
         if (hole_punch_cb_)
         {
             hole_punch_cb_(id, success, path);
         }
 
-        std::printf("[smo-node] heartbeat: hole punch %s for %s via %s\n",
-                    success ? "SUCCESS" : "FAILURE", node_id_hex(id).c_str(), path.c_str());
+        std::printf("[smo-node] heartbeat: hole punch %s for %s via %s (nat_status=%u)\n",
+                    success ? "SUCCESS" : "FAILURE", node_id_hex(id).c_str(), path.c_str(),
+                    static_cast<uint8_t>(nat_status));
+    }
+
+    HeartbeatService::NatTestStatus HeartbeatService::get_nat_test_status(const NodeID& id) const
+    {
+        uint64_t key = peer_key(id);
+        auto it = hole_punch_states_.find(key);
+        if (it != hole_punch_states_.end())
+        {
+            if (it->second.succeeded)
+            {
+                if (it->second.path == "direct")
+                    return NatTestStatus::Direct;
+                else if (it->second.path == "relay")
+                    return NatTestStatus::Relay;
+            }
+            else
+            {
+                if (it->second.path == "relay_unavailable" || it->second.path == "relay_failed" || it->second.path == "failed")
+                    return NatTestStatus::Blocked;
+            }
+        }
+        return NatTestStatus::Unknown;
     }
 
     // N3: Relay fallback - send ping through relay service

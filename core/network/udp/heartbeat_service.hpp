@@ -59,6 +59,10 @@ namespace smo::network::udp {
         using HolePunchCallback = std::function<void(const NodeID&, bool success, const std::string& path)>;
         void set_hole_punch_callback(HolePunchCallback cb) { hole_punch_cb_ = std::move(cb); }
 
+        // N5: NAT test status callback (0=unknown, 1=direct, 2=relay, 3=blocked)
+        using NatTestStatusCallback = std::function<void(const NodeID&, uint8_t status)>;
+        void set_nat_test_status_callback(NatTestStatusCallback cb) { nat_test_status_cb_ = std::move(cb); }
+
         // N2: Hole punch state for testing/inspection
         struct HolePunchState
         {
@@ -68,8 +72,20 @@ namespace smo::network::udp {
             std::string path; // "direct", "relay", "failed"
         };
 
-        // N2: Get config for inspection
+        // N5: NAT Test Status metric values
+        enum class NatTestStatus : uint8_t
+        {
+            Unknown = 0,
+            Direct = 1,
+            Relay = 2,
+            Blocked = 3
+        };
+
+        // N5: Get config for inspection
         const Config& config() const noexcept { return config_; }
+
+        // N5: Get NAT test status for a peer (for metrics export)
+        NatTestStatus get_nat_test_status(const NodeID& id) const;
 
     private:
         Config config_;
@@ -86,6 +102,9 @@ namespace smo::network::udp {
         // N2: Hole punch tracking
         std::unordered_map<uint64_t, HolePunchState> hole_punch_states_;
         HolePunchCallback hole_punch_cb_;
+
+        // N5: NAT test status callback
+        NatTestStatusCallback nat_test_status_cb_;
 
         void send_ping_to_all(int64_t now_ns);
         void check_peer_health(int64_t now_ns);

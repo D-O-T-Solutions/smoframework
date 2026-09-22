@@ -5,6 +5,8 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday at 02:00 UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -193,3 +195,70 @@ jobs:
           echo "- Sanitizer: ${{ needs.sanitizer.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- Lint: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- Coverage: ${{ needs.coverage.result }}" >> $GITHUB_STEP_SUMMARY
+
+  # ── N5 WAN Test Suite (Weekly only) ──────────────────────────────────
+  wan-test:
+    name: N5 WAN Test Suite (3-Node NAT Traversal)
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq docker-compose-plugin
+
+      - name: Build test images
+        run: |
+          cd tests/wan
+          docker compose build
+
+      - name: Start WAN test topology
+        run: |
+          cd tests/wan
+          docker compose up -d
+
+      - name: Wait for nodes to be healthy
+        run: |
+          cd tests/wan
+          timeout 180 bash -c '
+            while ! docker compose ps node-a | grep -q "healthy"; do sleep 5; done
+            while ! docker compose ps node-b | grep -q "healthy"; do sleep 5; done
+            while ! docker compose ps node-c | grep -q "healthy"; do sleep 5; done
+          '
+
+      - name: Run WAN test suite
+        run: |
+          cd tests/wan
+          docker compose exec -T test-runner /test-scripts/wan_test.sh
+        env:
+          COMPOSE_FILE: docker-compose.yml
+
+      - name: Collect test results
+        if: always()
+        run: |
+          cd tests/wan
+          docker compose logs --no-color > wan_test_logs.txt 2>&1 || true
+          docker compose cp test-runner:/tmp/wan_test_results_final.json wan_test_results.json 2>/dev/null || true
+
+      - name: Upload WAN test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wan-test-logs
+          path: tests/wan/wan_test_logs.txt
+
+      - name: Upload WAN test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wan-test-results
+          path: tests/wan/wan_test_results.json
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd tests/wan
+          docker compose down -v

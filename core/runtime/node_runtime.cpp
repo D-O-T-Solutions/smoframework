@@ -647,11 +647,11 @@ Result<void> NodeRuntime::Impl::initialize()
         // N2: Wire UDP listener to GossipEngine for UDP gossip fanout (hole-punched peers)
         gossip_.set_udp_listener(hb_listener);
 
-        // N2: Set hole punch callback to update metrics
+// N2: Set hole punch callback to update metrics
         heartbeat_.set_hole_punch_callback([&](const NodeID& peer_id, bool success, const std::string& path) {
             // Metrics are recorded inside heartbeat_, but we can add additional logging here
-std::printf("[smo-node] N2: hole punch %s for %s via %s\n",
-                    success ? "SUCCESS" : "FAILURE", peer_id.to_string().c_str(), path.c_str());
+            std::printf("[smo-node] N2: hole punch %s for %s via %s\n",
+                        success ? "SUCCESS" : "FAILURE", peer_id.to_string().c_str(), path.c_str());
 
             // N2: Record hole punch metrics
             auto& telemetry = smo::runtime::global_telemetry();
@@ -663,6 +663,13 @@ std::printf("[smo-node] N2: hole punch %s for %s via %s\n",
             {
                 telemetry.increment_counter("smo_hole_punch_failure_total", "path=" + path);
             }
+        });
+
+        // N5: Set NAT test status callback to update smo_nat_test_status metric
+        heartbeat_.set_nat_test_status_callback([&](const NodeID& peer_id, uint8_t status) {
+            auto& telemetry = smo::runtime::global_telemetry();
+            telemetry.set_gauge("smo_nat_test_status", static_cast<double>(status), "peer=" + peer_id.to_string());
+            std::printf("[smo-node] N5: nat_test_status for %s = %u\n", peer_id.to_string().c_str(), status);
         });
     }
 
