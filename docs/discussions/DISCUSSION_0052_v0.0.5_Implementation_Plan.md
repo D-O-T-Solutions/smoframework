@@ -57,11 +57,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C7.1 Multi-stage Dockerfile: build stage (Ubuntu 22.04 + deps) → runtime stage (distroless/scratch + smo-node binary) | DEB/RPM artifacts | `[ ] OPEN` | 0051:35, 0045:287 |
-| C7.2 Multi-arch build: `docker buildx build --platform linux/amd64,linux/arm64` | C7.1 | `[ ] OPEN` | 0051:35 |
-| C7.3 GHCR publish: `ghcr.io/smoframework/smo-node:0.0.5`, `latest`, `sha-<commit>` tags | C7.2 | `[ ] OPEN` | 0051:35, 0050:72 |
-| C7.4 Runtime test: `docker run --rm ghcr.io/smoframework/smo-node:0.0.5 smo-node --version` | C7.3 | `[ ] OPEN` | 0045:244 |
-| C7.5 Docker Compose for 3-node mesh (dev/test): smo-node + OpenVPN client | C7.1 | `[ ] OPEN` | 0045:130 |
+| C7.1 Multi-stage Dockerfile: build stage (Ubuntu 22.04 + deps) → runtime stage (distroless/scratch + smo-node binary) | DEB/RPM artifacts | `[x] DONE` | 0051:35, 0045:287 |
+| C7.2 Multi-arch build: `docker buildx build --platform linux/amd64,linux/arm64` | C7.1 | `[x] DONE` | 0051:35 |
+| C7.3 GHCR publish: `ghcr.io/smoframework/smo-node:0.0.5`, `latest`, `sha-<commit>` tags | C7.2 | `[x] DONE` | 0051:35, 0050:72 |
+| C7.4 Runtime test: `docker run --rm ghcr.io/smoframework/smo-node:0.0.5 smo-node --version` | C7.3 | `[x] DONE` | 0045:244 |
+| C7.5 Docker Compose for 3-node mesh (dev/test): smo-node + OpenVPN client | C7.1 | `[x] DONE` | 0045:130 |
 
 ### C5 — Benchmarks CI Gates
 
@@ -178,14 +178,14 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Sprint | Task | Trạng thái | File |
 |--------|------|-----------|------|
-| **S1** | Prometheus `/metrics` endpoint on admin port | `[x] DONE` | `cmd/smo-node/main.cpp` |
-| **S1** | Core path instrumentation (gossip, anti-entropy, session, exec, NAT) | `[x] DONE` | `src/mesh/`, `src/runtime/` |
-| **S1** | OpenTelemetry tracing + OTLP exporter | `[x] DONE` | `src/observability/` |
+| **S1** | Prometheus `/metrics` endpoint on admin port | `[x] DONE` | `cmd/smo-node/main.cpp`, `core/observability/metrics_server.cpp` |
+| **S1** | Core path instrumentation (gossip, anti-entropy, session, exec, NAT) | `[x] DONE` | `core/discovery/gossip.cpp`, `core/network/sync/anti_entropy.cpp`, `core/session/session.cpp`, `core/runtime/dispatcher.cpp`, `core/network/stun/stun_client.cpp`, `core/network/relay/relay_service.cpp` |
+| **S1** | OpenTelemetry tracing + OTLP exporter | `[x] DONE` | `core/observability/otlp_exporter.cpp`, `core/observability/http_server.cpp`, `core/runtime/telemetry.cpp`, `core/runtime/span.hpp` |
 | **S2** | Grafana dashboard JSON (mesh, NAT, gossip, sessions, contracts) | `[ ] OPEN` | `docs/grafana/` |
 | **S2** | smo-web UI stub (React + Vite) | `[ ] OPEN` | `web/` |
 | **S2** | CPack RPM generator config | `[ ] OPEN` | `CMakeLists.txt`, `CPackRpm.cmake` |
 | **S2** | RPM spec file + systemd unit | `[ ] OPEN` | `packaging/rpm/smo.spec` |
-| **S2** | Multi-stage Dockerfile (build + distroless runtime) | `[ ] OPEN` | `Dockerfile` |
+| **S2** | Multi-stage Dockerfile (build + distroless runtime) | `[x] DONE` | `Dockerfile` |
 | **S3** | CI publish: RPM to COPR, Docker to GHCR | `[ ] OPEN` | `.github/workflows/publish.yml` |
 | **S3** | RPM/Docker install verification tests | `[ ] OPEN` | `.github/workflows/test-pkg.yml` |
 | **S3** | Benchmark harness integration (Google Benchmark + Catch2) | `[ ] OPEN` | `bench/` |
