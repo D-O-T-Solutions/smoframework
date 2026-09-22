@@ -207,6 +207,17 @@ smo_set_warnings(smo_test_recovery_package)
 smo_set_optimisation(smo_test_recovery_package)
 add_test(NAME recovery_package_model COMMAND smo_test_recovery_package)
 
+# ── Shamir SSS tests (C8) ───────────────────────────────────────────
+add_executable(smo_test_shamir
+    unit/core/crypto/test_shamir.cpp
+)
+target_link_libraries(smo_test_shamir PRIVATE
+    smo_genesis smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_shamir)
+smo_set_optimisation(smo_test_shamir)
+add_test(NAME shamir_model COMMAND smo_test_shamir)
+
 # ── Error model tests ────────────────────────────────────────────────
 add_executable(smo_test_error
     unit/core/errors/test_error.cpp

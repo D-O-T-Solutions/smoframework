@@ -351,7 +351,28 @@ namespace smo {
                 return "Usage:\n"
                        "  export --context --file <path>\n"
                        "  export --mesh <name> --file <path>\n";
-            if (cmd == "governance")
+            if (cmd == "recovery")
+                return "Usage:\n"
+                       "  recovery restore [--passphrase PHRASE]\n"
+                       "    Start soft recovery (quorum exists)\n"
+                       "  recovery force --passphrase PHRASE\n"
+                       "    Force hard recovery (invalidate all certs)\n"
+                       "  recovery status\n"
+                       "    Show recovery status\n"
+                       "  recovery split --threshold M --shares N --output FILE --mesh ID --passphrases P1,P2,...\n"
+                       "    Split root key into M-of-N Shamir shares\n"
+                       "  recovery combine --input SHARE1.pkg SHARE2.pkg ... --output root.key --passphrases 1:P1,2:P2,...\n"
+                       "    Combine M shares to recover root key\n\n"
+                       "Split flags:\n"
+                       "  --threshold M      Minimum shares to recover (M)\n"
+                       "  --shares N         Total shares to generate (N)\n"
+                       "  --output FILE      Output recovery package file\n"
+                       "  --mesh ID          Mesh ID\n"
+                       "  --passphrases P1,P2,...  Comma-separated passphrases for each shareholder\n\n"
+                       "Combine flags:\n"
+                       "  --input FILE1 FILE2...  Input share package files\n"
+                       "  --output FILE      Output root private key file\n"
+                       "  --passphrases I1:P1,I2:P2...  Shareholder index:passphrase pairs\n";
                 return "Usage:\n"
                        "  governance propose <action> [--tier membership|constitution]\n"
                        "  governance list\n"
@@ -1864,6 +1885,12 @@ namespace smo {
             std::string home = smo::mesh::smo_home();
             auto current = context_.get_current_mesh();
 
+            if (intent.flags.count("help") || intent.flags.count("h"))
+            {
+                std::cout << command_help("recovery");
+                return 0;
+            }
+
             if (intent.flags.count("restore"))
             {
                 if (!current)
@@ -1970,10 +1997,358 @@ namespace smo {
                 return 0;
             }
 
+            // C8: Shamir SSS split command
+            if (intent.flags.count("split"))
+            {
+                return handle_recovery_split(intent);
+            }
+
+            // C8: Shamir SSS combine command
+            if (intent.flags.count("combine"))
+            {
+                return handle_recovery_combine(intent);
+            }
+
             std::cout << "Usage:\n";
             std::cout << "  recovery restore [--passphrase PHRASE]\n";
             std::cout << "  recovery force --passphrase PHRASE\n";
             std::cout << "  recovery status\n";
+            std::cout << "  recovery split --threshold M --shares N --output FILE --passphrases PASS1,PASS2,...\n";
+            std::cout << "  recovery combine --input SHARE1.pkg SHARE2.pkg ... --output root.key --passphrases PASS1,PASS2,...\n";
+            return 0;
+        }
+
+        Result<int> handle_recovery_split(const Intent& intent)
+        {
+            // Parse arguments
+            uint8_t threshold = 0;
+            uint8_t total_shares = 0;
+            std::string output_file;
+            std::string mesh_id;
+            std::string passphrases_str;
+
+            if (intent.flags.count("threshold"))
+            {
+                try { threshold = static_cast<uint8_t>(std::stoi(intent.flags.at("threshold"))); }
+                catch (...) { std::cerr << "Invalid threshold value\n"; return 1; }
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --threshold M\n";
+                return 1;
+            }
+
+            if (intent.flags.count("shares"))
+            {
+                try { total_shares = static_cast<uint8_t>(std::stoi(intent.flags.at("shares"))); }
+                catch (...) { std::cerr << "Invalid shares value\n"; return 1; }
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --shares N\n";
+                return 1;
+            }
+
+            if (intent.flags.count("output"))
+            {
+                output_file = intent.flags.at("output");
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --output FILE\n";
+                return 1;
+            }
+
+            if (intent.flags.count("mesh"))
+            {
+                mesh_id = intent.flags.at("mesh");
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --mesh MESH_ID\n";
+                return 1;
+            }
+
+            if (intent.flags.count("passphrases"))
+            {
+                passphrases_str = intent.flags.at("passphrases");
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --passphrases PASS1,PASS2,...\n";
+                return 1;
+            }
+
+            // Parse passphrases
+            std::vector<std::string> passphrases;
+            std::stringstream ss(passphrases_str);
+            std::string token;
+            while (std::getline(ss, token, ','))
+            {
+                passphrases.push_back(token);
+            }
+
+            if (passphrases.size() != total_shares)
+            {
+                std::cerr << "Passphrase count (" << passphrases.size() << ") must equal total_shares (" << static_cast<int>(total_shares) << ")\n";
+                return 1;
+            }
+
+            if (threshold == 0 || threshold > total_shares)
+            {
+                std::cerr << "Invalid threshold: 1 <= threshold <= shares\n";
+                return 1;
+            }
+
+            // Load or generate root keypair
+            std::string home_dir = smo::mesh::smo_home();
+            std::string mesh_dir = home_dir + "/meshes/" + mesh_id;
+            if (!std::filesystem::is_directory(mesh_dir))
+            {
+                std::cerr << "Mesh directory not found: " << mesh_dir << "\n";
+                return 1;
+            }
+
+            // Try to load existing root keypair from authority keys
+            std::string root_priv_path = mesh_dir + "/root.sec";
+            std::string root_pub_path = mesh_dir + "/root.pub";
+
+            smo::genesis::UnlockedKeypair keypair;
+
+            if (std::filesystem::exists(root_priv_path) && std::filesystem::exists(root_pub_path))
+            {
+                std::ifstream priv_file(root_priv_path, std::ios::binary);
+                std::ifstream pub_file(root_pub_path, std::ios::binary);
+                if (!priv_file || !pub_file)
+                {
+                    std::cerr << "Failed to read root key files\n";
+                    return 1;
+                }
+                keypair.secret_key.assign((std::istreambuf_iterator<char>(priv_file)), std::istreambuf_iterator<char>());
+                keypair.public_key.assign((std::istreambuf_iterator<char>(pub_file)), std::istreambuf_iterator<char>());
+            }
+            else
+            {
+                // Generate new keypair
+                auto crypto = get_crypto(smo::kSuiteClassical);
+                if (!crypto)
+                {
+                    std::cerr << "Failed to initialize crypto\n";
+                    return 1;
+                }
+                auto rng = crypto->default_rng();
+                auto kp = signer::Ed25519Provider::generate_keypair(rng);
+                keypair.public_key = std::move(kp.public_key);
+                keypair.secret_key = std::move(kp.secret_key);
+            }
+
+            // Default Argon2id params (fast for testing, production should use higher)
+            smo::kdf::Argon2idParams params;
+            params.memory_kib = 8192;
+            params.iterations = 2;
+            params.lanes = 4;
+
+            // Create RecoveryPackageV2
+            const auto* crypto = get_crypto(smo::kSuiteClassical);
+            if (!crypto)
+            {
+                std::cerr << "Failed to initialize crypto\n";
+                return 1;
+            }
+            auto rng = crypto->default_rng();
+            auto pkg_res = smo::genesis::RecoveryPackageV2::create(mesh_id, keypair, threshold, total_shares, params, passphrases, rng);
+            if (!pkg_res)
+            {
+                std::cerr << "Failed to create recovery package: " << pkg_res.error().message << "\n";
+                return 1;
+            }
+
+            auto pkg = std::move(pkg_res).value();
+            auto ser = pkg.serialize();
+            if (!ser)
+            {
+                std::cerr << "Failed to serialize recovery package: " << ser.error().message << "\n";
+                return 1;
+            }
+
+            // Write output file
+            std::ofstream out(output_file, std::ios::binary | std::ios::trunc);
+            if (!out)
+            {
+                std::cerr << "Failed to open output file: " << output_file << "\n";
+                return 1;
+            }
+            out.write(reinterpret_cast<const char*>(ser.value().data()), ser.value().size());
+            out.close();
+
+            std::cout << "Recovery package created: " << output_file << "\n";
+            std::cout << "  Mesh ID: " << mesh_id << "\n";
+            std::cout << "  Threshold: " << static_cast<int>(threshold) << " of " << static_cast<int>(total_shares) << " shares\n";
+            std::cout << "  Root public key: " << bytes_to_hex(keypair.public_key).substr(0, 16) << "...\n";
+
+            return 0;
+        }
+
+        Result<int> handle_recovery_combine(const Intent& intent)
+        {
+            // Parse arguments
+            std::vector<std::string> input_files;
+            std::string output_file;
+            std::string passphrases_str;
+
+            // Collect positional args as input files (after --input flag or bare args)
+            for (const auto& arg : intent.args)
+            {
+                if (arg != "combine") // skip the subcommand
+                    input_files.push_back(arg);
+            }
+
+            if (intent.flags.count("input"))
+            {
+                // If --input is provided, parse comma-separated or space-separated
+                std::string input_str = intent.flags.at("input");
+                std::stringstream ss(input_str);
+                std::string token;
+                while (std::getline(ss, token, ','))
+                {
+                    if (!token.empty())
+                        input_files.push_back(token);
+                }
+            }
+
+            if (input_files.empty())
+            {
+                std::cerr << "Missing required argument: --input SHARE1.pkg SHARE2.pkg ...\n";
+                return 1;
+            }
+
+            if (intent.flags.count("output"))
+            {
+                output_file = intent.flags.at("output");
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --output root.key\n";
+                return 1;
+            }
+
+            if (intent.flags.count("passphrases"))
+            {
+                passphrases_str = intent.flags.at("passphrases");
+            }
+            else
+            {
+                std::cerr << "Missing required flag: --passphrases PASS1,PASS2,...\n";
+                return 1;
+            }
+
+            // Parse passphrases (format: "index1:pass1,index2:pass2,...")
+            std::vector<std::pair<uint8_t, std::string>> passphrases;
+            std::stringstream ss(passphrases_str);
+            std::string token;
+            while (std::getline(ss, token, ','))
+            {
+                size_t colon = token.find(':');
+                if (colon == std::string::npos)
+                {
+                    std::cerr << "Passphrase format must be 'index:passphrase', got: " << token << "\n";
+                    return 1;
+                }
+                try
+                {
+                    uint8_t idx = static_cast<uint8_t>(std::stoi(token.substr(0, colon)));
+                    std::string pass = token.substr(colon + 1);
+                    passphrases.emplace_back(idx, pass);
+                }
+                catch (...)
+                {
+                    std::cerr << "Invalid passphrase entry: " << token << "\n";
+                    return 1;
+                }
+            }
+
+            if (passphrases.empty())
+            {
+                std::cerr << "At least one passphrase required\n";
+                return 1;
+            }
+
+            // Load and merge all input packages (they should be identical except for encrypted shares)
+            smo::genesis::RecoveryPackageV2 merged_pkg;
+            bool first = true;
+
+            for (const auto& file : input_files)
+            {
+                std::ifstream in(file, std::ios::binary);
+                if (!in)
+                {
+                    std::cerr << "Failed to open input file: " << file << "\n";
+                    return 1;
+                }
+                std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+                in.close();
+
+                Bytes data(content.begin(), content.end());
+                auto pkg_res = smo::genesis::RecoveryPackageV2::deserialize(BytesView(data));
+                if (!pkg_res)
+                {
+                    std::cerr << "Failed to parse " << file << ": " << pkg_res.error().message << "\n";
+                    return 1;
+                }
+
+                if (first)
+                {
+                    merged_pkg = std::move(pkg_res).value();
+                    first = false;
+                }
+                else
+                {
+                    // Merge shares from this package
+                    auto& pkg = pkg_res.value();
+                    for (const auto& share : pkg.shares)
+                    {
+                        bool found = false;
+                        for (auto& existing : merged_pkg.shares)
+                        {
+                            if (existing.shareholder_index == share.shareholder_index)
+                            {
+                                existing = share;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            merged_pkg.shares.push_back(share);
+                        }
+                    }
+                }
+            }
+
+            // Recover keypair
+            auto kp_res = merged_pkg.recover(passphrases);
+            if (!kp_res)
+            {
+                std::cerr << "Recovery failed: " << kp_res.error().message << "\n";
+                return 1;
+            }
+
+            auto keypair = std::move(kp_res).value();
+
+            // Write output (private key)
+            std::ofstream out(output_file, std::ios::binary | std::ios::trunc);
+            if (!out)
+            {
+                std::cerr << "Failed to open output file: " << output_file << "\n";
+                return 1;
+            }
+            out.write(reinterpret_cast<const char*>(keypair.secret_key.data()), keypair.secret_key.size());
+            out.close();
+
+            std::cout << "Root key recovered: " << output_file << "\n";
+            std::cout << "  Public key: " << bytes_to_hex(keypair.public_key).substr(0, 16) << "...\n";
+            std::cout << "  Used " << passphrases.size() << " shares (threshold: " << static_cast<int>(merged_pkg.threshold) << ")\n";
+
             return 0;
         }
 

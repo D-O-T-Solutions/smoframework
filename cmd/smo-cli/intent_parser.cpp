@@ -145,7 +145,9 @@ namespace smo {
                  {{"restore", "Start soft recovery"},
                   {"force", "Force hard recovery"},
                   {"status", "Show recovery status"},
-                  {"cancel", "Cancel recovery"}});
+                  {"cancel", "Cancel recovery"},
+                  {"split", "Split root key into M-of-N Shamir shares (--threshold M --shares N --output FILE --passphrases PASS1,PASS2,...)"},
+                  {"combine", "Combine M shares to recover root key (--input SHARE1.pkg ... --output root.key --passphrases PASS1,PASS2,...)"}});
             add("discover", "Discover mesh peers", IntentType::Discover, {},
                 {{"live", "Query live peers"}, {"mesh", "Filter by mesh"}});
             add("export", "Export context/mesh data", IntentType::Export, {},

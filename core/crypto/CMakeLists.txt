@@ -12,6 +12,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/aead/xchacha20_provider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/aead/aes256_gcm_provider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/recovery_crypto.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shamir.cpp
 )
 
 if(WITH_PQC)
@@ -30,6 +31,7 @@ target_sources(smo_core INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/kdf/argon2id.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/aead/aes256_gcm_provider.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/recovery_crypto.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shamir.hpp
 )
 
 target_include_directories(smo_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
