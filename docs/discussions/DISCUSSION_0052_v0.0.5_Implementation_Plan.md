@@ -79,12 +79,12 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C8.1 M-of-N threshold secret sharing: `shamir_split(secret, N, M)` → shares, `shamir_recover(shares[M])` → secret | Recovery crypto done (Argon2id + AES-256-GCM) | `[ ] OPEN` | 0051:36, 0046:84, 0046:617 |
-| C8.2 Versioned recovery format: `RecoveryPackage v2` with `shamir_shares[]`, `threshold`, `version`, `kdf_params` | C8.1 | `[ ] OPEN` | 0051:36, 0046:784 |
-| C8.3 CLI: `smo recovery split --threshold M --shares N --output recovery.pkg` | C8.2 | `[ ] OPEN` | 0051:36, 0046:84 |
-| C8.4 CLI: `smo recovery combine --input share1.pkg share2.pkg ... --output root.key` | C8.2 | `[ ] OPEN` | 0051:36, 0046:617 |
-| C8.5 Unit tests: round-trip split/recover, wrong threshold fails, tampered share fails | C8.1-C8.4 | `[ ] OPEN` | 0046:84 |
-| C8.6 Integration test: authority node recovery from M-of-N shares after disaster | C8.5 | `[ ] OPEN` | 0046:784 |
+| C8.1 M-of-N threshold secret sharing: `shamir_split(secret, N, M)` → shares, `shamir_recover(shares[M])` → secret | Recovery crypto done (Argon2id + AES-256-GCM) | `[x] DONE` | 0051:36, 0046:84, 0046:617 |
+| C8.2 Versioned recovery format: `RecoveryPackage v2` with `shamir_shares[]`, `threshold`, `version`, `kdf_params` | C8.1 | `[x] DONE` | 0051:36, 0046:784 |
+| C8.3 CLI: `smo recovery split --threshold M --shares N --output recovery.pkg` | C8.2 | `[x] DONE` | 0051:36, 0046:84 |
+| C8.4 CLI: `smo recovery combine --input share1.pkg share2.pkg ... --output root.key` | C8.2 | `[x] DONE` | 0051:36, 0046:617 |
+| C8.5 Unit tests: round-trip split/recover, wrong threshold fails, tampered share fails | C8.1-C8.4 | `[x] DONE` | 0046:84 |
+| C8.6 Integration test: authority node recovery from M-of-N shares after disaster | C8.5 | `[x] DONE` | 0046:784 |
 
 ---
 
@@ -192,10 +192,10 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line reference.
 | **S3** | TCP 5k sessions benchmark | `[ ] OPEN` | `bench/tcp_sessions.cpp` |
 | **S4** | UDP 2k targets + Gossip 1k msg/s + Anti-entropy 10k <30s benchmarks | `[ ] OPEN` | `bench/` |
 | **S4** | Regression gates in CI (10% threshold) | `[ ] OPEN` | `.github/workflows/benchmark.yml` |
-| **S4** | Shamir SSS split/recover core | `[ ] OPEN` | `src/crypto/shamir.cpp` |
-| **S4** | Versioned RecoveryPackage v2 format | `[ ] OPEN` | `src/crypto/recovery.cpp` |
-| **S4** | CLI: `smo recovery split/combine` | `[ ] OPEN` | `cmd/smo-cli/recovery_commands.cpp` |
-| **S4** | Shamir unit + integration tests | `[ ] OPEN` | `tests/crypto/shamir_test.cpp` |
+| **S4** | Shamir SSS split/recover core | `[x] DONE` | `core/crypto/shamir.cpp` |
+| **S4** | Versioned RecoveryPackage v2 format | `[x] DONE` | `core/genesis/recovery_package.cpp` |
+| **S4** | CLI: `smo recovery split/combine` | `[x] DONE` | `cmd/smo-cli/cli_application.cpp` |
+| **S4** | Shamir unit + integration tests | `[x] DONE` | `tests/unit/core/crypto/test_shamir.cpp` |
 
 ---
 
