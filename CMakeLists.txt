@@ -65,6 +65,11 @@ add_subdirectory(cmd)
 add_subdirectory(runtime)
 add_subdirectory(tests)
 
+# ── Benchmarks (optional) ─────────────────────────────────────────────
+if(BUILD_BENCHMARKS)
+    add_subdirectory(bench)
+endif()
+
 # ── Aliases ──────────────────────────────────────────────────────────
 add_library(smo::core      ALIAS smo_core)
 add_library(smo::protocol  ALIAS smo_protocol)

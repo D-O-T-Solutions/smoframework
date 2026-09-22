@@ -1,0 +1,328 @@
+name: Benchmarks CI Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 0'  # Weekly on Sunday at 03:00 UTC (after main CI)
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
+  BUILD_BENCHMARKS: ON
+
+jobs:
+  # ── Benchmark Build ──────────────────────────────────────────────────
+  build-benchmarks:
+    name: Build Benchmarks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake ninja-build \
+            g++-11 clang-14 \
+            libssl-dev \
+            libsodium-dev
+
+      - name: Configure with benchmarks
+        run: >
+          cmake -S . -B build-bench
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_CXX_COMPILER=g++-11
+          -DBUILD_BENCHMARKS=ON
+          -DWITH_PQC=ON
+
+      - name: Build benchmarks
+        run: cmake --build build-bench --target tcp_sessions_benchmark udp_targets_benchmark gossip_benchmark anti_entropy_benchmark
+
+      - name: Upload benchmark binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-binaries
+          path: |
+            build-bench/bench/tcp_sessions/tcp_sessions_benchmark
+            build-bench/bench/udp_targets/udp_targets_benchmark
+            build-bench/bench/gossip_throughput/gossip_benchmark
+            build-bench/bench/anti_entropy/anti_entropy_benchmark
+
+  # ── Run Benchmarks ───────────────────────────────────────────────────
+  run-benchmarks:
+    name: Run Benchmarks
+    needs: build-benchmarks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download benchmark binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-binaries
+          path: bin
+
+      - name: Make binaries executable
+        run: chmod +x bin/*
+
+      - name: Run TCP 5000 sessions benchmark
+        run: |
+          ./bin/tcp_sessions_benchmark \
+            --benchmark_out=tcp_sessions.json \
+            --benchmark_out_format=json \
+            --benchmark_min_time=2 \
+            --benchmark_format=console
+        env:
+          BENCHMARK_ITERATIONS: 5
+
+      - name: Run UDP 2000 targets benchmark
+        run: |
+          ./bin/udp_targets_benchmark \
+            --benchmark_out=udp_targets.json \
+            --benchmark_out_format=json \
+            --benchmark_min_time=2 \
+            --benchmark_format=console
+        env:
+          BENCHMARK_ITERATIONS: 5
+
+      - name: Run Gossip 1000 msg/s benchmark
+        run: |
+          ./bin/gossip_benchmark \
+            --benchmark_out=gossip.json \
+            --benchmark_out_format=json \
+            --benchmark_min_time=2 \
+            --benchmark_format=console
+        env:
+          BENCHMARK_ITERATIONS: 5
+
+      - name: Run Anti-Entropy 10k nodes benchmark
+        run: |
+          ./bin/anti_entropy_benchmark \
+            --benchmark_out=anti_entropy.json \
+            --benchmark_out_format=json \
+            --benchmark_min_time=2 \
+            --benchmark_format=console
+        env:
+          BENCHMARK_ITERATIONS: 3
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            tcp_sessions.json
+            udp_targets.json
+            gossip.json
+            anti_entropy.json
+
+  # ── Regression Gate Check ────────────────────────────────────────────
+  regression-gate:
+    name: Regression Gate (10% threshold)
+    needs: run-benchmarks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+          path: results
+
+      - name: Install Python for regression analysis
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3 python3-pip
+
+      - name: Run regression analysis
+        id: regression
+        run: |
+          cat > regression_check.py << 'PYEOF'
+          import json
+          import sys
+          import os
+          
+          THRESHOLD = 0.10  # 10% regression threshold
+          
+          # Baseline values (these would be stored/computed from main branch)
+          # For now, we define reasonable baselines for each benchmark
+          BASELINES = {
+              "tcp_sessions": {
+                  "BM_TCP_Session_Creation/5000": {"cpu_time": 0.5, "items_per_sec": 10000},
+                  "BM_TCP_Session_Concurrent_Handshake/5000": {"cpu_time": 2.0, "items_per_sec": 2500},
+                  "BM_TCP_Session_Latency_P99/5000": {"p99_latency_us": 500},
+                  "BM_TCP_5000_Sessions_Sustained": {"operations_per_sec": 100000}
+              },
+              "udp_targets": {
+                  "BM_UDP_Target_Registration/2000": {"cpu_time": 0.3, "items_per_sec": 6000},
+                  "BM_UDP_Hole_Punch_Attempt/2000": {"cpu_time": 1.0, "items_per_sec": 2000},
+                  "BM_UDP_2000_Targets_Sustained": {"packets_sent_per_sec": 50000}
+              },
+              "gossip": {
+                  "BM_Gossip_1000_msg_s_Sustained/10/100": {"actual_msg_sent_per_sec": 1000},
+                  "BM_Gossip_Message_Assembly/1000/10": {"messages_per_sec": 50000},
+                  "BM_Gossip_Delta_Processing/100/1024": {"deltas_per_sec": 100000}
+              },
+              "anti_entropy": {
+                  "BM_AntiEntropy_Sync_10k_Nodes/10000/30": {"elapsed_seconds": 25, "sync_rate_nodes_per_sec": 400},
+                  "BM_AntiEntropy_Full_Sync_EndToEnd": {"elapsed_seconds": 25, "target_met": 1.0}
+              }
+          }
+          
+          def load_results(filename):
+              with open(filename) as f:
+                  return json.load(f)
+          
+          def check_regression(baseline, current, metric_name):
+              if metric_name not in baseline or metric_name not in current:
+                  return True, f"Metric {metric_name} not found in baseline or current"
+              
+              base_val = baseline[metric_name]
+              curr_val = current[metric_name]
+              
+              # For latency/error metrics, lower is better
+              # For throughput/rate metrics, higher is better
+              lower_is_better = any(k in metric_name for k in ['latency', 'time', 'error', 'cpu_time'])
+              
+              if lower_is_better:
+                  regression = (curr_val - base_val) / base_val if base_val > 0 else 0
+                  passed = regression <= THRESHOLD
+              else:
+                  regression = (base_val - curr_val) / base_val if base_val > 0 else 0
+                  passed = regression <= THRESHOLD
+              
+              return passed, f"{metric_name}: baseline={base_val:.2f}, current={curr_val:.2f}, regression={regression*100:.1f}%"
+          
+          all_passed = True
+          results_summary = []
+          
+          for bench_file, baselines in BASELINES.items():
+              filename = f"results/{bench_file}.json"
+              if not os.path.exists(filename):
+                  print(f"WARNING: {filename} not found")
+                  continue
+              
+              data = load_results(filename)
+              benchmarks = data.get('benchmarks', [])
+              
+              for bench in benchmarks:
+                  name = bench.get('name', '')
+                  if name in baselines:
+                      baseline = baselines[name]
+                      
+                      for metric, base_val in baseline.items():
+                          curr_val = bench.get(metric, 0)
+                          passed, msg = check_regression({metric: base_val}, {metric: curr_val}, metric)
+                          results_summary.append(f"{name} - {msg}")
+                          if not passed:
+                              all_passed = False
+          
+          # Print summary
+          print("=== REGRESSION CHECK SUMMARY ===")
+          for line in results_summary:
+              print(line)
+          print("================================")
+          
+          # Write summary for GitHub Actions
+          with open(os.environ.get('GITHUB_STEP_SUMMARY', '/dev/stdout'), 'a') as f:
+              f.write("## Benchmark Regression Check\n\n")
+              f.write(f"**Threshold:** {THRESHOLD*100:.0f}%\n\n")
+              f.write("| Benchmark | Metric | Baseline | Current | Regression | Status |\n")
+              f.write("|-----------|--------|----------|---------|------------|--------|\n")
+              for line in results_summary:
+                  parts = line.split(' - ')
+                  if len(parts) == 2:
+                      bench_metric, details = parts
+                      # Parse details
+                      import re
+                      match = re.search(r'baseline=([\d.]+), current=([\d.]+), regression=([\d.]+)%', details)
+                      if match:
+                          base, curr, reg = match.groups()
+                          status = "✅ PASS" if float(reg) <= THRESHOLD*100 else "❌ FAIL"
+                          f.write(f"| {bench_metric} | {metric} | {base} | {curr} | {reg}% | {status} |\n")
+          
+          if not all_passed:
+              print("::error::Benchmark regression detected (>10%)")
+              sys.exit(1)
+          
+          print("All benchmarks within 10% threshold ✓")
+          PYEOF
+          
+          python3 regression_check.py
+        shell: bash
+
+      - name: Upload regression report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-report
+          path: results/*.json
+
+  # ── Benchmark Summary to GH Actions ──────────────────────────────────
+  benchmark-summary:
+    name: Benchmark Summary
+    needs: [run-benchmarks, regression-gate]
+    if: always()
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-results
+          path: results
+
+      - name: Generate summary
+        run: |
+          cat > gen_summary.py << 'PYEOF'
+          import json
+          import os
+          
+          summary_path = os.environ.get('GITHUB_STEP_SUMMARY', '/dev/stdout')
+          
+          with open(summary_path, 'a') as f:
+              f.write("# Benchmark Results Summary\n\n")
+              
+              for bench_name in ['tcp_sessions', 'udp_targets', 'gossip', 'anti_entropy']:
+                  filename = f"results/{bench_name}.json"
+                  if not os.path.exists(filename):
+                      f.write(f"## {bench_name}: ❌ No results\n\n")
+                      continue
+                  
+                  with open(filename) as bf:
+                      data = json.load(bf)
+                  
+                  f.write(f"## {bench_name}\n\n")
+                  f.write("| Benchmark | CPU Time | Iterations | Metrics |\n")
+                  f.write("|-----------|----------|------------|---------|\n")
+                  
+                  for bench in data.get('benchmarks', [])[:20]:  # Top 20
+                      name = bench.get('name', 'N/A')
+                      cpu_time = bench.get('cpu_time', 0)
+                      iterations = bench.get('iterations', 0)
+                      
+                      # Extract key metrics
+                      metrics = []
+                      for k, v in bench.items():
+                          if k in ['items_per_sec', 'throughput_mbps', 'p99_latency_us', 
+                                   'operations_per_sec', 'packets_sent_per_sec',
+                                   'actual_msg_sent_per_sec', 'sync_rate_nodes_per_sec',
+                                   'elapsed_seconds', 'target_met']:
+                              metrics.append(f"{k}={v:.2f}")
+                      
+                      f.write(f"| {name} | {cpu_time:.4f}s | {iterations} | {', '.join(metrics)} |\n")
+                  
+                  f.write("\n")
+          PYEOF
+          
+          python3 gen_summary.py
