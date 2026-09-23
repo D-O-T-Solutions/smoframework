@@ -1,6 +1,6 @@
 # DISCUSSION 0054 — v0.0.6 Implementation Plan: Runtime Wiring + RFC Compliance Cleanup
 
-**Status:** OPEN (phase new, baselined from 0053)  
+**Status:** IN PROGRESS (C1 P0-S6 complete)  
 **Target:** v0.0.6  
 **Supersedes:** DISCUSSION_0053  
 
@@ -39,10 +39,10 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C1.1 Implement JOIN_REQUEST handler: verify join token → issue node certificate | P0-S1..S5 done; crypto suites registered; join token verify working | `[ ] OPEN` | 0053:30, 0046:720, 0046:866 |
-| C1.2 SecureSession handshake: require cert + sig (remove empty cert/sig exception) | C1.1 | `[ ] OPEN` | 0053:30, 0046:866 |
-| C1.3 Capability Epoch implementation: epoch-based revocation replacing CRL | C1.1 | `[ ] OPEN` | 0053:30, 0046:17.2 |
-| C1.4 E2E integration test: fresh node → token verify → cert issue → SecureSession handshake | C1.1-C1.3 | `[ ] OPEN` | 0053:190 |
+| C1.1 Implement JOIN_REQUEST handler: verify join token → issue node certificate | P0-S1..S5 done; crypto suites registered; join token verify working | `[x] DONE` | 0053:30, 0046:720, 0046:866 |
+| C1.2 SecureSession handshake: require cert + sig (remove empty cert/sig exception) | C1.1 | `[x] DONE` | 0053:30, 0046:866 |
+| C1.3 Capability Epoch implementation: epoch-based revocation replacing CRL | C1.1 | `[x] DONE` | 0053:30, 0046:17.2 |
+| C1.4 E2E integration test: fresh node → token verify → cert issue → SecureSession handshake | C1.1-C1.3 | `[x] DONE` | 0053:190 |
 
 ### C2 — P0-EX: RecoveryEngine verify_recovery_package()
 
