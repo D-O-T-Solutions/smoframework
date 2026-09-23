@@ -56,10 +56,10 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C3.1 Instantiate PolicyEngine in daemon bootstrap (core/acl/policy_engine.cpp) | P0-S6 complete (auth separation) | `[ ] OPEN` | 0053:32, 0046:726, 0046:868 |
-| C3.2 Wire PolicyMiddleware into packet path (after auth, before dispatch) | C3.1 | `[ ] OPEN` | 0053:32, 0046:155 |
-| C3.3 Remove anonymous bypass for 7 policy-covered contracts | C3.2 | `[ ] OPEN` | 0053:32, 0046:868 |
-| C3.4 PCT policy tests pass; no anonymous bypass | C3.3 | `[ ] OPEN` | 0053:163, 0053:192 |
+| C3.1 Instantiate PolicyEngine in daemon bootstrap (core/acl/policy_engine.cpp) | P0-S6 complete (auth separation) | `[x] DONE` | 0053:32, 0046:726, 0046:868 |
+| C3.2 Wire PolicyMiddleware into packet path (after auth, before dispatch) | C3.1 | `[x] DONE` | 0053:32, 0046:155 |
+| C3.3 Remove anonymous bypass for 7 policy-covered contracts | C3.2 | `[x] DONE` | 0053:32, 0046:868 |
+| C3.4 PCT policy tests pass; no anonymous bypass | C3.3 | `[x] DONE` | 0053:163, 0053:192 |
 
 ### C4 — R3: Runtime Services Wiring (5 .cpp Incremental)
 
@@ -150,7 +150,7 @@ CURRENT (P0-S6, P0-EX in progress)
 ```
 [x] P0-S6: E2E join works (fresh node → token verify → cert issue → SecureSession handshake)
 [x] P0-EX: RecoveryEngine verify_recovery_package() passes; circular dep resolved
-[ ] R2: PolicyEngine instantiated + PolicyMiddleware wired; 7 contracts no longer anonymous
+[x] R2: PolicyEngine instantiated + PolicyMiddleware wired; 7 contracts no longer anonymous
 [ ] R3: All 5 runtime .cpp compile + link + unit test + smoke test
 [ ] R4: Daemon uses ContractManager init/shutdown/validate lifecycle
 [ ] R5: WorkerPool submit/wait_all/cancel/active_count/resize functional
