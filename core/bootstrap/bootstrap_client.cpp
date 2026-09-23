@@ -13,15 +13,16 @@ namespace smo::bootstrap {
         auto& LOG = smo::runtime::global_logger();
     }
 
-    BootstrapClient::Result BootstrapClient::bootstrap(const Endpoint& seed_ep,
-                                                        const CryptoProvider& crypto,
-                                                        const Identity& local_identity,
-                                                        const PeerRecord& self_record,
-                                                        DiscoveryEngine& discovery_engine,
-                                                        const Bytes& server_cert_blob,
-                                                        const Bytes& server_signing_key,
-                                                        const Bytes& root_public_key,
-                                                        const std::string& mesh_id) {
+BootstrapClient::Result BootstrapClient::bootstrap(const Endpoint& seed_ep,
+                                                         const CryptoProvider& crypto,
+                                                         const Identity& local_identity,
+                                                         const PeerRecord& self_record,
+                                                         DiscoveryEngine& discovery_engine,
+                                                         const Bytes& server_cert_blob,
+                                                         const Bytes& server_signing_key,
+                                                         const Bytes& root_public_key,
+                                                         const std::string& mesh_id,
+                                                         uint64_t current_epoch) {
         // 1. Raw TCP connect + version handshake (Sync connection type)
         auto raw_session = TransportRegistry::instance().get("tcp")->connect(seed_ep, ConnectionType::Sync);
         if (!raw_session) {
@@ -39,6 +40,7 @@ namespace smo::bootstrap {
         sec_cfg.client_signing_secret_key = server_signing_key;
         sec_cfg.root_public_key = root_public_key;
         sec_cfg.mesh_id = mesh_id;
+        sec_cfg.current_epoch = current_epoch; // C1.3: Capability Epoch
 
         SecureSession sec(fd, sec_cfg, crypto);
         auto hs = sec.handshake();

@@ -119,6 +119,19 @@ smo_set_warnings(smo_test_secure_session)
 smo_set_optimisation(smo_test_secure_session)
 add_test(NAME secure_session_model COMMAND smo_test_secure_session)
 
+# ── P0-S6 E2E tests (Session Crypto Handshake + Mesh Auth Separation) ──
+add_executable(smo_test_p0_s6_e2e
+    unit/core/transport/test_p0_s6_e2e.cpp
+)
+target_link_libraries(smo_test_p0_s6_e2e PRIVATE
+    smo_core smo_suite1_classical smo_protocol smo_storage smo_contract
+    fmt::fmt
+)
+smo_set_warnings(smo_test_p0_s6_e2e)
+smo_set_optimisation(smo_test_p0_s6_e2e)
+target_compile_definitions(smo_test_p0_s6_e2e PRIVATE SMO_TEST=1)
+add_test(NAME p0_s6_e2e COMMAND smo_test_p0_s6_e2e)
+
 # ── High-Level Transport tests ────────────────────────────────────────
 add_executable(smo_test_transport_hl
     unit/transport/test_transport_highlevel.cpp

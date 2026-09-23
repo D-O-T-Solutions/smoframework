@@ -30,18 +30,18 @@ namespace smo::network
         struct Config
         {
             uint16_t default_port = 7777; // fallback when remote string lacks :port
-            smo::Bytes server_cert_blob;   // empty ⇒ plain (legacy) path
-            smo::Bytes server_signing_key; // PQ path only
-            smo::Bytes root_public_key;    // PQ path only
-            std::string mesh_id;            // PQ path only
+            smo::Bytes server_cert_blob;   // required for PQ handshake
+            smo::Bytes server_signing_key; // required for PQ handshake
+            smo::Bytes root_public_key;    // required for PQ handshake
+            std::string mesh_id;            // required for PQ handshake
+            uint64_t current_epoch = 1;     // Capability Epoch for revocation (C1.3)
         };
 
         using AcceptFn = std::function<smo::Result<smo::SessionPtr>()>;
         using Hook     = std::function<smo::Result<void>(smo::SessionPtr&,
                                                          const smo::Endpoint&)>;
 
-        ConnectionManager(Config config, AcceptFn accept,
-                          Hook on_plain, Hook on_secure);
+        ConnectionManager(Config config, AcceptFn accept, Hook on_secure);
         ~ConnectionManager();
 
         ConnectionManager(const ConnectionManager&) = delete;

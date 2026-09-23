@@ -515,7 +515,7 @@ namespace smo {
         return payload;
     }
 
-// Verify peer certificate: chain, expiry, CRL, and mesh authorization
+// Verify peer certificate: chain, expiry, Capability Epoch revocation, and mesh authorization
 Result<void> SecureSession::verify_peer_certificate(BytesView cert_blob) const
 {
     // Parse certificate
@@ -535,30 +535,26 @@ Result<void> SecureSession::verify_peer_certificate(BytesView cert_blob) const
         return SMO_ERR_CERT(217, Error, NoRetry, None, "Certificate expired or not yet valid");
     }
 
-    // Check CRL if provided
-    if (config_.crl)
+    // Capability Epoch (C1.3): epoch-based revocation replaces CRL.
+    // A certificate is valid only if its epoch >= current_epoch.
+    // Certificates with epoch < current_epoch are implicitly revoked.
+    if (config_.current_epoch > 0 && cert.epoch < config_.current_epoch)
     {
-        // Compute fingerprint of the certificate
-        auto fp_res = crypto_.hash.hash(cert_blob);
-        if (!fp_res)
-            return fp_res.error();
-        std::string fp_hex = bytes_to_hex(fp_res.value());
-        if (config_.crl->is_revoked(fp_hex))
-        {
-            return SMO_ERR_CERT(218, Error, NoRetry, None, "Certificate revoked");
-        }
+        return SMO_ERR_CERT(218, Error, NoRetry, None,
+                            "Certificate revoked: epoch " + std::to_string(cert.epoch) +
+                            " < current_epoch " + std::to_string(config_.current_epoch));
     }
 
-// Check mesh authorization: the certificate's mesh_id must match config_.mesh_id
-        // The certificate stores mesh_id in its mesh_id field (Bytes), convert to string for comparison
-        if (!config_.mesh_id.empty())
+    // Check mesh authorization: the certificate's mesh_id must match config_.mesh_id
+    // The certificate stores mesh_id in its mesh_id field (Bytes), convert to string for comparison
+    if (!config_.mesh_id.empty())
+    {
+        std::string cert_mesh_id(cert.mesh_id.begin(), cert.mesh_id.end());
+        if (cert_mesh_id != config_.mesh_id)
         {
-            std::string cert_mesh_id(cert.mesh_id.begin(), cert.mesh_id.end());
-            if (cert_mesh_id != config_.mesh_id)
-            {
-                return SMO_ERR_CERT(219, Error, NoRetry, None, "Certificate mesh_id mismatch");
-            }
+            return SMO_ERR_CERT(219, Error, NoRetry, None, "Certificate mesh_id mismatch");
         }
+    }
 
     // TODO: Full chain verification up to root_public_key when chain support is added
     // For now, we only have a single certificate from the peer

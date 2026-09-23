@@ -4,7 +4,6 @@
 #include "../types.hpp"
 #include "../crypto/impl.hpp"
 #include "../crypto/suite.hpp"
-#include "../recovery/crl.hpp"
 #include "../session/session_crypto_context.hpp"
 #include "../session/session_id.hpp"
 
@@ -59,7 +58,7 @@ namespace smo {
             // Trust & authorization (used by both Client and Server)
             Bytes root_public_key;    // mesh root public key for chain verification
             std::string mesh_id;      // mesh ID for authorization
-            const recovery::CRL* crl = nullptr; // CRL for revocation checking (optional)
+            uint64_t current_epoch = 1; // Capability Epoch (C1.3): certs with epoch < current_epoch are revoked
         };
 
         // Take ownership of a connected socket fd.
@@ -101,8 +100,14 @@ namespace smo {
         Config config_;
         const CryptoProvider& crypto_;
 
-        // Helper to verify certificate chain, expiry, CRL, and mesh authorization
+        // Helper to verify certificate chain, expiry, Capability Epoch, and mesh authorization
         Result<void> verify_peer_certificate(BytesView cert_blob) const;
+
+#ifdef SMO_TEST
+        // Test access to verify_peer_certificate
+    public:
+        Result<void> test_verify_peer_certificate(BytesView cert_blob) const { return verify_peer_certificate(cert_blob); }
+#endif
 
         // Handshake transcript state
         Bytes peer_pk_;   // peer's KEM public key

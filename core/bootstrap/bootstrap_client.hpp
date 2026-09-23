@@ -27,15 +27,16 @@ namespace smo::bootstrap {
 
         // Perform bootstrap with seed using provided PQ material
         // (avoids re-loading from disk when already available in memory)
-        static Result bootstrap(const Endpoint& seed_ep,
-                                const CryptoProvider& crypto,
-                                const Identity& local_identity,
-                                const PeerRecord& self_record,
-                                DiscoveryEngine& discovery_engine,
-                                const Bytes& server_cert_blob,
-                                const Bytes& server_signing_key,
-                                const Bytes& root_public_key,
-                                const std::string& mesh_id);
+static Result bootstrap(const Endpoint& seed_ep,
+                                 const CryptoProvider& crypto,
+                                 const Identity& local_identity,
+                                 const PeerRecord& self_record,
+                                 DiscoveryEngine& discovery_engine,
+                                 const Bytes& server_cert_blob,
+                                 const Bytes& server_signing_key,
+                                 const Bytes& root_public_key,
+                                 const std::string& mesh_id,
+                                 uint64_t current_epoch);
 
     private:
         static Result perform_handshake(int fd,
@@ -43,7 +44,8 @@ namespace smo::bootstrap {
                                         const Bytes& server_cert_blob,
                                         const Bytes& server_signing_key,
                                         const Bytes& root_public_key,
-                                        const std::string& mesh_id);
+                                        const std::string& mesh_id,
+                                        uint64_t current_epoch);
     };
 
 } // namespace smo::bootstrap

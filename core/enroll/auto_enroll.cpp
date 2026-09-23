@@ -677,6 +677,7 @@ namespace smo {
                             sec_cfg.client_cert.assign(std::istreambuf_iterator<char>(cf),
                                                        std::istreambuf_iterator<char>());
                     }
+                    sec_cfg.current_epoch = static_cast<uint64_t>(token.mesh_epoch); // C1.3: Capability Epoch
                     SecureSession sec(fd, sec_cfg, *crypto);
                     auto hs = sec.handshake();
                     if (!hs)

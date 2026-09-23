@@ -368,6 +368,7 @@ private:
     smo::Bytes server_signing_key_;
     smo::Bytes root_public_key_;
     std::string mesh_id_str_;
+    uint64_t current_epoch_ = 1; // C1.3: Capability Epoch for revocation
 
     // transports / listeners
     std::unique_ptr<smo::network::udp::UdpTransport> udp_transport_;
@@ -582,7 +583,7 @@ Result<void> NodeRuntime::Impl::initialize()
     mesh_id_str_ = "";
     if (!config_.mesh_dir.empty())
     {
-        // Read canonical mesh_id from mesh.json (not the directory basename)
+        // Read canonical mesh_id and epoch from mesh.json (not the directory basename)
         std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
         std::ifstream mfd(mesh_json_path);
         if (mfd)
@@ -596,6 +597,30 @@ Result<void> NodeRuntime::Impl::initialize()
                 auto me = ms != std::string::npos ? mjs.find('"', ms + 1) : std::string::npos;
                 if (ms != std::string::npos && me != std::string::npos)
                     mesh_id_str_ = mjs.substr(ms + 1, me - ms - 1);
+            }
+            // C1.3: Read epoch for Capability Epoch revocation
+            auto ep = mjs.find("\"epoch\"");
+            if (ep != std::string::npos)
+            {
+                auto ec = mjs.find(':', ep);
+                if (ec != std::string::npos)
+                {
+                    auto es = mjs.find_first_of("0123456789", ec);
+                    if (es != std::string::npos)
+                    {
+                        auto ee = mjs.find_first_not_of("0123456789", es);
+                        if (ee == std::string::npos)
+                            ee = mjs.size();
+                        try
+                        {
+                            current_epoch_ = std::stoull(mjs.substr(es, ee - es));
+                        }
+                        catch (...)
+                        {
+                            current_epoch_ = 1;
+                        }
+                    }
+                }
             }
         }
         if (mesh_id_str_.empty())
@@ -1004,7 +1029,8 @@ void NodeRuntime::Impl::connect_to_seed()
         server_cert_blob_,
         server_signing_key_,
         root_public_key_,
-        mesh_id_str_
+        mesh_id_str_,
+        current_epoch_ // C1.3: Capability Epoch
     );
 
     if (!bs_res.success)
@@ -1410,33 +1436,22 @@ int NodeRuntime::Impl::run()
 
         // Accept TCP connections — delegated to ConnectionManager (Phase 2).
         // -----------------------------------------------------------------
-        // Composition root injects accept() + plain/secure dispatch hooks so
+        // Composition root injects accept() + secure dispatch hooks so
         // crypto/identity/membership stay NodeRuntime-owned; ConnectionManager
         // only moves bytes / parses the remote Endpoint / closes the session.
+        // P0-S6: No plain/legacy path - always require SecureSession with cert+sig.
+        // C1.3: Capability Epoch for revocation replaces CRL.
         smo::network::ConnectionManager::Config cm_cfg;
         cm_cfg.default_port    = static_cast<uint16_t>(config_.port);
         cm_cfg.server_cert_blob      = server_cert_blob_;
         cm_cfg.server_signing_key    = server_signing_key_;
         cm_cfg.root_public_key       = root_public_key_;
         cm_cfg.mesh_id               = mesh_id_str_;
+        cm_cfg.current_epoch         = current_epoch_; // C1.3: Capability Epoch
 
         smo::network::ConnectionManager::AcceptFn cm_accept = [&]()
         {
             return tcp_listener_owner_->accept();
-        };
-
-        // Plain (legacy) dispatch hook — owns & closes the session.
-        smo::network::ConnectionManager::Hook cm_plain =
-            [&](smo::SessionPtr& session, const smo::Endpoint& remote_ep)
-        {
-            auto* tcp_ses = static_cast<smo::TcpSession*>(session.get());
-            auto dres = dispatcher_.dispatch_session(*tcp_ses, remote_ep);
-            if (!dres)
-            {
-                LOG.warn("dispatch failed: " + dres.error().message);
-            }
-            session->close();
-            return smo::Result<void>{};
         };
 
         // Secure (PQ) dispatch hook — release_fd → SecureSession → PQ handshake
@@ -1453,6 +1468,7 @@ int NodeRuntime::Impl::run()
             sec_cfg.signing_secret_key = server_signing_key_;
             sec_cfg.root_public_key    = root_public_key_;
             sec_cfg.mesh_id            = mesh_id_str_;
+            sec_cfg.current_epoch      = current_epoch_; // C1.3: Capability Epoch
 
             smo::SecureSession sec(client_fd, sec_cfg, *crypto_);
             auto hs = sec.handshake();
@@ -1470,7 +1486,7 @@ int NodeRuntime::Impl::run()
             return smo::Result<void>{};
         };
 
-        smo::network::ConnectionManager conn_mgr(cm_cfg, cm_accept, cm_plain, cm_secure);
+        smo::network::ConnectionManager conn_mgr(cm_cfg, cm_accept, cm_secure);
         conn_mgr.accept_once();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

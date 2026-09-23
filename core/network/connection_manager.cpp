@@ -25,11 +25,9 @@ namespace smo::network
     //      membership — all of which the composition root injects through the
     //      hooks rather than through this class's members.
     // =========================================================================
-    ConnectionManager::ConnectionManager(Config config, AcceptFn accept,
-                                         Hook on_plain, Hook on_secure)
+    ConnectionManager::ConnectionManager(Config config, AcceptFn accept, Hook on_secure)
         : config_(std::move(config)),
           accept_(std::move(accept)),
-          on_plain_(std::move(on_plain)),
           on_secure_(std::move(on_secure))
     {
     }
@@ -68,24 +66,12 @@ namespace smo::network
             remote_ep.port = static_cast<uint16_t>(config_.default_port);
         }
 
-        if (!config_.server_cert_blob.empty())
+        // P0-S6: Always require SecureSession with cert + sig (no plain/legacy path)
+        // Capability Epoch (C1.3): pass current_epoch for revocation checking
+        auto res = on_secure_(session, remote_ep);
+        if (!res)
         {
-            // PQ secure path — injected hook performs the PQ handshake + AEAD
-            // packet dispatch (and owns/closes the session).
-            auto res = on_secure_(session, remote_ep);
-            if (!res)
-            {
-                LOG.warn("secure dispatch failed: " + res.error().message + " from " + remote_str);
-            }
-        }
-        else
-        {
-            // Legacy plain path — injected hook dispatches (and owns/closes).
-            auto res = on_plain_(session, remote_ep);
-            if (!res)
-            {
-                LOG.warn("dispatch failed: " + res.error().message + " from " + remote_str);
-            }
+            LOG.warn("secure dispatch failed: " + res.error().message + " from " + remote_str);
         }
         return true;
     }
