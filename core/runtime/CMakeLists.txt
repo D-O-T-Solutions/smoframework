@@ -15,6 +15,11 @@ add_library(smo_runtime STATIC
     event_registry_service.cpp
     authority_mesh_service.cpp
     contract_registry_service.cpp
+    event_store.cpp
+    runtime_context.cpp
+    history.cpp
+    execution_engine.cpp
+    scheduler.cpp
     contracts/join_contract.cpp
     contracts/bootstrap_contract.cpp
     contracts/governance_contract.cpp

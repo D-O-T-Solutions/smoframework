@@ -101,7 +101,7 @@ namespace smo::runtime {
         }
 
         // Check capabilities: ensure node has crypto service
-        if (!ctx.services || !ctx.services->crypto)
+        if (!ctx.services.crypto)
         {
             return ContractResult::denied("crypto service required");
         }
@@ -119,7 +119,7 @@ namespace smo::runtime {
         // The full implementation would validate the token signature.
 
         // Check capabilities: ensure node has crypto service
-        if (!ctx.services || !ctx.services->crypto)
+        if (!ctx.services.crypto)
         {
             return ContractResult::denied("crypto service required");
         }

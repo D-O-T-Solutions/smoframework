@@ -169,7 +169,7 @@ namespace smo::runtime {
         plan_ctx.event_bus = &event_bus_;
         plan_ctx.dispatcher = &dispatcher_;
         plan_ctx.output = &output_mgr_;
-        plan_ctx.services = ctx.services;
+        plan_ctx.services = &ctx.services;
         for (const auto& [key, val] : plan.context)
         {
             plan_ctx.context[key] = val;

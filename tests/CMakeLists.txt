@@ -242,6 +242,61 @@ smo_set_warnings(smo_test_error)
 smo_set_optimisation(smo_test_error)
 add_test(NAME error_model COMMAND smo_test_error)
 
+# ── EventStore tests ──────────────────────────────────────────────────
+add_executable(smo_test_event_store
+    unit/core/runtime/test_event_store.cpp
+)
+target_link_libraries(smo_test_event_store PRIVATE
+    smo_runtime smo_core smo_storage fmt::fmt
+)
+smo_set_warnings(smo_test_event_store)
+smo_set_optimisation(smo_test_event_store)
+add_test(NAME event_store_model COMMAND smo_test_event_store)
+
+# ── RuntimeContext tests ──────────────────────────────────────────────
+add_executable(smo_test_runtime_context
+    unit/core/runtime/test_runtime_context.cpp
+)
+target_link_libraries(smo_test_runtime_context PRIVATE
+    smo_runtime smo_core smo_acl fmt::fmt
+)
+smo_set_warnings(smo_test_runtime_context)
+smo_set_optimisation(smo_test_runtime_context)
+add_test(NAME runtime_context_model COMMAND smo_test_runtime_context)
+
+# ── HistoryService tests ──────────────────────────────────────────────
+add_executable(smo_test_history
+    unit/core/runtime/test_history.cpp
+)
+target_link_libraries(smo_test_history PRIVATE
+    smo_runtime smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_history)
+smo_set_optimisation(smo_test_history)
+add_test(NAME history_model COMMAND smo_test_history)
+
+# ── ExecutionEngine tests ─────────────────────────────────────────────
+add_executable(smo_test_execution_engine
+    unit/core/runtime/test_execution_engine.cpp
+)
+target_link_libraries(smo_test_execution_engine PRIVATE
+    smo_runtime smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_execution_engine)
+smo_set_optimisation(smo_test_execution_engine)
+add_test(NAME execution_engine_model COMMAND smo_test_execution_engine)
+
+# ── Scheduler tests ───────────────────────────────────────────────────
+add_executable(smo_test_scheduler
+    unit/core/runtime/test_scheduler.cpp
+)
+target_link_libraries(smo_test_scheduler PRIVATE
+    smo_runtime smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_scheduler)
+smo_set_optimisation(smo_test_scheduler)
+add_test(NAME scheduler_model COMMAND smo_test_scheduler)
+
 # ── Contract tests ──────────────────────────────────────────────────
 add_executable(smo_test_contract
     unit/core/contract/test_contract.cpp

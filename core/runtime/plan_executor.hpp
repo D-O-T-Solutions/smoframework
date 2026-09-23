@@ -242,13 +242,13 @@ namespace smo::runtime {
                                           ctx.dispatcher->execute(a.contract_id, a.input, dummy_ctx);
                                       }
                                   },
-                                  [&](const ActionDispatchMessage& a) {
-                                      // Send raw message via transport
-                                      if (ctx.services && ctx.services->transport)
-                                      {
-                                          ctx.services->transport->send_message(a.target_node, a.opcode, a.data);
-                                      }
-                                  },
+[&](const ActionDispatchMessage& a) {
+                                       // Send raw message via transport
+                                       if (ctx.services && ctx.services->transport)
+                                       {
+                                           ctx.services->transport->send_message(a.target_node, a.opcode, a.data);
+                                       }
+                                   },
                                   [&](const ActionScheduleRetry& a) {
                                       // Mark step for scheduled retry
                                       auto& ss = ctx.step_status[step_id];
