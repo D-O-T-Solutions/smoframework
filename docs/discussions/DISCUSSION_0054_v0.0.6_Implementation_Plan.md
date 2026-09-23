@@ -48,9 +48,9 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C2.1 Implement `verify_recovery_package()` in `recovery_engine.cpp` | Recovery crypto done (Argon2id + AES-256-GCM); RecoveryDomain in tooling layer | `[ ] OPEN` | 0053:31, 0046:721, 0046:722, 0046:867 |
-| C2.2 Resolve circular dependency: smo_core ↔ smo_genesis (move RecoveryEngine to smo_genesis or interface) | C2.1 | `[ ] OPEN` | 0053:31, 0046:722 |
-| C2.3 Gate test: wrong passphrase → reject; restart decrypts authority.sec | C2.1-C2.2 | `[ ] OPEN` | 0053:158, 0053:191 |
+| C2.1 Implement `verify_recovery_package()` in `recovery_engine.cpp` | Recovery crypto done (Argon2id + AES-256-GCM); RecoveryDomain in tooling layer | `[x] DONE` | 0053:31, 0046:721, 0046:722, 0046:867 |
+| C2.2 Resolve circular dependency: smo_core ↔ smo_genesis (move RecoveryEngine to smo_genesis or interface) | C2.1 | `[x] DONE` | 0053:31, 0046:722 |
+| C2.3 Gate test: wrong passphrase → reject; restart decrypts authority.sec | C2.1-C2.2 | `[x] DONE` | 0053:158, 0053:191 |
 
 ### C3 — R2: PolicyEngine + PolicyMiddleware Wiring
 
@@ -148,8 +148,8 @@ CURRENT (P0-S6, P0-EX in progress)
 ## 5. Success Criteria Checklist (from 0053)
 
 ```
-[ ] P0-S6: E2E join works (fresh node → token verify → cert issue → SecureSession handshake)
-[ ] P0-EX: RecoveryEngine verify_recovery_package() passes; circular dep resolved
+[x] P0-S6: E2E join works (fresh node → token verify → cert issue → SecureSession handshake)
+[x] P0-EX: RecoveryEngine verify_recovery_package() passes; circular dep resolved
 [ ] R2: PolicyEngine instantiated + PolicyMiddleware wired; 7 contracts no longer anonymous
 [ ] R3: All 5 runtime .cpp compile + link + unit test + smoke test
 [ ] R4: Daemon uses ContractManager init/shutdown/validate lifecycle
