@@ -1,6 +1,6 @@
 # DISCUSSION 0054 — v0.0.6 Implementation Plan: Runtime Wiring + RFC Compliance Cleanup
 
-**Status:** IN PROGRESS (C1-C5 complete)  
+**Status:** IN PROGRESS (C1-C5, C7 complete)  
 **Target:** v0.0.6  
 **Supersedes:** DISCUSSION_0053  
 
@@ -94,13 +94,13 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C7.1 RFC 0020: Implement 3-byte namespace allocation constexpr table (core/protocol/opcode_registry.cpp) | RFC 0019 packet layout alignment; G3 packet auth done | `[ ] OPEN` | 0053:40, 0046:191, 0046:614, 0020:11, 0020:83 |
-| C7.2 RFC 0020: Packet validation via registry; sequential message IDs per functional group | C7.1 | `[ ] OPEN` | 0053:40, 0020:83 |
-| C7.3 RFC 0022: Define 8 SQLite stores (node, mesh, session, trust, audit, dag, peer, governance) with frozen schemas | Serialization pipeline (C7.5) for CBOR blobs | `[ ] OPEN` | 0053:41, 0046:192, 0046:615, 0022:20 |
-| C7.4 RFC 0022: Implement migrations, WAL mode, backup API for each store | C7.3 | `[ ] OPEN` | 0053:41, 0022:194 |
-| C7.5 RFC 0043: Unified CBOR pipeline: Packet.payload ↔ ContextValue ↔ ContractInput ↔ ContractResult | Storage schema (C7.3) for blob encoding; CBOR library | `[ ] OPEN` | 0053:42, 0046:193, 0046:616, 0043:34 |
-| C7.6 RFC 0043: SchemaRegistry validation; ContextValue recursive variant; content-type byte | C7.5 | `[ ] OPEN` | 0053:42, 0043:2.2, 0043:2.3, 0043:2.6 |
-| C7.7 Gate: All 3 RFCs compile-time clean; packet validation via registry; schema migrations work | C7.1-C7.6 | `[ ] OPEN` | 0053:180, 0053:198-200 |
+| C7.1 RFC 0020: Implement 3-byte namespace allocation constexpr table (core/protocol/opcode_registry.cpp) | RFC 0019 packet layout alignment; G3 packet auth done | `[x] DONE` | 0053:40, 0046:191, 0046:614, 0020:11, 0020:83 |
+| C7.2 RFC 0020: Packet validation via registry; sequential message IDs per functional group | C7.1 | `[x] DONE` | 0053:40, 0020:83 |
+| C7.3 RFC 0022: Define 8 SQLite stores (node, mesh, session, trust, audit, dag, peer, governance) with frozen schemas | Serialization pipeline (C7.5) for CBOR blobs | `[x] DONE` | 0053:41, 0046:192, 0046:615, 0022:20 |
+| C7.4 RFC 0022: Implement migrations, WAL mode, backup API for each store | C7.3 | `[x] DONE` | 0053:41, 0022:194 |
+| C7.5 RFC 0043: Unified CBOR pipeline: Packet.payload ↔ ContextValue ↔ ContractInput ↔ ContractResult | Storage schema (C7.3) for blob encoding; CBOR library | `[x] DONE` | 0053:42, 0046:193, 0046:616, 0043:34 |
+| C7.6 RFC 0043: SchemaRegistry validation; ContextValue recursive variant; content-type byte | C7.5 | `[x] DONE` | 0053:42, 0043:2.2, 0043:2.3, 0043:2.6 |
+| C7.7 Gate: All 3 RFCs compile-time clean; packet validation via registry; schema migrations work | C7.1-C7.6 | `[x] DONE` | 0053:180, 0053:198-200 |
 
 ---
 
@@ -156,11 +156,11 @@ CURRENT (P0-S6, P0-EX in progress)
 [ ] R5: WorkerPool submit/wait_all/cancel/active_count/resize functional
 [x] G1: SESSION_OPEN handler on packet path; SessionManager::open() called
 [ ] G8: MeshFSM Draft→Genesis→Bootstrap→Online transitions; sign_bootstrap_csr impl
-[ ] RFC 0020: Opcode registry constexpr table; packet validation via registry
-[ ] RFC 0022: 8 SQLite stores with frozen schemas, migrations, WAL, backup
-[ ] RFC 0043: Unified CBOR pipeline; SchemaRegistry validation; ContextValue recursive variant
-[ ] All 25+ ctest PASS
-[ ] All 24+ PCT PASS (including new policy, session, RFC compliance tests)
+[x] RFC 0020: Opcode registry constexpr table; packet validation via registry
+[x] RFC 0022: 8 SQLite stores with frozen schemas, migrations, WAL, backup
+[x] RFC 0043: Unified CBOR pipeline; SchemaRegistry validation; ContextValue recursive variant
+[ ] All 25+ ctest PASS (97/99, 2 pre-existing failures)
+[ ] All 24+ PCT PASS (29/29 including new RFC compliance tests)
 [ ] E2E 3-node mesh: join, session, contract exec, governance, trust gossip all PASS
 [ ] Security regression tests: downgrade, confusion, key-suite mismatch, replay, truncated sig all REJECT
 [ ] clang-format + clang-tidy clean
