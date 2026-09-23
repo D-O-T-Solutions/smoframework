@@ -86,6 +86,11 @@ private:
     void register_routes();
     void register_packet_handlers(RuntimeHandler handler);
 
+    // Session lifecycle handlers (C5.1)
+    Result<void> handle_session_open(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
+    Result<void> handle_session_close(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
+    Result<void> handle_session_renew(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
+
     Config config_;
     Dependencies deps_;
 };

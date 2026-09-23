@@ -2,6 +2,11 @@
 
 #include <core/runtime/runtime_kernel.hpp>
 #include <core/runtime/action_executor.hpp>
+#include <core/session/session.hpp>
+#include <core/certificate/certificate.hpp>
+#include <core/capability/capability.h>
+#include <core/types.hpp>
+#include <core/identity/identity.hpp>
 
 #include <chrono>
 
@@ -166,6 +171,11 @@ void ContractRegistryService::register_packet_handlers(RuntimeHandler handler)
     deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::WITNESS), handler);
     deps_.packet_dispatcher.register_handler(join::kOpcodeBootstrapSyncReq, handler);
 
+    // Session lifecycle handlers (C5.1)
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::SESSION_OPEN), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::SESSION_CLOSE), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::SESSION_RENEW), handler);
+
     // Raw handler delegated to ProtocolService
     deps_.protocol_service.register_raw_handler(deps_.packet_dispatcher);
 }
@@ -175,6 +185,24 @@ ContractRegistryService::RuntimeHandler ContractRegistryService::make_runtime_ha
     return [this](Packet&& pkt, const Endpoint& remote, network::hl::Transport& t) -> Result<void> {
         std::string remote_str = remote.host + ":" + std::to_string(remote.port);
         std::printf("[smo-node] Packet received opcode=0x%x from %s\n", pkt.opcode_id, remote_str.c_str());
+
+        // Special handling for SESSION_OPEN (C5.1): creates a new session
+        if (pkt.opcode_id == static_cast<uint32_t>(Opcode::SESSION_OPEN))
+        {
+            return handle_session_open(std::move(pkt), remote, t);
+        }
+
+        // Special handling for SESSION_CLOSE (C5.1)
+        if (pkt.opcode_id == static_cast<uint32_t>(Opcode::SESSION_CLOSE))
+        {
+            return handle_session_close(std::move(pkt), remote, t);
+        }
+
+        // Special handling for SESSION_RENEW (C5.1)
+        if (pkt.opcode_id == static_cast<uint32_t>(Opcode::SESSION_RENEW))
+        {
+            return handle_session_renew(std::move(pkt), remote, t);
+        }
 
         // 1. Session lookup (if session_id present)
         const Session* session = nullptr;
@@ -313,6 +341,257 @@ ContractRegistryService::RuntimeHandler ContractRegistryService::make_runtime_ha
 
         return {};
     };
+}
+
+// Session lifecycle handlers (C5.1)
+
+Result<void> ContractRegistryService::handle_session_open(Packet&& pkt, const Endpoint& remote,
+                                                          network::hl::Transport& t)
+{
+    std::printf("[smo-node] Handling SESSION_OPEN from %s:%u\n", remote.host.c_str(), remote.port);
+
+    // 1. Deserialize SessionOpenMsg from payload
+    auto msg_res = SessionOpenMsg::deserialize(BytesView(pkt.payload.data(), pkt.payload.size()));
+    if (!msg_res)
+    {
+        std::printf("[smo-node] SESSION_OPEN: Failed to deserialize: %s\n", msg_res.error().message.c_str());
+        return msg_res.error();
+    }
+    auto msg = std::move(msg_res.value());
+
+    // 2. Deserialize certificate from cert_data
+    auto cert_res = Certificate::deserialize(BytesView(msg.cert_data.data(), msg.cert_data.size()));
+    if (!cert_res)
+    {
+        std::printf("[smo-node] SESSION_OPEN: Failed to deserialize certificate: %s\n",
+                    cert_res.error().message.c_str());
+        return cert_res.error();
+    }
+    auto peer_cert = std::move(cert_res.value());
+
+    // 3. Verify signature: signature is over (nonce || cert_data)
+    Bytes signed_data;
+    signed_data.insert(signed_data.end(), msg.nonce.begin(), msg.nonce.end());
+    signed_data.insert(signed_data.end(), msg.cert_data.begin(), msg.cert_data.end());
+
+    auto verify_res = deps_.crypto->signer.verify(signed_data, msg.signature, peer_cert.subject_pubkey);
+    if (!verify_res || !verify_res.value())
+    {
+        std::printf("[smo-node] SESSION_OPEN: Signature verification failed\n");
+        return SMO_ERR_SESSION(503, Error, NoRetry, Reconnect, "SESSION_OPEN signature verification failed");
+    }
+
+    // 4. Extract peer NodeID from certificate (NodeID = Blake3(subject_pubkey))
+    auto node_id_res = node_id_from_public_key(BytesView(peer_cert.subject_pubkey), deps_.crypto->hash);
+    if (!node_id_res)
+    {
+        std::printf("[smo-node] SESSION_OPEN: Failed to derive NodeID from certificate: %s\n",
+                    node_id_res.error().message.c_str());
+        return node_id_res.error();
+    }
+    NodeID peer_id = node_id_res.value();
+
+    // 5. Get capabilities from certificate (convert Bytes to CapabilitySet)
+    CapabilitySet capabilities;
+    if (peer_cert.capabilities.size() >= sizeof(CapabilitySet))
+    {
+        std::memcpy(&capabilities, peer_cert.capabilities.data(), sizeof(CapabilitySet));
+    }
+
+    // 6. Generate session ID (from nonce + local entropy)
+    SessionId session_id;
+    auto rng = deps_.crypto->default_rng();
+    rng.fill(BytesMutView(session_id.bytes.data(), session_id.bytes.size()));
+
+    // 7. Create session (TTL from certificate or default 1 hour)
+    int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      std::chrono::system_clock::now().time_since_epoch())
+                      .count();
+    uint64_t ttl_ns = peer_cert.not_after > 0
+                          ? static_cast<uint64_t>(peer_cert.not_after * 1'000'000'000LL - now)
+                          : 3600'000'000'000ULL; // 1 hour default
+
+    auto session_res = Session::create(session_id, peer_id, peer_cert, capabilities, now, ttl_ns);
+    if (!session_res)
+    {
+        std::printf("[smo-node] SESSION_OPEN: Failed to create session: %s\n", session_res.error().message.c_str());
+        return session_res.error();
+    }
+    Session session = std::move(session_res.value());
+
+    // 8. Compute cert fingerprint for CRL check
+    auto hash_res = deps_.crypto->hash.hash(msg.cert_data);
+    if (hash_res)
+    {
+        session.set_cert_fingerprint(bytes_to_hex(hash_res.value()));
+    }
+
+    // 9. Open session in SessionManager (does CRL check)
+    auto open_res = deps_.session_mgr.open(std::move(session));
+    if (!open_res)
+    {
+        std::printf("[smo-node] SESSION_OPEN: SessionManager::open failed: %s\n", open_res.error().message.c_str());
+        return open_res.error();
+    }
+    Session* opened = open_res.value();
+
+    // 10. Send SESSION_OPEN response with session ID
+    Packet resp;
+    resp.header = pkt.header;
+    resp.opcode_id = static_cast<uint32_t>(Opcode::SESSION_OPEN);
+    resp.session_id() = opened->id().bytes;
+    resp.intent_id = pkt.intent_id;
+    resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::system_clock::now().time_since_epoch())
+                           .count();
+    // Response payload: session_id (16 bytes)
+    resp.payload.assign(opened->id().bytes.begin(), opened->id().bytes.end());
+
+    auto send_ec = t.send(std::move(resp), remote);
+    if (send_ec)
+    {
+        std::printf("[smo-node] SESSION_OPEN response send failed: %s\n", send_ec.message().c_str());
+        return Error(ErrorCode(ErrorCategory::Transport, static_cast<uint16_t>(send_ec.value()), Severity::Error,
+                               RetryClass::RetrySafe, Recovery::None),
+                     "SESSION_OPEN response send failed", __FILE__, __LINE__);
+    }
+
+    std::printf("[smo-node] SESSION_OPEN: Created session %s for peer %s\n",
+                opened->id().to_hex().c_str(), peer_id.to_string().c_str());
+    return {};
+}
+
+Result<void> ContractRegistryService::handle_session_close(Packet&& pkt, const Endpoint& remote,
+                                                           network::hl::Transport& t)
+{
+    std::printf("[smo-node] Handling SESSION_CLOSE from %s:%u\n", remote.host.c_str(), remote.port);
+
+    // Look up session by session_id in packet header
+    if (pkt.session_id().size() < 16)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "SESSION_CLOSE: missing session_id");
+    }
+    SessionId sid;
+    std::memcpy(sid.bytes.data(), pkt.session_id().data(), 16);
+
+    auto* session = deps_.session_mgr.lookup(sid);
+    if (!session)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "SESSION_CLOSE: session not found");
+    }
+
+    int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      std::chrono::system_clock::now().time_since_epoch())
+                      .count();
+
+    // Parse close reason from payload if present
+    uint8_t reason = 0;
+    if (!pkt.payload.empty())
+    {
+        reason = pkt.payload[0];
+    }
+
+    // Close the session
+    auto close_res = deps_.session_mgr.close(sid, now);
+    if (!close_res)
+    {
+        std::printf("[smo-node] SESSION_CLOSE: Failed to close session: %s\n", close_res.error().message.c_str());
+        return close_res.error();
+    }
+
+    // Send response
+    Packet resp;
+    resp.header = pkt.header;
+    resp.opcode_id = static_cast<uint32_t>(Opcode::SESSION_CLOSE);
+    resp.session_id() = pkt.session_id();
+    resp.intent_id = pkt.intent_id;
+    resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::system_clock::now().time_since_epoch())
+                           .count();
+    resp.payload.push_back(reason);
+
+    auto send_ec = t.send(std::move(resp), remote);
+    if (send_ec)
+    {
+        std::printf("[smo-node] SESSION_CLOSE response send failed: %s\n", send_ec.message().c_str());
+        return Error(ErrorCode(ErrorCategory::Transport, static_cast<uint16_t>(send_ec.value()), Severity::Error,
+                               RetryClass::RetrySafe, Recovery::None),
+                     "SESSION_CLOSE response send failed", __FILE__, __LINE__);
+    }
+
+    std::printf("[smo-node] SESSION_CLOSE: Closed session %s (reason=%u)\n", sid.to_hex().c_str(), reason);
+    return {};
+}
+
+Result<void> ContractRegistryService::handle_session_renew(Packet&& pkt, const Endpoint& remote,
+                                                           network::hl::Transport& t)
+{
+    std::printf("[smo-node] Handling SESSION_RENEW from %s:%u\n", remote.host.c_str(), remote.port);
+
+    // Look up session by session_id in packet header
+    if (pkt.session_id().size() < 16)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "SESSION_RENEW: missing session_id");
+    }
+    SessionId sid;
+    std::memcpy(sid.bytes.data(), pkt.session_id().data(), 16);
+
+    auto* session = deps_.session_mgr.lookup(sid);
+    if (!session)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "SESSION_RENEW: session not found");
+    }
+
+    int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      std::chrono::system_clock::now().time_since_epoch())
+                      .count();
+
+    // Parse TTL from payload (8 bytes big-endian)
+    uint64_t ttl_ns = 3600'000'000'000ULL; // 1 hour default
+    if (pkt.payload.size() >= 8)
+    {
+        ttl_ns = 0;
+        for (size_t i = 0; i < 8; ++i)
+        {
+            ttl_ns = (ttl_ns << 8) | pkt.payload[i];
+        }
+    }
+
+    // Renew the session
+    auto renew_res = session->renew(now, ttl_ns);
+    if (!renew_res)
+    {
+        std::printf("[smo-node] SESSION_RENEW: Failed to renew session: %s\n", renew_res.error().message.c_str());
+        return renew_res.error();
+    }
+
+    // Send response
+    Packet resp;
+    resp.header = pkt.header;
+    resp.opcode_id = static_cast<uint32_t>(Opcode::SESSION_RENEW);
+    resp.session_id() = pkt.session_id();
+    resp.intent_id = pkt.intent_id;
+    resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::system_clock::now().time_since_epoch())
+                           .count();
+    // Response payload: new expires_at (8 bytes big-endian)
+    for (int i = 7; i >= 0; --i)
+    {
+        resp.payload.push_back(static_cast<uint8_t>((session->expires_at() >> (i * 8)) & 0xFF));
+    }
+
+    auto send_ec = t.send(std::move(resp), remote);
+    if (send_ec)
+    {
+        std::printf("[smo-node] SESSION_RENEW response send failed: %s\n", send_ec.message().c_str());
+        return Error(ErrorCode(ErrorCategory::Transport, static_cast<uint16_t>(send_ec.value()), Severity::Error,
+                               RetryClass::RetrySafe, Recovery::None),
+                     "SESSION_RENEW response send failed", __FILE__, __LINE__);
+    }
+
+    std::printf("[smo-node] SESSION_RENEW: Renewed session %s (new expiry=%lld)\n",
+                sid.to_hex().c_str(), session->expires_at());
+    return {};
 }
 
 } // namespace smo::runtime
