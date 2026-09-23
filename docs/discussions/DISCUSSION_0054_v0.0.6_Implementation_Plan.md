@@ -1,6 +1,6 @@
 # DISCUSSION 0054 — v0.0.6 Implementation Plan: Runtime Wiring + RFC Compliance Cleanup
 
-**Status:** IN PROGRESS (C1 P0-S6 complete)  
+**Status:** IN PROGRESS (C1-C5 complete)  
 **Target:** v0.0.6  
 **Supersedes:** DISCUSSION_0053  
 
@@ -73,13 +73,13 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 | C4.6 Smoke test: all 5 .cpp compile + link + unit test + smoke | C4.1-C4.5 | `[x] DONE` | 0053:168, 0053:193 |
 
 ### C5 — G1: SESSION_OPEN Handler
-
-| Task | Depends | Status | Source |
-|------|---------|--------|--------|
-| C5.1 Implement SessionManager::open() on packet path (core/session/session_manager.cpp) | R2 (PolicyEngine for authorization); P0-S6 (session auth) | `[ ] OPEN` | 0053:36, 0046:731, 0046:875, 0046:68 |
-| C5.2 Add SESSION_OPEN opcode handling in dispatcher | C5.1 | `[ ] OPEN` | 0053:36, 0046:68, 0014 |
-| C5.3 Session state machine: PENDING → OPEN → CLOSED/FAILED | C5.2 | `[ ] OPEN` | 0053:36, 0046:68 |
-| C5.4 Gate: SESSION_OPEN works; contract execution over sessions enabled | C5.3 | `[ ] OPEN` | 0053:174, 0053:196 |
+ 
+ | Task | Depends | Status | Source |
+ |------|---------|--------|--------|
+ | C5.1 Implement SessionManager::open() on packet path (core/session/session.cpp) | R2 (PolicyEngine for authorization); P0-S6 (session auth) | `[x] DONE` | 0053:36, 0046:731, 0046:875, 0046:68 |
+ | C5.2 Add SESSION_OPEN opcode handling in dispatcher | C5.1 | `[x] DONE` | 0053:36, 0046:68, 0014 |
+ | C5.3 Session state machine: Handshake → Established → Active/Closed (RFC 0014 §3) | C5.2 | `[x] DONE` | 0053:36, 0046:68 |
+ | C5.4 Gate: SESSION_OPEN works; contract execution over sessions enabled | C5.3 | `[x] DONE` | 0053:174, 0053:196 |
 
 ### C6 — G8: MeshFSM Wire + sign_bootstrap_csr
 
@@ -154,7 +154,7 @@ CURRENT (P0-S6, P0-EX in progress)
 [x] R3: All 5 runtime .cpp compile + link + unit test + smoke test
 [ ] R4: Daemon uses ContractManager init/shutdown/validate lifecycle
 [ ] R5: WorkerPool submit/wait_all/cancel/active_count/resize functional
-[ ] G1: SESSION_OPEN handler on packet path; SessionManager::open() called
+[x] G1: SESSION_OPEN handler on packet path; SessionManager::open() called
 [ ] G8: MeshFSM Draft→Genesis→Bootstrap→Online transitions; sign_bootstrap_csr impl
 [ ] RFC 0020: Opcode registry constexpr table; packet validation via registry
 [ ] RFC 0022: 8 SQLite stores with frozen schemas, migrations, WAL, backup
