@@ -65,12 +65,12 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0053.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C4.1 Add `event_store.cpp` to CMake; compile → link → unit test | CMake fix | `[ ] OPEN` | 0053:33, 0046:728, 0046:148 |
-| C4.2 Add `runtime_context.cpp` to CMake; inject Tier-1 services (crypto, identity, storage, policy, audit, clock, random) | C4.1 | `[ ] OPEN` | 0053:33, 0046:148, 0046:872 |
-| C4.3 Add `history.cpp` to CMake; compile → link → unit test | C4.2 | `[ ] OPEN` | 0053:33, 0046:872 |
-| C4.4 Add `execution_engine.cpp` to CMake; compile → link → unit test | C4.3 | `[ ] OPEN` | 0053:33, 0046:872 |
-| C4.5 Add `scheduler.cpp` to CMake; compile → link → unit test; RetryEngine (RFC 0044) runs | C4.4 | `[ ] OPEN` | 0053:33, 0046:872 |
-| C4.6 Smoke test: all 5 .cpp compile + link + unit test + smoke | C4.1-C4.5 | `[ ] OPEN` | 0053:168, 0053:193 |
+| C4.1 Add `event_store.cpp` to CMake; compile → link → unit test | CMake fix | `[x] DONE` | 0053:33, 0046:728, 0046:148 |
+| C4.2 Add `runtime_context.cpp` to CMake; inject Tier-1 services (crypto, identity, storage, policy, audit, clock, random) | C4.1 | `[x] DONE` | 0053:33, 0046:148, 0046:872 |
+| C4.3 Add `history.cpp` to CMake; compile → link → unit test | C4.2 | `[x] DONE` | 0053:33, 0046:872 |
+| C4.4 Add `execution_engine.cpp` to CMake; compile → link → unit test | C4.3 | `[x] DONE` | 0053:33, 0046:872 |
+| C4.5 Add `scheduler.cpp` to CMake; compile → link + unit test; RetryEngine (RFC 0044) runs | C4.4 | `[x] DONE` | 0053:33, 0046:872 |
+| C4.6 Smoke test: all 5 .cpp compile + link + unit test + smoke | C4.1-C4.5 | `[x] DONE` | 0053:168, 0053:193 |
 
 ### C5 — G1: SESSION_OPEN Handler
 
@@ -151,7 +151,7 @@ CURRENT (P0-S6, P0-EX in progress)
 [x] P0-S6: E2E join works (fresh node → token verify → cert issue → SecureSession handshake)
 [x] P0-EX: RecoveryEngine verify_recovery_package() passes; circular dep resolved
 [x] R2: PolicyEngine instantiated + PolicyMiddleware wired; 7 contracts no longer anonymous
-[ ] R3: All 5 runtime .cpp compile + link + unit test + smoke test
+[x] R3: All 5 runtime .cpp compile + link + unit test + smoke test
 [ ] R4: Daemon uses ContractManager init/shutdown/validate lifecycle
 [ ] R5: WorkerPool submit/wait_all/cancel/active_count/resize functional
 [ ] G1: SESSION_OPEN handler on packet path; SessionManager::open() called
