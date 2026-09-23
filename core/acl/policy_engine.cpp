@@ -6,6 +6,7 @@
 #include <chrono>
 #include <algorithm>
 #include <regex>
+#include <climits>
 
 namespace smo::acl {
 
@@ -156,21 +157,24 @@ namespace smo::acl {
             std::sort(all_rules.begin(), all_rules.end(),
                       [](const PolicyRule& a, const PolicyRule& b) { return a.priority > b.priority; });
 
+            int highest_allow_priority = INT_MIN;
+            int highest_deny_priority = INT_MIN;
+            const PolicyRule* highest_allow_rule = nullptr;
+            const PolicyRule* highest_deny_rule = nullptr;
+
             for (const auto& rule : all_rules)
             {
                 if (!matches_context(rule, context))
                     continue;
 
-                decision.decision = rule.effect;
-                decision.reason = rule.description.empty() ? rule.name : rule.description;
-                decision.matched_rules.push_back(rule.name);
-
                 // Check capability requirements
+                bool caps_ok = true;
                 for (const auto& cap : rule.required_capabilities)
                 {
                     if (std::find(context.session_caps.begin(), context.session_caps.end(), cap) ==
                         context.session_caps.end())
                     {
+                        caps_ok = false;
                         decision.missing_capabilities.push_back(cap);
                     }
                     else
@@ -178,27 +182,41 @@ namespace smo::acl {
                         decision.required_capabilities.push_back(cap);
                     }
                 }
+                if (!caps_ok)
+                    continue;
 
-                // Check forbidden capabilities
+                // Check forbidden capabilities (treat as condition: rule doesn't match if any forbidden cap present)
+                bool forbidden_ok = true;
                 for (const auto& cap : rule.forbidden_capabilities)
                 {
                     if (std::find(context.session_caps.begin(), context.session_caps.end(), cap) !=
                         context.session_caps.end())
                     {
-                        decision.decision = PolicyDecision::Deny;
-                        decision.reason = "Forbidden capability: " + cap;
-                        return decision;
+                        forbidden_ok = false;
+                        break;
                     }
                 }
+                if (!forbidden_ok)
+                    continue;
 
-                // Check roles
+                // Check roles (OR semantics: at least one required role must be present)
+                bool roles_ok = rule.required_roles.empty();
                 for (const auto& role : rule.required_roles)
                 {
-                    if (std::find(context.session_roles.begin(), context.session_roles.end(), role) ==
+                    if (std::find(context.session_roles.begin(), context.session_roles.end(), role) !=
                         context.session_roles.end())
+                    {
+                        roles_ok = true;
+                        break;
+                    }
+                }
+                if (!roles_ok)
+                {
+                    for (const auto& role : rule.required_roles)
                     {
                         decision.missing_capabilities.push_back("role:" + role);
                     }
+                    continue;
                 }
 
                 // Check trust score
@@ -215,16 +233,18 @@ namespace smo::acl {
                     return decision;
                 }
 
-                // Check certifications
+                // Check certifications (treat as condition: rule doesn't match if any required cert missing)
+                bool certs_ok = true;
                 for (const auto& cert : rule.required_certifications)
                 {
                     if (context.custom_attributes.find(cert) == context.custom_attributes.end())
                     {
-                        decision.decision = PolicyDecision::Deny;
-                        decision.reason = "Missing certification: " + cert;
-                        return decision;
+                        certs_ok = false;
+                        break;
                     }
                 }
+                if (!certs_ok)
+                    continue;
 
                 // Evaluate where expression if present
                 if (!rule.where_expression.empty())
@@ -236,45 +256,57 @@ namespace smo::acl {
                     decision.matched_conditions.push_back("where: " + rule.where_expression);
                 }
 
-                // If we reach here, rule matches
+                // Rule matches completely
                 decision.matched_rules.push_back(rule.name);
 
-                // Deny — stop evaluating immediately
+                // Track highest priority allow and deny
                 if (rule.effect == PolicyDecision::Deny)
                 {
-                    return decision;
+                    if (rule.priority > highest_deny_priority)
+                    {
+                        highest_deny_priority = rule.priority;
+                        highest_deny_rule = &rule;
+                    }
                 }
-                // Allow — continue checking for higher-priority deny
-                if (rule.effect == PolicyDecision::Allow)
+                else if (rule.effect == PolicyDecision::Allow ||
+                         rule.effect == PolicyDecision::Audit ||
+                         rule.effect == PolicyDecision::Sandbox ||
+                         rule.effect == PolicyDecision::RateLimit ||
+                         rule.effect == PolicyDecision::ReadOnly ||
+                         rule.effect == PolicyDecision::Conditional)
                 {
-                    decision.decision = PolicyDecision::Allow;
-                    continue;
+                    if (rule.priority > highest_allow_priority)
+                    {
+                        highest_allow_priority = rule.priority;
+                        highest_allow_rule = &rule;
+                    }
                 }
-                // Plugin effects — apply and continue
-                if (rule.effect == PolicyDecision::Audit)
-                {
+            }
+
+            // Compare highest priority allow vs deny
+            if (highest_allow_priority > highest_deny_priority && highest_allow_rule)
+            {
+                decision.decision = highest_allow_rule->effect;
+                decision.reason = highest_allow_rule->description.empty()
+                                    ? highest_allow_rule->name
+                                    : highest_allow_rule->description;
+                if (highest_allow_rule->effect == PolicyDecision::Audit)
                     decision.metadata["audit"] = "true";
-                    decision.decision = PolicyDecision::Allow;
-                    continue;
-                }
-                if (rule.effect == PolicyDecision::Sandbox)
-                {
+                else if (highest_allow_rule->effect == PolicyDecision::Sandbox)
                     decision.metadata["sandbox"] = "true";
-                    decision.decision = PolicyDecision::Allow;
-                    continue;
-                }
-                if (rule.effect == PolicyDecision::RateLimit)
-                {
+                else if (highest_allow_rule->effect == PolicyDecision::RateLimit)
                     decision.metadata["ratelimit"] = "true";
-                    decision.decision = PolicyDecision::Allow;
-                    continue;
-                }
-                if (rule.effect == PolicyDecision::ReadOnly)
-                {
+                else if (highest_allow_rule->effect == PolicyDecision::ReadOnly)
                     decision.metadata["readonly"] = "true";
-                    decision.decision = PolicyDecision::Allow;
-                    continue;
-                }
+                return decision;
+            }
+            else if (highest_deny_priority != INT_MIN && highest_deny_rule)
+            {
+                decision.decision = PolicyDecision::Deny;
+                decision.reason = highest_deny_rule->description.empty()
+                                    ? highest_deny_rule->name
+                                    : highest_deny_rule->description;
+                return decision;
             }
 
             return decision;
@@ -414,6 +446,14 @@ namespace smo::acl {
             return {};
         }
 
+        Result<void> clear_policies()
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            policies_.clear();
+            cache_.clear();
+            return {};
+        }
+
     private:
         std::string make_cache_key(const PolicyEvaluationContext& context) const
         {
@@ -468,6 +508,11 @@ namespace smo::acl {
     Result<void> PolicyEngine::reload()
     {
         return impl_->reload();
+    }
+
+    Result<void> PolicyEngine::clear_policies()
+    {
+        return impl_->clear_policies();
     }
 
 } // namespace smo::acl

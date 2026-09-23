@@ -176,6 +176,9 @@ namespace smo::acl {
         // Reload policies
         Result<void> reload();
 
+        // Clear all policies (including built-in presets)
+        Result<void> clear_policies();
+
     private:
         class Impl;
         std::unique_ptr<Impl> impl_;

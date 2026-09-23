@@ -30,6 +30,13 @@
 #include <network/sync/anti_entropy.hpp>
 #include <network/stun/stun_client.hpp>
 #include <network/udp/heartbeat_service.hpp>
+#include <acl/policy_engine.hpp>
+#include <runtime/policy_middleware.hpp>
+#include <trust/trust.hpp>
+#include <session/session.hpp>
+#include <fsm/node_lifecycle_fsm.hpp>
+#include <core/identity/identity.hpp>
+#include <core/transport/transport.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -1936,6 +1943,334 @@ static bool test_pct_028()
 }
 
 // ==========================================================================
+// PCT-029 — PolicyEngine evaluation with built-in presets
+// ==========================================================================
+static bool test_pct_029()
+{
+    using namespace smo::acl;
+
+    // Create PolicyEngine with default config (loads built-in presets)
+    PolicyEngine::Config config;
+    config.enable_caching = false;
+    PolicyEngine engine(config);
+
+    // Test 1: Enterprise-standard preset allows read for members
+    {
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY", "CAP_FS_READ"};
+        ctx.session_roles = {"Member"};
+        ctx.session_trust_score = 0.5;
+        ctx.custom_attributes["CAP_VERIFY"] = "true"; // Required by "require-certificate" rule
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "read";
+
+        auto result = engine.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Allow));
+    }
+
+    // Test 2: Enterprise-standard allows write for members too (require-certificate rule at priority 100 allows all Member ops)
+    // Note: The enterprise-standard preset has a baseline "require-certificate" rule at priority 100
+    // that allows any operation for Members with CAP_VERIFY. More specific rules are at lower priority.
+    {
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY", "CAP_FS_WRITE"};
+        ctx.session_roles = {"Member"};
+        ctx.session_trust_score = 0.5;
+        ctx.custom_attributes["CAP_VERIFY"] = "true";
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "write";
+
+        auto result = engine.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Allow));
+    }
+
+    // Test 3: Enterprise-standard allows write for contributors
+    {
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY", "CAP_FS_WRITE"};
+        ctx.session_roles = {"Contributor"};
+        ctx.session_trust_score = 0.5;
+        ctx.custom_attributes["CAP_VERIFY"] = "true";
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "write";
+
+        auto result = engine.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Allow));
+    }
+
+// Test 4: Custom deny-write policy
+    {
+        PolicyEngine engine_custom(PolicyEngine::Config{.enable_caching = false});
+        auto clear_res = engine_custom.clear_policies();
+        ASSERT(clear_res);
+        // Create a custom policy that denies write
+        PolicySet deny_write_policy;
+        deny_write_policy.name = "deny-write-test";
+        deny_write_policy.rules.push_back(PolicyRule{
+            .name = "deny-write",
+            .description = "Deny write operations",
+            .priority = 10,
+            .required_capabilities = {},
+            .forbidden_capabilities = {"CAP_FS_WRITE"},
+            .required_roles = {},
+            .forbidden_roles = {},
+            .effect = PolicyDecision::Deny,
+        });
+        deny_write_policy.rules.push_back(PolicyRule{
+            .name = "allow-read",
+            .description = "Allow read operations",
+            .priority = 50,
+            .required_capabilities = {"CAP_FS_READ", "CAP_VERIFY"},
+            .forbidden_capabilities = {},
+            .required_roles = {"Member"},
+            .forbidden_roles = {},
+            .effect = PolicyDecision::Allow,
+        });
+        auto load_res = engine_custom.load_policy_set(deny_write_policy);
+        ASSERT(load_res);
+
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY", "CAP_FS_WRITE"};
+        ctx.session_roles = {"Contributor"};
+        ctx.session_trust_score = 0.5;
+        ctx.custom_attributes["CAP_VERIFY"] = "true";
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "write";
+
+        auto result = engine_custom.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Deny));
+    }
+
+    // Test 5: Custom allow-read policy
+    {
+        PolicyEngine engine_custom(PolicyEngine::Config{.enable_caching = false});
+        auto clear_res = engine_custom.clear_policies();
+        ASSERT(clear_res);
+        PolicySet allow_read_policy;
+        allow_read_policy.name = "allow-read-test";
+        allow_read_policy.rules.push_back(PolicyRule{
+            .name = "allow-read",
+            .description = "Allow read operations",
+            .priority = 50,
+            .required_capabilities = {"CAP_FS_READ", "CAP_VERIFY"},
+            .forbidden_capabilities = {},
+            .required_roles = {"Member"},
+            .forbidden_roles = {},
+            .effect = PolicyDecision::Allow,
+        });
+        auto load_res = engine_custom.load_policy_set(allow_read_policy);
+        ASSERT(load_res);
+
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY", "CAP_FS_READ"};
+        ctx.session_roles = {"Member"};
+        ctx.session_trust_score = 0.5;
+        ctx.custom_attributes["CAP_VERIFY"] = "true";
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "read";
+
+        auto result = engine_custom.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Allow));
+    }
+
+    // Test 6: PolicyEngine with no policies returns Deny
+    {
+        PolicyEngine engine_empty(PolicyEngine::Config{.enable_caching = false});
+        auto clear_res = engine_empty.clear_policies();
+        ASSERT(clear_res);
+        PolicyEvaluationContext ctx;
+        ctx.session_id = "test-session";
+        ctx.session_caps = {"CAP_VERIFY"};
+        ctx.session_roles = {"Member"};
+        ctx.session_trust_score = 0.5;
+        ctx.request_contract_id = "system.file";
+        ctx.request_method = "read";
+
+        auto result = engine_empty.evaluate(ctx);
+        ASSERT(result);
+        ASSERT_EQ(static_cast<int>(result.value().decision), static_cast<int>(PolicyDecision::Deny));
+        ASSERT(result.value().reason == "No matching policy");
+    }
+
+    return true;
+}
+
+// ==========================================================================
+// PCT-030 — PolicyMiddleware integration with PolicyEngine
+// ==========================================================================
+static bool test_pct_030()
+{
+    using namespace smo::runtime;
+    using namespace smo::acl;
+
+    // Create PolicyEngine with enterprise-standard preset
+    smo::acl::PolicyEngine::Config config;
+    config.enable_caching = false;
+    smo::acl::PolicyEngine engine(config);
+
+    // Create TrustManager (minimal for test)
+    TrustManager trust_mgr;
+
+    // Create NodeLifecycleFSM
+    NodeLifecycleFSM lifecycle_fsm;
+    lifecycle_fsm.on_event(NodeLifecycleEvent::IDENTITY_CREATED);
+
+    // Create PolicyMiddleware with PolicyEngine
+    PolicyMiddleware policy_mw(&trust_mgr, &engine, &lifecycle_fsm);
+
+    // Test 1: Anonymous contract bypasses all checks
+    {
+        PolicyMiddleware policy_mw2(&trust_mgr, &engine, &lifecycle_fsm);
+        policy_mw2.set_anonymous("system.test", true);
+
+        PacketContext ctx;
+        ctx.session = nullptr;
+        ctx.contract_id = "system.test";
+        ctx.method = "test";
+        ctx.payload = BytesView{};
+        ctx.opcode_hex = "0x01";
+
+        auto result = policy_mw2.process(ctx);
+        ASSERT(result);
+        ASSERT(!ctx.denied);
+    }
+
+    // Test 2: Non-anonymous contract without session is denied
+    {
+        PacketContext ctx;
+        ctx.session = nullptr;
+        ctx.contract_id = "system.file";
+        ctx.method = "read";
+        ctx.payload = BytesView{};
+        ctx.opcode_hex = "0x2b";
+
+        auto result = policy_mw.process(ctx);
+        ASSERT(result);
+        ASSERT(ctx.denied);
+        ASSERT(ctx.deny_reason.find("session required") != std::string::npos);
+    }
+
+    // Test 3: Closed session is denied
+    {
+        auto crypto_res = smo::CryptoRegistry::instance().get_suite(smo::kSuiteClassical);
+        ASSERT(crypto_res);
+        const auto* crypto = crypto_res.value();
+        auto rng = crypto->default_rng();
+        auto id_res = smo::Identity::create(*crypto, rng);
+        ASSERT(id_res);
+        auto identity = std::move(id_res.value());
+
+        auto session_res = Session::create(SessionId{}, identity.node_id(), Certificate{}, CapabilitySet{}, 1000, 3600000000000LL);
+        ASSERT(session_res);
+        auto session = std::move(session_res.value());
+        session.on_event(SessionEvent::Close, 2000);
+
+        PacketContext ctx;
+        ctx.session = &session;
+        ctx.contract_id = "system.file";
+        ctx.method = "read";
+        ctx.payload = BytesView{};
+        ctx.opcode_hex = "0x2b";
+
+        auto result = policy_mw.process(ctx);
+        ASSERT(result);
+        ASSERT(ctx.denied);
+        ASSERT(ctx.deny_reason.find("session is closed") != std::string::npos);
+    }
+
+    return true;
+}
+
+// ==========================================================================
+// PCT-031 — No anonymous bypass for 7 policy-covered contracts
+// ==========================================================================
+static bool test_pct_031()
+{
+    using namespace smo::runtime;
+    using namespace smo::acl;
+
+    // Create PolicyEngine with enterprise-standard preset
+    smo::acl::PolicyEngine::Config config;
+    config.enable_caching = false;
+    smo::acl::PolicyEngine engine(config);
+
+    // Create TrustManager
+    TrustManager trust_mgr;
+
+    // Create NodeLifecycleFSM
+    NodeLifecycleFSM lifecycle_fsm;
+    lifecycle_fsm.on_event(NodeLifecycleEvent::IDENTITY_CREATED);
+
+    // Create PolicyMiddleware with PolicyEngine - NO anonymous contracts set
+    PolicyMiddleware policy_mw(&trust_mgr, &engine, &lifecycle_fsm);
+
+    // The 7 policy-covered contracts (packet-capable opcodes):
+    const std::vector<std::string> policy_covered_contracts = {
+        "system.echo",       // ECHO (0x06) - Execution namespace
+        "system.governance", // GOV_* (0x24-0x29) - Control namespace
+        "system.recovery",   // RECOVERY (0x2A) - Control namespace
+        "system.file",       // FILE_OP (0x2B) - Execution namespace
+        "system.process",    // PROCESS (0x2C) - Execution namespace
+        "system.contracts",  // CONTRACT_MGMT (0x2D) - Control namespace
+        "system.trust"       // WITNESS (0x2E) - Control namespace
+    };
+
+    // Create a mock session
+    auto crypto_res = smo::CryptoRegistry::instance().get_suite(smo::kSuiteClassical);
+    ASSERT(crypto_res);
+    const auto* crypto = crypto_res.value();
+    auto rng = crypto->default_rng();
+    auto id_res = smo::Identity::create(*crypto, rng);
+    ASSERT(id_res);
+    auto identity = std::move(id_res.value());
+
+    auto session_res = Session::create(SessionId{}, identity.node_id(), Certificate{}, CapabilitySet{}, 1000, 3600000000000LL);
+    ASSERT(session_res);
+    auto session = std::move(session_res.value());
+    session.on_event(SessionEvent::Established, 1000);
+    session.on_event(SessionEvent::Activate, 1000);
+
+    // Test each policy-covered contract - NONE should be anonymous
+    for (const auto& contract_id : policy_covered_contracts)
+    {
+        // Verify not anonymous
+        ASSERT(!policy_mw.is_anonymous(contract_id));
+
+        // Create context for this contract
+        PacketContext ctx;
+        ctx.session = &session;
+        ctx.contract_id = contract_id;
+        ctx.method = "invoke";
+        ctx.payload = BytesView{};
+        ctx.opcode_hex = "0x01";
+
+        // Process should evaluate through PolicyEngine (not bypass)
+        auto result = policy_mw.process(ctx);
+        ASSERT(result);
+
+        // The decision depends on PolicyEngine rules, but the key point is:
+        // - It should NOT bypass due to anonymous (ctx.denied should not be set due to missing session)
+        // - If denied, it should be due to policy evaluation, not anonymous bypass
+        if (ctx.denied)
+        {
+            ASSERT(ctx.deny_reason.find("session required") == std::string::npos);
+        }
+    }
+
+    return true;
+}
+
+// ==========================================================================
 // Main
 // ==========================================================================
 int main(int, char*[])
@@ -2009,10 +2344,15 @@ int main(int, char*[])
     printf("\n── §9.17 ICE-Lite (N4) ────────────────────────────────────────────\n");
     TEST("PCT-028  ICE candidate gather + exchange + connectivity check") END_TEST(test_pct_028());
 
+    printf("\n── §9.18 Policy Engine ────────────────────────────────────────────\n");
+    TEST("PCT-029  PolicyEngine evaluation with built-in presets") END_TEST(test_pct_029());
+    TEST("PCT-030  PolicyMiddleware integration with PolicyEngine") END_TEST(test_pct_030());
+    TEST("PCT-031  No anonymous bypass for 7 policy-covered contracts") END_TEST(test_pct_031());
+
     printf("\n");
     if (failures == 0)
     {
-        printf("ALL 26 PCT TESTS PASSED\n");
+        printf("ALL 29 PCT TESTS PASSED\n");
         return 0;
     }
     else

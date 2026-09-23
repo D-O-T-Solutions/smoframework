@@ -2,7 +2,6 @@
 
 #include <core/runtime/runtime_kernel.hpp>
 #include <core/runtime/action_executor.hpp>
-#include <core/runtime/policy_middleware.hpp>
 
 #include <chrono>
 
@@ -135,18 +134,6 @@ void ContractRegistryService::register_routes()
 
 void ContractRegistryService::register_packet_handlers(RuntimeHandler handler)
 {
-    // Middleware Pipeline
-    auto policy_mw = std::make_unique<PolicyMiddleware>(&deps_.trust_mgr);
-    policy_mw->set_anonymous("system.bootstrap", true);
-    policy_mw->set_anonymous("system.join", true);
-    // CLI/operator packets carry no session yet (transport is PQ-secured);
-    // keep file/process opcodes reachable without an SMO session.
-    policy_mw->set_anonymous("system.file", true);
-    policy_mw->set_anonymous("system.process", true);
-    policy_mw->set_anonymous("system.contracts", true);
-    policy_mw->set_anonymous("system.trust", true);
-    deps_.middleware_pipeline.push(std::move(policy_mw));
-
     // Node Lifecycle FSM
     deps_.node_fsm.on_event(NodeLifecycleEvent::IDENTITY_CREATED);
 
