@@ -73,7 +73,7 @@ static int failures = 0;
 // ==========================================================================
 namespace {
 
-// Build a valid EXECUTION packet wire buffer via public serializer.
+// Build a valid packet wire buffer via public serializer.
 std::vector<uint8_t> make_valid_wire(uint8_t ns, uint16_t message_id, uint8_t suite_id,
                                      size_t payload_len, size_t auth_len)
 {
@@ -89,7 +89,33 @@ std::vector<uint8_t> make_valid_wire(uint8_t ns, uint16_t message_id, uint8_t su
     pkt.auth.assign(auth_len, 0x22);
 
     std::vector<uint8_t> out;
-    (void)packet_to_buffer(pkt, out);
+    auto res = packet_to_buffer(pkt, out);
+    if (!res)
+        return {};
+    return out;
+}
+
+// Build an INVALID packet wire buffer manually (bypassing packet_to_buffer validation).
+std::vector<uint8_t> make_invalid_wire(uint8_t ns, uint16_t message_id, uint8_t suite_id,
+                                       size_t payload_len, size_t auth_len)
+{
+    PacketHeader hdr;
+    hdr.protocol_version = kPacketProtocolVersion;
+    hdr.suite_id = suite_id;
+    hdr.ns = ns;
+    hdr.message_id = message_id;
+    hdr.session_id.fill(0xA5);
+    hdr.timestamp = 1234567890;
+    hdr.nonce = 42;
+    hdr.payload_length = static_cast<uint16_t>(payload_len);
+
+    auto header_bytes = serialize_packet_header(hdr);
+
+    std::vector<uint8_t> out;
+    out.reserve(39 + payload_len + auth_len);
+    out.insert(out.end(), header_bytes.begin(), header_bytes.end());
+    out.insert(out.end(), payload_len, 0x11);
+    out.insert(out.end(), auth_len, 0x22);
     return out;
 }
 
@@ -100,8 +126,8 @@ static bool test_packet_roundtrip_39b()
     Packet pkt;
     pkt.header.protocol_version = kPacketProtocolVersion;
     pkt.header.suite_id = 1;
-    pkt.header.ns = packet_route::kNamespaceExecution;
-    pkt.header.message_id = static_cast<uint16_t>(Opcode::PUT);
+    pkt.header.ns = packet_route::kNamespaceDiscovery;  // PUT is in Discovery namespace
+    pkt.header.message_id = 0x0102;  // PUT message_id per RFC 0020
     pkt.session_id().fill(0xAA);
     pkt.intent_id.fill(0xBB);
     pkt.timestamp() = 1234567890;
@@ -118,8 +144,8 @@ static bool test_packet_roundtrip_39b()
     ASSERT(parsed);
     ASSERT_EQ(parsed.value().header.protocol_version, kPacketProtocolVersion);
     ASSERT_EQ(parsed.value().header.suite_id, 1);
-    ASSERT_EQ(parsed.value().header.ns, packet_route::kNamespaceExecution);
-    ASSERT_EQ(parsed.value().header.message_id, static_cast<uint16_t>(Opcode::PUT));
+    ASSERT_EQ(parsed.value().header.ns, packet_route::kNamespaceDiscovery);
+    ASSERT_EQ(parsed.value().header.message_id, 0x0102U);
     ASSERT_EQ(parsed.value().session_id()[0], 0xAA);
     ASSERT_EQ(parsed.value().timestamp(), 1234567890);
     ASSERT_EQ(parsed.value().header.nonce, 7U);
@@ -149,7 +175,7 @@ static bool test_packet_bad_version()
     std::vector<uint8_t> buf;
     ASSERT(!packet_to_buffer(pkt, buf));
 
-    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+    auto wire = make_valid_wire(packet_route::kNamespaceDiscovery, 0x0102,
                                 1, 0, 16);
     ASSERT(!wire.empty());
     wire[0] = 99;
@@ -159,7 +185,7 @@ static bool test_packet_bad_version()
 
 static bool test_packet_zero_nonce_payload_len_mismatch()
 {
-    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+    auto wire = make_valid_wire(packet_route::kNamespaceDiscovery, 0x0102,
                                 1, 0, 16);
     ASSERT(!wire.empty());
 
@@ -180,7 +206,7 @@ static bool test_packet_zero_nonce_payload_len_mismatch()
 
 static bool test_packet_zero_session_id()
 {
-    auto wire = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
+    auto wire = make_valid_wire(packet_route::kNamespaceDiscovery, 0x0102,
                                 1, 0, 16);
     ASSERT(!wire.empty());
     for (size_t i = 5; i < 21; ++i)
@@ -193,7 +219,7 @@ static bool test_packet_auth_length()
 {
     // CONTROL + suite 1 (Ed25519) = 64B auth → hợp lệ.
     auto ctrl = make_valid_wire(packet_route::kNamespaceControl,
-                                static_cast<uint16_t>(Opcode::CONTRACT_MGMT), 1, 4, 64);
+                                0x0050, 1, 4, 64);  // CONTRACT_MGMT
     ASSERT(!ctrl.empty());
     ASSERT(packet_from_buffer(ctrl));
     ASSERT_EQ(ctrl.size(), 39U + 4U + 64U);
@@ -208,11 +234,12 @@ static bool test_packet_auth_length()
     extended.push_back(0x33);
     ASSERT(!packet_from_buffer(extended));
 
-    // Namespace không hỗ trợ Packet (DISCOVERY 0x01) → reject.
-    auto exec = make_valid_wire(packet_route::kNamespaceExecution, static_cast<uint16_t>(Opcode::PUT),
-                                1, 0, 16);
+    // Namespace không hỗ trợ Packet (DISCOVERY 0x01 with invalid message_id) → reject.
+    // 0x0199 is not a valid message_id in Discovery namespace
+    auto exec = make_invalid_wire(packet_route::kNamespaceDiscovery, 0x0199,
+                                  1, 0, 16);
     ASSERT(!exec.empty());
-    exec[2] = packet_route::kNamespaceDiscovery;
+    // This should fail validation since 0x0199 is not valid in Discovery namespace
     ASSERT(!packet_from_buffer(exec));
 
     return true;
@@ -220,24 +247,69 @@ static bool test_packet_auth_length()
 
 static bool test_packet_route_mapping()
 {
-    const Opcode capable[] = {
-        Opcode::LS,          Opcode::PUT,           Opcode::GET,          Opcode::EXEC,
-        Opcode::QUARANTINE,  Opcode::ECHO,          Opcode::MKDIR,        Opcode::RM,
-        Opcode::CP,          Opcode::FILE_OP,       Opcode::PROCESS,      Opcode::CUSTOM,
-        Opcode::CONTRACT_MGMT, Opcode::WITNESS,     Opcode::REVOKE_CERT,  Opcode::EPOCH_INCREMENT,
-        Opcode::RECOVERY_SESSION, Opcode::CRL_SYNC, Opcode::RECOVERY,     Opcode::GOV_PROPOSE,
-        Opcode::GOV_VOTE,    Opcode::GOV_COMMIT,    Opcode::GOV_LIST,     Opcode::GOV_STATUS,
-        Opcode::GOV_INFO,
+    using smo::packet_route::PacketRoute;
+    using smo::Opcode;
+
+    struct TestCase {
+        Opcode op;
+        uint8_t expected_ns;
+        uint16_t expected_mid;
     };
-    for (const auto op : capable)
+
+    const TestCase cases[] = {
+        // Discovery namespace (0x01)
+        {Opcode::LS,        0x01, 0x0101},
+        {Opcode::PUT,       0x01, 0x0102},
+        {Opcode::GET,       0x01, 0x0103},
+        {Opcode::ECHO,      0x01, 0x0104},
+
+        // Control namespace (0x02) - session
+        {Opcode::SESSION_OPEN,  0x02, 0x0010},
+        {Opcode::SESSION_CLOSE, 0x02, 0x0011},
+        {Opcode::SESSION_RENEW, 0x02, 0x0012},
+
+        // Control namespace (0x02) - governance
+        {Opcode::GOV_PROPOSE,  0x02, 0x0020},
+        {Opcode::GOV_VOTE,     0x02, 0x0021},
+        {Opcode::GOV_COMMIT,   0x02, 0x0022},
+        {Opcode::GOV_LIST,     0x02, 0x0023},
+        {Opcode::GOV_STATUS,   0x02, 0x0024},
+        {Opcode::GOV_INFO,     0x02, 0x0025},
+
+        // Control namespace (0x02) - certificate
+        {Opcode::REVOKE_CERT,     0x02, 0x0030},
+        {Opcode::EPOCH_INCREMENT, 0x02, 0x0031},
+        {Opcode::CRL_SYNC,        0x02, 0x0032},
+
+        // Control namespace (0x02) - recovery
+        {Opcode::RECOVERY_SESSION, 0x02, 0x0040},
+        {Opcode::RECOVERY,         0x02, 0x0041},
+
+        // Control namespace (0x02) - contract_mgmt
+        {Opcode::CONTRACT_MGMT, 0x02, 0x0050},
+        {Opcode::WITNESS,       0x02, 0x0051},
+
+        // Execution namespace (0x03)
+        {Opcode::EXEC,      0x03, 0x0201},
+        {Opcode::QUARANTINE, 0x03, 0x0202},
+        {Opcode::MKDIR,     0x03, 0x0203},
+        {Opcode::RM,        0x03, 0x0204},
+        {Opcode::CP,        0x03, 0x0205},
+        {Opcode::FILE_OP,   0x03, 0x0206},
+        {Opcode::PROCESS,   0x03, 0x0207},
+        {Opcode::CUSTOM,    0x03, 0x02FF},
+    };
+
+    for (const auto& tc : cases)
     {
-        ASSERT(packet_route::is_packet_capable(op));
-        auto route = packet_route::to_packet_route(op);
+        ASSERT(packet_route::is_packet_capable(tc.op));
+        auto route = packet_route::to_packet_route(tc.op);
         ASSERT(route);
-        ASSERT_EQ(route->message_id, static_cast<uint16_t>(op));
+        ASSERT_EQ(route->ns, tc.expected_ns);
+        ASSERT_EQ(route->message_id, tc.expected_mid);
         auto back = packet_route::from_packet_route(route->ns, route->message_id);
         ASSERT(back);
-        ASSERT(*back == op);
+        ASSERT(*back == tc.op);
     }
 
     const Opcode non_packet[] = {Opcode::BOOTSTRAP_SNAPSHOT, Opcode::BOOTSTRAP_INFO, Opcode::JOIN,

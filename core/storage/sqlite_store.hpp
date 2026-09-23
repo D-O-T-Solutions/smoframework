@@ -65,14 +65,22 @@ namespace smo {
 
         DatabaseHandle& database() { return db_; }
 
-        // ── Backup / restore ─────────────────────────────────────────────
-
+// ── Backup / restore ─────────────────────────────────────────────
+ 
         // Back up the current database to `dest_path`.
         Result<void> backup(const std::string& dest_path);
-
+ 
         // Restore from a backup file. Closes current DB, copies file, reopens.
         Result<void> restore(const std::string& src_path);
-
+ 
+        // ── Schema migration ──────────────────────────────────────────────
+ 
+        // Migrate database to target schema version (using frozen schema).
+        Result<void> migrate(int target_version);
+ 
+        // Get current schema version from PRAGMA user_version.
+        int current_schema_version() const;
+ 
     private:
         StoreID id_;
         std::string base_path_;

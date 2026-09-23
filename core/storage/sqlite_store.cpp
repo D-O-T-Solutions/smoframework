@@ -1,16 +1,13 @@
 #include "sqlite_store.hpp"
+#include "schemas.hpp"
 
 #include <sqlite3.h>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 namespace smo {
-
-    static const char kKvSchema[] = "CREATE TABLE IF NOT EXISTS kv ("
-                                    "  key   BLOB PRIMARY KEY,"
-                                    "  value BLOB NOT NULL"
-                                    ") WITHOUT ROWID;";
 
     SqliteStore::SqliteStore(StoreID id, std::string base_path) : id_(id), base_path_(std::move(base_path)) {}
 
@@ -30,19 +27,45 @@ namespace smo {
         if (!r)
             return r;
 
-        // Ensure the kv table schema
-        MigrationRunner mig(db_);
-        r = mig.ensure_schema(info, kKvSchema);
-        if (!r)
+        // Use frozen schema for this store
+        const char* frozen_schema = get_frozen_schema(id_);
+        if (frozen_schema && frozen_schema[0] != '\0')
         {
-            db_.close();
-            return r;
+            // Execute the full frozen schema (may contain multiple statements)
+            r = db_.exec(frozen_schema);
+            if (!r)
+            {
+                db_.close();
+                return r;
+            }
+
+            // Set schema version
+            std::string pragma = "PRAGMA user_version = ";
+            pragma += std::to_string(info.schema_version);
+            pragma += ";";
+            r = db_.exec(pragma);
+            if (!r)
+            {
+                db_.close();
+                return r;
+            }
+        }
+        else
+        {
+            // Fallback to generic KV schema
+            MigrationRunner mig(db_);
+            r = mig.ensure_schema(info, "CREATE TABLE IF NOT EXISTS kv (key BLOB PRIMARY KEY, value BLOB NOT NULL) WITHOUT ROWID;");
+            if (!r)
+            {
+                db_.close();
+                return r;
+            }
         }
 
         return {};
     }
 
-    // ── KV operations ───────────────────────────────────────────────────────
+    // ── KV operations (operate on the 'kv' table for backward compatibility) ──────────
 
     Result<void> SqliteStore::put(BytesView key, BytesView value)
     {
@@ -205,6 +228,57 @@ namespace smo {
 
         // Reopen
         return open();
+    }
+
+    // ── Schema migration support ───────────────────────────────────────────
+
+    Result<void> SqliteStore::migrate(int target_version)
+    {
+        if (!db_.is_open())
+        {
+            return SMO_ERR_STORAGE(905, Error, RetrySafe, RebootNode, "database not open");
+        }
+
+        auto mig = MigrationRunner(db_);
+        auto current = mig.current_version();
+        if (!current)
+            return current.error();
+
+        if (current.value() >= target_version)
+        {
+            return {}; // Already at or beyond target
+        }
+
+        // For now, only support migration by re-creating with frozen schema
+        // In the future, incremental migrations would be defined per-store
+        const auto& schema = get_schema(id_);
+        if (target_version > schema.schema_version)
+        {
+            return SMO_ERR_STORAGE(901, Critical, NoRetry, RebootNode, "target version exceeds frozen schema version");
+        }
+
+        // Execute frozen schema (idempotent - uses CREATE IF NOT EXISTS)
+        auto r = db_.exec(schema.frozen_schema_ddl);
+        if (!r)
+            return r;
+
+        // Update user_version
+        std::string pragma = "PRAGMA user_version = ";
+        pragma += std::to_string(target_version);
+        pragma += ";";
+        return db_.exec(pragma);
+    }
+
+    int SqliteStore::current_schema_version() const
+    {
+        if (!db_.is_open())
+            return -1;
+
+        auto mig = MigrationRunner(db_);
+        auto ver = mig.current_version();
+        if (!ver)
+            return -1;
+        return ver.value();
     }
 
 } // namespace smo

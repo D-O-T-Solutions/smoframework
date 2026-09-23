@@ -1,5 +1,6 @@
 #include "packet.h"
 #include "packet_route.hpp"
+#include "../../core/opcode/opcode_registry.hpp"
 
 #include <cstring>
 
@@ -29,7 +30,7 @@ namespace smo {
 
     size_t expected_auth_length(uint8_t ns, uint8_t suite_id) noexcept
     {
-        if (ns == packet_route::kNamespaceExecution || ns == packet_route::kNamespaceData)
+        if (ns == packet_route::kNamespaceDiscovery || ns == packet_route::kNamespaceExecution || ns == packet_route::kNamespaceData)
             return kAeadTagLen;
 
         if (ns == packet_route::kNamespaceControl)
@@ -106,6 +107,13 @@ namespace smo {
             return SMO_ERR_PROTOCOL(604, Error, NoRetry, None, "unsupported namespace for packet G3");
         }
 
+        // RFC 0020: validate opcode via registry
+        auto reg_res = OpcodeRegistry::instance().validate_packet_opcode(pkt.header.ns, pkt.header.message_id);
+        if (!reg_res)
+        {
+            return reg_res.error();
+        }
+
         if (kHeaderSize + pkt.header.payload_length > wire.size())
         {
             return SMO_ERR_PROTOCOL(605, Error, NoRetry, None, "payload length exceeds wire buffer");
@@ -150,6 +158,13 @@ namespace smo {
             }
             ns = route->ns;
             message_id = route->message_id;
+        }
+
+        // RFC 0020: validate opcode via registry before serialization
+        auto reg_res = OpcodeRegistry::instance().validate_packet_opcode(ns, message_id);
+        if (!reg_res)
+        {
+            return reg_res.error();
         }
 
         PacketHeader wire_header = pkt.header;

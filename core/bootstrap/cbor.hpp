@@ -33,6 +33,10 @@ namespace smo::cbor {
         void encode_array(size_t count);
         void encode_map(size_t count);
 
+        // Direct byte append (for content-type byte and special CBOR values)
+        void push_byte(uint8_t b) { buf_.push_back(b); }
+        void push_bytes(const uint8_t* data, size_t len) { buf_.insert(buf_.end(), data, data + len); }
+
         // Encoded size (for pre-allocation)
         size_t size() const { return buf_.size(); }
 
@@ -64,6 +68,12 @@ namespace smo::cbor {
 
         // Skip one value entirely
         Result<void> skip();
+
+        // Advance position (for content-type byte)
+        void advance(size_t n) { pos_ += n; }
+
+        // Get current position data view
+        BytesView current_view() const { return data_.subspan(pos_); }
 
     private:
         Result<uint64_t> decode_head(uint8_t& major_out);

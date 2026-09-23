@@ -66,7 +66,7 @@ static Packet make_packet(const SessionId& sid, const std::string& payload)
     p.header.protocol_version = kPacketProtocolVersion;
     p.header.suite_id = 1;
     p.header.ns = packet_route::kNamespaceExecution;
-    p.header.message_id = static_cast<uint16_t>(Opcode::ECHO);
+    p.header.message_id = 0x0201;  // EXEC in Execution namespace per RFC 0020
     p.header.session_id = sid.bytes;
     p.header.timestamp = 1234567890;
     p.payload.assign(payload.begin(), payload.end());

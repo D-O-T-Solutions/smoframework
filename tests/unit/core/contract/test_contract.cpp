@@ -206,7 +206,7 @@ static bool test_opcode_registry_by_name()
 static bool test_opcode_registry_unknown()
 {
     auto& reg = OpcodeRegistry::instance();
-    auto res = reg.resolve(Opcode(0xFF));
+    auto res = reg.resolve(Opcode(0xAA)); // Unassigned opcode
     ASSERT(!res);
     return true;
 }
