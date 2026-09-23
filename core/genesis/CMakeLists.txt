@@ -4,6 +4,7 @@ add_library(smo_genesis STATIC
     recovery_package.cpp
     root_session.cpp
     genesis.cpp
+    recovery_engine.cpp
 )
 
 target_link_libraries(smo_genesis PUBLIC

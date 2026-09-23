@@ -3,7 +3,7 @@
 #include "intent_parser.hpp"
 #include "core/genesis/genesis.hpp"
 #include "core/governance/governance.hpp"
-#include "core/recovery/recovery_engine.hpp"
+#include "core/genesis/recovery_engine.hpp"
 #include "core/enroll/join_token.hpp"
 #include "core/enroll/auto_enroll.hpp"
 #include "core/mesh/mesh_resolver.hpp"

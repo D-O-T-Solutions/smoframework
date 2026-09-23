@@ -63,7 +63,7 @@
 #include <core/runtime/output_manager.hpp>
 #include <core/session/session.hpp>
 #include <core/trust/trust.hpp>
-#include <core/recovery/recovery_engine.hpp>
+#include <core/genesis/recovery_engine.hpp>
 #include <core/recovery/crl.hpp>
 #include <core/runtime/contracts/recovery_contract.hpp>
 #include <core/runtime/contracts/file_contract.hpp>

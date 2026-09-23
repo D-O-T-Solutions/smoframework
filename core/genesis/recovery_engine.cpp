@@ -1,5 +1,9 @@
 #include "recovery_engine.hpp"
 
+#include "../crypto/recovery_crypto.hpp"
+#include "recovery_package.hpp"
+
+#include <fstream>
 #include <sstream>
 #include <random>
 
@@ -216,12 +220,40 @@ namespace smo::recovery {
 
     Result<bool> RecoveryEngine::verify_recovery_package(const std::string& passphrase)
     {
-        (void)passphrase;
-        // TODO (P0-EX follow-up): wire real RecoveryPackage verification. NOTE:
-        // RecoveryEngine lives in smo_core while RecoveryPackage lives in
-        // smo_genesis (which links smo_core) — calling it here would create a
-        // circular static-lib dependency. Verify via RecoveryCryptoProvider at
-        // the tooling layer instead.
+        if (config_.recovery_pkg_path.empty())
+        {
+            return SMO_ERR_RECOVERY(1503, Error, NoRetry, ManualIntervention, "recovery package path not configured");
+        }
+
+        // Read the recovery package file
+        std::ifstream pkg_file(config_.recovery_pkg_path, std::ios::binary);
+        if (!pkg_file)
+        {
+            return SMO_ERR_RECOVERY(1503, Error, NoRetry, ManualIntervention,
+                                    "recovery package not found: " + config_.recovery_pkg_path);
+        }
+
+        std::string json((std::istreambuf_iterator<char>(pkg_file)), std::istreambuf_iterator<char>());
+        if (json.empty())
+        {
+            return SMO_ERR_RECOVERY(1503, Error, NoRetry, ManualIntervention, "recovery package file is empty");
+        }
+
+        // Deserialize using RecoveryPackage (handles both v1 and v2 formats)
+        Bytes pkg_bytes(json.begin(), json.end());
+        auto pkg_res = smo::genesis::RecoveryPackage::deserialize(BytesView(pkg_bytes));
+        if (!pkg_res)
+        {
+            return SMO_ERR_RECOVERY(1503, Error, NoRetry, ManualIntervention,
+                                    "recovery package deserialization failed: " + pkg_res.error().message);
+        }
+
+        // Verify passphrase using RecoveryPackage's built-in verification
+        if (!pkg_res.value().verify_passphrase(passphrase))
+        {
+            return false; // Wrong passphrase or corrupted data
+        }
+
         return true;
     }
 

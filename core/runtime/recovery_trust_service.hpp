@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/recovery/recovery_engine.hpp"
+#include "core/genesis/recovery_engine.hpp"
 #include "core/trust/trust.hpp"
 #include "core/errors/error.hpp"
 

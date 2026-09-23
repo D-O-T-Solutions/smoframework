@@ -3,7 +3,7 @@
 #include "../contract_interface.hpp"
 #include "../runtime_context.hpp"
 
-#include "core/recovery/recovery_engine.hpp"
+#include "core/genesis/recovery_engine.hpp"
 #include "core/recovery/crl.hpp"
 #include "core/governance/governance.hpp"
 

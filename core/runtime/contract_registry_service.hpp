@@ -8,7 +8,7 @@
 #include <core/authority/authority.hpp>
 #include <core/governance/governance.hpp>
 #include <core/recovery/crl.hpp>
-#include <core/recovery/recovery_engine.hpp>
+#include <core/genesis/recovery_engine.hpp>
 #include <core/trust/trust.hpp>
 #include <core/session/session.hpp>
 #include <core/runtime/event_bus.hpp>

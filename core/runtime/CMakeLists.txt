@@ -44,6 +44,7 @@ target_link_libraries(smo_runtime PUBLIC
     smo_contract
     smo_acl
     smo_observability
+    smo_genesis
 )
 
 target_compile_features(smo_runtime PUBLIC cxx_std_20)

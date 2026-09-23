@@ -3,7 +3,7 @@
 #include "../errors/error.hpp"
 #include "../types.hpp"
 #include "../governance/governance.hpp"
-#include "../genesis/recovery_package.hpp"
+#include "recovery_package.hpp"
 
 #include <cstdint>
 #include <functional>
