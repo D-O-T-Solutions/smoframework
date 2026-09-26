@@ -48,6 +48,9 @@ namespace smo {
         std::vector<std::string> advertise_addresses;
         std::vector<std::string> bootstrap_endpoints;
         bool bootstrap_configured = false;
+
+        // Mesh lifecycle state (C6.1: MeshFSM wiring)
+        std::string mesh_state = "Draft"; // Draft, Genesis, Bootstrap, Online, Maintenance, Recovery, Archived
     };
 
     struct MeshPaths

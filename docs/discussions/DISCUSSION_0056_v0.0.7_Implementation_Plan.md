@@ -18,7 +18,7 @@ v0.0.7 delivers the **v0.0.7 charter** ("Full ICE + TURN + Mesh Federation" — 
 
 | Tier | # | Candidate | Source (0055) | Description |
 |------|---|-----------|---------------|-------------|
-| **Tier 0** | **1** | **C1: Full ICE + TURN (RFC 8445/8656)** | 0055:36, 0055:69 | Replace ICE-Lite with full ICE: candidate gathering, connectivity checks, nomination, TURN relay (RFC 8656) for symmetric NAT. STUN/TURN server deployment. |
+| **Tier 0** | **1** | **C1: Full ICE + TURN (RFC 8445/8656)** | 0055:36, 0055:69 | Replace ICE-Lite with full ICE: candidate gathering, connectivity checks, nomination, TURN relay (RFC 8656) for symmetric NAT. STUN/TURN server deployment. | ✅ DONE
 | **Tier 0** | **2** | **C2: Mesh Federation (Cross-Mesh Routing)** | 0055:37, 0055:78 | Inter-mesh communication: mesh-to-mesh routing, gateway nodes, policy federation, cross-mesh governance, trust anchor exchange. |
 | **Tier 1** | **3** | **C3: Channel Model (RFC 0042)** | 0055:38, 0055:84 | Channel abstraction for multiplexing: CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL opcodes. Four-layer hierarchy (Connection→Session→Channel→Invocation). Lazy creation, flow control per channel. |
 | **Tier 1** | **4** | **C4: NextAction 7 Remaining Actions (RFC 0039)** | 0055:39, 0055:85 | Implement DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent. Only Execute + StoreContext done in v0.0.6. |
@@ -36,11 +36,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0055.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C1.1 Implement full ICE candidate gathering (host, srflx, relay) | N1-N5 (v0.0.4) complete; ICE-Lite baseline | `[ ] OPEN` | 0055:36, 0050:57, 0027:538 |
-| C1.2 Implement connectivity checks + nomination (controlling/controlled) | C1.1 | `[ ] OPEN` | 0055:36, 0042:304, RFC 8445 §5-6 |
-| C1.3 Implement TURN client (RFC 8656): allocate, refresh, send/channel data | C1.1 | `[ ] OPEN` | 0055:36, 0050:57, RFC 8656 |
-| C1.4 STUN/TURN server deployment config + integration test | C1.2, C1.3 | `[ ] OPEN` | 0055:36, 0042:304 |
-| C1.5 Gate test: 3-node WAN mesh (symmetric NAT) establishes via TURN relay | C1.1-C1.4 | `[ ] OPEN` | 0055:140 |
+| C1.1 Implement full ICE candidate gathering (host, srflx, relay) | N1-N5 (v0.0.4) complete; ICE-Lite baseline | `[x] DONE` | 0055:36, 0050:57, 0027:538 |
+| C1.2 Implement connectivity checks + nomination (controlling/controlled) | C1.1 | `[x] DONE` | 0055:36, 0042:304, RFC 8445 §5-6 |
+| C1.3 Implement TURN client (RFC 8656): allocate, refresh, send/channel data | C1.1 | `[x] DONE` | 0055:36, 0050:57, RFC 8656 |
+| C1.4 STUN/TURN server deployment config + integration test | C1.2, C1.3 | `[x] DONE` | 0055:36, 0042:304 |
+| C1.5 Gate test: 3-node WAN mesh (symmetric NAT) establishes via TURN relay | C1.1-C1.4 | `[x] DONE` | 0055:140 |
 
 ### C2 — Mesh Federation (Cross-Mesh Routing)
 
@@ -185,9 +185,9 @@ v0.0.1       Protocol
 v0.0.2       Production runtime foundation (LAN/VPN)
 v0.0.3       Real deployment verification (3-node VPN mesh) ✅ DONE
 v0.0.4       Network capability: STUN, hole punch, relay, ICE-Lite ✅ DONE
-v0.0.5       Observability + Packaging + Benchmarks + Recovery SSS ✅ IN PROGRESS
+v0.0.5       Observability + Packaging + Benchmarks + Recovery SSS ✅ DONE
 v0.0.6       Runtime wiring (R1-R5, G1-G10) + RFC compliance cleanup ✅ COMPLETE
-v0.0.7       **Full ICE + TURN + Mesh Federation + Distributed Runtime Core** ← THIS PLAN
+v0.0.7       **Full ICE + TURN + Mesh Federation + Distributed Runtime Core** ← THIS PLAN (C1 ✅ DONE)
 v0.0.8       SMIR → WASM SDK + Distributed Runtime (EventBus, NextAction, RuntimeKernel)
 v0.1         Stable platform
 ```

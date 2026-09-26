@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_monocypher.a CMakeFiles/smo_monocypher.dir/monocypher.c.o
+/usr/bin/ranlib libsmo_monocypher.a

@@ -34,6 +34,7 @@ namespace smo::genesis {
         oss << "  \"manifest_schema\": " << manifest_schema << ",\n";
         oss << "  \"manifest_revision\": " << manifest_revision << ",\n";
         oss << "  \"state\": " << esc(state) << ",\n";
+        oss << "  \"mesh_state\": " << esc(mesh_state) << ",\n";
         oss << "  \"profile\": " << esc(to_string(profile)) << ",\n";
         oss << "  \"authorities\": {\n";
         oss << "    \"minimum\": " << authorities.minimum << ",\n";
@@ -106,6 +107,9 @@ namespace smo::genesis {
         m.manifest_schema = (uint32_t)json_int_value("manifest_schema", json);
         m.manifest_revision = (uint32_t)json_int_value("manifest_revision", json);
         m.state = json_str_value("state", json);
+        m.mesh_state = json_str_value("mesh_state", json);
+        if (m.mesh_state.empty())
+            m.mesh_state = "Draft";
 
         auto profile_str = json_str_value("profile", json);
         auto profile_res = deployment_profile_from_string(profile_str);

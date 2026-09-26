@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/smo_stub_protocol.dir/unit/protocol_test.cpp.o -o smo_stub_protocol 

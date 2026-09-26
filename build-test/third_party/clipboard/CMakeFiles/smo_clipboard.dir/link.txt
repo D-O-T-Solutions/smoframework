@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_clipboard.a CMakeFiles/smo_clipboard.dir/clipboard.cpp.o
+/usr/bin/ranlib libsmo_clipboard.a

@@ -46,7 +46,14 @@ namespace smo::mesh {
         };
     }
 
-    MeshFsm::MeshFsm()
+    MeshFsm::MeshFsm() : authority_(nullptr)
+    {
+        fsm.set_transitions(default_rules());
+        fsm.set_timeouts(default_timeouts());
+        fsm.reset((int64_t)MeshState::Draft);
+    }
+
+    MeshFsm::MeshFsm(smo::authority::MeshAuthority* authority) : authority_(authority)
     {
         fsm.set_transitions(default_rules());
         fsm.set_timeouts(default_timeouts());
@@ -88,6 +95,26 @@ namespace smo::mesh {
         if (all.size() <= n)
             return all;
         return std::vector<TransitionRecord>(all.end() - (ptrdiff_t)n, all.end());
+    }
+
+    Result<smo::Certificate> MeshFsm::sign_bootstrap_csr(const smo::authority::MeshAuthority::BootstrapSignRequest& req)
+    {
+        if (!authority_)
+        {
+            return Result<smo::Certificate>(smo::Error(
+                smo::ErrorCode(smo::ErrorCategory::Internal, 1, smo::Severity::Error,
+                               smo::RetryClass::NoRetry, smo::Recovery::ManualIntervention),
+                "MeshFsm: authority not set for sign_bootstrap_csr"));
+        }
+        if (current_state() != MeshState::Genesis && current_state() != MeshState::Bootstrap)
+        {
+            return Result<smo::Certificate>(smo::Error(
+                smo::ErrorCode(smo::ErrorCategory::Internal, 2, smo::Severity::Error,
+                               smo::RetryClass::NoRetry, smo::Recovery::ManualIntervention),
+                "MeshFsm: sign_bootstrap_csr only allowed in Genesis or Bootstrap state, current: " +
+                    to_string(current_state())));
+        }
+        return authority_->sign_bootstrap_csr(req);
     }
 
 } // namespace smo::mesh

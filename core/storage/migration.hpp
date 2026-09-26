@@ -16,6 +16,7 @@ namespace smo {
     {
     public:
         explicit MigrationRunner(DatabaseHandle& db) : db_(db) {}
+        explicit MigrationRunner(const DatabaseHandle& db) : db_(const_cast<DatabaseHandle&>(db)) {}
 
         // Read current PRAGMA user_version
         Result<int> current_version();

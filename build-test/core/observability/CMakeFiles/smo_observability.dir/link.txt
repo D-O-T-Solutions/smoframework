@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_observability.a CMakeFiles/smo_observability.dir/http_server.cpp.o CMakeFiles/smo_observability.dir/metrics_server.cpp.o CMakeFiles/smo_observability.dir/otlp_exporter.cpp.o
+/usr/bin/ranlib libsmo_observability.a

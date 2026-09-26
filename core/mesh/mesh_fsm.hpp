@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../authority/authority.hpp"
 #include "../errors/error.hpp"
 #include "../fsm/fsm.hpp"
 #include "mesh_state.hpp"
@@ -20,14 +21,16 @@ namespace smo::mesh {
         TriggerRecovery = 105,
         RecoveryComplete = 106,
         Archive = 107,
-        Timeout = 999,
+        Timeout = -1,
     };
 
     struct MeshFsm
     {
         FsmInstance fsm;
+        smo::authority::MeshAuthority* authority_ = nullptr;
 
         MeshFsm();
+        explicit MeshFsm(smo::authority::MeshAuthority* authority);
 
         Result<void> on_event(MeshEvent event);
 
@@ -37,6 +40,9 @@ namespace smo::mesh {
         bool is_terminal() const;
 
         std::vector<TransitionRecord> recent_history(size_t n) const;
+
+        // Bootstrap CSR signing (C6.2)
+        Result<smo::Certificate> sign_bootstrap_csr(const smo::authority::MeshAuthority::BootstrapSignRequest& req);
 
         static std::vector<TransitionRule> default_rules();
         static std::vector<StateTimeout> default_timeouts();

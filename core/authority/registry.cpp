@@ -402,8 +402,9 @@ namespace smo::authority {
         {
             return map_sqlite_error(SQLITE_ERROR, db_, "prepare register_node");
         }
+        std::string normalized_name = normalize_display_name(node.display_name);
         sqlite3_bind_text(stmt, 1, node.node_id_hex.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, normalize_display_name(node.display_name).c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, normalized_name.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 3, node.mesh_id.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 4, node.role.c_str(), -1, SQLITE_STATIC);
         sqlite3_bind_text(stmt, 5, node.cert_fingerprint.c_str(), -1, SQLITE_STATIC);
@@ -571,7 +572,8 @@ namespace smo::authority {
         {
             return map_sqlite_error(SQLITE_ERROR, db_, "prepare release_alias");
         }
-        sqlite3_bind_text(stmt, 1, normalize_display_name(alias).c_str(), -1, SQLITE_STATIC);
+        std::string normalized_alias = normalize_display_name(alias);
+        sqlite3_bind_text(stmt, 1, normalized_alias.c_str(), -1, SQLITE_STATIC);
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
         return {};
@@ -585,7 +587,8 @@ namespace smo::authority {
         {
             return map_sqlite_error<std::optional<AliasRecord>>(SQLITE_ERROR, db_, "prepare get_alias");
         }
-        sqlite3_bind_text(stmt, 1, normalize_display_name(alias).c_str(), -1, SQLITE_STATIC);
+        std::string normalized_alias = normalize_display_name(alias);
+        sqlite3_bind_text(stmt, 1, normalized_alias.c_str(), -1, SQLITE_STATIC);
         std::optional<AliasRecord> result;
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {

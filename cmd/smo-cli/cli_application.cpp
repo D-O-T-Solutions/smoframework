@@ -1635,6 +1635,9 @@ namespace smo {
 
                 auto genesis_res = std::move(result).value();
 
+                // Update mesh_state to Genesis after Stage 0 (C6.1: MeshFSM wiring)
+                genesis_res.manifest.mesh_state = "Genesis";
+
                 auto manifest_res = genesis_res.manifest.serialize();
                 if (!manifest_res)
                 {
@@ -1665,7 +1668,7 @@ namespace smo {
                 std::cout << "  Mesh:        " << name << "\n";
                 std::cout << "  Profile:     " << profile_str << "\n";
                 std::cout << "  Authorities: " << authorities << " slots\n";
-                std::cout << "  State:       Bootstrap\n";
+                std::cout << "  State:       Genesis\n";
                 std::cout << "\n";
                 std::cout << "  To bootstrap the mesh, publish it then generate a real join token:\n";
                 std::cout << "    smo mesh publish --port 7777\n";

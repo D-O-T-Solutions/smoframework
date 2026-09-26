@@ -92,6 +92,9 @@ namespace smo::genesis {
         uint32_t manifest_revision = 1; // manifest content revision
         std::string state = "genesis";
 
+        // Mesh lifecycle state (C6.1: MeshFSM wiring)
+        std::string mesh_state = "Draft"; // Draft, Genesis, Bootstrap, Online, Maintenance, Recovery, Archived
+
         DeploymentProfile profile = DeploymentProfile::Enterprise;
         AuthorityRange authorities;
         QuorumConfig quorum;

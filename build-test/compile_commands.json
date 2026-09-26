@@ -1,0 +1,566 @@
+[
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -o CMakeFiles/oqs.dir/kem/kem.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/kem.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/kem.c",
+  "output": "_deps/liboqs-build/src/CMakeFiles/oqs.dir/kem/kem.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -o CMakeFiles/oqs.dir/sig/sig.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/sig.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/sig.c",
+  "output": "_deps/liboqs-build/src/CMakeFiles/oqs.dir/sig/sig.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -o CMakeFiles/oqs.dir/sig_stfl/sig_stfl.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig_stfl/sig_stfl.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig_stfl/sig_stfl.c",
+  "output": "_deps/liboqs-build/src/CMakeFiles/oqs.dir/sig_stfl/sig_stfl.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/aes/aes_impl.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_impl.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_impl.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/aes/aes_impl.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/aes/aes_c.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_c.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_c.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/aes/aes_c.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -maes -mssse3 -o CMakeFiles/common.dir/aes/aes128_ni.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes128_ni.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes128_ni.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/aes/aes128_ni.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -maes -mssse3 -o CMakeFiles/common.dir/aes/aes256_ni.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes256_ni.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes256_ni.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/aes/aes256_ni.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/aes/aes.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/aes/aes.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha2/sha2_ossl.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2_ossl.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2_ossl.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha2/sha2_ossl.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha2/sha2.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha2/sha2.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha3/xkcp_sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/xkcp_sha3.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3x4.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3x4.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha3/sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/sha3/sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3x4.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3x4.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/ossl_helpers.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/ossl_helpers.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/ossl_helpers.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/common.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/common.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/common.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/pqclean_shims/fips202.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202x4.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202x4.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/common.dir/rand/rand.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/rand.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/rand.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/aes/aes_impl.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_impl.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_impl.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_impl.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/aes/aes_c.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_c.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes_c.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_c.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -maes -mssse3 -o CMakeFiles/internal.dir/aes/aes128_ni.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes128_ni.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes128_ni.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes128_ni.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -maes -mssse3 -o CMakeFiles/internal.dir/aes/aes256_ni.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes256_ni.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes256_ni.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes256_ni.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/aes/aes.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/aes/aes.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha2/sha2_ossl.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2_ossl.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2_ossl.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha2/sha2_ossl.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha2/sha2.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha2/sha2.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha2/sha2.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha3/xkcp_sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha3/xkcp_sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3x4.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3x4.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3x4.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha3/sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/sha3/sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3x4.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3x4.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3x4.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/ossl_helpers.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/ossl_helpers.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/ossl_helpers.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/ossl_helpers.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/common.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/common.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/common.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/common.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common",
+  "command": "/usr/bin/cc -DOQS_HAVE_ALIGNED_ALLOC -DOQS_HAVE_EXPLICIT_BZERO -DOQS_HAVE_MEMALIGN -DOQS_HAVE_POSIX_MEMALIGN -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=default -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/internal.dir/rand/rand_nist.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/rand_nist.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/rand_nist.c",
+  "output": "_deps/liboqs-build/src/common/CMakeFiles/internal.dir/rand/rand_nist.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low",
+  "command": "/usr/bin/cc -DADD_SYMBOL_SUFFIX -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/xkcp_low_keccakp_1600_plain64.dir/KeccakP-1600/plain-64bits/KeccakP-1600-opt64.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/KeccakP-1600-opt64.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/KeccakP-1600-opt64.c",
+  "output": "_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_plain64.dir/KeccakP-1600/plain-64bits/KeccakP-1600-opt64.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low",
+  "command": "/usr/bin/cc -DADD_SYMBOL_SUFFIX -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/xkcp_low_keccakp_1600times4_serial.dir/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c",
+  "output": "_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_serial.dir/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low",
+  "command": "/usr/bin/cc -DADD_SYMBOL_SUFFIX -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -O3 -DNDEBUG -fPIC -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -o CMakeFiles/xkcp_low_keccakp_1600_avx2.dir/KeccakP-1600/avx2/KeccakP-1600-AVX2.S.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/avx2/KeccakP-1600-AVX2.S",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/avx2/KeccakP-1600-AVX2.S",
+  "output": "_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_avx2.dir/KeccakP-1600/avx2/KeccakP-1600-AVX2.S.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low",
+  "command": "/usr/bin/cc -DADD_SYMBOL_SUFFIX -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/avx2 -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -Wbad-function-cast -mavx2 -o CMakeFiles/xkcp_low_keccakp_1600times4_avx2.dir/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c",
+  "output": "_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_avx2.dir/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/kem_ml_kem_512.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_512.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_512.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/kem_ml_kem_512.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=2 -o CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/kem_ml_kem_768.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_768.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_768.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/kem_ml_kem_768.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=3 -o CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/kem_ml_kem_1024.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_1024.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/kem_ml_kem_1024.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/kem_ml_kem_1024.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/kem/ml_kem",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DKYBER_K=4 -o CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/kem/ml_kem/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c",
+  "output": "_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/sig_ml_dsa_44_ipd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_44_ipd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_44_ipd.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/sig_ml_dsa_44_ipd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=2 -o CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/sig_ml_dsa_65_ipd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_65_ipd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_65_ipd.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/sig_ml_dsa_65_ipd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=3 -o CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/sig_ml_dsa_87_ipd.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_87_ipd.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/sig_ml_dsa_87_ipd.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/sig_ml_dsa_87_ipd.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o"
+},
+{
+  "directory": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/sig/ml_dsa",
+  "command": "/usr/bin/cc  -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections -DDILITHIUM_MODE=5 -o CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c",
+  "file": "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c",
+  "output": "_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o"
+}
+]

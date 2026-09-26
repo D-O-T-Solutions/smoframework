@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_suite1_classical.a CMakeFiles/smo_suite1_classical.dir/suite1_classical_provider.cpp.o
+/usr/bin/ranlib libsmo_suite1_classical.a

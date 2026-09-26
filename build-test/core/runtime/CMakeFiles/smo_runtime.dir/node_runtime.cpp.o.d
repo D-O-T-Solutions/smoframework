@@ -1,0 +1,451 @@
+core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/node_runtime.cpp \
+ /usr/include/stdc-predef.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/node_runtime.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/errors/error.hpp \
+ /usr/include/c++/13/cstdint \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
+ /usr/include/features.h /usr/include/features-time64.h \
+ /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+ /usr/include/x86_64-linux-gnu/bits/timesize.h \
+ /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+ /usr/include/x86_64-linux-gnu/bits/long-double.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
+ /usr/include/c++/13/pstl/pstl_config.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+ /usr/include/c++/13/new /usr/include/c++/13/bits/exception.h \
+ /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
+ /usr/include/c++/13/bits/stringfwd.h \
+ /usr/include/c++/13/bits/memoryfwd.h \
+ /usr/include/c++/13/bits/char_traits.h \
+ /usr/include/c++/13/bits/postypes.h /usr/include/c++/13/cwchar \
+ /usr/include/wchar.h /usr/include/x86_64-linux-gnu/bits/floatn.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+ /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar2.h \
+ /usr/include/c++/13/type_traits /usr/include/c++/13/compare \
+ /usr/include/c++/13/concepts /usr/include/c++/13/bits/stl_construct.h \
+ /usr/include/c++/13/bits/move.h \
+ /usr/include/c++/13/bits/stl_iterator_base_types.h \
+ /usr/include/c++/13/bits/iterator_concepts.h \
+ /usr/include/c++/13/bits/ptr_traits.h \
+ /usr/include/c++/13/bits/ranges_cmp.h \
+ /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/13/bits/concept_check.h \
+ /usr/include/c++/13/debug/assertions.h \
+ /usr/include/c++/13/bits/allocator.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
+ /usr/include/c++/13/bits/new_allocator.h \
+ /usr/include/c++/13/bits/functexcept.h \
+ /usr/include/c++/13/bits/exception_defines.h \
+ /usr/include/c++/13/bits/cpp_type_traits.h \
+ /usr/include/c++/13/bits/localefwd.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
+ /usr/include/c++/13/clocale /usr/include/locale.h \
+ /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/13/iosfwd \
+ /usr/include/c++/13/cctype /usr/include/ctype.h \
+ /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endianness.h \
+ /usr/include/c++/13/bits/ostream_insert.h \
+ /usr/include/c++/13/bits/cxxabi_forced.h \
+ /usr/include/c++/13/bits/stl_iterator.h \
+ /usr/include/c++/13/ext/type_traits.h \
+ /usr/include/c++/13/bits/stl_function.h \
+ /usr/include/c++/13/backward/binders.h \
+ /usr/include/c++/13/ext/numeric_traits.h \
+ /usr/include/c++/13/bits/stl_algobase.h \
+ /usr/include/c++/13/bits/stl_pair.h /usr/include/c++/13/bits/utility.h \
+ /usr/include/c++/13/debug/debug.h \
+ /usr/include/c++/13/bits/predefined_ops.h /usr/include/c++/13/bit \
+ /usr/include/c++/13/bits/refwrap.h /usr/include/c++/13/bits/invoke.h \
+ /usr/include/c++/13/bits/range_access.h \
+ /usr/include/c++/13/initializer_list \
+ /usr/include/c++/13/bits/basic_string.h \
+ /usr/include/c++/13/ext/alloc_traits.h \
+ /usr/include/c++/13/bits/alloc_traits.h /usr/include/c++/13/string_view \
+ /usr/include/c++/13/bits/functional_hash.h \
+ /usr/include/c++/13/bits/hash_bytes.h \
+ /usr/include/c++/13/bits/ranges_base.h \
+ /usr/include/c++/13/bits/max_size_type.h /usr/include/c++/13/numbers \
+ /usr/include/c++/13/bits/string_view.tcc \
+ /usr/include/c++/13/ext/string_conversions.h /usr/include/c++/13/cstdlib \
+ /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/timer_t.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+ /usr/include/x86_64-linux-gnu/sys/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
+ /usr/include/x86_64-linux-gnu/bits/select-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+ /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h \
+ /usr/include/c++/13/bits/std_abs.h /usr/include/c++/13/cstdio \
+ /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/c++/13/cerrno \
+ /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
+ /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
+ /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+ /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
+ /usr/include/c++/13/bits/charconv.h \
+ /usr/include/c++/13/bits/basic_string.tcc \
+ /usr/include/c++/13/bits/memory_resource.h /usr/include/c++/13/cstddef \
+ /usr/include/c++/13/bits/uses_allocator.h \
+ /usr/include/c++/13/bits/uses_allocator_args.h /usr/include/c++/13/tuple \
+ /usr/include/c++/13/bits/ranges_util.h /usr/include/c++/13/system_error \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/error_constants.h \
+ /usr/include/c++/13/stdexcept /usr/include/c++/13/exception \
+ /usr/include/c++/13/bits/exception_ptr.h \
+ /usr/include/c++/13/bits/cxxabi_init_exception.h \
+ /usr/include/c++/13/typeinfo /usr/include/c++/13/bits/nested_exception.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/types.hpp \
+ /usr/include/c++/13/iomanip /usr/include/c++/13/bits/ios_base.h \
+ /usr/include/c++/13/ext/atomicity.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h \
+ /usr/include/pthread.h /usr/include/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
+ /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+ /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
+ /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
+ /usr/include/c++/13/bits/locale_classes.h \
+ /usr/include/c++/13/bits/locale_classes.tcc /usr/include/c++/13/locale \
+ /usr/include/c++/13/bits/locale_facets.h /usr/include/c++/13/cwctype \
+ /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
+ /usr/include/c++/13/streambuf /usr/include/c++/13/bits/streambuf.tcc \
+ /usr/include/c++/13/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_inline.h \
+ /usr/include/c++/13/bits/locale_facets.tcc \
+ /usr/include/c++/13/bits/locale_facets_nonio.h /usr/include/c++/13/ctime \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/13/bits/codecvt.h \
+ /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/13/bits/locale_conv.h \
+ /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
+ /usr/include/c++/13/istream /usr/include/c++/13/ios \
+ /usr/include/c++/13/bits/basic_ios.h \
+ /usr/include/c++/13/bits/basic_ios.tcc /usr/include/c++/13/ostream \
+ /usr/include/c++/13/bits/ostream.tcc \
+ /usr/include/c++/13/bits/istream.tcc \
+ /usr/include/c++/13/bits/sstream.tcc /usr/include/c++/13/span \
+ /usr/include/c++/13/array /usr/include/c++/13/vector \
+ /usr/include/c++/13/bits/stl_uninitialized.h \
+ /usr/include/c++/13/bits/stl_vector.h \
+ /usr/include/c++/13/bits/stl_bvector.h \
+ /usr/include/c++/13/bits/vector.tcc /usr/include/c++/13/atomic \
+ /usr/include/c++/13/bits/atomic_base.h \
+ /usr/include/c++/13/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/13/bits/atomic_wait.h /usr/include/c++/13/climits \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
+ /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/uio_lim.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/environments.h \
+ /usr/include/x86_64-linux-gnu/bits/confname.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h /usr/include/syscall.h \
+ /usr/include/x86_64-linux-gnu/sys/syscall.h \
+ /usr/include/x86_64-linux-gnu/asm/unistd.h \
+ /usr/include/x86_64-linux-gnu/asm/unistd_64.h \
+ /usr/include/x86_64-linux-gnu/bits/syscall.h \
+ /usr/include/c++/13/bits/std_mutex.h /usr/include/c++/13/memory \
+ /usr/include/c++/13/bits/stl_tempbuf.h \
+ /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/13/bits/align.h /usr/include/c++/13/bits/unique_ptr.h \
+ /usr/include/c++/13/bits/shared_ptr.h \
+ /usr/include/c++/13/bits/shared_ptr_base.h \
+ /usr/include/c++/13/bits/allocated_ptr.h \
+ /usr/include/c++/13/ext/aligned_buffer.h \
+ /usr/include/c++/13/ext/concurrence.h \
+ /usr/include/c++/13/bits/shared_ptr_atomic.h \
+ /usr/include/c++/13/backward/auto_ptr.h \
+ /usr/include/c++/13/bits/ranges_uninitialized.h \
+ /usr/include/c++/13/bits/ranges_algobase.h \
+ /usr/include/c++/13/pstl/glue_memory_defs.h \
+ /usr/include/c++/13/pstl/execution_defs.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/suite.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/discovery.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../certificate/certificate.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../identity/identity.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../transport/transport.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../transport/framing.hpp \
+ /usr/include/c++/13/unordered_map \
+ /usr/include/c++/13/bits/unordered_map.h \
+ /usr/include/c++/13/bits/hashtable.h \
+ /usr/include/c++/13/bits/hashtable_policy.h \
+ /usr/include/c++/13/bits/enable_special_members.h \
+ /usr/include/c++/13/bits/node_handle.h \
+ /usr/include/c++/13/bits/erase_if.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.hpp \
+ /usr/include/c++/13/chrono /usr/include/c++/13/bits/chrono.h \
+ /usr/include/c++/13/ratio /usr/include/c++/13/limits \
+ /usr/include/c++/13/bits/parse_numbers.h \
+ /usr/include/c++/13/bits/stl_algo.h \
+ /usr/include/c++/13/bits/algorithmfwd.h \
+ /usr/include/c++/13/bits/stl_heap.h \
+ /usr/include/c++/13/bits/uniform_int_dist.h \
+ /usr/include/c++/13/bits/chrono_io.h /usr/include/c++/13/format \
+ /usr/include/c++/13/charconv /usr/include/c++/13/optional \
+ /usr/include/c++/13/variant \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/transport/tcp_transport.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_id.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/udp_transport.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/select/selector.hpp \
+ /usr/include/c++/13/functional /usr/include/c++/13/bits/std_function.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/heartbeat_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/../../runtime/telemetry.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp \
+ /usr/include/c++/13/mutex /usr/include/c++/13/bits/unique_lock.h \
+ /usr/include/c++/13/map /usr/include/c++/13/bits/stl_tree.h \
+ /usr/include/c++/13/bits/stl_map.h \
+ /usr/include/c++/13/bits/stl_multimap.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/span.hpp \
+ /usr/include/c++/13/thread /usr/include/c++/13/stop_token \
+ /usr/include/c++/13/bits/std_thread.h /usr/include/c++/13/semaphore \
+ /usr/include/c++/13/bits/semaphore_base.h \
+ /usr/include/c++/13/bits/atomic_timed_wait.h \
+ /usr/include/c++/13/bits/this_thread_sleep.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/semaphore.h \
+ /usr/include/x86_64-linux-gnu/bits/semaphore.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/../../network/relay/relay_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/gossip.hpp \
+ /usr/include/c++/13/random /usr/include/c++/13/cmath /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+ /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+ /usr/include/c++/13/bits/specfun.h /usr/include/c++/13/tr1/gamma.tcc \
+ /usr/include/c++/13/tr1/special_function_util.h \
+ /usr/include/c++/13/tr1/bessel_function.tcc \
+ /usr/include/c++/13/tr1/beta_function.tcc \
+ /usr/include/c++/13/tr1/ell_integral.tcc \
+ /usr/include/c++/13/tr1/exp_integral.tcc \
+ /usr/include/c++/13/tr1/hypergeometric.tcc \
+ /usr/include/c++/13/tr1/legendre_function.tcc \
+ /usr/include/c++/13/tr1/modified_bessel_func.tcc \
+ /usr/include/c++/13/tr1/poly_hermite.tcc \
+ /usr/include/c++/13/tr1/poly_laguerre.tcc \
+ /usr/include/c++/13/tr1/riemann_zeta.tcc \
+ /usr/include/c++/13/bits/random.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/opt_random.h \
+ /usr/include/c++/13/bits/random.tcc /usr/include/c++/13/numeric \
+ /usr/include/c++/13/bits/stl_numeric.h \
+ /usr/include/c++/13/pstl/glue_numeric_defs.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/membership_sync.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/transport/address_resolver.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/peer_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../storage/database.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../storage/store_id.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/third_party/sqlite3/sqlite3.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../storage/migration.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/auto_enroll.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_resolver.hpp \
+ /usr/include/c++/13/filesystem /usr/include/c++/13/bits/fs_fwd.h \
+ /usr/include/c++/13/bits/fs_path.h /usr/include/c++/13/codecvt \
+ /usr/include/c++/13/bits/fs_dir.h /usr/include/c++/13/bits/fs_ops.h \
+ /usr/include/c++/13/fstream \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
+ /usr/include/c++/13/bits/fstream.tcc \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp \
+ /usr/include/c++/13/algorithm /usr/include/c++/13/bits/ranges_algo.h \
+ /usr/include/c++/13/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/hash_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_definition.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_abi.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/storage/manifest_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/packet_dispatcher.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/packet.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/../../core/opcode/opcode.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/transport/transport.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/errors/errors.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/node_lifecycle_fsm.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/fsm.hpp \
+ /usr/include/c++/13/unordered_set \
+ /usr/include/c++/13/bits/unordered_set.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/../capability/capability.h \
+ /usr/include/c++/13/bitset \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/protocol_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_fsm.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_state.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/sync_delta_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/storage/policy_store/policy_store.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/storage/storage.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/storage/sqlite_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/connection_manager.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp_server.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_client.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_protocol.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/cbor.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/join_token.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_bridge.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_types.hpp \
+ /usr/include/c++/13/queue /usr/include/c++/13/deque \
+ /usr/include/c++/13/bits/stl_deque.h /usr/include/c++/13/bits/deque.tcc \
+ /usr/include/c++/13/bits/stl_queue.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_kernel.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contract_interface.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_context.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/dispatcher.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/middleware_pipeline.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/policy_middleware.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/action_executor.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/echo_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/bootstrap_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/join_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/governance_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/output_manager.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_engine.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_package.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/kdf/argon2id.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/recovery_crypto.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/aead/aes256_gcm_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/shamir.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer/ed25519_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer_context.hpp \
+ /usr/include/c++/13/set /usr/include/c++/13/bits/stl_set.h \
+ /usr/include/c++/13/bits/stl_multiset.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/recovery_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/file_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/process_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/deployment_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/trust_contract.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/../../trust/witness.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/service_registry.hpp \
+ /usr/include/c++/13/any /usr/include/c++/13/typeindex \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/structured_logger.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_registry_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_backend.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/merkle_tree.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/version_vector.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_errors.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/anti_entropy.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/authority_mesh_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contract_registry_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/session_manager_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/recovery_trust_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/governance_middleware_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_kernel_service.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/network/stun/stun_client.hpp \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
+ /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
+ /usr/include/x86_64-linux-gnu/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types.h \
+ /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h \
+ /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/x86_64-linux-gnu/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
+ /usr/include/x86_64-linux-gnu/bits/socket2.h /usr/include/netinet/in.h \
+ /usr/include/x86_64-linux-gnu/bits/in.h /usr/include/arpa/inet.h \
+ /usr/include/netdb.h /usr/include/rpc/netdb.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
+ /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/poll.h \
+ /usr/include/x86_64-linux-gnu/sys/poll.h \
+ /usr/include/x86_64-linux-gnu/bits/poll.h \
+ /usr/include/x86_64-linux-gnu/bits/poll2.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/observability/metrics_server.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/observability/http_server.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/observability/otlp_exporter.hpp \
+ /usr/include/c++/13/condition_variable \
+ /home/nguyenduccanh/shellmap_project/smoframework/providers/blake3_provider/blake3_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/providers/suite1_classical/suite1_classical_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/providers/suite2_modern/suite2_modern_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/providers/suite3_purepqc/suite3_purepqc_provider.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/tooling/clipboard.hpp

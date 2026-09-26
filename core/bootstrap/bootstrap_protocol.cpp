@@ -179,9 +179,10 @@ namespace hl = smo::network::hl;
 
     // ── Handler ───────────────────────────────────────────────────────────
 
-    Result<BootstrapResponse> handle_bootstrap_request(const BootstrapRequest& req, MeshManager& mesh_mgr,
-                                                       authority::MeshAuthority& authority,
-                                                       GovernanceEngine* governance, recovery::CRL* crl)
+Result<BootstrapResponse> handle_bootstrap_request(const BootstrapRequest& req, MeshManager& mesh_mgr,
+                                                   authority::MeshAuthority& authority,
+                                                   GovernanceEngine* governance, recovery::CRL* crl,
+                                                   mesh::MeshFsm* mesh_fsm)
     {
         BootstrapResponse resp;
         resp.version = kProtocolVersion;
@@ -198,7 +199,16 @@ namespace hl = smo::network::hl;
 
         auto& snap = resp.snapshot;
         snap.mesh_id = cfg.mesh_id;
-        snap.mesh_state = "Online";
+        // Use FSM state instead of hardcoded "Online" (C6.3)
+        if (mesh_fsm)
+        {
+            snap.mesh_state = smo::mesh::to_string(mesh_fsm->current_state());
+        }
+        else
+        {
+            // Fallback to mesh config state if FSM not available
+            snap.mesh_state = cfg.mesh_state.empty() ? "Draft" : cfg.mesh_state;
+        }
         snap.epoch = cfg.epoch;
 
         // Policy / governance versions
@@ -313,22 +323,23 @@ namespace hl = smo::network::hl;
         return resp;
     }
 
-    // ── Dispatcher registration ──────────────────────────────────────────
+// ── Dispatcher registration ──────────────────────────────────────────
 
     void register_bootstrap_handler(network::PacketDispatcher& dispatcher, MeshManager& mesh_mgr,
                                     authority::MeshAuthority& authority, GovernanceEngine* governance,
-                                    recovery::CRL* crl, hl::Transport* transport)
+                                    recovery::CRL* crl, hl::Transport* transport,
+                                    mesh::MeshFsm* mesh_fsm = nullptr)
     {
         dispatcher.register_handler(kOpcodeBootstrapRequest,
-                                    [&mesh_mgr, &authority, governance, crl](Packet&& pkt, const smo::Endpoint& remote,
-                                                                             hl::Transport& t) -> Result<void> {
+                                    [&mesh_mgr, &authority, governance, crl, mesh_fsm](Packet&& pkt, const smo::Endpoint& remote,
+                                                                                         hl::Transport& t) -> Result<void> {
                                         (void)remote;
                                         auto req = BootstrapRequest::decode_cbor(pkt.payload);
                                         if (!req)
                                             return req.error();
 
                                         auto resp =
-                                            handle_bootstrap_request(req.value(), mesh_mgr, authority, governance, crl);
+                                            handle_bootstrap_request(req.value(), mesh_mgr, authority, governance, crl, mesh_fsm);
                                         if (!resp)
                                             return resp.error();
 

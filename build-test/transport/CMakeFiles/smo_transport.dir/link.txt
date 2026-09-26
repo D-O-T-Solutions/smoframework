@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_transport.a CMakeFiles/smo_transport.dir/tcp/tcp_transport.cpp.o CMakeFiles/smo_transport.dir/framing/framing.cpp.o
+/usr/bin/ranlib libsmo_transport.a

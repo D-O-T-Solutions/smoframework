@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_compiler.a CMakeFiles/smo_compiler.dir/ast/ast.cpp.o CMakeFiles/smo_compiler.dir/smir/smir.cpp.o CMakeFiles/smo_compiler.dir/parser/parser.cpp.o CMakeFiles/smo_compiler.dir/planner/planner.cpp.o CMakeFiles/smo_compiler.dir/optimizer/optimizer.cpp.o CMakeFiles/smo_compiler.dir/graph/builder.cpp.o CMakeFiles/smo_compiler.dir/validator/semantic.cpp.o CMakeFiles/smo_compiler.dir/validator/final.cpp.o
+/usr/bin/ranlib libsmo_compiler.a

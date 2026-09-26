@@ -13,7 +13,6 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_service.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/version_vector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/merkle_tree.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sync/sync_backend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sync/anti_entropy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/public_ip.cpp
@@ -26,6 +25,7 @@ target_sources(smo_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/stun/stun_client.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/relay/relay_service.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ice/ice_candidate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/turn/turn_client.cpp
 )
 
 target_sources(smo_core INTERFACE

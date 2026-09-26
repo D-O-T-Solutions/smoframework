@@ -2,7 +2,11 @@
 
 #include <core/join/join_protocol.hpp>
 #include <core/discovery/discovery.hpp>
+#include <core/bootstrap/bootstrap_protocol.hpp>
+#include <core/bootstrap/bootstrap_protocol_inline.hpp>
 #include <core/runtime/structured_logger.hpp>
+#include <core/governance/governance.hpp>
+#include <core/mesh/mesh_fsm.hpp>
 
 #include <chrono>
 
@@ -49,6 +53,14 @@ namespace smo::runtime {
                                                 const smo::Endpoint& remote) -> smo::Result<void> {
             return this->handle_raw(raw, session, remote);
         });
+    }
+
+void ProtocolService::register_bootstrap_handler(smo::network::PacketDispatcher& dispatcher,
+                                                     smo::mesh::MeshFsm* mesh_fsm,
+                                                     smo::GovernanceEngine* governance)
+    {
+        smo::bootstrap::register_bootstrap_handler_inline(dispatcher, mesh_manager_, authority_, governance, &crl_,
+                                                          nullptr, mesh_fsm);
     }
 
     smo::Result<void> ProtocolService::handle_raw(smo::BytesView raw, smo::TransportSession& session,

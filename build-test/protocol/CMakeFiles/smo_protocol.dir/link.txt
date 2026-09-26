@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_protocol.a CMakeFiles/smo_protocol.dir/packet/packet.cpp.o CMakeFiles/smo_protocol.dir/packet/packet_route.cpp.o CMakeFiles/smo_protocol.dir/packet/packet_crypto.cpp.o CMakeFiles/smo_protocol.dir/schema/schema.cpp.o CMakeFiles/smo_protocol.dir/signing/signing.cpp.o CMakeFiles/smo_protocol.dir/encryption/encryption.cpp.o CMakeFiles/smo_protocol.dir/replay/replay.cpp.o
+/usr/bin/ranlib libsmo_protocol.a

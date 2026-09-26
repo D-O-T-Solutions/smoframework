@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/align.h
+stdint.h
+-
+immintrin.h
+-
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/config.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/consts.h
+params.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/params.h
+align.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/align.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/invntt.S
+consts.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/consts.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/ntt.S
+consts.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/consts.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/params.h
+config.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/config.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/pointwise.S
+params.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/params.h
+consts.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/consts.h
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/shuffle.S
+consts.h
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-44-ipd_avx2/consts.h
+

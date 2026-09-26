@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_contract.a CMakeFiles/smo_contract.dir/registry/contract_registry.cpp.o CMakeFiles/smo_contract.dir/registry/native.cpp.o CMakeFiles/smo_contract.dir/factory/contract_factory.cpp.o CMakeFiles/smo_contract.dir/kernel/kernel_contracts.cpp.o
+/usr/bin/ranlib libsmo_contract.a

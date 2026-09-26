@@ -29,6 +29,9 @@ add_library(smo_runtime STATIC
     contracts/deployment_contract.cpp
     contracts/trust_contract.cpp
     node_runtime.cpp
+    # Include bootstrap_protocol.cpp before protocol_service.cpp to ensure
+    # register_bootstrap_handler is defined before it's referenced (C6.1: MeshFSM wiring)
+    ../bootstrap/bootstrap_protocol.cpp
     protocol_service.cpp
     sync_delta_service.cpp
     telemetry_service.cpp
@@ -51,6 +54,11 @@ target_link_libraries(smo_runtime PUBLIC
     smo_observability
     smo_genesis
 )
+
+# Remove whole-archive since we now include bootstrap_protocol.cpp directly
+# if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#     target_link_options(smo_runtime PUBLIC -Wl,--whole-archive -Wl,--no-whole-archive)
+# endif()
 
 target_compile_features(smo_runtime PUBLIC cxx_std_20)
 

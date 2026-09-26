@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_sqlite3.a CMakeFiles/smo_sqlite3.dir/sqlite3.c.o
+/usr/bin/ranlib libsmo_sqlite3.a

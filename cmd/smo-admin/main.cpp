@@ -1436,6 +1436,33 @@ static int cmd_mesh_init_authority(const std::vector<std::string>& args, const s
         }
     }
 
+    // Update mesh_state to Bootstrap in mesh.json (C6.1: MeshFSM wiring)
+    {
+        auto pos = json.find("\"mesh_state\"");
+        if (pos != std::string::npos)
+        {
+            auto colon = json.find(':', pos);
+            auto start = json.find('"', colon + 1);
+            auto end = json.find('"', start + 1);
+            if (start != std::string::npos && end != std::string::npos)
+            {
+                json.replace(start + 1, end - start - 1, "Bootstrap");
+            }
+        }
+        else
+        {
+            // Insert mesh_state before the last '}'
+            auto last_brace = json.rfind('}');
+            if (last_brace != std::string::npos)
+            {
+                json.insert(last_brace, ",\n  \"mesh_state\": \"Bootstrap\"");
+            }
+        }
+        std::ofstream mf(json_path);
+        mf << json;
+        mf.close();
+    }
+
     std::printf("Authority keys, certificate, and identity initialized at %s\n", mesh_dir.c_str());
     return 0;
 }

@@ -273,6 +273,10 @@ static bool test_join_request_verify_token_issue_cert()
     admission.role = "Member";
     admission.profile = "server";
 
+    // Generate a test issuer keypair for the token (separate from authority)
+    auto issuer_kp = suite1().signer.generate_keypair(rng);
+    ASSERT(issuer_kp);
+
     auto token_result = enroll::generate_token(
         mesh_id,
         1, // mesh_epoch
@@ -280,9 +284,9 @@ static bool test_join_request_verify_token_issue_cert()
         mesh_ctx->config.bootstrap_endpoints,
         admission,
         0, // no expiry
-        "authority:" + bytes_to_hex(authority.authority_public_key()).substr(0, 16),
+        "authority:" + bytes_to_hex(issuer_kp.value().public_key).substr(0, 16),
         suite1().signer,
-        authority.authority_public_key(),
+        BytesView(issuer_kp.value().secret_key),
         rng
     );
 
@@ -301,7 +305,7 @@ static bool test_join_request_verify_token_issue_cert()
     ASSERT(parsed.value().mesh_id == mesh_id);
 
     // Verify token signature
-    auto validate = enroll::validate_token(parsed.value(), suite1().signer, authority.authority_public_key(), suite1().hash);
+    auto validate = enroll::validate_token(parsed.value(), suite1().signer, issuer_kp.value().public_key, suite1().hash);
     ASSERT(validate);
 
     // Create a CSR for a new node
@@ -482,6 +486,10 @@ static bool test_e2e_fresh_node_join_session()
     admission.role = "Member";
     admission.profile = "server";
 
+    // Generate a test issuer keypair for the token
+    auto issuer_kp = suite1().signer.generate_keypair(rng);
+    ASSERT(issuer_kp);
+
     auto token_result = enroll::generate_token(
         mesh_id,
         1, // mesh_epoch
@@ -489,9 +497,9 @@ static bool test_e2e_fresh_node_join_session()
         mesh_ctx->config.bootstrap_endpoints,
         admission,
         0,
-        "authority:" + bytes_to_hex(authority.authority_public_key()).substr(0, 16),
+        "authority:" + bytes_to_hex(issuer_kp.value().public_key).substr(0, 16),
         suite1().signer,
-        authority.authority_public_key(),
+        BytesView(issuer_kp.value().secret_key),
         rng
     );
 
@@ -508,7 +516,7 @@ static bool test_e2e_fresh_node_join_session()
     auto parsed = enroll::parse_token(token_wire);
     ASSERT(parsed);
 
-    auto validate = enroll::validate_token(parsed.value(), suite1().signer, authority.authority_public_key(), suite1().hash);
+    auto validate = enroll::validate_token(parsed.value(), suite1().signer, issuer_kp.value().public_key, suite1().hash);
     ASSERT(validate);
 
     // --- Node side: create CSR and send JOIN_REQUEST ---

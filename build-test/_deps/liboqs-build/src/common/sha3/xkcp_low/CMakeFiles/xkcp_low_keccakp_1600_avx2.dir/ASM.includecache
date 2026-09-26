@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/avx2/KeccakP-1600-AVX2.S
+

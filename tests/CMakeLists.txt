@@ -154,6 +154,17 @@ smo_set_warnings(smo_test_fsm)
 smo_set_optimisation(smo_test_fsm)
 add_test(NAME fsm_model COMMAND smo_test_fsm)
 
+# ── MeshFSM tests ────────────────────────────────────────────────────
+add_executable(smo_test_mesh_fsm
+    unit/core/mesh/test_mesh_fsm.cpp
+)
+target_link_libraries(smo_test_mesh_fsm PRIVATE
+    smo_core fmt::fmt
+)
+smo_set_warnings(smo_test_mesh_fsm)
+smo_set_optimisation(smo_test_mesh_fsm)
+add_test(NAME mesh_fsm_model COMMAND smo_test_mesh_fsm)
+
 # ── Certificate tests ────────────────────────────────────────────────
 add_executable(smo_test_certificate
     unit/core/certificate/test_certificate.cpp

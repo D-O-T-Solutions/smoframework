@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_trust.a 
+/usr/bin/ranlib libsmo_trust.a

@@ -33,6 +33,12 @@ namespace smo {
         // Echo (Sprint 37 E2E test)
         ECHO = 0x06,
 
+        // Session lifecycle (CONTROL namespace 0x02, message_id 0x0010/0x0011/0x0012 per RFC 0020)
+        // Internal values 0x40-0x42 to avoid conflict with MKDIR/RM/CP (0x10-0x12)
+        SESSION_OPEN = 0x40,
+        SESSION_CLOSE = 0x41,
+        SESSION_RENEW = 0x42,
+
         // Bootstrap Contract methods
         BOOTSTRAP_SNAPSHOT = 0x30,
         BOOTSTRAP_INFO = 0x31,

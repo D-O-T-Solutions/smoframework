@@ -1,0 +1,728 @@
+[  0%] Built target smo_monocypher
+[  0%] Built target smo_sqlite3
+[  2%] Built target smo_blake3
+[  7%] Built target ml_dsa_87_x86_64
+[  7%] Built target xkcp_low_keccakp_1600_plain64
+[  7%] Built target xkcp_low_keccakp_1600times4_serial
+[ 10%] Built target common
+[ 12%] Built target sha3_avx512vl_low
+[ 12%] Built target xkcp_low_keccakp_1600times4_avx2
+[ 12%] Built target xkcp_low_keccakp_1600_avx2
+[ 14%] Built target ml_kem_512_ref
+[ 19%] Built target ml_kem_512_x86_64
+[ 24%] Built target ml_kem_768_x86_64
+[ 26%] Built target ml_kem_768_ref
+[ 27%] Built target ml_kem_1024_ref
+[ 28%] Built target ml_dsa_44_ref
+[ 33%] Built target ml_kem_1024_x86_64
+[ 38%] Built target ml_dsa_44_x86_64
+[ 40%] Built target ml_dsa_65_ref
+[ 44%] Built target ml_dsa_65_x86_64
+[ 46%] Built target ml_dsa_87_ref
+[ 51%] Built target yaml-cpp
+[ 51%] Built target smo_clipboard
+[ 54%] Built target fmt
+[ 54%] Built target internal
+[ 54%] Built target smo_stub_core
+[ 55%] Built target smo_stub_compiler
+[ 55%] Built target smo_stub_protocol
+[ 55%] Built target simdjson
+[ 56%] Built target oqs-internal
+[ 56%] Built target oqs
+[ 57%] Built target yaml-cpp-sandbox
+[ 58%] Built target spdlog
+[ 58%] Built target yaml-cpp-read
+[ 59%] Built target yaml-cpp-parse
+[ 60%] Built target smo_blake3_provider
+[ 75%] Built target smo_core
+[ 75%] Built target smo_mesh
+[ 75%] Built target smo_acl
+[ 76%] Built target smo_genesis
+[ 78%] Built target smo_protocol
+[ 78%] Built target smo_suite2_modern
+[ 81%] Built target smo_compiler
+[ 79%] Built target smo_suite1_classical
+[ 81%] Built target smo_suite3_purepqc
+[ 81%] Built target smo_test_protocol
+[ 82%] Built target smo_test_replay
+[ 82%] Built target smo_test_trust
+[ 83%] Built target smo_test_packet_crypto
+[ 83%] Built target smo_test_negative
+[ 84%] Built target smo_test_governance
+[ 85%] Built target smo_test_discovery
+[ 86%] Built target smo_test_session_security
+[ 86%] Built target smo_test_session
+[ 87%] Built target smo_test_certificate
+[ 88%] Built target smo_test_transport
+[ 88%] Built target smo_test_secure_session
+[ 88%] Built target smo_test_identity
+[ 88%] Built target smo_test_fsm
+[ 88%] Built target smo_test_storage
+[ 88%] Built target smo_test_crypto
+[ 88%] Built target smo_test_recovery_package
+[ 88%] Built target smo_test_error
+[ 89%] Built target smo_storage
+[ 90%] Built target smo_transport
+[ 90%] Built target smo_test_transport_hl
+[ 90%] Built target smo_trust
+[ 90%] Built target smo_test_storage_stores
+[ 90%] Built target smo_contract
+[ 90%] Building CXX object cmd/smo/CMakeFiles/smo.dir/main.cpp.o
+[ 90%] Building CXX object cmd/smo-admin/CMakeFiles/smo-admin.dir/main.cpp.o
+[ 91%] Building CXX object cmd/smo-cli/CMakeFiles/smo-cli.dir/cli_application.cpp.o
+[ 92%] Building CXX object cmd/smo-debug/CMakeFiles/smo-debug.dir/main.cpp.o
+[ 92%] Linking CXX executable smo-debug
+[ 92%] Built target smo-debug
+[ 92%] Linking CXX static library libsmo_legacy_runtime.a
+[ 92%] Built target smo_legacy_runtime
+[ 92%] Building CXX object tests/CMakeFiles/smo_test_contract.dir/unit/core/contract/test_contract.cpp.o
+[ 92%] Building CXX object cmd/smo/CMakeFiles/smo.dir/__/smo-cli/cli_application.cpp.o
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_package.hpp:9,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:11:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp: In constructor ‘smo::genesis::RootSession::RootSession(smo::genesis::RootSession&&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:231:26: warning: ‘smo::genesis::RootSession::state_’ will be initialized after [-Wreorder]
+  231 |         RootSessionState state_ = RootSessionState::Inactive;
+      |                          ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:154:21: warning:   ‘std::string smo::genesis::RootSession::root_node_id’ [-Wreorder]
+  154 |         std::string root_node_id;
+      |                     ^~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:164:9: warning:   when initialized here [-Wreorder]
+  164 |         RootSession(RootSession&& other) noexcept
+      |         ^~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.hpp:12,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:14:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.hpp:13,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/tests/unit/core/contract/test_contract.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘void print_usage(const char*)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:52:26: warning: too many arguments for format [-Wformat-extra-args]
+   52 |     std::fprintf(stderr, R"(SMO Admin — Mesh Administration
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   53 | 
+      |                           
+   54 | Usage:
+      | ~~~~~~                    
+   55 |   %s --mesh <name> <command> [options]
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |   %s --mesh-dir <path> <command> [options]
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   57 |   %s <command> [options]                     (uses current mesh from context)
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   58 | 
+      |                           
+   59 | Commands:
+      | ~~~~~~~~~                 
+   60 |   sign <csr-file> -o <output-file>   Sign a CSR and issue a certificate
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   61 |   create-mesh <name>                  Initialize a new mesh
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   62 |   mesh publish [options]              Configure network endpoints
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   63 |   mesh init-authority                 Initialize authority keys (completes genesis Stage 1)
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   64 |   generate-invite <role> [options]    Generate a Join Token
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   65 |   serve [--port <port>]               Start enroll HTTP server
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   66 | 
+      |                           
+   67 | Options:
+      | ~~~~~~~~                  
+   68 |   --mesh <name>        Select mesh by name (stored in ~/.smo/meshes/<name>/)
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   69 |   --mesh-dir <path>    Direct path to mesh directory (overrides --mesh)
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   70 | )",
+      | ~~                        
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘bool write_file(const std::string&, smo::BytesView)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:97:66: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::span<const unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+   97 |     f.write(reinterpret_cast<const char*>(data.data()), data.size());
+      |                                                         ~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘bool get_crypto(smo::CryptoSuiteID, const smo::CryptoProvider*&, smo::RngRef&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:121:83: warning: use of old-style cast to ‘unsigned int’ [-Wold-style-cast]
+  121 |         std::fprintf(stderr, "Error: cipher suite %u not registered\n", (unsigned)suite_id);
+      |                                                                                   ^~~~~~~~
+      |                                                                         ------------------
+      |                                                                         static_cast<unsigned> (suite_id)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘int cmd_sign(const std::vector<std::__cxx11::basic_string<char> >&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:388:97: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+  388 |             pk_out.write(reinterpret_cast<const char*>(kp.public_key.data()), kp.public_key.size());
+      |                                                                               ~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:400:101: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+  400 |             sk_out.write(reinterpret_cast<const char*>(enc_res.value().data()), enc_res.value().size());
+      |                                                                                 ~~~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘int cmd_create_mesh(const std::string&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:530:44: warning: ‘smo::Result<void> smo::authority::MeshAuthority::create_mesh_keys(const Config&, const smo::CryptoProvider&, smo::RngRef&, std::string&)’ is deprecated: Use genesis flow: smo genesis create [-Wdeprecated-declarations]
+  530 |     if (auto r = authority.create_mesh_keys(auth_cfg, *crypto, rng, root_pubkey_hex); !r)
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp:58:9: note: declared here
+   58 |         create_mesh_keys(const Config& config, const CryptoProvider& crypto, RngRef& rng, std::string& root_pubkey_out);
+      |         ^~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘int cmd_generate_invite(const std::vector<std::__cxx11::basic_string<char> >&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:743:22: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘long int’ may change the sign of the result [-Wsign-conversion]
+  743 |                      now_ns,
+      |                      ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:801:74: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  801 |             oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
+      |                                                                          ^
+      |                                                                     ------
+      |                                                                     static_cast<int> (b)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:814:24: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘long int’ may change the sign of the result [-Wsign-conversion]
+  814 |     req.timestamp_ns = now_ns;
+      |                        ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:816:47: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘long int’ may change the sign of the result [-Wsign-conversion]
+  816 |     auto exec_res = session.execute(req, rng, now_ns);
+      |                                               ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:830:40: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘long int’ may change the sign of the result [-Wsign-conversion]
+  830 |     auto consume_res = session.consume(now_ns);
+      |                                        ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp: In function ‘int cmd_mesh_init_authority(const std::vector<std::__cxx11::basic_string<char> >&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1275:84: warning: use of old-style cast to ‘unsigned int’ [-Wold-style-cast]
+ 1275 |         std::fprintf(stderr, "Error: no keygen function for suite %u\n", (unsigned)suite_id);
+      |                                                                                    ^~~~~~~~
+      |                                                                          ------------------
+      |                                                                          static_cast<unsigned> (suite_id)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1339:22: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘long int’ may change the sign of the result [-Wsign-conversion]
+ 1339 |                      now_ns,
+      |                      ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1351:19: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘std::chrono::duration<long int, std::ratio<1, 1000000000> >::rep’ {aka ‘long int’} may change the sign of the result [-Wsign-conversion]
+ 1350 |         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1351 |             .count();
+      |             ~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1385:98: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1385 |     pub_f.write(reinterpret_cast<const char*>(auth_kp.public_key.data()), auth_kp.public_key.size());
+      |                                                                           ~~~~~~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1398:92: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1398 |     sec_f.write(reinterpret_cast<const char*>(enc_res.value().data()), enc_res.value().size());
+      |                                                                        ~~~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-admin/main.cpp:1408:81: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1408 |     cert_f.write(reinterpret_cast<const char*>(cert_blob.data()), cert_blob.size());
+      |                                                                   ~~~~~~~~~~~~~~^~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_package.hpp:9,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/genesis.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:4:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp: In constructor ‘smo::genesis::RootSession::RootSession(smo::genesis::RootSession&&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:231:26: warning: ‘smo::genesis::RootSession::state_’ will be initialized after [-Wreorder]
+  231 |         RootSessionState state_ = RootSessionState::Inactive;
+      |                          ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:154:21: warning:   ‘std::string smo::genesis::RootSession::root_node_id’ [-Wreorder]
+  154 |         std::string root_node_id;
+      |                     ^~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:164:9: warning:   when initialized here [-Wreorder]
+  164 |         RootSession(RootSession&& other) noexcept
+      |         ^~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:5:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp: In function ‘smo::MeshHealth smo::compute_health(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp:257:32: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+  257 |         h.operational = online >= h.required_quorum;
+      |                         ~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::execute_intent(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:256:69: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  256 |                 std::cerr << "Unknown intent type: " << (int)intent.type << "\n";
+      |                                                                     ^~~~
+      |                                                         ----------------
+      |                                                         static_cast<int> (intent.type)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In lambda function:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:505:44: warning: conversion to ‘unsigned char’ from ‘char’ may change the sign of the result [-Wsign-conversion]
+  505 |                     for (unsigned char c : content)
+      |                                            ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_transfer(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:613:40: warning: conversion to ‘unsigned char’ from ‘char’ may change the sign of the result [-Wsign-conversion]
+  613 |                 for (unsigned char c : content)
+      |                                        ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_status(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:831:80: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  831 |                 std::cout << "  Control:  " << (int)context_.get_control_level() << "\n";
+      |                                                                                ^
+      |                                                -----
+      |                                                static_cast<int> (               )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:832:72: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  832 |                 std::cout << "  Scope:    " << (int)context_.get_scope() << "\n";
+      |                                                                        ^
+      |                                                -----
+      |                                                static_cast<int> (       )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In lambda function:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:882:59: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  882 |                     std::cout << "  Control:  " << (int)c.control << "\n";
+      |                                                           ^~~~~~~
+      |                                                    --------------
+      |                                                    static_cast<int> (c.control)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:883:59: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  883 |                     std::cout << "  Scope:    " << (int)c.scope << "\n";
+      |                                                           ^~~~~
+      |                                                    ------------
+      |                                                    static_cast<int> (c.scope)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_context(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+ 1046 |                 return handle_status(Intent{IntentType::Status, "", {}, {}});
+      |                                                                           ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::opcode’ [-Wmissing-field-initializers]
+ 1067 |             return handle_status(Intent{IntentType::Status});
+      |                                                           ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::args’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::flags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_mesh(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1240:56: warning: ‘smo::Result<void> smo::authority::MeshAuthority::create_mesh_keys(const Config&, const smo::CryptoProvider&, smo::RngRef&, std::string&)’ is deprecated: Use genesis flow: smo genesis create [-Wdeprecated-declarations]
+ 1240 |                 if (auto r = authority.create_mesh_keys(auth_cfg, *crypto, rng, root_pubkey_hex); !r)
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:10:
+/home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp:58:9: note: declared here
+   58 |         create_mesh_keys(const Config& config, const CryptoProvider& crypto, RngRef& rng, std::string& root_pubkey_out);
+      |         ^~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_genesis(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1509:49: warning: conversion from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} may change value [-Wconversion]
+ 1509 |                         authorities = std::stoul(intent.flags.at("authorities"));
+      |                                       ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1539:70: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 1539 |                     std::cerr << "Error: crypto suite " << (int)smo::kSuitePurePQC
+      |                                                                      ^~~~~~~~~~~~~
+      |                                                            -----
+      |                                                            static_cast<int> (     )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1626:99: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1626 |                     .write(reinterpret_cast<const char*>(manifest_data.data()), manifest_data.size());
+      |                                                                                 ~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1635:103: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1635 |                         .write(reinterpret_cast<const char*>(recovery_data.data()), recovery_data.size());
+      |                                                                                     ~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_export(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2125:77: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 2125 |                 out << "  \"control\": " << (int)context_.get_control_level() << ",\n";
+      |                                                                             ^
+      |                                             -----
+      |                                             static_cast<int> (               )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2126:67: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 2126 |                 out << "  \"scope\": " << (int)context_.get_scope() << ",\n";
+      |                                                                   ^
+      |                                           -----
+      |                                           static_cast<int> (       )
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.hpp:13,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 92%] Linking CXX executable smo_test_contract
+[ 92%] Built target smo_test_contract
+[ 92%] Building CXX object cmd/smo/CMakeFiles/smo.dir/__/smo-cli/cli_context.cpp.o
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_package.hpp:9,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/genesis.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:4:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp: In constructor ‘smo::genesis::RootSession::RootSession(smo::genesis::RootSession&&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:231:26: warning: ‘smo::genesis::RootSession::state_’ will be initialized after [-Wreorder]
+  231 |         RootSessionState state_ = RootSessionState::Inactive;
+      |                          ^~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:154:21: warning:   ‘std::string smo::genesis::RootSession::root_node_id’ [-Wreorder]
+  154 |         std::string root_node_id;
+      |                     ^~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp:164:9: warning:   when initialized here [-Wreorder]
+  164 |         RootSession(RootSession&& other) noexcept
+      |         ^~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:5:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp: In function ‘smo::MeshHealth smo::compute_health(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp:257:32: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+  257 |         h.operational = online >= h.required_quorum;
+      |                         ~~~~~~~^~~~~~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::execute_intent(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:256:69: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  256 |                 std::cerr << "Unknown intent type: " << (int)intent.type << "\n";
+      |                                                                     ^~~~
+      |                                                         ----------------
+      |                                                         static_cast<int> (intent.type)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In lambda function:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:505:44: warning: conversion to ‘unsigned char’ from ‘char’ may change the sign of the result [-Wsign-conversion]
+  505 |                     for (unsigned char c : content)
+      |                                            ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_transfer(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:613:40: warning: conversion to ‘unsigned char’ from ‘char’ may change the sign of the result [-Wsign-conversion]
+  613 |                 for (unsigned char c : content)
+      |                                        ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_status(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:831:80: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  831 |                 std::cout << "  Control:  " << (int)context_.get_control_level() << "\n";
+      |                                                                                ^
+      |                                                -----
+      |                                                static_cast<int> (               )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:832:72: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  832 |                 std::cout << "  Scope:    " << (int)context_.get_scope() << "\n";
+      |                                                                        ^
+      |                                                -----
+      |                                                static_cast<int> (       )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In lambda function:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:882:59: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  882 |                     std::cout << "  Control:  " << (int)c.control << "\n";
+      |                                                           ^~~~~~~
+      |                                                    --------------
+      |                                                    static_cast<int> (c.control)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:883:59: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+  883 |                     std::cout << "  Scope:    " << (int)c.scope << "\n";
+      |                                                           ^~~~~
+      |                                                    ------------
+      |                                                    static_cast<int> (c.scope)
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_context(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+ 1046 |                 return handle_status(Intent{IntentType::Status, "", {}, {}});
+      |                                                                           ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1046:75: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::opcode’ [-Wmissing-field-initializers]
+ 1067 |             return handle_status(Intent{IntentType::Status});
+      |                                                           ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::args’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::flags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1067:59: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_mesh(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1240:56: warning: ‘smo::Result<void> smo::authority::MeshAuthority::create_mesh_keys(const Config&, const smo::CryptoProvider&, smo::RngRef&, std::string&)’ is deprecated: Use genesis flow: smo genesis create [-Wdeprecated-declarations]
+ 1240 |                 if (auto r = authority.create_mesh_keys(auth_cfg, *crypto, rng, root_pubkey_hex); !r)
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:10:
+/home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp:58:9: note: declared here
+   58 |         create_mesh_keys(const Config& config, const CryptoProvider& crypto, RngRef& rng, std::string& root_pubkey_out);
+      |         ^~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_genesis(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1509:49: warning: conversion from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} may change value [-Wconversion]
+ 1509 |                         authorities = std::stoul(intent.flags.at("authorities"));
+      |                                       ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1539:70: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 1539 |                     std::cerr << "Error: crypto suite " << (int)smo::kSuitePurePQC
+      |                                                                      ^~~~~~~~~~~~~
+      |                                                            -----
+      |                                                            static_cast<int> (     )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1626:99: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1626 |                     .write(reinterpret_cast<const char*>(manifest_data.data()), manifest_data.size());
+      |                                                                                 ~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:1635:103: warning: conversion to ‘std::streamsize’ {aka ‘long int’} from ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} may change the sign of the result [-Wsign-conversion]
+ 1635 |                         .write(reinterpret_cast<const char*>(recovery_data.data()), recovery_data.size());
+      |                                                                                     ~~~~~~~~~~~~~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp: In member function ‘smo::Result<int> smo::CLIApplication::Impl::handle_export(const smo::Intent&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2125:77: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 2125 |                 out << "  \"control\": " << (int)context_.get_control_level() << ",\n";
+      |                                                                             ^
+      |                                             -----
+      |                                             static_cast<int> (               )
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_application.cpp:2126:67: warning: use of old-style cast to ‘int’ [-Wold-style-cast]
+ 2126 |                 out << "  \"scope\": " << (int)context_.get_scope() << ",\n";
+      |                                                                   ^
+      |                                           -----
+      |                                           static_cast<int> (       )
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.hpp:13,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../recovery/crl.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp:7,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:25:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp: In function ‘smo::runtime::Event smo::runtime::make_event(EventType, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp:139:23: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘std::chrono::duration<long int, std::ratio<1, 1000000000> >::rep’ {aka ‘long int’} may change the sign of the result [-Wsign-conversion]
+  138 |             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  139 |                 .count();
+      |                 ~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘std::string smo::CLIContextManager::Impl::get_prompt() const’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:508:20: warning: enumeration value ‘Elevated’ not handled in switch [-Wswitch]
+  508 |             switch (get_control_level())
+      |                    ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:508:20: warning: enumeration value ‘Privileged’ not handled in switch [-Wswitch]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:525:20: warning: enumeration value ‘Cluster’ not handled in switch [-Wswitch]
+  525 |             switch (get_scope())
+      |                    ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:525:20: warning: enumeration value ‘Global’ not handled in switch [-Wswitch]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘smo::Result<void> smo::CLIContextManager::save_execution_context(const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:746:79: warning: unused parameter ‘name’ [-Wunused-parameter]
+  746 |     Result<void> CLIContextManager::save_execution_context(const std::string& name)
+      |                                                            ~~~~~~~~~~~~~~~~~~~^~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘smo::Result<void> smo::CLIContextManager::load_execution_context(const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:752:79: warning: unused parameter ‘name’ [-Wunused-parameter]
+  752 |     Result<void> CLIContextManager::load_execution_context(const std::string& name)
+      |                                                            ~~~~~~~~~~~~~~~~~~~^~~~
+[ 92%] Linking CXX executable smo-admin
+[ 92%] Built target smo-admin
+[ 93%] Built target smo_observability
+[ 93%] Building CXX object cmd/smo-cli/CMakeFiles/smo-cli.dir/cli_context.cpp.o
+[ 94%] Building CXX object cmd/smo/CMakeFiles/smo.dir/__/smo-cli/intent_parser.cpp.o
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.hpp:13,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.hpp:10,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 94%] Building CXX object cmd/smo-cli/CMakeFiles/smo-cli.dir/intent_parser.cpp.o
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp: In member function ‘smo::Result<smo::ParsedCommand> smo::IntentParser::parse(const std::vector<std::__cxx11::basic_string<char> >&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+  193 |                 return ParsedCommand{Intent{IntentType::Help, "", {}, {{"command", args[1]}}}, cmd, {}};
+      |                                                                                             ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+  195 |             return ParsedCommand{Intent{IntentType::Help, "", {}, {}}, "help", {}};
+      |                                                                     ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../recovery/crl.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp:7,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:25:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp: In function ‘smo::runtime::Event smo::runtime::make_event(EventType, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp:139:23: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘std::chrono::duration<long int, std::ratio<1, 1000000000> >::rep’ {aka ‘long int’} may change the sign of the result [-Wsign-conversion]
+  138 |             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  139 |                 .count();
+      |                 ~~~~~~^~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘std::string smo::CLIContextManager::Impl::get_prompt() const’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:508:20: warning: enumeration value ‘Elevated’ not handled in switch [-Wswitch]
+  508 |             switch (get_control_level())
+      |                    ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:508:20: warning: enumeration value ‘Privileged’ not handled in switch [-Wswitch]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:525:20: warning: enumeration value ‘Cluster’ not handled in switch [-Wswitch]
+  525 |             switch (get_scope())
+      |                    ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:525:20: warning: enumeration value ‘Global’ not handled in switch [-Wswitch]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘smo::Result<void> smo::CLIContextManager::save_execution_context(const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:746:79: warning: unused parameter ‘name’ [-Wunused-parameter]
+  746 |     Result<void> CLIContextManager::save_execution_context(const std::string& name)
+      |                                                            ~~~~~~~~~~~~~~~~~~~^~~~
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp: In member function ‘smo::Result<void> smo::CLIContextManager::load_execution_context(const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/cli_context.cpp:752:79: warning: unused parameter ‘name’ [-Wunused-parameter]
+  752 |     Result<void> CLIContextManager::load_execution_context(const std::string& name)
+      |                                                            ~~~~~~~~~~~~~~~~~~~^~~~
+[ 94%] Building CXX object cmd/smo-cli/CMakeFiles/smo-cli.dir/__/__/third_party/readline/readline.cpp.o
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.hpp:10,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:1:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/session_manager_service.cpp.o
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp: In member function ‘smo::Result<smo::ParsedCommand> smo::IntentParser::parse(const std::vector<std::__cxx11::basic_string<char> >&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+  193 |                 return ParsedCommand{Intent{IntentType::Help, "", {}, {{"command", args[1]}}}, cmd, {}};
+      |                                                                                             ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:193:93: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::node_names’ [-Wmissing-field-initializers]
+  195 |             return ParsedCommand{Intent{IntentType::Help, "", {}, {}}, "help", {}};
+      |                                                                     ^
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::node_ids’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::roles’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::tags’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::where_expression’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::os_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::arch_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::version_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::mesh_filter’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::trust_min’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::trust_max’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::scope’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::control’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::kwargs’ [-Wmissing-field-initializers]
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-cli/intent_parser.cpp:195:69: warning: missing initializer for member ‘smo::Intent::selection_name’ [-Wmissing-field-initializers]
+[ 95%] Building CXX object cmd/smo/CMakeFiles/smo.dir/__/__/third_party/readline/readline.cpp.o
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/recovery_trust_service.cpp.o
+[ 95%] Linking CXX executable smo
+[ 95%] Built target smo
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/governance_middleware_service.cpp.o
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/runtime_kernel_service.cpp.o
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/__/__/runtime/executor/executor.cpp.o
+[ 95%] Linking CXX executable smo-cli
+[ 95%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/__/__/runtime/sandbox/sandbox.cpp.o
+[ 95%] Built target smo-cli
+[ 96%] Building CXX object core/runtime/CMakeFiles/smo_runtime.dir/__/__/runtime/workerpool/workerpool.cpp.o
+[ 96%] Linking CXX static library libsmo_runtime.a
+[100%] Built target smo_runtime
+[100%] Building CXX object tests/CMakeFiles/smo_pct.dir/unit/protocol/test_pct.cpp.o
+[100%] Building CXX object cmd/smo-node/CMakeFiles/smo-node.dir/main.cpp.o
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-node/main.cpp: In function ‘int main(int, char**)’:
+/home/nguyenduccanh/shellmap_project/smoframework/cmd/smo-node/main.cpp:76:9: warning: variable ‘admin_port’ set but not used [-Wunused-but-set-variable]
+   76 |     int admin_port = 9090;
+      |         ^~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.hpp:12,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.hpp:6,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:4:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp: In member function ‘std::size_t std::hash<smo::ContractID>::operator()(const smo::ContractID&) const’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp:233:56: warning: useless cast to type ‘std::size_t’ {aka ‘long unsigned int’} [-Wuseless-cast]
+  233 |                 size_t copy = std::min(sizeof(size_t), static_cast<size_t>(32 - i));
+      |                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[100%] Linking CXX executable smo-node
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/network/packet_dispatcher.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.hpp:9:
+/home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.hpp: In member function ‘virtual smo::Result<std::unique_ptr<smo::TransportSession> > smo::Transport::connect(const smo::Endpoint&, smo::ConnectionType)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.hpp:144:79: warning: unused parameter ‘conn_type’ [-Wunused-parameter]
+  144 |         virtual Result<SessionPtr> connect(const Endpoint& ep, ConnectionType conn_type) {
+      |                                                                ~~~~~~~~~~~~~~~^~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp:5,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/network/packet_dispatcher.hpp:9:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp: In function ‘smo::runtime::Event smo::runtime::make_event(EventType, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp:139:23: warning: conversion to ‘uint64_t’ {aka ‘long unsigned int’} from ‘std::chrono::duration<long int, std::ratio<1, 1000000000> >::rep’ {aka ‘long int’} may change the sign of the result [-Wsign-conversion]
+  138 |             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  139 |                 .count();
+      |                 ~~~~~~^~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_protocol.hpp:8,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:5:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp: In function ‘smo::MeshHealth smo::compute_health(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp:257:32: warning: comparison of integer expressions of different signedness: ‘uint32_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+  257 |         h.operational = online >= h.required_quorum;
+      |                         ~~~~~~~^~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/discovery.hpp:8,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/membership_sync.hpp:3,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:12:
+/home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.hpp: In function ‘uint32_t smo::network::ice::calculate_priority(CandidateType, uint16_t, uint8_t)’:
+/home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.hpp:115:65: warning: conversion to ‘uint32_t’ {aka ‘unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  115 |         return (type_pref << 24) | ((local_preference & 0xFFFF) << 8) | (256 - component_id);
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.hpp: At global scope:
+/home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.hpp:144:36: warning: ‘virtual smo::Result<std::unique_ptr<smo::TransportSession> > smo::Transport::connect(const smo::Endpoint&, smo::ConnectionType)’ was hidden [-Woverloaded-virtual=]
+  144 |         virtual Result<SessionPtr> connect(const Endpoint& ep, ConnectionType conn_type) {
+      |                                    ^~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/heartbeat_service.hpp:6,
+                 from /home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:32:
+/home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/../udp/udp_transport.hpp:67:28: note:   by ‘virtual smo::Result<std::unique_ptr<smo::TransportSession> > smo::network::udp::UdpTransport::connect(const smo::Endpoint&)’
+   67 |         Result<SessionPtr> connect(const Endpoint& ep) override;
+      |                            ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp: In function ‘bool test_pct_021()’:
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:854:28: warning: unused variable ‘nonce_b’ [-Wunused-variable]
+  854 |     std::array<uint8_t, 8> nonce_b = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+      |                            ^~~~~~~
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp: In function ‘bool test_pct_025()’:
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:1094:66: warning: conversion from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} may change value [-Wconversion]
+ 1094 |         uint16_t msg_type = (static_cast<uint16_t>(req[0]) << 8) | req[1];
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:1112:77: warning: conversion from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} may change value [-Wconversion]
+ 1112 |             uint16_t last_type = (static_cast<uint16_t>(req[end - 8]) << 8) | req[end - 7];
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:1146:20: warning: conversion to ‘std::vector<unsigned char>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+ 1146 |             resp[8 + i] = tid.bytes[i];
+      |                  ~~^~~
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:1146:37: warning: conversion to ‘std::array<unsigned char, 12>::size_type’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+ 1146 |             resp[8 + i] = tid.bytes[i];
+      |                                     ^
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp: In function ‘bool test_pct_023()’:
+/home/nguyenduccanh/shellmap_project/smoframework/tests/unit/protocol/test_pct.cpp:1708:50: warning: ‘smo::Result<smo::enroll::JoinToken> smo::enroll::generate_token_hmac(const std::string&, int64_t, int, const std::vector<std::__cxx11::basic_string<char> >&, const std::string&, int64_t, const smo::Bytes&, const smo::HashImpl&)’ is deprecated: Use generate_token with admission+signature instead [-Wdeprecated-declarations]
+ 1708 |             auto v1 = enroll::generate_token_hmac("mesh-test", 1, static_cast<int>(suite_id), {"10.0.0.1:7777"},
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1709 |                                                   "Member", expiry, Bytes{1, 2, 3, 4}, prov->hash);
+      |                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.hpp:7:
+/home/nguyenduccanh/shellmap_project/smoframework/core/enroll/join_token.hpp:90:5: note: declared here
+   90 |     generate_token_hmac(const std::string& mesh_id, int64_t mesh_epoch, int cipher_suite_id,
+      |     ^~~~~~~~~~~~~~~~~~~
+[100%] Built target smo-node
+[100%] Linking CXX executable smo_pct
+[100%] Built target smo_pct

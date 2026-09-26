@@ -80,6 +80,13 @@ namespace smo::network::ice {
         bool empty() const noexcept { return local.empty() || remote.empty(); }
     };
 
+    // ── ICE Role (RFC 8445 §5.2) ────────────────────────────────────────────────
+    enum class IceRole : uint8_t
+    {
+        Controlling = 0,  // Initiator, uses USE-CANDIDATE to nominate
+        Controlled = 1,   // Responder, waits for USE-CANDIDATE
+    };
+
     // ── ICE Configuration ─────────────────────────────────────────────────────
     struct IceConfig
     {
@@ -90,6 +97,8 @@ namespace smo::network::ice {
         bool enable_relay = true;
         uint32_t connectivity_check_timeout_ms = 5000;
         uint32_t max_checks_per_pair = 3;
+        IceRole role = IceRole::Controlling; // Default to controlling (initiator)
+        uint64_t tie_breaker = 0; // Random tie-breaker for role conflict resolution
     };
 
     // ── Priority Calculation (RFC 8445 §5.1.2) ────────────────────────────────
@@ -177,19 +186,23 @@ namespace smo::network::ice {
 
         // Perform connectivity checks on pairs (STUN binding requests)
         // Returns nominated pair on success
+        // controlling: true = controlling role (initiator), false = controlled role (responder)
         smo::Result<CandidatePair> run_connectivity_checks(const Endpoint& local_bind_endpoint,
                                                            bool controlling = true);
 
         // Get nominated pair (after connectivity checks)
         std::optional<CandidatePair> nominated_pair() const;
 
-        // Get current config (for inspection)
-        const IceConfig& config() const noexcept { return config_; }
+        // Get current role
+        IceRole role() const noexcept { return config_.role; }
+
+        // Set role (call before run_connectivity_checks)
+        void set_role(IceRole role) { config_.role = role; }
 
         // Serialize local candidates to CBOR for Join protocol exchange
         Bytes encode_candidates_cbor() const;
 
-        // Deserialize candidates from CBOR
+        // Deserialize candidates from CBOR (static, used by Join protocol)
         static smo::Result<std::vector<Candidate>> decode_candidates_cbor(BytesView data);
 
     private:
@@ -197,6 +210,7 @@ namespace smo::network::ice {
         std::vector<Candidate> local_candidates_;
         std::vector<Candidate> remote_candidates_;
         std::optional<CandidatePair> nominated_pair_;
+        bool checks_started_ = false;
 
         // Gather host candidates from local interfaces
         std::vector<Candidate> gather_host_candidates(const std::vector<Endpoint>& endpoints);
@@ -210,15 +224,19 @@ namespace smo::network::ice {
         // Perform a single STUN binding check to a remote candidate
         smo::Result<double> check_connectivity(const Endpoint& local_bind,
                                                const Candidate& remote_cand,
-                                               const Candidate& local_cand);
+                                               const Candidate& local_cand,
+                                               bool use_candidate);
 
         // Build STUN binding request for connectivity check
-        Bytes build_check_request(std::array<uint8_t, 12>& out_tid) const;
+        Bytes build_check_request(std::array<uint8_t, 12>& out_tid, bool use_candidate) const;
 
         // Parse STUN binding response
         std::optional<double> parse_check_response(BytesView data,
                                                    const std::array<uint8_t, 12>& expected_tid,
                                                    int64_t sent_time_ns) const;
+
+        // Handle role conflict (RFC 8445 §7.3.1.1)
+        bool handle_role_conflict(const CandidatePair& pair, bool& role_switched);
     };
 
 } // namespace smo::network::ice

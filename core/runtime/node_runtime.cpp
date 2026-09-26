@@ -397,6 +397,7 @@ private:
     smo::SessionManager session_mgr_;
     smo::MeshManager mesh_manager_;
     smo::authority::MeshAuthority authority_;
+    smo::mesh::MeshFsm mesh_fsm_;  // C6.1: MeshFSM for lifecycle transitions
     smo::GovernanceEngine governance_engine_;
     smo::TrustManager trust_mgr_;
     smo::recovery::CRL crl_;
@@ -477,6 +478,7 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
           .address_resolver = address_resolver_,
           .heartbeat = heartbeat_,
           .membership = membership_})
+    , mesh_fsm_(&authority_)
 {
     // Services constructed after all dependencies are available
     telemetry_service_ = std::make_unique<smo::runtime::TelemetryService>(
@@ -1080,6 +1082,63 @@ void NodeRuntime::Impl::wire_runtime()
         }
     }
 
+    // Initialize MeshFsm state from mesh config (C6.1: MeshFSM wiring)
+    if (!config_.mesh_dir.empty())
+    {
+        std::string mesh_json_path = config_.mesh_dir + "/mesh.json";
+        std::ifstream mfd(mesh_json_path);
+        if (mfd)
+        {
+            std::string mjs((std::istreambuf_iterator<char>(mfd)), std::istreambuf_iterator<char>());
+            auto ms_pos = mjs.find("\"mesh_state\"");
+            if (ms_pos != std::string::npos)
+            {
+                auto colon = mjs.find(':', ms_pos);
+                auto start = mjs.find('"', colon + 1);
+                auto end = start != std::string::npos ? mjs.find('"', start + 1) : std::string::npos;
+                if (start != std::string::npos && end != std::string::npos)
+                {
+                    std::string state_str = mjs.substr(start + 1, end - start - 1);
+                    if (state_str == "Genesis")
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                    else if (state_str == "Bootstrap")
+                    {
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::BootstrapReady);
+                    }
+                    else if (state_str == "Online")
+                    {
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::BootstrapReady);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::AllSlotsFulfilled);
+                    }
+                    else if (state_str == "Maintenance")
+                    {
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::BootstrapReady);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::AllSlotsFulfilled);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::EnterMaintenance);
+                    }
+                    else if (state_str == "Recovery")
+                    {
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::BootstrapReady);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::TriggerRecovery);
+                    }
+                    else if (state_str == "Archived")
+                    {
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::StartGenesis);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::BootstrapReady);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::AllSlotsFulfilled);
+                        mesh_fsm_.on_event(smo::mesh::MeshEvent::Archive);
+                    }
+                    std::printf("[smo-node] MeshFsm initialized to state: %s\n",
+                                smo::mesh::to_string(mesh_fsm_.current_state()).c_str());
+                }
+            }
+        }
+    }
+
     sync_delta_service_.register_delta_handlers();
 
     // Register contracts, routes, and packet handlers via service
@@ -1089,6 +1148,9 @@ void NodeRuntime::Impl::wire_runtime()
     }
 
     event_registry_service_.register_all();
+
+    // Register bootstrap handler with MeshFsm (C6.1: MeshFSM wiring)
+    protocol_service_.register_bootstrap_handler(dispatcher_, &mesh_fsm_, &governance_engine_);
 
     // Initialize extracted services
     if (telemetry_service_)

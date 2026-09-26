@@ -6,6 +6,7 @@
 #include <core/authority/authority.hpp>
 #include <core/recovery/crl.hpp>
 #include <core/network/packet_dispatcher.hpp>
+#include <core/mesh/mesh_fsm.hpp>
 
 #include <cstdint>
 #include <functional>
@@ -30,6 +31,7 @@ namespace smo {
     struct PongMsg;
     struct PeerRecord;
     class NodeID;
+    class GovernanceEngine;
 
 } // namespace smo
 
@@ -72,6 +74,11 @@ namespace smo::runtime {
 
         // Register this service's raw handler with the given PacketDispatcher
         void register_raw_handler(smo::network::PacketDispatcher& dispatcher);
+
+        // Register bootstrap handler with optional MeshFsm (C6.1: MeshFSM wiring)
+        void register_bootstrap_handler(smo::network::PacketDispatcher& dispatcher,
+                                        smo::mesh::MeshFsm* mesh_fsm = nullptr,
+                                        smo::GovernanceEngine* governance = nullptr);
 
     private:
         Config config_;

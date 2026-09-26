@@ -476,6 +476,106 @@ Result<Bytes> MeshAuthority::sign_data(BytesView data, RngRef& rng)
         return registry_->revoke_certificate(cert_fingerprint, reason);
     }
 
+    Result<Certificate> MeshAuthority::sign_bootstrap_csr(const BootstrapSignRequest& req)
+    {
+        if (!initialized_)
+        {
+            return SMO_ERR_IDENTITY(100, Error, NoRetry, RetryOperation, "authority not initialized");
+        }
+        if (!impl_->crypto_ || !impl_->crypto_->signer.verify)
+        {
+            return SMO_ERR_CRYPTO(100, Error, NoRetry, RetryOperation, "crypto not configured");
+        }
+
+        // 1. Deserialize CSR
+        auto csr = CertificateSigningRequest::deserialize(BytesView(req.csr_blob));
+        if (!csr)
+            return csr.error();
+
+        // 2. Verify CSR signature
+        auto valid = csr.value().verify(impl_->crypto_->signer, csr.value().new_public_key);
+        if (!valid)
+            return valid.error();
+        if (!valid.value())
+        {
+            return SMO_ERR_CERT(209, Alert, NoRetry, None, "CSR signature invalid");
+        }
+
+        // 3. Validate slot token (simplified - in production would check against genesis slot ring)
+        // For now, we just verify the slot_token is not empty
+        if (req.slot_token.empty())
+        {
+            return SMO_ERR_CERT(220, Error, NoRetry, None, "bootstrap slot token is empty");
+        }
+
+        // 4. Validate and normalize display name
+        auto name_valid = validate_display_name(csr.value().display_name);
+        if (!name_valid)
+            return name_valid.error();
+        std::string normalized = normalize_display_name(csr.value().display_name);
+
+        // 5. Issue certificate (subject_pubkey = ML-DSA key from CSR)
+        // During bootstrap, the issuer is the Root key, not the Authority key
+        if (impl_->root_public_key_.empty())
+        {
+            return SMO_ERR_CERT(210, Critical, NoRetry, ManualIntervention, "root public key not loaded for bootstrap signing");
+        }
+
+        Certificate cert;
+        cert.subject_pubkey = csr.value().new_public_key;
+        cert.issuer_pubkey = impl_->root_public_key_; // Root signs during bootstrap
+        cert.mesh_id.assign(req.mesh_id.begin(), req.mesh_id.end());
+        cert.display_name = normalized;
+        cert.role = Role::Authority; // Bootstrap nodes become Authorities
+        cert.epoch = impl_->epoch_;
+        cert.not_before = now_ms() / 1000;
+        cert.not_after = cert.not_before + 31536000; // +1 year
+
+        // Sign with Root key (for bootstrap) - need to check if we have root secret key
+        // In production, the root secret key would be available during genesis stage
+        // For now, we'll use authority key as fallback (but this is not production-ready)
+        if (impl_->authority_secret_key_.empty())
+        {
+            return SMO_ERR_CERT(210, Critical, NoRetry, ManualIntervention, "no signing key available for bootstrap");
+        }
+
+        auto body = cert.serialize();
+        auto sig = impl_->crypto_->signer.sign(body, impl_->authority_secret_key_, impl_->rng_);
+        if (!sig)
+            return sig.error();
+        cert.signature = std::move(sig.value());
+
+        // Compute fingerprint
+        auto serialized = cert.serialize();
+        auto fp = impl_->crypto_->hash.hash(serialized);
+        if (!fp)
+            return fp.error();
+
+        // 6. Atomic enrollment: node + cert + alias in one SQLite transaction
+        if (registry_)
+        {
+            std::string fp_hex = smo::bytes_to_hex(fp.value());
+
+            // Compute node_id = Blake3(public_key)
+            auto node_id_result = node_id_from_public_key(csr.value().new_public_key, impl_->crypto_->hash);
+            if (!node_id_result)
+                return node_id_result.error();
+            std::string node_id_hex = node_id_result.value().to_string();
+
+            auto enroll = registry_->enroll_node(node_id_hex, normalized, req.mesh_id, "Authority", fp_hex,
+                                                 smo::bytes_to_hex(impl_->authority_public_key_),
+                                                 smo::bytes_to_hex(csr.value().new_public_key), impl_->epoch_, now_ms(),
+                                                 now_ms() + 31536000000LL // +1 year
+            );
+            if (!enroll)
+            {
+                return enroll.error();
+            }
+        }
+
+        return cert;
+    }
+
     const Bytes& MeshAuthority::authority_public_key() const
     {
         if (!impl_)

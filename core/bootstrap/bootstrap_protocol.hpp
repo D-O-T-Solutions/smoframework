@@ -8,6 +8,7 @@
 #include "core/governance/governance.hpp"
 #include "core/recovery/crl.hpp"
 #include "core/network/packet_dispatcher.hpp"
+#include "core/mesh/mesh_fsm.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -15,7 +16,7 @@
 
 namespace smo::bootstrap {
 
-    // ── Protocol constants ────────────────────────────────────────────────
+    // ── Protocol constants ──────────────────────────────────────────────────
 
     inline constexpr uint8_t kProtocolVersion = 1;
 
@@ -63,13 +64,15 @@ namespace smo::bootstrap {
     // Uses live data from authority, mesh_manager, governance, and CRL.
     Result<BootstrapResponse> handle_bootstrap_request(const BootstrapRequest& req, MeshManager& mesh_mgr,
                                                        authority::MeshAuthority& authority,
-                                                       GovernanceEngine* governance, recovery::CRL* crl);
+                                                       GovernanceEngine* governance, recovery::CRL* crl,
+                                                       mesh::MeshFsm* mesh_fsm = nullptr);
 
     // Register the bootstrap request handler on a PacketDispatcher.
     // After registration, incoming BOOTSTRAP_REQUEST packets are automatically
     // handled: snapshot assembled, encoded as CBOR, sent back as BOOTSTRAP_RESPONSE.
     void register_bootstrap_handler(network::PacketDispatcher& dispatcher, MeshManager& mesh_mgr,
                                     authority::MeshAuthority& authority, GovernanceEngine* governance,
-                                    recovery::CRL* crl, hl::Transport* transport);
+                                    recovery::CRL* crl, hl::Transport* transport,
+                                    mesh::MeshFsm* mesh_fsm = nullptr);
 
 } // namespace smo::bootstrap

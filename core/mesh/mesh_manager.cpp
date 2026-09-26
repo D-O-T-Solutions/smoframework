@@ -153,6 +153,7 @@ namespace smo {
         oss << "\"created_at\":" << config.created_at << ",";
         oss << "\"listen_address\":\"" << escape_json(config.listen_address) << "\",";
         oss << "\"bootstrap_configured\":" << (config.bootstrap_configured ? "true" : "false") << ",";
+        oss << "\"mesh_state\":\"" << escape_json(config.mesh_state) << "\",";
         // advertise_addresses array
         oss << "\"advertise_addresses\":[";
         for (size_t i = 0; i < config.advertise_addresses.size(); ++i)
@@ -252,6 +253,12 @@ namespace smo {
                 for (uint8_t b : secret)
                     oss << std::hex << std::setw(2) << std::setfill('0') << (int)b;
                 cfg.hmac_secret = oss.str();
+            }
+
+            // Initialize mesh_state to Draft if not set (C6.1: MeshFSM wiring)
+            if (cfg.mesh_state.empty())
+            {
+                cfg.mesh_state = "Draft";
             }
 
             std::string mesh_id = cfg.mesh_id.empty() ? generate_mesh_id(cfg) : cfg.mesh_id;
@@ -379,6 +386,9 @@ namespace smo {
                     ctx->config.authority_pubkey = json_read_string(config_json, "authority_pubkey");
                     ctx->config.root_pubkey = json_read_string(config_json, "root_pubkey");
                     ctx->config.epoch = json_read_int(config_json, "epoch", 1);
+                    ctx->config.mesh_state = json_read_string(config_json, "mesh_state");
+                    if (ctx->config.mesh_state.empty())
+                        ctx->config.mesh_state = "Draft";
                     // Parse advertise_addresses
                     auto adv = config_json.find("\"advertise_addresses\"");
                     if (adv != std::string::npos)
@@ -788,6 +798,9 @@ namespace smo {
         if (cfg.listen_address.empty())
             cfg.listen_address = "0.0.0.0:7777";
         cfg.bootstrap_configured = json_read_string(json, "bootstrap_configured") == "true";
+        cfg.mesh_state = json_read_string(json, "mesh_state");
+        if (cfg.mesh_state.empty())
+            cfg.mesh_state = "Draft";
 
         // Parse advertise_addresses array
         auto adv_start = json.find("\"advertise_addresses\"");

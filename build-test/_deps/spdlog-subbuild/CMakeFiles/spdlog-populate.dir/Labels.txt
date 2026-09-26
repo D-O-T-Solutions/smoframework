@@ -1,0 +1,14 @@
+# Target labels
+ spdlog-populate
+# Source files and their labels
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/CMakeFiles/spdlog-populate
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/CMakeFiles/spdlog-populate.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/CMakeFiles/spdlog-populate-complete.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-build.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-configure.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-download.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-install.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-mkdir.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-patch.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-test.rule
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/spdlog-subbuild/spdlog-populate-prefix/src/spdlog-populate-stamp/spdlog-populate-update.rule
