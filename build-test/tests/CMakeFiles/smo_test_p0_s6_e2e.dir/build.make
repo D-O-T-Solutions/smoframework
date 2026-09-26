@@ -97,7 +97,7 @@ tests/smo_test_p0_s6_e2e: providers/suite1_classical/libsmo_suite1_classical.a
 tests/smo_test_p0_s6_e2e: protocol/libsmo_protocol.a
 tests/smo_test_p0_s6_e2e: storage/libsmo_storage.a
 tests/smo_test_p0_s6_e2e: contract/libsmo_contract.a
-tests/smo_test_p0_s6_e2e: _deps/fmt-build/libfmt.a
+tests/smo_test_p0_s6_e2e: _deps/fmt-build/libfmtd.a
 tests/smo_test_p0_s6_e2e: storage/libsmo_storage.a
 tests/smo_test_p0_s6_e2e: protocol/libsmo_protocol.a
 tests/smo_test_p0_s6_e2e: _deps/simdjson-build/libsimdjson.a
@@ -105,8 +105,10 @@ tests/smo_test_p0_s6_e2e: core/libsmo_core.a
 tests/smo_test_p0_s6_e2e: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_p0_s6_e2e: core/libsmo_core.a
 tests/smo_test_p0_s6_e2e: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_p0_s6_e2e: _deps/fmt-build/libfmt.a
+tests/smo_test_p0_s6_e2e: _deps/fmt-build/libfmtd.a
 tests/smo_test_p0_s6_e2e: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_p0_s6_e2e: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_p0_s6_e2e: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_p0_s6_e2e: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_p0_s6_e2e: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_p0_s6_e2e: third_party/blake3/libsmo_blake3.a

@@ -93,12 +93,14 @@ smo_test_storage_EXTERNAL_OBJECTS =
 tests/smo_test_storage: tests/CMakeFiles/smo_test_storage.dir/unit/core/storage/test_storage.cpp.o
 tests/smo_test_storage: tests/CMakeFiles/smo_test_storage.dir/build.make
 tests/smo_test_storage: core/libsmo_core.a
-tests/smo_test_storage: _deps/fmt-build/libfmt.a
+tests/smo_test_storage: _deps/fmt-build/libfmtd.a
 tests/smo_test_storage: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_storage: core/libsmo_core.a
 tests/smo_test_storage: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_storage: _deps/fmt-build/libfmt.a
+tests/smo_test_storage: _deps/fmt-build/libfmtd.a
 tests/smo_test_storage: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_storage: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_storage: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_storage: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_storage: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_storage: third_party/blake3/libsmo_blake3.a

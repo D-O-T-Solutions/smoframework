@@ -95,7 +95,7 @@ tests/smo_test_event_store: tests/CMakeFiles/smo_test_event_store.dir/build.make
 tests/smo_test_event_store: core/runtime/libsmo_runtime.a
 tests/smo_test_event_store: core/libsmo_core.a
 tests/smo_test_event_store: storage/libsmo_storage.a
-tests/smo_test_event_store: _deps/fmt-build/libfmt.a
+tests/smo_test_event_store: _deps/fmt-build/libfmtd.a
 tests/smo_test_event_store: core/observability/libsmo_observability.a
 tests/smo_test_event_store: core/runtime/libsmo_runtime.a
 tests/smo_test_event_store: core/observability/libsmo_observability.a
@@ -104,14 +104,16 @@ tests/smo_test_event_store: storage/libsmo_storage.a
 tests/smo_test_event_store: protocol/libsmo_protocol.a
 tests/smo_test_event_store: _deps/simdjson-build/libsimdjson.a
 tests/smo_test_event_store: core/acl/libsmo_acl.a
-tests/smo_test_event_store: _deps/yaml-cpp-build/libyaml-cpp.a
+tests/smo_test_event_store: _deps/yaml-cpp-build/libyaml-cppd.a
 tests/smo_test_event_store: core/genesis/libsmo_genesis.a
 tests/smo_test_event_store: core/libsmo_core.a
 tests/smo_test_event_store: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_event_store: core/libsmo_core.a
 tests/smo_test_event_store: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_event_store: _deps/fmt-build/libfmt.a
+tests/smo_test_event_store: _deps/fmt-build/libfmtd.a
 tests/smo_test_event_store: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_event_store: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_event_store: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_event_store: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_event_store: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_event_store: third_party/blake3/libsmo_blake3.a

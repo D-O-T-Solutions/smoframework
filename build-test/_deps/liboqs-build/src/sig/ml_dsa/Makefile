@@ -193,694 +193,2368 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/rule:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/rule
-.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/rule
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/rule
 
 # Convenience name for target.
-ml_dsa_44_ipd_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/rule
-.PHONY : ml_dsa_44_ipd_ref
+ml_dsa_44_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/rule
+.PHONY : ml_dsa_44_ref
 
 # fast build rule for target.
-ml_dsa_44_ipd_ref/fast:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build
-.PHONY : ml_dsa_44_ipd_ref/fast
+ml_dsa_44_ref/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build
+.PHONY : ml_dsa_44_ref/fast
 
 # Convenience name for target.
-_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/rule:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/rule
-.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/rule
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/rule
 
 # Convenience name for target.
-ml_dsa_65_ipd_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/rule
-.PHONY : ml_dsa_65_ipd_ref
+ml_dsa_44_x86_64: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/rule
+.PHONY : ml_dsa_44_x86_64
 
 # fast build rule for target.
-ml_dsa_65_ipd_ref/fast:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build
-.PHONY : ml_dsa_65_ipd_ref/fast
+ml_dsa_44_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build
+.PHONY : ml_dsa_44_x86_64/fast
 
 # Convenience name for target.
-_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/rule:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/rule
-.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/rule
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/rule
 
 # Convenience name for target.
-ml_dsa_87_ipd_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/rule
-.PHONY : ml_dsa_87_ipd_ref
+ml_dsa_65_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/rule
+.PHONY : ml_dsa_65_ref
 
 # fast build rule for target.
-ml_dsa_87_ipd_ref/fast:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build
-.PHONY : ml_dsa_87_ipd_ref/fast
+ml_dsa_65_ref/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build
+.PHONY : ml_dsa_65_ref/fast
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.o
+# Convenience name for target.
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/rule
 
-# target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.o
+# Convenience name for target.
+ml_dsa_65_x86_64: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/rule
+.PHONY : ml_dsa_65_x86_64
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.i
+# fast build rule for target.
+ml_dsa_65_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build
+.PHONY : ml_dsa_65_x86_64/fast
 
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.i
+# Convenience name for target.
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/rule
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.s
+# Convenience name for target.
+ml_dsa_87_ref: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/rule
+.PHONY : ml_dsa_87_ref
 
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.c.s
+# fast build rule for target.
+ml_dsa_87_ref/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build
+.PHONY : ml_dsa_87_ref/fast
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.o
+# Convenience name for target.
+_deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/rule
 
-# target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.o
+# Convenience name for target.
+ml_dsa_87_x86_64: _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/rule
+.PHONY : ml_dsa_87_x86_64
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.i
+# fast build rule for target.
+ml_dsa_87_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build
+.PHONY : ml_dsa_87_x86_64/fast
 
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.o: mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.i: mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.s: mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/ct.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.o: mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.i: mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.s: mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/debug.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.o: mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.i: mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.s: mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/packing.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.o: mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.i: mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.s: mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.o: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.o: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.i: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.i: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.s: pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.s: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.o: mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.o
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.i: mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.i
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.s: mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.c.s
+mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-44_ref/mldsa/src/sign.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.o: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.i: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.s: pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.i
-
-# target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.i
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.s
-
-# target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.c.s
-
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.o: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o
 
 # target to build an object file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.i: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i
 
 # target to preprocess a source file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
 
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.s: pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s
 
 # target to generate assembly for a file
-pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
 
-sig_ml_dsa_44_ipd.o: sig_ml_dsa_44_ipd.c.o
-.PHONY : sig_ml_dsa_44_ipd.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o
 
 # target to build an object file
-sig_ml_dsa_44_ipd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/sig_ml_dsa_44_ipd.c.o
-.PHONY : sig_ml_dsa_44_ipd.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
 
-sig_ml_dsa_44_ipd.i: sig_ml_dsa_44_ipd.c.i
-.PHONY : sig_ml_dsa_44_ipd.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i
 
 # target to preprocess a source file
-sig_ml_dsa_44_ipd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/sig_ml_dsa_44_ipd.c.i
-.PHONY : sig_ml_dsa_44_ipd.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
 
-sig_ml_dsa_44_ipd.s: sig_ml_dsa_44_ipd.c.s
-.PHONY : sig_ml_dsa_44_ipd.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s
 
 # target to generate assembly for a file
-sig_ml_dsa_44_ipd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/sig_ml_dsa_44_ipd.c.s
-.PHONY : sig_ml_dsa_44_ipd.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
 
-sig_ml_dsa_65_ipd.o: sig_ml_dsa_65_ipd.c.o
-.PHONY : sig_ml_dsa_65_ipd.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o
 
 # target to build an object file
-sig_ml_dsa_65_ipd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/sig_ml_dsa_65_ipd.c.o
-.PHONY : sig_ml_dsa_65_ipd.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
 
-sig_ml_dsa_65_ipd.i: sig_ml_dsa_65_ipd.c.i
-.PHONY : sig_ml_dsa_65_ipd.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i
 
 # target to preprocess a source file
-sig_ml_dsa_65_ipd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/sig_ml_dsa_65_ipd.c.i
-.PHONY : sig_ml_dsa_65_ipd.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
 
-sig_ml_dsa_65_ipd.s: sig_ml_dsa_65_ipd.c.s
-.PHONY : sig_ml_dsa_65_ipd.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s
 
 # target to generate assembly for a file
-sig_ml_dsa_65_ipd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/sig_ml_dsa_65_ipd.c.s
-.PHONY : sig_ml_dsa_65_ipd.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
 
-sig_ml_dsa_87_ipd.o: sig_ml_dsa_87_ipd.c.o
-.PHONY : sig_ml_dsa_87_ipd.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o
 
 # target to build an object file
-sig_ml_dsa_87_ipd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/sig_ml_dsa_87_ipd.c.o
-.PHONY : sig_ml_dsa_87_ipd.c.o
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
 
-sig_ml_dsa_87_ipd.i: sig_ml_dsa_87_ipd.c.i
-.PHONY : sig_ml_dsa_87_ipd.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i
 
 # target to preprocess a source file
-sig_ml_dsa_87_ipd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/sig_ml_dsa_87_ipd.c.i
-.PHONY : sig_ml_dsa_87_ipd.c.i
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
 
-sig_ml_dsa_87_ipd.s: sig_ml_dsa_87_ipd.c.s
-.PHONY : sig_ml_dsa_87_ipd.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s
 
 # target to generate assembly for a file
-sig_ml_dsa_87_ipd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/sig_ml_dsa_87_ipd.c.s
-.PHONY : sig_ml_dsa_87_ipd.c.s
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.c.s
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.o: mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.o
+
+# target to build an object file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.o
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.i: mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.i
+
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.s: mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.o: mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.i: mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.s: mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/ct.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.o: mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.i: mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.s: mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/debug.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.o: mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.i: mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.s: mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/packing.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.o: mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.i: mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.s: mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.o: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.i: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.s: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.c.s
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.o: mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.o
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.i: mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.i
+
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.s: mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-65_ref/mldsa/src/sign.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.c.s
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.o: mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.o
+
+# target to build an object file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.o
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.i: mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.i
+
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.s: mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.o: mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.i: mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.s: mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/ct.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.o: mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.i: mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.s: mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/debug.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.o: mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.i: mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.s: mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/packing.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.o: mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.i: mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.s: mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.o: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.i: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.s: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.c.s
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.o: mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.o
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.i: mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.i
+
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.s: mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-87_ref/mldsa/src/sign.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.S.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.c.s
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.o: mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.o
+
+# target to build an object file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.o
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.o
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.i: mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.i
+
+# target to preprocess a source file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.i
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.i
+
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.s: mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.s
+
+# target to generate assembly for a file
+mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.s
+.PHONY : mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.c.s
+
+sig_ml_dsa_44.o: sig_ml_dsa_44.c.o
+.PHONY : sig_ml_dsa_44.o
+
+# target to build an object file
+sig_ml_dsa_44.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/sig_ml_dsa_44.c.o
+.PHONY : sig_ml_dsa_44.c.o
+
+sig_ml_dsa_44.i: sig_ml_dsa_44.c.i
+.PHONY : sig_ml_dsa_44.i
+
+# target to preprocess a source file
+sig_ml_dsa_44.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/sig_ml_dsa_44.c.i
+.PHONY : sig_ml_dsa_44.c.i
+
+sig_ml_dsa_44.s: sig_ml_dsa_44.c.s
+.PHONY : sig_ml_dsa_44.s
+
+# target to generate assembly for a file
+sig_ml_dsa_44.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/sig_ml_dsa_44.c.s
+.PHONY : sig_ml_dsa_44.c.s
+
+sig_ml_dsa_65.o: sig_ml_dsa_65.c.o
+.PHONY : sig_ml_dsa_65.o
+
+# target to build an object file
+sig_ml_dsa_65.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/sig_ml_dsa_65.c.o
+.PHONY : sig_ml_dsa_65.c.o
+
+sig_ml_dsa_65.i: sig_ml_dsa_65.c.i
+.PHONY : sig_ml_dsa_65.i
+
+# target to preprocess a source file
+sig_ml_dsa_65.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/sig_ml_dsa_65.c.i
+.PHONY : sig_ml_dsa_65.c.i
+
+sig_ml_dsa_65.s: sig_ml_dsa_65.c.s
+.PHONY : sig_ml_dsa_65.s
+
+# target to generate assembly for a file
+sig_ml_dsa_65.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/sig_ml_dsa_65.c.s
+.PHONY : sig_ml_dsa_65.c.s
+
+sig_ml_dsa_87.o: sig_ml_dsa_87.c.o
+.PHONY : sig_ml_dsa_87.o
+
+# target to build an object file
+sig_ml_dsa_87.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/sig_ml_dsa_87.c.o
+.PHONY : sig_ml_dsa_87.c.o
+
+sig_ml_dsa_87.i: sig_ml_dsa_87.c.i
+.PHONY : sig_ml_dsa_87.i
+
+# target to preprocess a source file
+sig_ml_dsa_87.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/sig_ml_dsa_87.c.i
+.PHONY : sig_ml_dsa_87.c.i
+
+sig_ml_dsa_87.s: sig_ml_dsa_87.c.s
+.PHONY : sig_ml_dsa_87.s
+
+# target to generate assembly for a file
+sig_ml_dsa_87.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/sig_ml_dsa_87.c.s
+.PHONY : sig_ml_dsa_87.c.s
 
 # Help Target
 help:
@@ -897,90 +2571,297 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... test"
-	@echo "... ml_dsa_44_ipd_ref"
-	@echo "... ml_dsa_65_ipd_ref"
-	@echo "... ml_dsa_87_ipd_ref"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/ntt.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/packing.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/poly.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/polyvec.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/reduce.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/rounding.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/sign.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-44-ipd_ref/symmetric-shake.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/ntt.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/packing.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/poly.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/polyvec.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/reduce.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/rounding.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/sign.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/symmetric-shake.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/ntt.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/packing.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/poly.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/polyvec.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/reduce.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/rounding.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/sign.s"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.o"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.i"
-	@echo "... pqcrystals-dilithium-standard_ml-dsa-87-ipd_ref/symmetric-shake.s"
-	@echo "... sig_ml_dsa_44_ipd.o"
-	@echo "... sig_ml_dsa_44_ipd.i"
-	@echo "... sig_ml_dsa_44_ipd.s"
-	@echo "... sig_ml_dsa_65_ipd.o"
-	@echo "... sig_ml_dsa_65_ipd.i"
-	@echo "... sig_ml_dsa_65_ipd.s"
-	@echo "... sig_ml_dsa_87_ipd.o"
-	@echo "... sig_ml_dsa_87_ipd.i"
-	@echo "... sig_ml_dsa_87_ipd.s"
+	@echo "... ml_dsa_44_ref"
+	@echo "... ml_dsa_44_x86_64"
+	@echo "... ml_dsa_65_ref"
+	@echo "... ml_dsa_65_x86_64"
+	@echo "... ml_dsa_87_ref"
+	@echo "... ml_dsa_87_x86_64"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-44_ref/mldsa/src/sign.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/consts.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-44_x86_64/mldsa/src/sign.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-65_ref/mldsa/src/sign.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/consts.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-65_x86_64/mldsa/src/sign.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-87_ref/mldsa/src/sign.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/ct.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/debug.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/consts.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l4_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l5_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_acc_l7_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/pointwise_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_caddq_avx2_asm.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_chknorm_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_decompose_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_32_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/poly_use_hint_88_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_17_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/polyz_unpack_19_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta2_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_eta4_avx2.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/packing.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/poly_kl.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/polyvec_lazy.s"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.o"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.i"
+	@echo "... mldsa-native_ml-dsa-87_x86_64/mldsa/src/sign.s"
+	@echo "... sig_ml_dsa_44.o"
+	@echo "... sig_ml_dsa_44.i"
+	@echo "... sig_ml_dsa_44.s"
+	@echo "... sig_ml_dsa_65.o"
+	@echo "... sig_ml_dsa_65.i"
+	@echo "... sig_ml_dsa_65.s"
+	@echo "... sig_ml_dsa_87.o"
+	@echo "... sig_ml_dsa_87.i"
+	@echo "... sig_ml_dsa_87.s"
 .PHONY : help
 
 

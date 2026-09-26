@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_federation.a CMakeFiles/smo_federation.dir/gateway.cpp.o CMakeFiles/smo_federation.dir/federation_handshake.cpp.o CMakeFiles/smo_federation.dir/policy_federation.cpp.o CMakeFiles/smo_federation.dir/cross_mesh_router.cpp.o
+/usr/bin/ranlib libsmo_federation.a

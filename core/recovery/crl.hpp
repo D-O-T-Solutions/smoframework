@@ -2,7 +2,7 @@
 
 #include "../errors/error.hpp"
 #include "../types.hpp"
-#include "runtime/event_bus.hpp"
+#include "../runtime/event_bus.hpp"
 
 #include <cstdint>
 #include <string>

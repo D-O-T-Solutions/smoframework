@@ -93,12 +93,14 @@ smo_test_discovery_EXTERNAL_OBJECTS =
 tests/smo_test_discovery: tests/CMakeFiles/smo_test_discovery.dir/unit/core/discovery/test_discovery.cpp.o
 tests/smo_test_discovery: tests/CMakeFiles/smo_test_discovery.dir/build.make
 tests/smo_test_discovery: core/libsmo_core.a
-tests/smo_test_discovery: _deps/fmt-build/libfmt.a
+tests/smo_test_discovery: _deps/fmt-build/libfmtd.a
 tests/smo_test_discovery: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_discovery: core/libsmo_core.a
 tests/smo_test_discovery: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_discovery: _deps/fmt-build/libfmt.a
+tests/smo_test_discovery: _deps/fmt-build/libfmtd.a
 tests/smo_test_discovery: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_discovery: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_discovery: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_discovery: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_discovery: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_discovery: third_party/blake3/libsmo_blake3.a

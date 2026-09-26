@@ -207,6 +207,20 @@ ml_kem_512_ref/fast:
 .PHONY : ml_kem_512_ref/fast
 
 # Convenience name for target.
+_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/rule
+
+# Convenience name for target.
+ml_kem_512_x86_64: _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/rule
+.PHONY : ml_kem_512_x86_64
+
+# fast build rule for target.
+ml_kem_512_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build
+.PHONY : ml_kem_512_x86_64/fast
+
+# Convenience name for target.
 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/rule:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/rule
 .PHONY : _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/rule
@@ -221,6 +235,20 @@ ml_kem_768_ref/fast:
 .PHONY : ml_kem_768_ref/fast
 
 # Convenience name for target.
+_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/rule
+
+# Convenience name for target.
+ml_kem_768_x86_64: _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/rule
+.PHONY : ml_kem_768_x86_64
+
+# fast build rule for target.
+ml_kem_768_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build
+.PHONY : ml_kem_768_x86_64/fast
+
+# Convenience name for target.
 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/rule:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/rule
 .PHONY : _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/rule
@@ -233,6 +261,20 @@ ml_kem_1024_ref: _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.di
 ml_kem_1024_ref/fast:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build
 .PHONY : ml_kem_1024_ref/fast
+
+# Convenience name for target.
+_deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/rule
+.PHONY : _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/rule
+
+# Convenience name for target.
+ml_kem_1024_x86_64: _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/rule
+.PHONY : ml_kem_1024_x86_64
+
+# fast build rule for target.
+ml_kem_1024_x86_64/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build
+.PHONY : ml_kem_1024_x86_64/fast
 
 kem_ml_kem_1024.o: kem_ml_kem_1024.c.o
 .PHONY : kem_ml_kem_1024.o
@@ -306,653 +348,1853 @@ kem_ml_kem_768.c.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/kem_ml_kem_768.c.s
 .PHONY : kem_ml_kem_768.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.o: pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.o: mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.i: pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.i: mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.s: pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.s: mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/compress.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.o: pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.o: mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.i: pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.i: mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.s: pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.s: mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/debug.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.o: pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.o: mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.i: pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.i: mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.s: pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.s: mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/kem.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.o: pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.o: mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.i: pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.i: mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.s: pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.s: mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/kem.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.o: pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.o: mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.i: pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.i: mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.s: pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.s: mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/poly.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.o: pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.o: mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.i: pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.i: mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.s: pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.s: mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.o: pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.o: mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.i: pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.i: mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.s: pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.s: mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.o: pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.o: mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.o
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.i: pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.i: mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.i
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.s: pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.s: mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.c.s
+mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-1024_ref/mlkem/src/verify.c.s
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.o: pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.o
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.i: pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.i
 
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.s: pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_ref.dir/pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-1024_ref/verify.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.o: pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.i: pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.i
 
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.s: pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/cbd.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.o: pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.i: pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.i
 
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.s: pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.o: pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.i: pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.i
 
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.s: pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/kem.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.o: pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.i: pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
 
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.s: pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/ntt.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.o: pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.i: pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.i
 
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.s: pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/poly.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.c.s
 
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.o: pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.i: pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.i
-
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.s: pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.c.s
-
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.o: pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.i: pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.i
-
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.s: pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/reduce.c.s
-
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.o: pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.i: pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.i
-
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.s: pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.c.s
-
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.o: pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.i: pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.i
-
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.s: pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-512_ref/verify.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.o: pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.i: pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.s: pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/cbd.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.o: pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.i: pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.s: pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.o: pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.i: pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.s: pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/kem.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.o: pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.i: pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.s: pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/ntt.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.o: pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.i: pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.s: pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/poly.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.o: pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.i: pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.s: pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.o: pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.i: pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.s: pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/reduce.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.o: pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.i: pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.i
-
-# target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.i
-
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.s: pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.s
-
-# target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.c.s
-
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.o: pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o
 
 # target to build an object file
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.o
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
 
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.i: pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i
 
 # target to preprocess a source file
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.i:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.i
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.i
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
 
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.s: pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s
 
 # target to generate assembly for a file
-pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.s:
-	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.s
-.PHONY : pqcrystals-kyber-standard_ml-kem-768_ref/verify.c.s
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.i
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.c.s
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.i
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.c.s
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.i
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.c.s
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.o: mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.o
+
+# target to build an object file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.o
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.i: mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.i
+
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.s: mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.o: mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.i: mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.s: mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/compress.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.o: mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.i: mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.s: mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/debug.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.o: mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.i: mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.s: mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.o: mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.i: mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.s: mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/kem.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.o: mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.i: mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.s: mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.o: mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.i: mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.s: mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.o: mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.i: mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.s: mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/sampling.c.s
+
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.o: mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.o
+
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.i: mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.i
+
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.s: mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-512_ref/mlkem/src/verify.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.c.s
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.o: mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.o
+
+# target to build an object file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.o
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.i: mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.i
+
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.s: mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.o: mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.i: mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.s: mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/compress.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.o: mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.i: mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.s: mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/debug.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.o: mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.i: mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.s: mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.o: mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.i: mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.s: mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/kem.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.o: mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.i: mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.s: mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.o: mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.i: mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.s: mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.o: mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.i: mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.s: mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/sampling.c.s
+
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.o: mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.o
+
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.i: mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.i
+
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.s: mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_ref.dir/mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-768_ref/mlkem/src/verify.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.S.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.c.s
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.o: mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.o
+
+# target to build an object file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.o
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.o
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.i: mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.i
+
+# target to preprocess a source file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.i
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.i
+
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.s: mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.s
+
+# target to generate assembly for a file
+mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.s
+.PHONY : mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.c.s
 
 # Help Target
 help:
@@ -970,8 +2212,11 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... ml_kem_1024_ref"
+	@echo "... ml_kem_1024_x86_64"
 	@echo "... ml_kem_512_ref"
+	@echo "... ml_kem_512_x86_64"
 	@echo "... ml_kem_768_ref"
+	@echo "... ml_kem_768_x86_64"
 	@echo "... kem_ml_kem_1024.o"
 	@echo "... kem_ml_kem_1024.i"
 	@echo "... kem_ml_kem_1024.s"
@@ -981,87 +2226,237 @@ help:
 	@echo "... kem_ml_kem_768.o"
 	@echo "... kem_ml_kem_768.i"
 	@echo "... kem_ml_kem_768.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/cbd.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/indcpa.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/kem.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/kem.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/kem.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/ntt.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/poly.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/poly.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/poly.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/polyvec.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/reduce.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/symmetric-shake.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/verify.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/verify.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-1024_ref/verify.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/cbd.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/cbd.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/cbd.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/indcpa.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/kem.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/kem.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/kem.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/ntt.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/ntt.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/ntt.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/poly.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/poly.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/poly.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/polyvec.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/reduce.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/reduce.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/reduce.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/symmetric-shake.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/verify.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/verify.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-512_ref/verify.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/cbd.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/cbd.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/cbd.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/indcpa.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/kem.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/kem.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/kem.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/ntt.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/ntt.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/ntt.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/poly.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/poly.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/poly.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/polyvec.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/reduce.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/reduce.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/reduce.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/symmetric-shake.s"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/verify.o"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/verify.i"
-	@echo "... pqcrystals-kyber-standard_ml-kem-768_ref/verify.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-1024_ref/mlkem/src/verify.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/compress_consts.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/consts.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-1024_x86_64/mlkem/src/verify.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-512_ref/mlkem/src/verify.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/compress_consts.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/consts.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-512_x86_64/mlkem/src/verify.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-768_ref/mlkem/src/verify.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/compress.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/debug.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/indcpa.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/kem.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/compress_consts.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/consts.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/intt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntt_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttfrombytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/ntttobytes_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/nttunpack_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_compress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d10_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d11_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_decompress_d5_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/poly_mulcache_compute_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k2_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k3_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/polyvec_basemul_acc_montgomery_cached_k4_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/reduce_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/rej_uniform_table.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/native/x86_64/src/tomont_avx2_asm.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/poly_k.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/sampling.s"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.o"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.i"
+	@echo "... mlkem-native_ml-kem-768_x86_64/mlkem/src/verify.s"
 .PHONY : help
 
 

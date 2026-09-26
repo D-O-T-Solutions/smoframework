@@ -15,6 +15,7 @@ set(CMAKE_ASM_COMPILER_ID "GNU")
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_ASM
   "ADD_SYMBOL_SUFFIX"
+  "SMO_WITH_PQC"
   )
 
 # The include file search paths:

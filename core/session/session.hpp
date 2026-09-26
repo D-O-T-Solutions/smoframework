@@ -2,8 +2,8 @@
 
 #include "../capability/capability.h"
 #include "../certificate/certificate.hpp"
-#include "runtime/event_bus.hpp"
-#include "runtime/telemetry.hpp"
+#include "../runtime/event_bus.hpp"
+#include "../runtime/telemetry.hpp"
 #include "../recovery/crl.hpp"
 #include "../crypto/impl.hpp"
 #include "../errors/error.hpp"

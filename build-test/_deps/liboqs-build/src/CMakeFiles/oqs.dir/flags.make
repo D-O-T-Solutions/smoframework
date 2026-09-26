@@ -3,15 +3,15 @@
 
 # compile ASM with /usr/bin/cc
 # compile C with /usr/bin/cc
-ASM_DEFINES = 
+ASM_DEFINES = -DSMO_WITH_PQC
 
 ASM_INCLUDES = -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src
 
-ASM_FLAGS = -O3 -DNDEBUG -fPIC -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections
+ASM_FLAGS = -g -fPIC -Wa,--noexecstack -Wstrict-overflow -ggdb3
 
-C_DEFINES = 
+C_DEFINES = -DSMO_WITH_PQC
 
 C_INCLUDES = -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include -I/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src
 
-C_FLAGS = -O3 -DNDEBUG -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -O3 -fomit-frame-pointer -fdata-sections -ffunction-sections -Wl,--gc-sections
+C_FLAGS = -g -std=gnu11 -fPIC -fvisibility=hidden -Wa,--noexecstack -Wstrict-overflow -ggdb3
 

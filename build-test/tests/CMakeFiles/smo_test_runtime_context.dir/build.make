@@ -95,12 +95,12 @@ tests/smo_test_runtime_context: tests/CMakeFiles/smo_test_runtime_context.dir/bu
 tests/smo_test_runtime_context: core/runtime/libsmo_runtime.a
 tests/smo_test_runtime_context: core/libsmo_core.a
 tests/smo_test_runtime_context: core/acl/libsmo_acl.a
-tests/smo_test_runtime_context: _deps/fmt-build/libfmt.a
+tests/smo_test_runtime_context: _deps/fmt-build/libfmtd.a
 tests/smo_test_runtime_context: core/observability/libsmo_observability.a
 tests/smo_test_runtime_context: core/runtime/libsmo_runtime.a
 tests/smo_test_runtime_context: core/observability/libsmo_observability.a
 tests/smo_test_runtime_context: core/acl/libsmo_acl.a
-tests/smo_test_runtime_context: _deps/yaml-cpp-build/libyaml-cpp.a
+tests/smo_test_runtime_context: _deps/yaml-cpp-build/libyaml-cppd.a
 tests/smo_test_runtime_context: contract/libsmo_contract.a
 tests/smo_test_runtime_context: storage/libsmo_storage.a
 tests/smo_test_runtime_context: protocol/libsmo_protocol.a
@@ -110,8 +110,10 @@ tests/smo_test_runtime_context: core/libsmo_core.a
 tests/smo_test_runtime_context: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_runtime_context: core/libsmo_core.a
 tests/smo_test_runtime_context: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_runtime_context: _deps/fmt-build/libfmt.a
+tests/smo_test_runtime_context: _deps/fmt-build/libfmtd.a
 tests/smo_test_runtime_context: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_runtime_context: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_runtime_context: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_runtime_context: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_runtime_context: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_runtime_context: third_party/blake3/libsmo_blake3.a

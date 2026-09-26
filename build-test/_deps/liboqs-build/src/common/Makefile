@@ -559,6 +559,60 @@ sha2/sha2_ossl.c.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha2/sha2_ossl.c.s
 .PHONY : sha2/sha2_ossl.c.s
 
+sha3/avx512vl_sha3.o: sha3/avx512vl_sha3.c.o
+.PHONY : sha3/avx512vl_sha3.o
+
+# target to build an object file
+sha3/avx512vl_sha3.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3.c.o
+.PHONY : sha3/avx512vl_sha3.c.o
+
+sha3/avx512vl_sha3.i: sha3/avx512vl_sha3.c.i
+.PHONY : sha3/avx512vl_sha3.i
+
+# target to preprocess a source file
+sha3/avx512vl_sha3.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.i
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3.c.i
+.PHONY : sha3/avx512vl_sha3.c.i
+
+sha3/avx512vl_sha3.s: sha3/avx512vl_sha3.c.s
+.PHONY : sha3/avx512vl_sha3.s
+
+# target to generate assembly for a file
+sha3/avx512vl_sha3.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.s
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3.c.s
+.PHONY : sha3/avx512vl_sha3.c.s
+
+sha3/avx512vl_sha3x4.o: sha3/avx512vl_sha3x4.c.o
+.PHONY : sha3/avx512vl_sha3x4.o
+
+# target to build an object file
+sha3/avx512vl_sha3x4.c.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3x4.c.o
+.PHONY : sha3/avx512vl_sha3x4.c.o
+
+sha3/avx512vl_sha3x4.i: sha3/avx512vl_sha3x4.c.i
+.PHONY : sha3/avx512vl_sha3x4.i
+
+# target to preprocess a source file
+sha3/avx512vl_sha3x4.c.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.i
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3x4.c.i
+.PHONY : sha3/avx512vl_sha3x4.c.i
+
+sha3/avx512vl_sha3x4.s: sha3/avx512vl_sha3x4.c.s
+.PHONY : sha3/avx512vl_sha3x4.s
+
+# target to generate assembly for a file
+sha3/avx512vl_sha3x4.c.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/common.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.s
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/CMakeFiles/internal.dir/build.make _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3x4.c.s
+.PHONY : sha3/avx512vl_sha3x4.c.s
+
 sha3/sha3.o: sha3/sha3.c.o
 .PHONY : sha3/sha3.o
 
@@ -723,6 +777,12 @@ help:
 	@echo "... sha2/sha2_ossl.o"
 	@echo "... sha2/sha2_ossl.i"
 	@echo "... sha2/sha2_ossl.s"
+	@echo "... sha3/avx512vl_sha3.o"
+	@echo "... sha3/avx512vl_sha3.i"
+	@echo "... sha3/avx512vl_sha3.s"
+	@echo "... sha3/avx512vl_sha3x4.o"
+	@echo "... sha3/avx512vl_sha3x4.i"
+	@echo "... sha3/avx512vl_sha3x4.s"
 	@echo "... sha3/sha3.o"
 	@echo "... sha3/sha3.i"
 	@echo "... sha3/sha3.s"

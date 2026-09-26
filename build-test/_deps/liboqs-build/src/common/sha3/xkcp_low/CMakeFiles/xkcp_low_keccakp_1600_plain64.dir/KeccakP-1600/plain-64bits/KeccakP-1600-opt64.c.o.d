@@ -20,10 +20,8 @@ _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_pla
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/strings.h \
- /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
- /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/strings.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
@@ -42,17 +40,13 @@ _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_pla
  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h \
- /usr/include/x86_64-linux-gnu/bits/select-decl.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/brg_endian.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/KeccakP-1600-SnP.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/KeccakP-1600-opt64-config.h \

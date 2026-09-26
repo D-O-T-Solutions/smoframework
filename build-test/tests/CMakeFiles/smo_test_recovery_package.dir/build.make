@@ -94,12 +94,14 @@ tests/smo_test_recovery_package: tests/CMakeFiles/smo_test_recovery_package.dir/
 tests/smo_test_recovery_package: tests/CMakeFiles/smo_test_recovery_package.dir/build.make
 tests/smo_test_recovery_package: core/genesis/libsmo_genesis.a
 tests/smo_test_recovery_package: core/libsmo_core.a
-tests/smo_test_recovery_package: _deps/fmt-build/libfmt.a
+tests/smo_test_recovery_package: _deps/fmt-build/libfmtd.a
 tests/smo_test_recovery_package: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_recovery_package: core/libsmo_core.a
 tests/smo_test_recovery_package: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_recovery_package: _deps/fmt-build/libfmt.a
+tests/smo_test_recovery_package: _deps/fmt-build/libfmtd.a
 tests/smo_test_recovery_package: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_recovery_package: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_recovery_package: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_recovery_package: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_recovery_package: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_recovery_package: third_party/blake3/libsmo_blake3.a

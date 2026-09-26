@@ -3,17 +3,17 @@
 
 # compile ASM with /usr/bin/cc
 # compile C with /usr/bin/cc
-ASM_DEFINES = 
+ASM_DEFINES = -DSMO_WITH_PQC
 
 ASM_INCLUDES = -I/home/nguyenduccanh/shellmap_project/smoframework/third_party/blake3
 
-ASM_FLAGS = -O3 -DNDEBUG -fPIC -msse2 -msse4.1 -mavx2
+ASM_FLAGS = -g -fPIC -msse2 -msse4.1 -mavx2
 
-C_DEFINES = 
+C_DEFINES = -DSMO_WITH_PQC
 
 C_INCLUDES = -I/home/nguyenduccanh/shellmap_project/smoframework/third_party/blake3
 
-C_FLAGS = -O3 -DNDEBUG -fPIC -msse2 -msse4.1 -mavx2
+C_FLAGS = -g -fPIC -msse2 -msse4.1 -mavx2
 
 # Custom flags: third_party/blake3/CMakeFiles/smo_blake3.dir/blake3_avx512.c.o_FLAGS = -mavx512f -mavx512vl
 

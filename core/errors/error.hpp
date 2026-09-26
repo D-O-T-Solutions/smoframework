@@ -94,6 +94,8 @@ namespace smo {
         Recovery = 16,   // recovery/* — soft/hard recovery, CRL, revocation
         Bootstrap = 17,  // bootstrap/* — bootstrap protocol, snapshot
         Sync = 18,       // sync/* — version vectors, merkle trees, anti-entropy
+        Federation = 19, // federation/* — cross-mesh routing, handshake, policy sync
+        Serialization = 20, // serialization/* — CBOR, JSON, binary serialization
     };
 
 // ---------------------------------------------------------------------------
@@ -261,6 +263,9 @@ namespace smo {
 #define SMO_ERR_GENESIS(code, sev, retry, rec, msg) SMO_ERR(Genesis, code, sev, retry, rec, msg)
 #define SMO_ERR_RECOVERY(code, sev, retry, rec, msg) SMO_ERR(Recovery, code, sev, retry, rec, msg)
 #define SMO_ERR_BOOTSTRAP(code, sev, retry, rec, msg) SMO_ERR(Bootstrap, code, sev, retry, rec, msg)
+#define SMO_ERR_SYNC(code, sev, retry, rec, msg) SMO_ERR(Sync, code, sev, retry, rec, msg)
+#define SMO_ERR_FEDERATION(code, sev, retry, rec, msg) SMO_ERR(Federation, code, sev, retry, rec, msg)
+#define SMO_ERR_SERIALIZATION(code, sev, retry, rec, msg) SMO_ERR(Serialization, code, sev, retry, rec, msg)
 
 // ---------------------------------------------------------------------------
 // SMO_TRY — early-return macro for Result<T>

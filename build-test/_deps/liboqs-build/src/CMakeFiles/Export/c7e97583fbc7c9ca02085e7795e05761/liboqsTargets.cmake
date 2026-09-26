@@ -59,7 +59,7 @@ endif()
 add_library(OQS::oqs STATIC IMPORTED)
 
 set_target_properties(OQS::oqs PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/oqs"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/oqs"
   INTERFACE_LINK_LIBRARIES "/usr/lib/x86_64-linux-gnu/libcrypto.so"
 )
 

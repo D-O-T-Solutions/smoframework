@@ -23,21 +23,15 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
- /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
- /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h /usr/include/unistd.h \
  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
- /usr/include/x86_64-linux-gnu/bits/unistd.h \
- /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/fcntl.h /usr/include/x86_64-linux-gnu/bits/fcntl.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
@@ -45,8 +39,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: \
  /usr/include/x86_64-linux-gnu/bits/endianness.h \
  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h \
- /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
- /usr/include/x86_64-linux-gnu/bits/fcntl2.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_stat.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
@@ -61,17 +54,13 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h \
- /usr/include/x86_64-linux-gnu/bits/select-decl.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include/oqs/oqs.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include/oqs/oqsconfig.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include/oqs/common.h \
@@ -99,24 +88,24 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include/oqs/sha3_ops.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/include/oqs/sha3x4_ops.h \
  /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/../ossl_helpers.h \
- /usr/include/openssl/err.h /usr/include/openssl/macros.h \
+ /usr/include/openssl/crypto.h /usr/include/openssl/macros.h \
  /usr/include/x86_64-linux-gnu/openssl/opensslconf.h \
  /usr/include/x86_64-linux-gnu/openssl/configuration.h \
- /usr/include/openssl/opensslv.h /usr/include/openssl/e_os2.h \
- /usr/include/inttypes.h /usr/include/openssl/types.h \
- /usr/include/openssl/safestack.h /usr/include/openssl/stack.h \
- /usr/include/openssl/bio.h /usr/include/openssl/crypto.h \
- /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/openssl/opensslv.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
- /usr/include/openssl/cryptoerr.h /usr/include/openssl/symhacks.h \
- /usr/include/openssl/cryptoerr_legacy.h /usr/include/openssl/core.h \
- /usr/include/pthread.h /usr/include/sched.h \
+ /usr/include/openssl/e_os2.h /usr/include/inttypes.h \
+ /usr/include/openssl/safestack.h /usr/include/openssl/stack.h \
+ /usr/include/openssl/types.h /usr/include/openssl/cryptoerr.h \
+ /usr/include/openssl/symhacks.h /usr/include/openssl/cryptoerr_legacy.h \
+ /usr/include/openssl/core.h /usr/include/pthread.h /usr/include/sched.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+ /usr/include/openssl/err.h /usr/include/openssl/bio.h \
  /usr/include/openssl/bioerr.h /usr/include/openssl/lhash.h \
  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \

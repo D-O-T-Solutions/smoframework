@@ -195,10 +195,38 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.s: cmake_
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.s"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/xkcp_sha3x4.c -o CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.s
 
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o: _deps/liboqs-src/src/common/sha3/avx512vl_sha3.c
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o -MF CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o.d -o CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3.c
+
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/common.dir/sha3/avx512vl_sha3.c.i"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3.c > CMakeFiles/common.dir/sha3/avx512vl_sha3.c.i
+
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/common.dir/sha3/avx512vl_sha3.c.s"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3.c -o CMakeFiles/common.dir/sha3/avx512vl_sha3.c.s
+
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o: _deps/liboqs-src/src/common/sha3/avx512vl_sha3x4.c
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o -MF CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o.d -o CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3x4.c
+
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.i"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3x4.c > CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.i
+
+_deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.s"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/avx512vl_sha3x4.c -o CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.s
+
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o: _deps/liboqs-src/src/common/sha3/sha3.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o -MF CMakeFiles/common.dir/sha3/sha3.c.o.d -o CMakeFiles/common.dir/sha3/sha3.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.i: cmake_force
@@ -212,7 +240,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.s: cmake_force
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o: _deps/liboqs-src/src/common/sha3/sha3x4.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o -MF CMakeFiles/common.dir/sha3/sha3x4.c.o.d -o CMakeFiles/common.dir/sha3/sha3x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/sha3/sha3x4.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.i: cmake_force
@@ -226,7 +254,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.s: cmake_force
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o: _deps/liboqs-src/src/common/ossl_helpers.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o -MF CMakeFiles/common.dir/ossl_helpers.c.o.d -o CMakeFiles/common.dir/ossl_helpers.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/ossl_helpers.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.i: cmake_force
@@ -240,7 +268,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.s: cmake_forc
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o: _deps/liboqs-src/src/common/common.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.o -MF CMakeFiles/common.dir/common.c.o.d -o CMakeFiles/common.dir/common.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/common.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.i: cmake_force
@@ -254,7 +282,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/common.c.s: cmake_force
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o: _deps/liboqs-src/src/common/pqclean_shims/fips202.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.o -MF CMakeFiles/common.dir/pqclean_shims/fips202.c.o.d -o CMakeFiles/common.dir/pqclean_shims/fips202.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.i: cmake_force
@@ -268,7 +296,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202.c.s: c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o: _deps/liboqs-src/src/common/pqclean_shims/fips202x4.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o -MF CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o.d -o CMakeFiles/common.dir/pqclean_shims/fips202x4.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/pqclean_shims/fips202x4.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.i: cmake_force
@@ -282,7 +310,7 @@ _deps/liboqs-build/src/common/CMakeFiles/common.dir/pqclean_shims/fips202x4.c.s:
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/flags.make
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: _deps/liboqs-src/src/common/rand/rand.c
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o: _deps/liboqs-build/src/common/CMakeFiles/common.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.o -MF CMakeFiles/common.dir/rand/rand.c.o.d -o CMakeFiles/common.dir/rand/rand.c.o -c /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src/src/common/rand/rand.c
 
 _deps/liboqs-build/src/common/CMakeFiles/common.dir/rand/rand.c.i: cmake_force
@@ -302,6 +330,8 @@ common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha2/sha2_ossl.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha2/sha2.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/xkcp_sha3.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/xkcp_sha3x4.c.o
+common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3.c.o
+common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/avx512vl_sha3x4.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/sha3/sha3x4.c.o
 common: _deps/liboqs-build/src/common/CMakeFiles/common.dir/ossl_helpers.c.o

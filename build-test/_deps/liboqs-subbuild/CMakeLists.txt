@@ -27,7 +27,7 @@ set_property(GLOBAL PROPERTY _CMAKE_FindGit_GIT_EXECUTABLE_VERSION
 
 include(ExternalProject)
 ExternalProject_Add(liboqs-populate
-                     "UPDATE_DISCONNECTED" "False" "GIT_REPOSITORY" "https://github.com/open-quantum-safe/liboqs.git" "EXTERNALPROJECT_INTERNAL_ARGUMENT_SEPARATOR" "GIT_TAG" "0.11.0" "GIT_SHALLOW" "TRUE"
+                     "UPDATE_DISCONNECTED" "False" "GIT_REPOSITORY" "https://github.com/open-quantum-safe/liboqs.git" "EXTERNALPROJECT_INTERNAL_ARGUMENT_SEPARATOR" "GIT_TAG" "0.16.0" "GIT_SHALLOW" "TRUE" "GIT_PROGRESS" "FALSE"
                     SOURCE_DIR          "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src"
                     BINARY_DIR          "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build"
                     CONFIGURE_COMMAND   ""

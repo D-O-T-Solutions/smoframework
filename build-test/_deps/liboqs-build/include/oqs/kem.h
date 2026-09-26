@@ -58,12 +58,12 @@ extern "C" {
 #define OQS_KEM_alg_classic_mceliece_8192128 "Classic-McEliece-8192128"
 /** Algorithm identifier for Classic-McEliece-8192128f KEM. */
 #define OQS_KEM_alg_classic_mceliece_8192128f "Classic-McEliece-8192128f"
-/** Algorithm identifier for HQC-128 KEM. */
-#define OQS_KEM_alg_hqc_128 "HQC-128"
-/** Algorithm identifier for HQC-192 KEM. */
-#define OQS_KEM_alg_hqc_192 "HQC-192"
-/** Algorithm identifier for HQC-256 KEM. */
-#define OQS_KEM_alg_hqc_256 "HQC-256"
+/** Algorithm identifier for HQC-1 KEM. */
+#define OQS_KEM_alg_hqc_1 "HQC-1"
+/** Algorithm identifier for HQC-3 KEM. */
+#define OQS_KEM_alg_hqc_3 "HQC-3"
+/** Algorithm identifier for HQC-5 KEM. */
+#define OQS_KEM_alg_hqc_5 "HQC-5"
 /** Algorithm identifier for Kyber512 KEM. */
 #define OQS_KEM_alg_kyber_512 "Kyber512"
 /** Algorithm identifier for Kyber768 KEM. */
@@ -77,6 +77,18 @@ extern "C" {
 /** Algorithm identifier for ML-KEM-1024 KEM. */
 #define OQS_KEM_alg_ml_kem_1024 "ML-KEM-1024"
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALG_IDENTIFIER_END
+/** Algorithm identifier for NTRU-HPS-2048-509 KEM. */
+#define OQS_KEM_alg_ntru_hps2048509 "NTRU-HPS-2048-509"
+/** Algorithm identifier for NTRU-HPS-2048-677 KEM. */
+#define OQS_KEM_alg_ntru_hps2048677 "NTRU-HPS-2048-677"
+/** Algorithm identifier for NTRU-HPS-4096-821 KEM. */
+#define OQS_KEM_alg_ntru_hps4096821 "NTRU-HPS-4096-821"
+/** Algorithm identifier for NTRU-HPS-4096-1229 KEM. */
+#define OQS_KEM_alg_ntru_hps40961229 "NTRU-HPS-4096-1229"
+/** Algorithm identifier for NTRU-HRSS-701 KEM. */
+#define OQS_KEM_alg_ntru_hrss701 "NTRU-HRSS-701"
+/** Algorithm identifier for NTRU-HRSS-1373 KEM. */
+#define OQS_KEM_alg_ntru_hrss1373 "NTRU-HRSS-1373"
 /** Algorithm identifier for sntrup761 KEM. */
 #define OQS_KEM_alg_ntruprime_sntrup761 "sntrup761"
 /** Algorithm identifier for FrodoKEM-640-AES KEM. */
@@ -91,11 +103,23 @@ extern "C" {
 #define OQS_KEM_alg_frodokem_1344_aes "FrodoKEM-1344-AES"
 /** Algorithm identifier for FrodoKEM-1344-SHAKE KEM. */
 #define OQS_KEM_alg_frodokem_1344_shake "FrodoKEM-1344-SHAKE"
+/** Algorithm identifier for eFrodoKEM-640-AES KEM. */
+#define OQS_KEM_alg_efrodokem_640_aes "eFrodoKEM-640-AES"
+/** Algorithm identifier for eFrodoKEM-640-SHAKE KEM. */
+#define OQS_KEM_alg_efrodokem_640_shake "eFrodoKEM-640-SHAKE"
+/** Algorithm identifier for eFrodoKEM-976-AES KEM. */
+#define OQS_KEM_alg_efrodokem_976_aes "eFrodoKEM-976-AES"
+/** Algorithm identifier for eFrodoKEM-976-SHAKE KEM. */
+#define OQS_KEM_alg_efrodokem_976_shake "eFrodoKEM-976-SHAKE"
+/** Algorithm identifier for eFrodoKEM-1344-AES KEM. */
+#define OQS_KEM_alg_efrodokem_1344_aes "eFrodoKEM-1344-AES"
+/** Algorithm identifier for eFrodoKEM-1344-SHAKE KEM. */
+#define OQS_KEM_alg_efrodokem_1344_shake "eFrodoKEM-1344-SHAKE"
 // EDIT-WHEN-ADDING-KEM
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_START
 
 /** Number of algorithm identifiers above. */
-#define OQS_KEM_algs_length 29
+#define OQS_KEM_algs_length 41
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ALGS_LENGTH_END
 
 /**
@@ -157,6 +181,24 @@ typedef struct OQS_KEM {
 	size_t length_ciphertext;
 	/** The length, in bytes, of shared secrets for this KEM. */
 	size_t length_shared_secret;
+	/** The length, in bytes, of seeds for derandomized keypair generation for this KEM. */
+	size_t length_keypair_seed;
+	/** The length, in bytes, of seeds for derandomized encaps generation for this KEM. */
+	size_t length_encaps_seed;
+
+	/**
+	 * Derandomized keypair generation algorithm.
+	 *
+	 * Caller is responsible for allocating sufficient memory for `public_key` and
+	 * `secret_key`, based on the `length_*` members in this object or the per-scheme
+	 * compile-time macros `OQS_KEM_*_length_*`.
+	 *
+	 * @param[out] public_key The public key represented as a byte string.
+	 * @param[out] secret_key The secret key represented as a byte string.
+	 * @param[in] seed The input randomness represented as a byte string.
+	 * @return OQS_SUCCESS or OQS_ERROR
+	 */
+	OQS_STATUS (*keypair_derand)(uint8_t *public_key, uint8_t *secret_key, const uint8_t *seed);
 
 	/**
 	 * Keypair generation algorithm.
@@ -170,6 +212,21 @@ typedef struct OQS_KEM {
 	 * @return OQS_SUCCESS or OQS_ERROR
 	 */
 	OQS_STATUS (*keypair)(uint8_t *public_key, uint8_t *secret_key);
+
+	/**
+	 * Derandomized encapsulation algorithm.
+	 *
+	 * Caller is responsible for allocating sufficient memory for `ciphertext` and
+	 * `shared_secret`, based on the `length_*` members in this object or the per-scheme
+	 * compile-time macros `OQS_KEM_*_length_*`.
+	 *
+	 * @param[out] ciphertext The ciphertext (encapsulation) represented as a byte string.
+	 * @param[out] shared_secret The shared secret represented as a byte string.
+	 * @param[in] public_key The public key represented as a byte string.
+	 * @param[in] seed The input randomness represented as a byte string.
+	 * @return OQS_SUCCESS or OQS_ERROR
+	 */
+	OQS_STATUS (*encaps_derand)(uint8_t *ciphertext, uint8_t *shared_secret, const uint8_t *public_key, const uint8_t *seed);
 
 	/**
 	 * Encapsulation algorithm.
@@ -213,6 +270,21 @@ typedef struct OQS_KEM {
 OQS_API OQS_KEM *OQS_KEM_new(const char *method_name);
 
 /**
+ * Derandomized keypair generation algorithm.
+ *
+ * Caller is responsible for allocating sufficient memory for `public_key` and
+ * `secret_key`, based on the `length_*` members in this object or the per-scheme
+ * compile-time macros `OQS_KEM_*_length_*`.
+ *
+ * @param[in] kem The OQS_KEM object representing the KEM.
+ * @param[out] public_key The public key represented as a byte string.
+ * @param[out] secret_key The secret key represented as a byte string.
+ * @param[in] seed The input randomness represented as a byte string.
+ * @return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_KEM_keypair_derand(const OQS_KEM *kem, uint8_t *public_key, uint8_t *secret_key, const uint8_t *seed);
+
+/**
  * Keypair generation algorithm.
  *
  * Caller is responsible for allocating sufficient memory for `public_key` and
@@ -225,6 +297,22 @@ OQS_API OQS_KEM *OQS_KEM_new(const char *method_name);
  * @return OQS_SUCCESS or OQS_ERROR
  */
 OQS_API OQS_STATUS OQS_KEM_keypair(const OQS_KEM *kem, uint8_t *public_key, uint8_t *secret_key);
+
+/**
+ * Derandomized encapsulation algorithm.
+ *
+ * Caller is responsible for allocating sufficient memory for `ciphertext` and
+ * `shared_secret`, based on the `length_*` members in this object or the per-scheme
+ * compile-time macros `OQS_KEM_*_length_*`.
+ *
+ * @param[in] kem The OQS_KEM object representing the KEM.
+ * @param[out] ciphertext The ciphertext (encapsulation) represented as a byte string.
+ * @param[out] shared_secret The shared secret represented as a byte string.
+ * @param[in] public_key The public key represented as a byte string.
+ * @param[in] seed The input randomness represented as a byte string.
+ * @return OQS_SUCCESS or OQS_ERROR
+ */
+OQS_API OQS_STATUS OQS_KEM_encaps_derand(const OQS_KEM *kem, uint8_t *ciphertext, uint8_t *shared_secret, const uint8_t *public_key, const uint8_t *seed);
 
 /**
  * Encapsulation algorithm.
@@ -280,6 +368,9 @@ OQS_API void OQS_KEM_free(OQS_KEM *kem);
 #include <oqs/kem_ml_kem.h>
 #endif /* OQS_ENABLE_KEM_ML_KEM */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_INCLUDE_END
+#ifdef OQS_ENABLE_KEM_NTRU
+#include <oqs/kem_ntru.h>
+#endif /* OQS_ENABLE_KEM_NTRU */
 #ifdef OQS_ENABLE_KEM_NTRUPRIME
 #include <oqs/kem_ntruprime.h>
 #endif /* OQS_ENABLE_KEM_NTRUPRIME */

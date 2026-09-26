@@ -94,13 +94,15 @@ tests/smo_test_governance: tests/CMakeFiles/smo_test_governance.dir/unit/core/go
 tests/smo_test_governance: tests/CMakeFiles/smo_test_governance.dir/build.make
 tests/smo_test_governance: core/libsmo_core.a
 tests/smo_test_governance: providers/suite1_classical/libsmo_suite1_classical.a
-tests/smo_test_governance: _deps/fmt-build/libfmt.a
+tests/smo_test_governance: _deps/fmt-build/libfmtd.a
 tests/smo_test_governance: core/libsmo_core.a
 tests/smo_test_governance: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_governance: core/libsmo_core.a
 tests/smo_test_governance: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_governance: _deps/fmt-build/libfmt.a
+tests/smo_test_governance: _deps/fmt-build/libfmtd.a
 tests/smo_test_governance: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_governance: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_governance: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_governance: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_governance: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_governance: third_party/blake3/libsmo_blake3.a

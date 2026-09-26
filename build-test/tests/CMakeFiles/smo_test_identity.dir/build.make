@@ -93,12 +93,14 @@ smo_test_identity_EXTERNAL_OBJECTS =
 tests/smo_test_identity: tests/CMakeFiles/smo_test_identity.dir/unit/core/identity/test_identity.cpp.o
 tests/smo_test_identity: tests/CMakeFiles/smo_test_identity.dir/build.make
 tests/smo_test_identity: core/libsmo_core.a
-tests/smo_test_identity: _deps/fmt-build/libfmt.a
+tests/smo_test_identity: _deps/fmt-build/libfmtd.a
 tests/smo_test_identity: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_identity: core/libsmo_core.a
 tests/smo_test_identity: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_identity: _deps/fmt-build/libfmt.a
+tests/smo_test_identity: _deps/fmt-build/libfmtd.a
 tests/smo_test_identity: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_identity: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_identity: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_identity: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_identity: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_identity: third_party/blake3/libsmo_blake3.a

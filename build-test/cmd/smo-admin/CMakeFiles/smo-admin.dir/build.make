@@ -96,12 +96,13 @@ cmd/smo-admin/smo-admin: core/libsmo_core.a
 cmd/smo-admin/smo-admin: core/genesis/libsmo_genesis.a
 cmd/smo-admin/smo-admin: providers/suite1_classical/libsmo_suite1_classical.a
 cmd/smo-admin/smo-admin: providers/suite2_modern/libsmo_suite2_modern.a
+cmd/smo-admin/smo-admin: providers/suite3_purepqc/libsmo_suite3_purepqc.a
 cmd/smo-admin/smo-admin: core/libsmo_core.a
 cmd/smo-admin/smo-admin: protocol/libsmo_protocol.a
 cmd/smo-admin/smo-admin: trust/libsmo_trust.a
 cmd/smo-admin/smo-admin: core/acl/libsmo_acl.a
-cmd/smo-admin/smo-admin: _deps/fmt-build/libfmt.a
-cmd/smo-admin/smo-admin: _deps/spdlog-build/libspdlog.a
+cmd/smo-admin/smo-admin: _deps/fmt-build/libfmtd.a
+cmd/smo-admin/smo-admin: _deps/spdlog-build/libspdlogd.a
 cmd/smo-admin/smo-admin: transport/libsmo_transport.a
 cmd/smo-admin/smo-admin: third_party/clipboard/libsmo_clipboard.a
 cmd/smo-admin/smo-admin: storage/libsmo_storage.a
@@ -113,10 +114,12 @@ cmd/smo-admin/smo-admin: core/libsmo_core.a
 cmd/smo-admin/smo-admin: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo-admin/smo-admin: third_party/monocypher/libsmo_monocypher.a
 cmd/smo-admin/smo-admin: /usr/lib/x86_64-linux-gnu/libcrypto.so
+cmd/smo-admin/smo-admin: _deps/liboqs-build/lib/liboqs.a
+cmd/smo-admin/smo-admin: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo-admin/smo-admin: third_party/sqlite3/libsmo_sqlite3.a
 cmd/smo-admin/smo-admin: third_party/blake3/libsmo_blake3.a
-cmd/smo-admin/smo-admin: _deps/yaml-cpp-build/libyaml-cpp.a
-cmd/smo-admin/smo-admin: _deps/fmt-build/libfmt.a
+cmd/smo-admin/smo-admin: _deps/yaml-cpp-build/libyaml-cppd.a
+cmd/smo-admin/smo-admin: _deps/fmt-build/libfmtd.a
 cmd/smo-admin/smo-admin: cmd/smo-admin/CMakeFiles/smo-admin.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable smo-admin"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/cmd/smo-admin && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo-admin.dir/link.txt --verbose=$(VERBOSE)

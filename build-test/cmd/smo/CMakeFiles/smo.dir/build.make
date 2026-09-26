@@ -159,12 +159,13 @@ cmd/smo/smo: cmd/smo/CMakeFiles/smo.dir/build.make
 cmd/smo/smo: core/genesis/libsmo_genesis.a
 cmd/smo/smo: providers/suite1_classical/libsmo_suite1_classical.a
 cmd/smo/smo: providers/suite2_modern/libsmo_suite2_modern.a
+cmd/smo/smo: providers/suite3_purepqc/libsmo_suite3_purepqc.a
 cmd/smo/smo: core/libsmo_core.a
 cmd/smo/smo: protocol/libsmo_protocol.a
 cmd/smo/smo: trust/libsmo_trust.a
 cmd/smo/smo: core/acl/libsmo_acl.a
-cmd/smo/smo: _deps/fmt-build/libfmt.a
-cmd/smo/smo: _deps/spdlog-build/libspdlog.a
+cmd/smo/smo: _deps/fmt-build/libfmtd.a
+cmd/smo/smo: _deps/spdlog-build/libspdlogd.a
 cmd/smo/smo: transport/libsmo_transport.a
 cmd/smo/smo: third_party/clipboard/libsmo_clipboard.a
 cmd/smo/smo: storage/libsmo_storage.a
@@ -175,11 +176,13 @@ cmd/smo/smo: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo/smo: core/libsmo_core.a
 cmd/smo/smo: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo/smo: third_party/monocypher/libsmo_monocypher.a
+cmd/smo/smo: _deps/liboqs-build/lib/liboqs.a
+cmd/smo/smo: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo/smo: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo/smo: third_party/sqlite3/libsmo_sqlite3.a
 cmd/smo/smo: third_party/blake3/libsmo_blake3.a
-cmd/smo/smo: _deps/yaml-cpp-build/libyaml-cpp.a
-cmd/smo/smo: _deps/fmt-build/libfmt.a
+cmd/smo/smo: _deps/yaml-cpp-build/libyaml-cppd.a
+cmd/smo/smo: _deps/fmt-build/libfmtd.a
 cmd/smo/smo: cmd/smo/CMakeFiles/smo.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable smo"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/cmd/smo && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo.dir/link.txt --verbose=$(VERBOSE)

@@ -93,12 +93,14 @@ smo_test_trust_EXTERNAL_OBJECTS =
 tests/smo_test_trust: tests/CMakeFiles/smo_test_trust.dir/unit/core/trust/test_trust.cpp.o
 tests/smo_test_trust: tests/CMakeFiles/smo_test_trust.dir/build.make
 tests/smo_test_trust: core/libsmo_core.a
-tests/smo_test_trust: _deps/fmt-build/libfmt.a
+tests/smo_test_trust: _deps/fmt-build/libfmtd.a
 tests/smo_test_trust: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_trust: core/libsmo_core.a
 tests/smo_test_trust: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_trust: _deps/fmt-build/libfmt.a
+tests/smo_test_trust: _deps/fmt-build/libfmtd.a
 tests/smo_test_trust: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_trust: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_trust: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_trust: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_trust: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_trust: third_party/blake3/libsmo_blake3.a

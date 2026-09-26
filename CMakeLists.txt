@@ -79,6 +79,7 @@ add_library(smo::trust     ALIAS smo_trust)
 add_library(smo::acl       ALIAS smo_acl)
 add_library(smo::compiler  ALIAS smo_compiler)
 add_library(smo::runtime   ALIAS smo_runtime)
+add_library(smo::federation ALIAS smo_federation)
 add_library(smo::sdk       ALIAS smo_sdk)
 add_library(smo::blake3    ALIAS smo_blake3)
 add_library(smo::blake3_provider ALIAS smo_blake3_provider)
@@ -116,6 +117,7 @@ install(DIRECTORY
 install(TARGETS
     smo_core smo_protocol smo_transport smo_trust smo_acl
     smo_storage smo_contract smo_compiler smo_runtime
+    smo_federation
     smo_blake3_provider smo_blake3 smo_monocypher smo_clipboard
     smo_suite1_classical smo_suite2_modern
     ARCHIVE DESTINATION lib

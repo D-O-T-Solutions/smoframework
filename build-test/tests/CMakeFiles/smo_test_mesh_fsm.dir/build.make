@@ -93,12 +93,14 @@ smo_test_mesh_fsm_EXTERNAL_OBJECTS =
 tests/smo_test_mesh_fsm: tests/CMakeFiles/smo_test_mesh_fsm.dir/unit/core/mesh/test_mesh_fsm.cpp.o
 tests/smo_test_mesh_fsm: tests/CMakeFiles/smo_test_mesh_fsm.dir/build.make
 tests/smo_test_mesh_fsm: core/libsmo_core.a
-tests/smo_test_mesh_fsm: _deps/fmt-build/libfmt.a
+tests/smo_test_mesh_fsm: _deps/fmt-build/libfmtd.a
 tests/smo_test_mesh_fsm: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_mesh_fsm: core/libsmo_core.a
 tests/smo_test_mesh_fsm: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_mesh_fsm: _deps/fmt-build/libfmt.a
+tests/smo_test_mesh_fsm: _deps/fmt-build/libfmtd.a
 tests/smo_test_mesh_fsm: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_mesh_fsm: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_mesh_fsm: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_mesh_fsm: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_mesh_fsm: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_mesh_fsm: third_party/blake3/libsmo_blake3.a

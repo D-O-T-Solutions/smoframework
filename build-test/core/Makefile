@@ -710,6 +710,30 @@ crypto/kdf/hkdf.cpp.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/kdf/hkdf.cpp.s
 .PHONY : crypto/kdf/hkdf.cpp.s
 
+crypto/kem/mlkem_provider.o: crypto/kem/mlkem_provider.cpp.o
+.PHONY : crypto/kem/mlkem_provider.o
+
+# target to build an object file
+crypto/kem/mlkem_provider.cpp.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o
+.PHONY : crypto/kem/mlkem_provider.cpp.o
+
+crypto/kem/mlkem_provider.i: crypto/kem/mlkem_provider.cpp.i
+.PHONY : crypto/kem/mlkem_provider.i
+
+# target to preprocess a source file
+crypto/kem/mlkem_provider.cpp.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.i
+.PHONY : crypto/kem/mlkem_provider.cpp.i
+
+crypto/kem/mlkem_provider.s: crypto/kem/mlkem_provider.cpp.s
+.PHONY : crypto/kem/mlkem_provider.s
+
+# target to generate assembly for a file
+crypto/kem/mlkem_provider.cpp.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.s
+.PHONY : crypto/kem/mlkem_provider.cpp.s
+
 crypto/kem/x25519_provider.o: crypto/kem/x25519_provider.cpp.o
 .PHONY : crypto/kem/x25519_provider.o
 
@@ -901,6 +925,30 @@ crypto/signer/ed25519_provider.s: crypto/signer/ed25519_provider.cpp.s
 crypto/signer/ed25519_provider.cpp.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/signer/ed25519_provider.cpp.s
 .PHONY : crypto/signer/ed25519_provider.cpp.s
+
+crypto/signer/mldsa_provider.o: crypto/signer/mldsa_provider.cpp.o
+.PHONY : crypto/signer/mldsa_provider.o
+
+# target to build an object file
+crypto/signer/mldsa_provider.cpp.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o
+.PHONY : crypto/signer/mldsa_provider.cpp.o
+
+crypto/signer/mldsa_provider.i: crypto/signer/mldsa_provider.cpp.i
+.PHONY : crypto/signer/mldsa_provider.i
+
+# target to preprocess a source file
+crypto/signer/mldsa_provider.cpp.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.i
+.PHONY : crypto/signer/mldsa_provider.cpp.i
+
+crypto/signer/mldsa_provider.s: crypto/signer/mldsa_provider.cpp.s
+.PHONY : crypto/signer/mldsa_provider.s
+
+# target to generate assembly for a file
+crypto/signer/mldsa_provider.cpp.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.s
+.PHONY : crypto/signer/mldsa_provider.cpp.s
 
 discovery/discovery.o: discovery/discovery.cpp.o
 .PHONY : discovery/discovery.o
@@ -2253,6 +2301,9 @@ help:
 	@echo "... crypto/kdf/hkdf.o"
 	@echo "... crypto/kdf/hkdf.i"
 	@echo "... crypto/kdf/hkdf.s"
+	@echo "... crypto/kem/mlkem_provider.o"
+	@echo "... crypto/kem/mlkem_provider.i"
+	@echo "... crypto/kem/mlkem_provider.s"
 	@echo "... crypto/kem/x25519_provider.o"
 	@echo "... crypto/kem/x25519_provider.i"
 	@echo "... crypto/kem/x25519_provider.s"
@@ -2277,6 +2328,9 @@ help:
 	@echo "... crypto/signer/ed25519_provider.o"
 	@echo "... crypto/signer/ed25519_provider.i"
 	@echo "... crypto/signer/ed25519_provider.s"
+	@echo "... crypto/signer/mldsa_provider.o"
+	@echo "... crypto/signer/mldsa_provider.i"
+	@echo "... crypto/signer/mldsa_provider.s"
 	@echo "... discovery/discovery.o"
 	@echo "... discovery/discovery.i"
 	@echo "... discovery/discovery.s"

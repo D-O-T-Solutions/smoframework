@@ -159,12 +159,13 @@ cmd/smo-cli/smo-cli: cmd/smo-cli/CMakeFiles/smo-cli.dir/build.make
 cmd/smo-cli/smo-cli: core/genesis/libsmo_genesis.a
 cmd/smo-cli/smo-cli: providers/suite1_classical/libsmo_suite1_classical.a
 cmd/smo-cli/smo-cli: providers/suite2_modern/libsmo_suite2_modern.a
+cmd/smo-cli/smo-cli: providers/suite3_purepqc/libsmo_suite3_purepqc.a
 cmd/smo-cli/smo-cli: core/libsmo_core.a
 cmd/smo-cli/smo-cli: protocol/libsmo_protocol.a
 cmd/smo-cli/smo-cli: trust/libsmo_trust.a
 cmd/smo-cli/smo-cli: core/acl/libsmo_acl.a
-cmd/smo-cli/smo-cli: _deps/fmt-build/libfmt.a
-cmd/smo-cli/smo-cli: _deps/spdlog-build/libspdlog.a
+cmd/smo-cli/smo-cli: _deps/fmt-build/libfmtd.a
+cmd/smo-cli/smo-cli: _deps/spdlog-build/libspdlogd.a
 cmd/smo-cli/smo-cli: transport/libsmo_transport.a
 cmd/smo-cli/smo-cli: third_party/clipboard/libsmo_clipboard.a
 cmd/smo-cli/smo-cli: storage/libsmo_storage.a
@@ -175,11 +176,13 @@ cmd/smo-cli/smo-cli: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo-cli/smo-cli: core/libsmo_core.a
 cmd/smo-cli/smo-cli: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo-cli/smo-cli: third_party/monocypher/libsmo_monocypher.a
+cmd/smo-cli/smo-cli: _deps/liboqs-build/lib/liboqs.a
+cmd/smo-cli/smo-cli: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo-cli/smo-cli: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo-cli/smo-cli: third_party/sqlite3/libsmo_sqlite3.a
 cmd/smo-cli/smo-cli: third_party/blake3/libsmo_blake3.a
-cmd/smo-cli/smo-cli: _deps/yaml-cpp-build/libyaml-cpp.a
-cmd/smo-cli/smo-cli: _deps/fmt-build/libfmt.a
+cmd/smo-cli/smo-cli: _deps/yaml-cpp-build/libyaml-cppd.a
+cmd/smo-cli/smo-cli: _deps/fmt-build/libfmtd.a
 cmd/smo-cli/smo-cli: cmd/smo-cli/CMakeFiles/smo-cli.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable smo-cli"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/cmd/smo-cli && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo-cli.dir/link.txt --verbose=$(VERBOSE)

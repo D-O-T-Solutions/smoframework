@@ -96,8 +96,8 @@ cmd/smo-debug/smo-debug: core/libsmo_core.a
 cmd/smo-debug/smo-debug: protocol/libsmo_protocol.a
 cmd/smo-debug/smo-debug: trust/libsmo_trust.a
 cmd/smo-debug/smo-debug: core/acl/libsmo_acl.a
-cmd/smo-debug/smo-debug: _deps/fmt-build/libfmt.a
-cmd/smo-debug/smo-debug: _deps/spdlog-build/libspdlog.a
+cmd/smo-debug/smo-debug: _deps/fmt-build/libfmtd.a
+cmd/smo-debug/smo-debug: _deps/spdlog-build/libspdlogd.a
 cmd/smo-debug/smo-debug: third_party/clipboard/libsmo_clipboard.a
 cmd/smo-debug/smo-debug: storage/libsmo_storage.a
 cmd/smo-debug/smo-debug: protocol/libsmo_protocol.a
@@ -108,10 +108,12 @@ cmd/smo-debug/smo-debug: core/libsmo_core.a
 cmd/smo-debug/smo-debug: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo-debug/smo-debug: third_party/monocypher/libsmo_monocypher.a
 cmd/smo-debug/smo-debug: /usr/lib/x86_64-linux-gnu/libcrypto.so
+cmd/smo-debug/smo-debug: _deps/liboqs-build/lib/liboqs.a
+cmd/smo-debug/smo-debug: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo-debug/smo-debug: third_party/sqlite3/libsmo_sqlite3.a
 cmd/smo-debug/smo-debug: third_party/blake3/libsmo_blake3.a
-cmd/smo-debug/smo-debug: _deps/yaml-cpp-build/libyaml-cpp.a
-cmd/smo-debug/smo-debug: _deps/fmt-build/libfmt.a
+cmd/smo-debug/smo-debug: _deps/yaml-cpp-build/libyaml-cppd.a
+cmd/smo-debug/smo-debug: _deps/fmt-build/libfmtd.a
 cmd/smo-debug/smo-debug: cmd/smo-debug/CMakeFiles/smo-debug.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable smo-debug"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/cmd/smo-debug && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo-debug.dir/link.txt --verbose=$(VERBOSE)

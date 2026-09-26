@@ -15,6 +15,11 @@ set(CMAKE_DEPENDS_CHECK_ASM
   )
 set(CMAKE_ASM_COMPILER_ID "GNU")
 
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_ASM
+  "SMO_WITH_PQC"
+  )
+
 # The include file search paths:
 set(CMAKE_ASM_TARGET_INCLUDE_PATH
   "/home/nguyenduccanh/shellmap_project/smoframework/third_party/blake3"

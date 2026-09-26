@@ -41,12 +41,12 @@ endif()
 
 execute_process(
   COMMAND "/usr/bin/git"
-          checkout "0.11.0" --
+          checkout "0.16.0" --
   WORKING_DIRECTORY "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-src"
   RESULT_VARIABLE error_code
 )
 if(error_code)
-  message(FATAL_ERROR "Failed to checkout tag: '0.11.0'")
+  message(FATAL_ERROR "Failed to checkout tag: '0.16.0'")
 endif()
 
 set(init_submodules TRUE)

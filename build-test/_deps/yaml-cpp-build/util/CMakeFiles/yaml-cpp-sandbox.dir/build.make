@@ -92,7 +92,7 @@ yaml__cpp__sandbox_EXTERNAL_OBJECTS =
 
 _deps/yaml-cpp-build/util/sandbox: _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/sandbox.cpp.o
 _deps/yaml-cpp-build/util/sandbox: _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/build.make
-_deps/yaml-cpp-build/util/sandbox: _deps/yaml-cpp-build/libyaml-cpp.a
+_deps/yaml-cpp-build/util/sandbox: _deps/yaml-cpp-build/libyaml-cppd.a
 _deps/yaml-cpp-build/util/sandbox: _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable sandbox"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/yaml-cpp-build/util && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/yaml-cpp-sandbox.dir/link.txt --verbose=$(VERBOSE)

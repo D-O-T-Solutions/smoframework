@@ -1,6 +1,21 @@
 // SPDX-License-Identifier: MIT
 
-#define OQS_VERSION_TEXT "0.11.0"
+/** 
+ * Version of liboqs as a string. Equivalent to {MAJOR}.{MINOR}.{PATCH}{PRE_RELEASE} 
+ */
+#define OQS_VERSION_TEXT "0.16.0"
+/** 
+ * Version levels of liboqs as integers.
+ */
+#define OQS_VERSION_MAJOR 0
+#define OQS_VERSION_MINOR 16
+#define OQS_VERSION_PATCH 0
+/** 
+ * OQS_VERSION_PRE_RELEASE is defined if this is a pre-release version of liboqs, otherwise it is undefined.
+ * Examples: "-dev" or "-rc1".
+ */
+/* #undef OQS_VERSION_PRE_RELEASE */
+
 #define OQS_COMPILE_BUILD_TARGET "x86_64-Linux-7.0.0-31-generic"
 #define OQS_DIST_BUILD 1
 #define OQS_DIST_X86_64_BUILD 1
@@ -8,15 +23,16 @@
 /* #undef OQS_DIST_ARM64_V8_BUILD */
 /* #undef OQS_DIST_ARM32_V7_BUILD */
 /* #undef OQS_DIST_PPC64LE_BUILD */
-/* #undef OQS_DEBUG_BUILD */
+#define OQS_DEBUG_BUILD 1
 #define ARCH_X86_64 1
 /* #undef ARCH_ARM64v8 */
 /* #undef ARCH_ARM32v7 */
 /* #undef BUILD_SHARED_LIBS */
 #define OQS_BUILD_ONLY_LIB 1
 #define OQS_OPT_TARGET "generic"
+/* #undef USE_COVERAGE */
 /* #undef USE_SANITIZER */
-#define CMAKE_BUILD_TYPE "Release"
+#define CMAKE_BUILD_TYPE "Debug"
 
 #define OQS_USE_OPENSSL 1
 /* #undef OQS_USE_AES_OPENSSL */
@@ -26,6 +42,7 @@
 /* #undef OQS_OPENSSL_CRYPTO_SONAME */
 
 /* #undef OQS_EMBEDDED_BUILD */
+/* #undef OQS_MEMOPT_BUILD */
 
 #define OQS_USE_PTHREADS 1
 
@@ -53,6 +70,10 @@
 /* #undef OQS_ENABLE_TEST_CONSTANT_TIME */
 
 #define OQS_ENABLE_SHA3_xkcp_low_avx2 1
+#define OQS_USE_SHA3_AVX512VL 1
+
+#define OQS_USE_CUPQC 0
+#define OQS_USE_ICICLE 0
 
 /* #undef OQS_ENABLE_KEM_BIKE */
 /* #undef OQS_ENABLE_KEM_bike_l1 */
@@ -66,10 +87,27 @@
 /* #undef OQS_ENABLE_KEM_frodokem_976_shake */
 /* #undef OQS_ENABLE_KEM_frodokem_1344_aes */
 /* #undef OQS_ENABLE_KEM_frodokem_1344_shake */
+/* #undef OQS_ENABLE_KEM_efrodokem_640_aes */
+/* #undef OQS_ENABLE_KEM_efrodokem_640_shake */
+/* #undef OQS_ENABLE_KEM_efrodokem_976_aes */
+/* #undef OQS_ENABLE_KEM_efrodokem_976_shake */
+/* #undef OQS_ENABLE_KEM_efrodokem_1344_aes */
+/* #undef OQS_ENABLE_KEM_efrodokem_1344_shake */
 
 /* #undef OQS_ENABLE_KEM_NTRUPRIME */
 /* #undef OQS_ENABLE_KEM_ntruprime_sntrup761 */
-/* #undef OQS_ENABLE_KEM_ntruprime_sntrup761_avx2 */
+
+/* #undef OQS_ENABLE_KEM_NTRU */
+/* #undef OQS_ENABLE_KEM_ntru_hps2048509 */
+/* #undef OQS_ENABLE_KEM_ntru_hps2048509_avx2 */
+/* #undef OQS_ENABLE_KEM_ntru_hps2048677 */
+/* #undef OQS_ENABLE_KEM_ntru_hps2048677_avx2 */
+/* #undef OQS_ENABLE_KEM_ntru_hps4096821 */
+/* #undef OQS_ENABLE_KEM_ntru_hps4096821_avx2 */
+/* #undef OQS_ENABLE_KEM_ntru_hps40961229 */
+/* #undef OQS_ENABLE_KEM_ntru_hrss701 */
+/* #undef OQS_ENABLE_KEM_ntru_hrss701_avx2 */
+/* #undef OQS_ENABLE_KEM_ntru_hrss1373 */
 
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_START
 
@@ -96,9 +134,9 @@
 /* #undef OQS_ENABLE_KEM_classic_mceliece_8192128f_avx2 */
 
 /* #undef OQS_ENABLE_KEM_HQC */
-/* #undef OQS_ENABLE_KEM_hqc_128 */
-/* #undef OQS_ENABLE_KEM_hqc_192 */
-/* #undef OQS_ENABLE_KEM_hqc_256 */
+/* #undef OQS_ENABLE_KEM_hqc_1 */
+/* #undef OQS_ENABLE_KEM_hqc_3 */
+/* #undef OQS_ENABLE_KEM_hqc_5 */
 
 /* #undef OQS_ENABLE_KEM_KYBER */
 /* #undef OQS_ENABLE_KEM_kyber_512 */
@@ -113,36 +151,31 @@
 
 #define OQS_ENABLE_KEM_ML_KEM 1
 #define OQS_ENABLE_KEM_ml_kem_512 1
-/* #undef OQS_ENABLE_KEM_ml_kem_512_avx2 */
+#define OQS_ENABLE_KEM_ml_kem_512_x86_64 1
+/* #undef OQS_ENABLE_KEM_ml_kem_512_aarch64 */
+/* #undef OQS_ENABLE_KEM_ml_kem_512_cuda */
+/* #undef OQS_ENABLE_KEM_ml_kem_512_icicle_cuda */
 #define OQS_ENABLE_KEM_ml_kem_768 1
-/* #undef OQS_ENABLE_KEM_ml_kem_768_avx2 */
+#define OQS_ENABLE_KEM_ml_kem_768_x86_64 1
+/* #undef OQS_ENABLE_KEM_ml_kem_768_aarch64 */
+/* #undef OQS_ENABLE_KEM_ml_kem_768_cuda */
+/* #undef OQS_ENABLE_KEM_ml_kem_768_icicle_cuda */
 #define OQS_ENABLE_KEM_ml_kem_1024 1
-/* #undef OQS_ENABLE_KEM_ml_kem_1024_avx2 */
-
-/* #undef OQS_ENABLE_SIG_DILITHIUM */
-/* #undef OQS_ENABLE_SIG_dilithium_2 */
-/* #undef OQS_ENABLE_SIG_dilithium_2_avx2 */
-/* #undef OQS_ENABLE_SIG_dilithium_2_aarch64 */
-/* #undef OQS_ENABLE_SIG_dilithium_3 */
-/* #undef OQS_ENABLE_SIG_dilithium_3_avx2 */
-/* #undef OQS_ENABLE_SIG_dilithium_3_aarch64 */
-/* #undef OQS_ENABLE_SIG_dilithium_5 */
-/* #undef OQS_ENABLE_SIG_dilithium_5_avx2 */
-/* #undef OQS_ENABLE_SIG_dilithium_5_aarch64 */
+#define OQS_ENABLE_KEM_ml_kem_1024_x86_64 1
+/* #undef OQS_ENABLE_KEM_ml_kem_1024_aarch64 */
+/* #undef OQS_ENABLE_KEM_ml_kem_1024_cuda */
+/* #undef OQS_ENABLE_KEM_ml_kem_1024_icicle_cuda */
 
 #define OQS_ENABLE_SIG_ML_DSA 1
-/* #undef OQS_ENABLE_SIG_ml_dsa_44_ipd */
 #define OQS_ENABLE_SIG_ml_dsa_44 1
-/* #undef OQS_ENABLE_SIG_ml_dsa_44_ipd_avx2 */
-/* #undef OQS_ENABLE_SIG_ml_dsa_44_avx2 */
-/* #undef OQS_ENABLE_SIG_ml_dsa_65_ipd */
+#define OQS_ENABLE_SIG_ml_dsa_44_x86_64 1
+/* #undef OQS_ENABLE_SIG_ml_dsa_44_aarch64 */
 #define OQS_ENABLE_SIG_ml_dsa_65 1
-/* #undef OQS_ENABLE_SIG_ml_dsa_65_ipd_avx2 */
-/* #undef OQS_ENABLE_SIG_ml_dsa_65_avx2 */
-/* #undef OQS_ENABLE_SIG_ml_dsa_87_ipd */
+#define OQS_ENABLE_SIG_ml_dsa_65_x86_64 1
+/* #undef OQS_ENABLE_SIG_ml_dsa_65_aarch64 */
 #define OQS_ENABLE_SIG_ml_dsa_87 1
-/* #undef OQS_ENABLE_SIG_ml_dsa_87_ipd_avx2 */
-/* #undef OQS_ENABLE_SIG_ml_dsa_87_avx2 */
+#define OQS_ENABLE_SIG_ml_dsa_87_x86_64 1
+/* #undef OQS_ENABLE_SIG_ml_dsa_87_aarch64 */
 
 /* #undef OQS_ENABLE_SIG_FALCON */
 /* #undef OQS_ENABLE_SIG_falcon_512 */
@@ -158,41 +191,19 @@
 /* #undef OQS_ENABLE_SIG_falcon_padded_1024_avx2 */
 /* #undef OQS_ENABLE_SIG_falcon_padded_1024_aarch64 */
 
-/* #undef OQS_ENABLE_SIG_SPHINCS */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_128f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_128f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_128s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_128s_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_192f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_192f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_192s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_192s_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_256f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_256f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_256s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_sha2_256s_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_128f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_128f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_128s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_128s_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_192f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_192f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_192s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_192s_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_256f_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_256f_simple_avx2 */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_256s_simple */
-/* #undef OQS_ENABLE_SIG_sphincs_shake_256s_simple_avx2 */
-
 /* #undef OQS_ENABLE_SIG_MAYO */
 /* #undef OQS_ENABLE_SIG_mayo_1 */
 /* #undef OQS_ENABLE_SIG_mayo_1_avx2 */
+/* #undef OQS_ENABLE_SIG_mayo_1_neon */
 /* #undef OQS_ENABLE_SIG_mayo_2 */
 /* #undef OQS_ENABLE_SIG_mayo_2_avx2 */
+/* #undef OQS_ENABLE_SIG_mayo_2_neon */
 /* #undef OQS_ENABLE_SIG_mayo_3 */
 /* #undef OQS_ENABLE_SIG_mayo_3_avx2 */
+/* #undef OQS_ENABLE_SIG_mayo_3_neon */
 /* #undef OQS_ENABLE_SIG_mayo_5 */
 /* #undef OQS_ENABLE_SIG_mayo_5_avx2 */
+/* #undef OQS_ENABLE_SIG_mayo_5_neon */
 
 /* #undef OQS_ENABLE_SIG_CROSS */
 /* #undef OQS_ENABLE_SIG_cross_rsdp_128_balanced */
@@ -231,7 +242,280 @@
 /* #undef OQS_ENABLE_SIG_cross_rsdpg_256_fast_avx2 */
 /* #undef OQS_ENABLE_SIG_cross_rsdpg_256_small */
 /* #undef OQS_ENABLE_SIG_cross_rsdpg_256_small_avx2 */
+
+/* #undef OQS_ENABLE_SIG_UOV */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_III */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_V */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc_skc */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc_skc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Is_pkc_skc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc_skc */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc_skc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_Ip_pkc_skc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc_skc */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc_skc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_III_pkc_skc_avx2 */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc_skc */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc_skc_neon */
+/* #undef OQS_ENABLE_SIG_uov_ov_V_pkc_skc_avx2 */
+
+/* #undef OQS_ENABLE_SIG_SNOVA */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_esk */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_esk_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_esk_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE_esk */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE_esk_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_4_SHAKE_esk_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_17_2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_17_2_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_17_2_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_25_8_3 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_25_8_3_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_25_8_3_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_56_25_2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_56_25_2_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_56_25_2_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_49_11_3 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_49_11_3_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_49_11_3_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_8_4 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_8_4_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_37_8_4_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_5 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_5_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_24_5_5_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_60_10_4 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_60_10_4_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_60_10_4_neon */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_29_6_5 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_29_6_5_avx2 */
+/* #undef OQS_ENABLE_SIG_snova_SNOVA_29_6_5_neon */
+
+/* #undef OQS_ENABLE_SIG_MQOM */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_fast_r5_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat1_gf16_short_r5_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_fast_r5_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat3_gf16_short_r5_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_fast_r5_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r3 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r3_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r3_avx2 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r5 */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r5_memopt */
+/* #undef OQS_ENABLE_SIG_mqom_mqom2_cat5_gf16_short_r5_avx2 */
 ///// OQS_COPY_FROM_UPSTREAM_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
+///// OQS_COPY_FROM_SLH_DSA_FRAGMENT_ADD_ALG_ENABLE_DEFINES_START
+/* #undef OQS_ENABLE_SIG_SLH_DSA */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_pure_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_224_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_256_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_384_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_224_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha2_512_256_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_224_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_256_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_384_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_sha3_512_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_128_prehash_shake_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_sha2_256f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_128s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_128f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_192s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_192f */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_256s */
+/* #undef OQS_ENABLE_SIG_slh_dsa_shake_256_prehash_shake_256f */
+///// OQS_COPY_FROM_SLH_DSA_FRAGMENT_ADD_ALG_ENABLE_DEFINES_END
 
 ///// OQS_COPY_FROM_LIBJADE_FRAGMENT_ADD_ALG_ENABLE_DEFINES_START
 
@@ -297,8 +581,29 @@
 /* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w1 */
 /* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w2 */
 /* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w4 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w1 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w2 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w4 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h25_w1 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h25_w2 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h25_w4 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h25_w8 */
 /* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h5_w8_h5_w8 */
 /* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h10_w4_h5_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h10_w8_h5_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h10_w2_h10_w2 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h10_w4_h10_w4 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h10_w8_h10_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w8_h5_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w8_h10_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h15_w8_h15_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w8_h5_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w8_h10_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w8_h15_w8 */
+/* #undef OQS_ENABLE_SIG_STFL_lms_sha256_h20_w8_h20_w8 */
+
 
 /* #undef OQS_HAZARDOUS_EXPERIMENTAL_ENABLE_SIG_STFL_KEY_SIG_GEN */
 /* #undef OQS_ALLOW_STFL_KEY_AND_SIG_GEN */

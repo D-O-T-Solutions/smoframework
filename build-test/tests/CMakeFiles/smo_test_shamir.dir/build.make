@@ -94,12 +94,14 @@ tests/smo_test_shamir: tests/CMakeFiles/smo_test_shamir.dir/unit/core/crypto/tes
 tests/smo_test_shamir: tests/CMakeFiles/smo_test_shamir.dir/build.make
 tests/smo_test_shamir: core/genesis/libsmo_genesis.a
 tests/smo_test_shamir: core/libsmo_core.a
-tests/smo_test_shamir: _deps/fmt-build/libfmt.a
+tests/smo_test_shamir: _deps/fmt-build/libfmtd.a
 tests/smo_test_shamir: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_shamir: core/libsmo_core.a
 tests/smo_test_shamir: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_shamir: _deps/fmt-build/libfmt.a
+tests/smo_test_shamir: _deps/fmt-build/libfmtd.a
 tests/smo_test_shamir: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_shamir: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_shamir: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_shamir: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_shamir: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_shamir: third_party/blake3/libsmo_blake3.a

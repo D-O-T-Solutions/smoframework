@@ -94,7 +94,7 @@ tests/smo_test_execution_engine: tests/CMakeFiles/smo_test_execution_engine.dir/
 tests/smo_test_execution_engine: tests/CMakeFiles/smo_test_execution_engine.dir/build.make
 tests/smo_test_execution_engine: core/runtime/libsmo_runtime.a
 tests/smo_test_execution_engine: core/libsmo_core.a
-tests/smo_test_execution_engine: _deps/fmt-build/libfmt.a
+tests/smo_test_execution_engine: _deps/fmt-build/libfmtd.a
 tests/smo_test_execution_engine: core/observability/libsmo_observability.a
 tests/smo_test_execution_engine: core/runtime/libsmo_runtime.a
 tests/smo_test_execution_engine: core/observability/libsmo_observability.a
@@ -103,14 +103,16 @@ tests/smo_test_execution_engine: storage/libsmo_storage.a
 tests/smo_test_execution_engine: protocol/libsmo_protocol.a
 tests/smo_test_execution_engine: _deps/simdjson-build/libsimdjson.a
 tests/smo_test_execution_engine: core/acl/libsmo_acl.a
-tests/smo_test_execution_engine: _deps/yaml-cpp-build/libyaml-cpp.a
+tests/smo_test_execution_engine: _deps/yaml-cpp-build/libyaml-cppd.a
 tests/smo_test_execution_engine: core/genesis/libsmo_genesis.a
 tests/smo_test_execution_engine: core/libsmo_core.a
 tests/smo_test_execution_engine: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_execution_engine: core/libsmo_core.a
 tests/smo_test_execution_engine: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_execution_engine: _deps/fmt-build/libfmt.a
+tests/smo_test_execution_engine: _deps/fmt-build/libfmtd.a
 tests/smo_test_execution_engine: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_execution_engine: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_execution_engine: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_execution_engine: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_execution_engine: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_execution_engine: third_party/blake3/libsmo_blake3.a

@@ -78,6 +78,10 @@ oqs__internal_EXTERNAL_OBJECTS = \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_serial.dir/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_avx2.dir/KeccakP-1600/avx2/KeccakP-1600-AVX2.S.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_avx2.dir/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/KeccakP-1600-AVX512VL.S.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/SHA3-AVX512VL.S.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/KeccakP-1600-times4-AVX512VL.S.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/SHA3-times4-AVX512VL.S.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_impl.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_c.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes128_ni.c.o" \
@@ -87,6 +91,8 @@ oqs__internal_EXTERNAL_OBJECTS = \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha2/sha2.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3x4.c.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3.c.o" \
+"/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3x4.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3x4.c.o" \
 "/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/liboqs-build/src/common/CMakeFiles/internal.dir/ossl_helpers.c.o" \
@@ -97,6 +103,10 @@ _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/xkc
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_serial.dir/KeccakP-1600times4/serial/KeccakP-1600-times4-on1.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600_avx2.dir/KeccakP-1600/avx2/KeccakP-1600-AVX2.S.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600times4_avx2.dir/KeccakP-1600times4/avx2/KeccakP-1600-times4-SIMD256.c.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/KeccakP-1600-AVX512VL.S.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/SHA3-AVX512VL.S.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/KeccakP-1600-times4-AVX512VL.S.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/SHA3-times4-AVX512VL.S.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_impl.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes_c.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/aes/aes128_ni.c.o
@@ -106,6 +116,8 @@ _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFil
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha2/sha2.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/xkcp_sha3x4.c.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3.c.o
+_deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/avx512vl_sha3x4.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/sha3/sha3x4.c.o
 _deps/liboqs-build/lib/liboqs-internal.a: _deps/liboqs-build/src/common/CMakeFiles/internal.dir/ossl_helpers.c.o

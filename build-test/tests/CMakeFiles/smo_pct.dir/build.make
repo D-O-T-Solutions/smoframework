@@ -99,19 +99,20 @@ tests/smo_pct: protocol/libsmo_protocol.a
 tests/smo_pct: storage/libsmo_storage.a
 tests/smo_pct: providers/suite1_classical/libsmo_suite1_classical.a
 tests/smo_pct: providers/suite2_modern/libsmo_suite2_modern.a
-tests/smo_pct: _deps/fmt-build/libfmt.a
+tests/smo_pct: _deps/fmt-build/libfmtd.a
+tests/smo_pct: providers/suite3_purepqc/libsmo_suite3_purepqc.a
 tests/smo_pct: core/libsmo_core.a
 tests/smo_pct: protocol/libsmo_protocol.a
 tests/smo_pct: trust/libsmo_trust.a
 tests/smo_pct: core/acl/libsmo_acl.a
-tests/smo_pct: _deps/fmt-build/libfmt.a
-tests/smo_pct: _deps/spdlog-build/libspdlog.a
+tests/smo_pct: _deps/fmt-build/libfmtd.a
+tests/smo_pct: _deps/spdlog-build/libspdlogd.a
 tests/smo_pct: core/observability/libsmo_observability.a
 tests/smo_pct: core/runtime/libsmo_runtime.a
 tests/smo_pct: core/observability/libsmo_observability.a
 tests/smo_pct: contract/libsmo_contract.a
 tests/smo_pct: core/acl/libsmo_acl.a
-tests/smo_pct: _deps/yaml-cpp-build/libyaml-cpp.a
+tests/smo_pct: _deps/yaml-cpp-build/libyaml-cppd.a
 tests/smo_pct: core/genesis/libsmo_genesis.a
 tests/smo_pct: storage/libsmo_storage.a
 tests/smo_pct: protocol/libsmo_protocol.a
@@ -121,10 +122,12 @@ tests/smo_pct: core/libsmo_core.a
 tests/smo_pct: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_pct: third_party/monocypher/libsmo_monocypher.a
 tests/smo_pct: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_pct: _deps/liboqs-build/lib/liboqs.a
+tests/smo_pct: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_pct: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_pct: third_party/blake3/libsmo_blake3.a
 tests/smo_pct: _deps/simdjson-build/libsimdjson.a
-tests/smo_pct: _deps/fmt-build/libfmt.a
+tests/smo_pct: _deps/fmt-build/libfmtd.a
 tests/smo_pct: tests/CMakeFiles/smo_pct.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable smo_pct"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo_pct.dir/link.txt --verbose=$(VERBOSE)

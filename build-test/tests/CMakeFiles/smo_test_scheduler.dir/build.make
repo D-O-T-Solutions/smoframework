@@ -94,7 +94,7 @@ tests/smo_test_scheduler: tests/CMakeFiles/smo_test_scheduler.dir/unit/core/runt
 tests/smo_test_scheduler: tests/CMakeFiles/smo_test_scheduler.dir/build.make
 tests/smo_test_scheduler: core/runtime/libsmo_runtime.a
 tests/smo_test_scheduler: core/libsmo_core.a
-tests/smo_test_scheduler: _deps/fmt-build/libfmt.a
+tests/smo_test_scheduler: _deps/fmt-build/libfmtd.a
 tests/smo_test_scheduler: core/observability/libsmo_observability.a
 tests/smo_test_scheduler: core/runtime/libsmo_runtime.a
 tests/smo_test_scheduler: core/observability/libsmo_observability.a
@@ -103,14 +103,16 @@ tests/smo_test_scheduler: storage/libsmo_storage.a
 tests/smo_test_scheduler: protocol/libsmo_protocol.a
 tests/smo_test_scheduler: _deps/simdjson-build/libsimdjson.a
 tests/smo_test_scheduler: core/acl/libsmo_acl.a
-tests/smo_test_scheduler: _deps/yaml-cpp-build/libyaml-cpp.a
+tests/smo_test_scheduler: _deps/yaml-cpp-build/libyaml-cppd.a
 tests/smo_test_scheduler: core/genesis/libsmo_genesis.a
 tests/smo_test_scheduler: core/libsmo_core.a
 tests/smo_test_scheduler: providers/blake3_provider/libsmo_blake3_provider.a
 tests/smo_test_scheduler: core/libsmo_core.a
 tests/smo_test_scheduler: providers/blake3_provider/libsmo_blake3_provider.a
-tests/smo_test_scheduler: _deps/fmt-build/libfmt.a
+tests/smo_test_scheduler: _deps/fmt-build/libfmtd.a
 tests/smo_test_scheduler: third_party/monocypher/libsmo_monocypher.a
+tests/smo_test_scheduler: /usr/lib/x86_64-linux-gnu/libcrypto.so
+tests/smo_test_scheduler: _deps/liboqs-build/lib/liboqs.a
 tests/smo_test_scheduler: /usr/lib/x86_64-linux-gnu/libcrypto.so
 tests/smo_test_scheduler: third_party/sqlite3/libsmo_sqlite3.a
 tests/smo_test_scheduler: third_party/blake3/libsmo_blake3.a

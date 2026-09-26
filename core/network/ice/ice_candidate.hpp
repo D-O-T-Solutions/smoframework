@@ -193,6 +193,9 @@ namespace smo::network::ice {
         // Get nominated pair (after connectivity checks)
         std::optional<CandidatePair> nominated_pair() const;
 
+        // Get current config (for inspection)
+        const IceConfig& config() const noexcept { return config_; }
+
         // Get current role
         IceRole role() const noexcept { return config_.role; }
 

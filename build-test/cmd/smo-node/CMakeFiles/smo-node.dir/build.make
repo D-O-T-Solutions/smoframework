@@ -98,18 +98,19 @@ cmd/smo-node/smo-node: storage/libsmo_storage.a
 cmd/smo-node/smo-node: contract/libsmo_contract.a
 cmd/smo-node/smo-node: providers/suite1_classical/libsmo_suite1_classical.a
 cmd/smo-node/smo-node: providers/suite2_modern/libsmo_suite2_modern.a
+cmd/smo-node/smo-node: providers/suite3_purepqc/libsmo_suite3_purepqc.a
 cmd/smo-node/smo-node: core/libsmo_core.a
 cmd/smo-node/smo-node: protocol/libsmo_protocol.a
 cmd/smo-node/smo-node: trust/libsmo_trust.a
 cmd/smo-node/smo-node: core/acl/libsmo_acl.a
-cmd/smo-node/smo-node: _deps/fmt-build/libfmt.a
-cmd/smo-node/smo-node: _deps/spdlog-build/libspdlog.a
+cmd/smo-node/smo-node: _deps/fmt-build/libfmtd.a
+cmd/smo-node/smo-node: _deps/spdlog-build/libspdlogd.a
 cmd/smo-node/smo-node: core/observability/libsmo_observability.a
 cmd/smo-node/smo-node: core/runtime/libsmo_runtime.a
 cmd/smo-node/smo-node: core/observability/libsmo_observability.a
 cmd/smo-node/smo-node: contract/libsmo_contract.a
 cmd/smo-node/smo-node: core/acl/libsmo_acl.a
-cmd/smo-node/smo-node: _deps/yaml-cpp-build/libyaml-cpp.a
+cmd/smo-node/smo-node: _deps/yaml-cpp-build/libyaml-cppd.a
 cmd/smo-node/smo-node: core/genesis/libsmo_genesis.a
 cmd/smo-node/smo-node: third_party/clipboard/libsmo_clipboard.a
 cmd/smo-node/smo-node: storage/libsmo_storage.a
@@ -120,10 +121,12 @@ cmd/smo-node/smo-node: core/libsmo_core.a
 cmd/smo-node/smo-node: providers/blake3_provider/libsmo_blake3_provider.a
 cmd/smo-node/smo-node: third_party/monocypher/libsmo_monocypher.a
 cmd/smo-node/smo-node: /usr/lib/x86_64-linux-gnu/libcrypto.so
+cmd/smo-node/smo-node: _deps/liboqs-build/lib/liboqs.a
+cmd/smo-node/smo-node: /usr/lib/x86_64-linux-gnu/libcrypto.so
 cmd/smo-node/smo-node: third_party/sqlite3/libsmo_sqlite3.a
 cmd/smo-node/smo-node: third_party/blake3/libsmo_blake3.a
 cmd/smo-node/smo-node: _deps/simdjson-build/libsimdjson.a
-cmd/smo-node/smo-node: _deps/fmt-build/libfmt.a
+cmd/smo-node/smo-node: _deps/fmt-build/libfmtd.a
 cmd/smo-node/smo-node: cmd/smo-node/CMakeFiles/smo-node.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable smo-node"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/cmd/smo-node && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo-node.dir/link.txt --verbose=$(VERBOSE)

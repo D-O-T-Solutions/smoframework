@@ -1,1 +1,1 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/smo_stub_compiler.dir/unit/compiler_test.cpp.o -o smo_stub_compiler 
+/usr/bin/c++ -g -fsanitize=address,undefined CMakeFiles/smo_stub_compiler.dir/unit/compiler_test.cpp.o -o smo_stub_compiler 

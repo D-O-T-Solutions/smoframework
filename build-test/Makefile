@@ -232,474 +232,6 @@ smo_monocypher/fast:
 .PHONY : smo_monocypher/fast
 
 #=============================================================================
-# Target rules for targets named smo_clipboard
-
-# Build rule for target.
-smo_clipboard: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_clipboard
-.PHONY : smo_clipboard
-
-# fast build rule for target.
-smo_clipboard/fast:
-	$(MAKE) $(MAKESILENT) -f third_party/clipboard/CMakeFiles/smo_clipboard.dir/build.make third_party/clipboard/CMakeFiles/smo_clipboard.dir/build
-.PHONY : smo_clipboard/fast
-
-#=============================================================================
-# Target rules for targets named Experimental
-
-# Build rule for target.
-Experimental: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Experimental
-.PHONY : Experimental
-
-# fast build rule for target.
-Experimental/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/Experimental.dir/build.make _deps/yaml-cpp-build/CMakeFiles/Experimental.dir/build
-.PHONY : Experimental/fast
-
-#=============================================================================
-# Target rules for targets named Nightly
-
-# Build rule for target.
-Nightly: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Nightly
-.PHONY : Nightly
-
-# fast build rule for target.
-Nightly/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/Nightly.dir/build.make _deps/yaml-cpp-build/CMakeFiles/Nightly.dir/build
-.PHONY : Nightly/fast
-
-#=============================================================================
-# Target rules for targets named Continuous
-
-# Build rule for target.
-Continuous: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Continuous
-.PHONY : Continuous
-
-# fast build rule for target.
-Continuous/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/Continuous.dir/build.make _deps/yaml-cpp-build/CMakeFiles/Continuous.dir/build
-.PHONY : Continuous/fast
-
-#=============================================================================
-# Target rules for targets named NightlyMemoryCheck
-
-# Build rule for target.
-NightlyMemoryCheck: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyMemoryCheck
-.PHONY : NightlyMemoryCheck
-
-# fast build rule for target.
-NightlyMemoryCheck/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyMemoryCheck.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyMemoryCheck.dir/build
-.PHONY : NightlyMemoryCheck/fast
-
-#=============================================================================
-# Target rules for targets named NightlyStart
-
-# Build rule for target.
-NightlyStart: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyStart
-.PHONY : NightlyStart
-
-# fast build rule for target.
-NightlyStart/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyStart.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyStart.dir/build
-.PHONY : NightlyStart/fast
-
-#=============================================================================
-# Target rules for targets named NightlyUpdate
-
-# Build rule for target.
-NightlyUpdate: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyUpdate
-.PHONY : NightlyUpdate
-
-# fast build rule for target.
-NightlyUpdate/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyUpdate.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyUpdate.dir/build
-.PHONY : NightlyUpdate/fast
-
-#=============================================================================
-# Target rules for targets named NightlyConfigure
-
-# Build rule for target.
-NightlyConfigure: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyConfigure
-.PHONY : NightlyConfigure
-
-# fast build rule for target.
-NightlyConfigure/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyConfigure.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyConfigure.dir/build
-.PHONY : NightlyConfigure/fast
-
-#=============================================================================
-# Target rules for targets named NightlyBuild
-
-# Build rule for target.
-NightlyBuild: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyBuild
-.PHONY : NightlyBuild
-
-# fast build rule for target.
-NightlyBuild/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyBuild.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyBuild.dir/build
-.PHONY : NightlyBuild/fast
-
-#=============================================================================
-# Target rules for targets named NightlyTest
-
-# Build rule for target.
-NightlyTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyTest
-.PHONY : NightlyTest
-
-# fast build rule for target.
-NightlyTest/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyTest.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyTest.dir/build
-.PHONY : NightlyTest/fast
-
-#=============================================================================
-# Target rules for targets named NightlyCoverage
-
-# Build rule for target.
-NightlyCoverage: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyCoverage
-.PHONY : NightlyCoverage
-
-# fast build rule for target.
-NightlyCoverage/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyCoverage.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyCoverage.dir/build
-.PHONY : NightlyCoverage/fast
-
-#=============================================================================
-# Target rules for targets named NightlyMemCheck
-
-# Build rule for target.
-NightlyMemCheck: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlyMemCheck
-.PHONY : NightlyMemCheck
-
-# fast build rule for target.
-NightlyMemCheck/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlyMemCheck.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlyMemCheck.dir/build
-.PHONY : NightlyMemCheck/fast
-
-#=============================================================================
-# Target rules for targets named NightlySubmit
-
-# Build rule for target.
-NightlySubmit: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 NightlySubmit
-.PHONY : NightlySubmit
-
-# fast build rule for target.
-NightlySubmit/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/NightlySubmit.dir/build.make _deps/yaml-cpp-build/CMakeFiles/NightlySubmit.dir/build
-.PHONY : NightlySubmit/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalStart
-
-# Build rule for target.
-ExperimentalStart: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalStart
-.PHONY : ExperimentalStart
-
-# fast build rule for target.
-ExperimentalStart/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalStart.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalStart.dir/build
-.PHONY : ExperimentalStart/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalUpdate
-
-# Build rule for target.
-ExperimentalUpdate: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalUpdate
-.PHONY : ExperimentalUpdate
-
-# fast build rule for target.
-ExperimentalUpdate/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalUpdate.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalUpdate.dir/build
-.PHONY : ExperimentalUpdate/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalConfigure
-
-# Build rule for target.
-ExperimentalConfigure: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalConfigure
-.PHONY : ExperimentalConfigure
-
-# fast build rule for target.
-ExperimentalConfigure/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalConfigure.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalConfigure.dir/build
-.PHONY : ExperimentalConfigure/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalBuild
-
-# Build rule for target.
-ExperimentalBuild: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalBuild
-.PHONY : ExperimentalBuild
-
-# fast build rule for target.
-ExperimentalBuild/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalBuild.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalBuild.dir/build
-.PHONY : ExperimentalBuild/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalTest
-
-# Build rule for target.
-ExperimentalTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalTest
-.PHONY : ExperimentalTest
-
-# fast build rule for target.
-ExperimentalTest/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalTest.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalTest.dir/build
-.PHONY : ExperimentalTest/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalCoverage
-
-# Build rule for target.
-ExperimentalCoverage: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalCoverage
-.PHONY : ExperimentalCoverage
-
-# fast build rule for target.
-ExperimentalCoverage/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalCoverage.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalCoverage.dir/build
-.PHONY : ExperimentalCoverage/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalMemCheck
-
-# Build rule for target.
-ExperimentalMemCheck: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalMemCheck
-.PHONY : ExperimentalMemCheck
-
-# fast build rule for target.
-ExperimentalMemCheck/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalMemCheck.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalMemCheck.dir/build
-.PHONY : ExperimentalMemCheck/fast
-
-#=============================================================================
-# Target rules for targets named ExperimentalSubmit
-
-# Build rule for target.
-ExperimentalSubmit: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExperimentalSubmit
-.PHONY : ExperimentalSubmit
-
-# fast build rule for target.
-ExperimentalSubmit/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ExperimentalSubmit.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ExperimentalSubmit.dir/build
-.PHONY : ExperimentalSubmit/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousStart
-
-# Build rule for target.
-ContinuousStart: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousStart
-.PHONY : ContinuousStart
-
-# fast build rule for target.
-ContinuousStart/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousStart.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousStart.dir/build
-.PHONY : ContinuousStart/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousUpdate
-
-# Build rule for target.
-ContinuousUpdate: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousUpdate
-.PHONY : ContinuousUpdate
-
-# fast build rule for target.
-ContinuousUpdate/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousUpdate.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousUpdate.dir/build
-.PHONY : ContinuousUpdate/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousConfigure
-
-# Build rule for target.
-ContinuousConfigure: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousConfigure
-.PHONY : ContinuousConfigure
-
-# fast build rule for target.
-ContinuousConfigure/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousConfigure.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousConfigure.dir/build
-.PHONY : ContinuousConfigure/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousBuild
-
-# Build rule for target.
-ContinuousBuild: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousBuild
-.PHONY : ContinuousBuild
-
-# fast build rule for target.
-ContinuousBuild/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousBuild.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousBuild.dir/build
-.PHONY : ContinuousBuild/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousTest
-
-# Build rule for target.
-ContinuousTest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousTest
-.PHONY : ContinuousTest
-
-# fast build rule for target.
-ContinuousTest/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousTest.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousTest.dir/build
-.PHONY : ContinuousTest/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousCoverage
-
-# Build rule for target.
-ContinuousCoverage: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousCoverage
-.PHONY : ContinuousCoverage
-
-# fast build rule for target.
-ContinuousCoverage/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousCoverage.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousCoverage.dir/build
-.PHONY : ContinuousCoverage/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousMemCheck
-
-# Build rule for target.
-ContinuousMemCheck: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousMemCheck
-.PHONY : ContinuousMemCheck
-
-# fast build rule for target.
-ContinuousMemCheck/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousMemCheck.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousMemCheck.dir/build
-.PHONY : ContinuousMemCheck/fast
-
-#=============================================================================
-# Target rules for targets named ContinuousSubmit
-
-# Build rule for target.
-ContinuousSubmit: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ContinuousSubmit
-.PHONY : ContinuousSubmit
-
-# fast build rule for target.
-ContinuousSubmit/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/ContinuousSubmit.dir/build.make _deps/yaml-cpp-build/CMakeFiles/ContinuousSubmit.dir/build
-.PHONY : ContinuousSubmit/fast
-
-#=============================================================================
-# Target rules for targets named yaml-cpp
-
-# Build rule for target.
-yaml-cpp: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp
-.PHONY : yaml-cpp
-
-# fast build rule for target.
-yaml-cpp/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/yaml-cpp.dir/build.make _deps/yaml-cpp-build/CMakeFiles/yaml-cpp.dir/build
-.PHONY : yaml-cpp/fast
-
-#=============================================================================
-# Target rules for targets named yaml-cpp-sandbox
-
-# Build rule for target.
-yaml-cpp-sandbox: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-sandbox
-.PHONY : yaml-cpp-sandbox
-
-# fast build rule for target.
-yaml-cpp-sandbox/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/build
-.PHONY : yaml-cpp-sandbox/fast
-
-#=============================================================================
-# Target rules for targets named yaml-cpp-parse
-
-# Build rule for target.
-yaml-cpp-parse: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-parse
-.PHONY : yaml-cpp-parse
-
-# fast build rule for target.
-yaml-cpp-parse/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-parse.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-parse.dir/build
-.PHONY : yaml-cpp-parse/fast
-
-#=============================================================================
-# Target rules for targets named yaml-cpp-read
-
-# Build rule for target.
-yaml-cpp-read: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-read
-.PHONY : yaml-cpp-read
-
-# fast build rule for target.
-yaml-cpp-read/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-read.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-read.dir/build
-.PHONY : yaml-cpp-read/fast
-
-#=============================================================================
-# Target rules for targets named fmt
-
-# Build rule for target.
-fmt: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fmt
-.PHONY : fmt
-
-# fast build rule for target.
-fmt/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/fmt-build/CMakeFiles/fmt.dir/build.make _deps/fmt-build/CMakeFiles/fmt.dir/build
-.PHONY : fmt/fast
-
-#=============================================================================
-# Target rules for targets named spdlog
-
-# Build rule for target.
-spdlog: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 spdlog
-.PHONY : spdlog
-
-# fast build rule for target.
-spdlog/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/spdlog-build/CMakeFiles/spdlog.dir/build.make _deps/spdlog-build/CMakeFiles/spdlog.dir/build
-.PHONY : spdlog/fast
-
-#=============================================================================
-# Target rules for targets named simdjson
-
-# Build rule for target.
-simdjson: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simdjson
-.PHONY : simdjson
-
-# fast build rule for target.
-simdjson/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/simdjson-build/CMakeFiles/simdjson.dir/build.make _deps/simdjson-build/CMakeFiles/simdjson.dir/build
-.PHONY : simdjson/fast
-
-#=============================================================================
 # Target rules for targets named uninstall
 
 # Build rule for target.
@@ -817,6 +349,19 @@ xkcp_low_keccakp_1600times4_avx2/fast:
 .PHONY : xkcp_low_keccakp_1600times4_avx2/fast
 
 #=============================================================================
+# Target rules for targets named sha3_avx512vl_low
+
+# Build rule for target.
+sha3_avx512vl_low: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sha3_avx512vl_low
+.PHONY : sha3_avx512vl_low
+
+# fast build rule for target.
+sha3_avx512vl_low/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/build.make _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/build
+.PHONY : sha3_avx512vl_low/fast
+
+#=============================================================================
 # Target rules for targets named ml_kem_512_ref
 
 # Build rule for target.
@@ -828,6 +373,19 @@ ml_kem_512_ref: cmake_check_build_system
 ml_kem_512_ref/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_ref.dir/build
 .PHONY : ml_kem_512_ref/fast
+
+#=============================================================================
+# Target rules for targets named ml_kem_512_x86_64
+
+# Build rule for target.
+ml_kem_512_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_kem_512_x86_64
+.PHONY : ml_kem_512_x86_64
+
+# fast build rule for target.
+ml_kem_512_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_512_x86_64.dir/build
+.PHONY : ml_kem_512_x86_64/fast
 
 #=============================================================================
 # Target rules for targets named ml_kem_768_ref
@@ -843,6 +401,19 @@ ml_kem_768_ref/fast:
 .PHONY : ml_kem_768_ref/fast
 
 #=============================================================================
+# Target rules for targets named ml_kem_768_x86_64
+
+# Build rule for target.
+ml_kem_768_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_kem_768_x86_64
+.PHONY : ml_kem_768_x86_64
+
+# fast build rule for target.
+ml_kem_768_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_768_x86_64.dir/build
+.PHONY : ml_kem_768_x86_64/fast
+
+#=============================================================================
 # Target rules for targets named ml_kem_1024_ref
 
 # Build rule for target.
@@ -856,43 +427,199 @@ ml_kem_1024_ref/fast:
 .PHONY : ml_kem_1024_ref/fast
 
 #=============================================================================
-# Target rules for targets named ml_dsa_44_ipd_ref
+# Target rules for targets named ml_kem_1024_x86_64
 
 # Build rule for target.
-ml_dsa_44_ipd_ref: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_44_ipd_ref
-.PHONY : ml_dsa_44_ipd_ref
+ml_kem_1024_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_kem_1024_x86_64
+.PHONY : ml_kem_1024_x86_64
 
 # fast build rule for target.
-ml_dsa_44_ipd_ref/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ipd_ref.dir/build
-.PHONY : ml_dsa_44_ipd_ref/fast
+ml_kem_1024_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build.make _deps/liboqs-build/src/kem/ml_kem/CMakeFiles/ml_kem_1024_x86_64.dir/build
+.PHONY : ml_kem_1024_x86_64/fast
 
 #=============================================================================
-# Target rules for targets named ml_dsa_65_ipd_ref
+# Target rules for targets named ml_dsa_44_ref
 
 # Build rule for target.
-ml_dsa_65_ipd_ref: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_65_ipd_ref
-.PHONY : ml_dsa_65_ipd_ref
+ml_dsa_44_ref: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_44_ref
+.PHONY : ml_dsa_44_ref
 
 # fast build rule for target.
-ml_dsa_65_ipd_ref/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ipd_ref.dir/build
-.PHONY : ml_dsa_65_ipd_ref/fast
+ml_dsa_44_ref/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_ref.dir/build
+.PHONY : ml_dsa_44_ref/fast
 
 #=============================================================================
-# Target rules for targets named ml_dsa_87_ipd_ref
+# Target rules for targets named ml_dsa_44_x86_64
 
 # Build rule for target.
-ml_dsa_87_ipd_ref: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_87_ipd_ref
-.PHONY : ml_dsa_87_ipd_ref
+ml_dsa_44_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_44_x86_64
+.PHONY : ml_dsa_44_x86_64
 
 # fast build rule for target.
-ml_dsa_87_ipd_ref/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ipd_ref.dir/build
-.PHONY : ml_dsa_87_ipd_ref/fast
+ml_dsa_44_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_44_x86_64.dir/build
+.PHONY : ml_dsa_44_x86_64/fast
+
+#=============================================================================
+# Target rules for targets named ml_dsa_65_ref
+
+# Build rule for target.
+ml_dsa_65_ref: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_65_ref
+.PHONY : ml_dsa_65_ref
+
+# fast build rule for target.
+ml_dsa_65_ref/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_ref.dir/build
+.PHONY : ml_dsa_65_ref/fast
+
+#=============================================================================
+# Target rules for targets named ml_dsa_65_x86_64
+
+# Build rule for target.
+ml_dsa_65_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_65_x86_64
+.PHONY : ml_dsa_65_x86_64
+
+# fast build rule for target.
+ml_dsa_65_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_65_x86_64.dir/build
+.PHONY : ml_dsa_65_x86_64/fast
+
+#=============================================================================
+# Target rules for targets named ml_dsa_87_ref
+
+# Build rule for target.
+ml_dsa_87_ref: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_87_ref
+.PHONY : ml_dsa_87_ref
+
+# fast build rule for target.
+ml_dsa_87_ref/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_ref.dir/build
+.PHONY : ml_dsa_87_ref/fast
+
+#=============================================================================
+# Target rules for targets named ml_dsa_87_x86_64
+
+# Build rule for target.
+ml_dsa_87_x86_64: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ml_dsa_87_x86_64
+.PHONY : ml_dsa_87_x86_64
+
+# fast build rule for target.
+ml_dsa_87_x86_64/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build.make _deps/liboqs-build/src/sig/ml_dsa/CMakeFiles/ml_dsa_87_x86_64.dir/build
+.PHONY : ml_dsa_87_x86_64/fast
+
+#=============================================================================
+# Target rules for targets named smo_clipboard
+
+# Build rule for target.
+smo_clipboard: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_clipboard
+.PHONY : smo_clipboard
+
+# fast build rule for target.
+smo_clipboard/fast:
+	$(MAKE) $(MAKESILENT) -f third_party/clipboard/CMakeFiles/smo_clipboard.dir/build.make third_party/clipboard/CMakeFiles/smo_clipboard.dir/build
+.PHONY : smo_clipboard/fast
+
+#=============================================================================
+# Target rules for targets named yaml-cpp
+
+# Build rule for target.
+yaml-cpp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp
+.PHONY : yaml-cpp
+
+# fast build rule for target.
+yaml-cpp/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/CMakeFiles/yaml-cpp.dir/build.make _deps/yaml-cpp-build/CMakeFiles/yaml-cpp.dir/build
+.PHONY : yaml-cpp/fast
+
+#=============================================================================
+# Target rules for targets named yaml-cpp-sandbox
+
+# Build rule for target.
+yaml-cpp-sandbox: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-sandbox
+.PHONY : yaml-cpp-sandbox
+
+# fast build rule for target.
+yaml-cpp-sandbox/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-sandbox.dir/build
+.PHONY : yaml-cpp-sandbox/fast
+
+#=============================================================================
+# Target rules for targets named yaml-cpp-parse
+
+# Build rule for target.
+yaml-cpp-parse: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-parse
+.PHONY : yaml-cpp-parse
+
+# fast build rule for target.
+yaml-cpp-parse/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-parse.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-parse.dir/build
+.PHONY : yaml-cpp-parse/fast
+
+#=============================================================================
+# Target rules for targets named yaml-cpp-read
+
+# Build rule for target.
+yaml-cpp-read: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 yaml-cpp-read
+.PHONY : yaml-cpp-read
+
+# fast build rule for target.
+yaml-cpp-read/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-read.dir/build.make _deps/yaml-cpp-build/util/CMakeFiles/yaml-cpp-read.dir/build
+.PHONY : yaml-cpp-read/fast
+
+#=============================================================================
+# Target rules for targets named fmt
+
+# Build rule for target.
+fmt: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fmt
+.PHONY : fmt
+
+# fast build rule for target.
+fmt/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/fmt-build/CMakeFiles/fmt.dir/build.make _deps/fmt-build/CMakeFiles/fmt.dir/build
+.PHONY : fmt/fast
+
+#=============================================================================
+# Target rules for targets named spdlog
+
+# Build rule for target.
+spdlog: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 spdlog
+.PHONY : spdlog
+
+# fast build rule for target.
+spdlog/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/spdlog-build/CMakeFiles/spdlog.dir/build.make _deps/spdlog-build/CMakeFiles/spdlog.dir/build
+.PHONY : spdlog/fast
+
+#=============================================================================
+# Target rules for targets named simdjson
+
+# Build rule for target.
+simdjson: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simdjson
+.PHONY : simdjson
+
+# fast build rule for target.
+simdjson/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/simdjson-build/CMakeFiles/simdjson.dir/build.make _deps/simdjson-build/CMakeFiles/simdjson.dir/build
+.PHONY : simdjson/fast
 
 #=============================================================================
 # Target rules for targets named benchmark
@@ -1428,6 +1155,58 @@ smo_observability/fast:
 .PHONY : smo_observability/fast
 
 #=============================================================================
+# Target rules for targets named smo_federation
+
+# Build rule for target.
+smo_federation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_federation
+.PHONY : smo_federation
+
+# fast build rule for target.
+smo_federation/fast:
+	$(MAKE) $(MAKESILENT) -f core/federation/CMakeFiles/smo_federation.dir/build.make core/federation/CMakeFiles/smo_federation.dir/build
+.PHONY : smo_federation/fast
+
+#=============================================================================
+# Target rules for targets named smo_test_federation_gateway
+
+# Build rule for target.
+smo_test_federation_gateway: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_test_federation_gateway
+.PHONY : smo_test_federation_gateway
+
+# fast build rule for target.
+smo_test_federation_gateway/fast:
+	$(MAKE) $(MAKESILENT) -f core/federation/CMakeFiles/smo_test_federation_gateway.dir/build.make core/federation/CMakeFiles/smo_test_federation_gateway.dir/build
+.PHONY : smo_test_federation_gateway/fast
+
+#=============================================================================
+# Target rules for targets named smo_test_federation_handshake
+
+# Build rule for target.
+smo_test_federation_handshake: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_test_federation_handshake
+.PHONY : smo_test_federation_handshake
+
+# fast build rule for target.
+smo_test_federation_handshake/fast:
+	$(MAKE) $(MAKESILENT) -f core/federation/CMakeFiles/smo_test_federation_handshake.dir/build.make core/federation/CMakeFiles/smo_test_federation_handshake.dir/build
+.PHONY : smo_test_federation_handshake/fast
+
+#=============================================================================
+# Target rules for targets named smo_test_federation_policy
+
+# Build rule for target.
+smo_test_federation_policy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_test_federation_policy
+.PHONY : smo_test_federation_policy
+
+# fast build rule for target.
+smo_test_federation_policy/fast:
+	$(MAKE) $(MAKESILENT) -f core/federation/CMakeFiles/smo_test_federation_policy.dir/build.make core/federation/CMakeFiles/smo_test_federation_policy.dir/build
+.PHONY : smo_test_federation_policy/fast
+
+#=============================================================================
 # Target rules for targets named smo_protocol
 
 # Build rule for target.
@@ -1543,6 +1322,19 @@ smo_suite2_modern: cmake_check_build_system
 smo_suite2_modern/fast:
 	$(MAKE) $(MAKESILENT) -f providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/build.make providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/build
 .PHONY : smo_suite2_modern/fast
+
+#=============================================================================
+# Target rules for targets named smo_suite3_purepqc
+
+# Build rule for target.
+smo_suite3_purepqc: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_suite3_purepqc
+.PHONY : smo_suite3_purepqc
+
+# fast build rule for target.
+smo_suite3_purepqc/fast:
+	$(MAKE) $(MAKESILENT) -f providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/build.make providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/build
+.PHONY : smo_suite3_purepqc/fast
 
 #=============================================================================
 # Target rules for targets named smo-cli
@@ -2066,34 +1858,6 @@ help:
 	@echo "... package_source"
 	@echo "... rebuild_cache"
 	@echo "... test"
-	@echo "... Continuous"
-	@echo "... ContinuousBuild"
-	@echo "... ContinuousConfigure"
-	@echo "... ContinuousCoverage"
-	@echo "... ContinuousMemCheck"
-	@echo "... ContinuousStart"
-	@echo "... ContinuousSubmit"
-	@echo "... ContinuousTest"
-	@echo "... ContinuousUpdate"
-	@echo "... Experimental"
-	@echo "... ExperimentalBuild"
-	@echo "... ExperimentalConfigure"
-	@echo "... ExperimentalCoverage"
-	@echo "... ExperimentalMemCheck"
-	@echo "... ExperimentalStart"
-	@echo "... ExperimentalSubmit"
-	@echo "... ExperimentalTest"
-	@echo "... ExperimentalUpdate"
-	@echo "... Nightly"
-	@echo "... NightlyBuild"
-	@echo "... NightlyConfigure"
-	@echo "... NightlyCoverage"
-	@echo "... NightlyMemCheck"
-	@echo "... NightlyMemoryCheck"
-	@echo "... NightlyStart"
-	@echo "... NightlySubmit"
-	@echo "... NightlyTest"
-	@echo "... NightlyUpdate"
 	@echo "... uninstall"
 	@echo "... Catch2"
 	@echo "... Catch2WithMain"
@@ -2119,12 +1883,18 @@ help:
 	@echo "... link_main_test"
 	@echo "... map_test"
 	@echo "... memory_manager_test"
-	@echo "... ml_dsa_44_ipd_ref"
-	@echo "... ml_dsa_65_ipd_ref"
-	@echo "... ml_dsa_87_ipd_ref"
+	@echo "... ml_dsa_44_ref"
+	@echo "... ml_dsa_44_x86_64"
+	@echo "... ml_dsa_65_ref"
+	@echo "... ml_dsa_65_x86_64"
+	@echo "... ml_dsa_87_ref"
+	@echo "... ml_dsa_87_x86_64"
 	@echo "... ml_kem_1024_ref"
+	@echo "... ml_kem_1024_x86_64"
 	@echo "... ml_kem_512_ref"
+	@echo "... ml_kem_512_x86_64"
 	@echo "... ml_kem_768_ref"
+	@echo "... ml_kem_768_x86_64"
 	@echo "... multiple_ranges_test"
 	@echo "... options_test"
 	@echo "... oqs"
@@ -2135,6 +1905,7 @@ help:
 	@echo "... repetitions_test"
 	@echo "... report_aggregates_only_test"
 	@echo "... reporter_output_test"
+	@echo "... sha3_avx512vl_low"
 	@echo "... simdjson"
 	@echo "... skip_with_error_test"
 	@echo "... smo"
@@ -2149,6 +1920,7 @@ help:
 	@echo "... smo_compiler"
 	@echo "... smo_contract"
 	@echo "... smo_core"
+	@echo "... smo_federation"
 	@echo "... smo_genesis"
 	@echo "... smo_legacy_runtime"
 	@echo "... smo_monocypher"
@@ -2163,6 +1935,7 @@ help:
 	@echo "... smo_stub_protocol"
 	@echo "... smo_suite1_classical"
 	@echo "... smo_suite2_modern"
+	@echo "... smo_suite3_purepqc"
 	@echo "... smo_test_certificate"
 	@echo "... smo_test_contract"
 	@echo "... smo_test_crypto"
@@ -2170,6 +1943,9 @@ help:
 	@echo "... smo_test_error"
 	@echo "... smo_test_event_store"
 	@echo "... smo_test_execution_engine"
+	@echo "... smo_test_federation_gateway"
+	@echo "... smo_test_federation_handshake"
+	@echo "... smo_test_federation_policy"
 	@echo "... smo_test_fsm"
 	@echo "... smo_test_governance"
 	@echo "... smo_test_history"

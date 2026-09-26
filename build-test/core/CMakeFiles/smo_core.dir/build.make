@@ -405,10 +405,38 @@ core/CMakeFiles/smo_core.dir/crypto/shamir.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/smo_core.dir/crypto/shamir.cpp.s"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/shamir.cpp -o CMakeFiles/smo_core.dir/crypto/shamir.cpp.s
 
+core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
+core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer/mldsa_provider.cpp
+core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o -MF CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o.d -o CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer/mldsa_provider.cpp
+
+core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.i"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer/mldsa_provider.cpp > CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.i
+
+core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.s"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer/mldsa_provider.cpp -o CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.s
+
+core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
+core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kem/mlkem_provider.cpp
+core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o -MF CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o.d -o CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kem/mlkem_provider.cpp
+
+core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.i"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kem/mlkem_provider.cpp > CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.i
+
+core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.s"
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kem/mlkem_provider.cpp -o CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.s
+
 core/CMakeFiles/smo_core.dir/storage/database.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/storage/database.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/storage/database.cpp
 core/CMakeFiles/smo_core.dir/storage/database.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object core/CMakeFiles/smo_core.dir/storage/database.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object core/CMakeFiles/smo_core.dir/storage/database.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/storage/database.cpp.o -MF CMakeFiles/smo_core.dir/storage/database.cpp.o.d -o CMakeFiles/smo_core.dir/storage/database.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/storage/database.cpp
 
 core/CMakeFiles/smo_core.dir/storage/database.cpp.i: cmake_force
@@ -422,7 +450,7 @@ core/CMakeFiles/smo_core.dir/storage/database.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/storage/migration.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/storage/migration.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/storage/migration.cpp
 core/CMakeFiles/smo_core.dir/storage/migration.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object core/CMakeFiles/smo_core.dir/storage/migration.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object core/CMakeFiles/smo_core.dir/storage/migration.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/storage/migration.cpp.o -MF CMakeFiles/smo_core.dir/storage/migration.cpp.o.d -o CMakeFiles/smo_core.dir/storage/migration.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/storage/migration.cpp
 
 core/CMakeFiles/smo_core.dir/storage/migration.cpp.i: cmake_force
@@ -436,7 +464,7 @@ core/CMakeFiles/smo_core.dir/storage/migration.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/storage/sqlite_store.cpp
 core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o -MF CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o.d -o CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/storage/sqlite_store.cpp
 
 core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.i: cmake_force
@@ -450,7 +478,7 @@ core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/storage/manifest_store.cpp
 core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o -MF CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o.d -o CMakeFiles/smo_core.dir/storage/manifest_store.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/storage/manifest_store.cpp
 
 core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.i: cmake_force
@@ -464,7 +492,7 @@ core/CMakeFiles/smo_core.dir/storage/manifest_store.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/identity/identity.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/identity/identity.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.cpp
 core/CMakeFiles/smo_core.dir/identity/identity.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object core/CMakeFiles/smo_core.dir/identity/identity.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object core/CMakeFiles/smo_core.dir/identity/identity.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/identity/identity.cpp.o -MF CMakeFiles/smo_core.dir/identity/identity.cpp.o.d -o CMakeFiles/smo_core.dir/identity/identity.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.cpp
 
 core/CMakeFiles/smo_core.dir/identity/identity.cpp.i: cmake_force
@@ -478,7 +506,7 @@ core/CMakeFiles/smo_core.dir/identity/identity.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/certificate/certificate.cpp
 core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o -MF CMakeFiles/smo_core.dir/certificate/certificate.cpp.o.d -o CMakeFiles/smo_core.dir/certificate/certificate.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/certificate/certificate.cpp
 
 core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.i: cmake_force
@@ -492,7 +520,7 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/fsm.cpp
 core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.o -MF CMakeFiles/smo_core.dir/fsm/fsm.cpp.o.d -o CMakeFiles/smo_core.dir/fsm/fsm.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/fsm.cpp
 
 core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.i: cmake_force
@@ -506,7 +534,7 @@ core/CMakeFiles/smo_core.dir/fsm/fsm.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/node_lifecycle_fsm.cpp
 core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o -MF CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o.d -o CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/fsm/node_lifecycle_fsm.cpp
 
 core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.i: cmake_force
@@ -520,7 +548,7 @@ core/CMakeFiles/smo_core.dir/fsm/node_lifecycle_fsm.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/transport/transport.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/transport/transport.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.cpp
 core/CMakeFiles/smo_core.dir/transport/transport.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object core/CMakeFiles/smo_core.dir/transport/transport.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object core/CMakeFiles/smo_core.dir/transport/transport.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/transport/transport.cpp.o -MF CMakeFiles/smo_core.dir/transport/transport.cpp.o.d -o CMakeFiles/smo_core.dir/transport/transport.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/transport/transport.cpp
 
 core/CMakeFiles/smo_core.dir/transport/transport.cpp.i: cmake_force
@@ -534,7 +562,7 @@ core/CMakeFiles/smo_core.dir/transport/transport.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/transport/framing.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/transport/framing.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/transport/framing.cpp
 core/CMakeFiles/smo_core.dir/transport/framing.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object core/CMakeFiles/smo_core.dir/transport/framing.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object core/CMakeFiles/smo_core.dir/transport/framing.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/transport/framing.cpp.o -MF CMakeFiles/smo_core.dir/transport/framing.cpp.o.d -o CMakeFiles/smo_core.dir/transport/framing.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/transport/framing.cpp
 
 core/CMakeFiles/smo_core.dir/transport/framing.cpp.i: cmake_force
@@ -548,7 +576,7 @@ core/CMakeFiles/smo_core.dir/transport/framing.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/transport/tcp_transport.cpp
 core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o -MF CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o.d -o CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/transport/tcp_transport.cpp
 
 core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.i: cmake_force
@@ -562,7 +590,7 @@ core/CMakeFiles/smo_core.dir/transport/tcp_transport.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.cpp
 core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.o -MF CMakeFiles/smo_core.dir/transport/secure_session.cpp.o.d -o CMakeFiles/smo_core.dir/transport/secure_session.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.cpp
 
 core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.i: cmake_force
@@ -576,7 +604,7 @@ core/CMakeFiles/smo_core.dir/transport/secure_session.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/discovery.cpp
 core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.o -MF CMakeFiles/smo_core.dir/discovery/discovery.cpp.o.d -o CMakeFiles/smo_core.dir/discovery/discovery.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/discovery.cpp
 
 core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.i: cmake_force
@@ -590,7 +618,7 @@ core/CMakeFiles/smo_core.dir/discovery/discovery.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/gossip.cpp
 core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.o -MF CMakeFiles/smo_core.dir/discovery/gossip.cpp.o.d -o CMakeFiles/smo_core.dir/discovery/gossip.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/gossip.cpp
 
 core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.i: cmake_force
@@ -604,7 +632,7 @@ core/CMakeFiles/smo_core.dir/discovery/gossip.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/peer_store.cpp
 core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o -MF CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o.d -o CMakeFiles/smo_core.dir/discovery/peer_store.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/peer_store.cpp
 
 core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.i: cmake_force
@@ -618,7 +646,7 @@ core/CMakeFiles/smo_core.dir/discovery/peer_store.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/seed_store.cpp
 core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o -MF CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o.d -o CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/seed_store.cpp
 
 core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.i: cmake_force
@@ -632,7 +660,7 @@ core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/governance/governance.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/governance/governance.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.cpp
 core/CMakeFiles/smo_core.dir/governance/governance.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object core/CMakeFiles/smo_core.dir/governance/governance.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object core/CMakeFiles/smo_core.dir/governance/governance.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/governance/governance.cpp.o -MF CMakeFiles/smo_core.dir/governance/governance.cpp.o.d -o CMakeFiles/smo_core.dir/governance/governance.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.cpp
 
 core/CMakeFiles/smo_core.dir/governance/governance.cpp.i: cmake_force
@@ -646,7 +674,7 @@ core/CMakeFiles/smo_core.dir/governance/governance.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/trust/trust.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/trust/trust.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.cpp
 core/CMakeFiles/smo_core.dir/trust/trust.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object core/CMakeFiles/smo_core.dir/trust/trust.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object core/CMakeFiles/smo_core.dir/trust/trust.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/trust/trust.cpp.o -MF CMakeFiles/smo_core.dir/trust/trust.cpp.o.d -o CMakeFiles/smo_core.dir/trust/trust.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.cpp
 
 core/CMakeFiles/smo_core.dir/trust/trust.cpp.i: cmake_force
@@ -660,7 +688,7 @@ core/CMakeFiles/smo_core.dir/trust/trust.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/trust/witness.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/trust/witness.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/trust/witness.cpp
 core/CMakeFiles/smo_core.dir/trust/witness.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object core/CMakeFiles/smo_core.dir/trust/witness.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object core/CMakeFiles/smo_core.dir/trust/witness.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/trust/witness.cpp.o -MF CMakeFiles/smo_core.dir/trust/witness.cpp.o.d -o CMakeFiles/smo_core.dir/trust/witness.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/trust/witness.cpp
 
 core/CMakeFiles/smo_core.dir/trust/witness.cpp.i: cmake_force
@@ -674,7 +702,7 @@ core/CMakeFiles/smo_core.dir/trust/witness.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/select/selector.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/select/selector.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/select/selector.cpp
 core/CMakeFiles/smo_core.dir/select/selector.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object core/CMakeFiles/smo_core.dir/select/selector.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object core/CMakeFiles/smo_core.dir/select/selector.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/select/selector.cpp.o -MF CMakeFiles/smo_core.dir/select/selector.cpp.o.d -o CMakeFiles/smo_core.dir/select/selector.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/select/selector.cpp
 
 core/CMakeFiles/smo_core.dir/select/selector.cpp.i: cmake_force
@@ -688,7 +716,7 @@ core/CMakeFiles/smo_core.dir/select/selector.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/select/query_parser.cpp
 core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o -MF CMakeFiles/smo_core.dir/select/query_parser.cpp.o.d -o CMakeFiles/smo_core.dir/select/query_parser.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/select/query_parser.cpp
 
 core/CMakeFiles/smo_core.dir/select/query_parser.cpp.i: cmake_force
@@ -702,7 +730,7 @@ core/CMakeFiles/smo_core.dir/select/query_parser.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/udp_transport.cpp
 core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o -MF CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o.d -o CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/udp_transport.cpp
 
 core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.i: cmake_force
@@ -716,7 +744,7 @@ core/CMakeFiles/smo_core.dir/network/udp/udp_transport.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/heartbeat_service.cpp
 core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o -MF CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o.d -o CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp/heartbeat_service.cpp
 
 core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.i: cmake_force
@@ -730,7 +758,7 @@ core/CMakeFiles/smo_core.dir/network/udp/heartbeat_service.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/membership_sync.cpp
 core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o -MF CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o.d -o CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/membership_sync.cpp
 
 core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.i: cmake_force
@@ -744,7 +772,7 @@ core/CMakeFiles/smo_core.dir/network/sync/membership_sync.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_service.cpp
 core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o -MF CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o.d -o CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_service.cpp
 
 core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.i: cmake_force
@@ -758,7 +786,7 @@ core/CMakeFiles/smo_core.dir/network/sync/sync_service.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/version_vector.cpp
 core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o -MF CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o.d -o CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/version_vector.cpp
 
 core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.i: cmake_force
@@ -772,7 +800,7 @@ core/CMakeFiles/smo_core.dir/network/sync/version_vector.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/merkle_tree.cpp
 core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o -MF CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o.d -o CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/merkle_tree.cpp
 
 core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.i: cmake_force
@@ -786,7 +814,7 @@ core/CMakeFiles/smo_core.dir/network/sync/merkle_tree.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/anti_entropy.cpp
 core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building CXX object core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o -MF CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o.d -o CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/anti_entropy.cpp
 
 core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.i: cmake_force
@@ -800,7 +828,7 @@ core/CMakeFiles/smo_core.dir/network/sync/anti_entropy.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/interface.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/interface.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/interface.cpp
 core/CMakeFiles/smo_core.dir/network/interface.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building CXX object core/CMakeFiles/smo_core.dir/network/interface.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building CXX object core/CMakeFiles/smo_core.dir/network/interface.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/interface.cpp.o -MF CMakeFiles/smo_core.dir/network/interface.cpp.o.d -o CMakeFiles/smo_core.dir/network/interface.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/interface.cpp
 
 core/CMakeFiles/smo_core.dir/network/interface.cpp.i: cmake_force
@@ -814,7 +842,7 @@ core/CMakeFiles/smo_core.dir/network/interface.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/public_ip.cpp
 core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building CXX object core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building CXX object core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/public_ip.cpp.o -MF CMakeFiles/smo_core.dir/network/public_ip.cpp.o.d -o CMakeFiles/smo_core.dir/network/public_ip.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/public_ip.cpp
 
 core/CMakeFiles/smo_core.dir/network/public_ip.cpp.i: cmake_force
@@ -828,7 +856,7 @@ core/CMakeFiles/smo_core.dir/network/public_ip.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/port_check.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/port_check.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/port_check.cpp
 core/CMakeFiles/smo_core.dir/network/port_check.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building CXX object core/CMakeFiles/smo_core.dir/network/port_check.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object core/CMakeFiles/smo_core.dir/network/port_check.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/port_check.cpp.o -MF CMakeFiles/smo_core.dir/network/port_check.cpp.o.d -o CMakeFiles/smo_core.dir/network/port_check.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/port_check.cpp
 
 core/CMakeFiles/smo_core.dir/network/port_check.cpp.i: cmake_force
@@ -842,7 +870,7 @@ core/CMakeFiles/smo_core.dir/network/port_check.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/dns.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/dns.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/dns.cpp
 core/CMakeFiles/smo_core.dir/network/dns.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building CXX object core/CMakeFiles/smo_core.dir/network/dns.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building CXX object core/CMakeFiles/smo_core.dir/network/dns.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/dns.cpp.o -MF CMakeFiles/smo_core.dir/network/dns.cpp.o.d -o CMakeFiles/smo_core.dir/network/dns.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/dns.cpp
 
 core/CMakeFiles/smo_core.dir/network/dns.cpp.i: cmake_force
@@ -856,7 +884,7 @@ core/CMakeFiles/smo_core.dir/network/dns.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/nat_detect.cpp
 core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building CXX object core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.o -MF CMakeFiles/smo_core.dir/network/nat_detect.cpp.o.d -o CMakeFiles/smo_core.dir/network/nat_detect.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/nat_detect.cpp
 
 core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.i: cmake_force
@@ -870,7 +898,7 @@ core/CMakeFiles/smo_core.dir/network/nat_detect.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/packet_dispatcher.cpp
 core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building CXX object core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building CXX object core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o -MF CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o.d -o CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/packet_dispatcher.cpp
 
 core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.i: cmake_force
@@ -884,7 +912,7 @@ core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/connection_manager.cpp
 core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building CXX object core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building CXX object core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.o -MF CMakeFiles/smo_core.dir/network/connection_manager.cpp.o.d -o CMakeFiles/smo_core.dir/network/connection_manager.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/connection_manager.cpp
 
 core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.i: cmake_force
@@ -898,7 +926,7 @@ core/CMakeFiles/smo_core.dir/network/connection_manager.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp_server.cpp
 core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building CXX object core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/udp_server.cpp.o -MF CMakeFiles/smo_core.dir/network/udp_server.cpp.o.d -o CMakeFiles/smo_core.dir/network/udp_server.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/udp_server.cpp
 
 core/CMakeFiles/smo_core.dir/network/udp_server.cpp.i: cmake_force
@@ -912,7 +940,7 @@ core/CMakeFiles/smo_core.dir/network/udp_server.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/stun/stun_client.cpp
 core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building CXX object core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o -MF CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o.d -o CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/stun/stun_client.cpp
 
 core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.i: cmake_force
@@ -926,7 +954,7 @@ core/CMakeFiles/smo_core.dir/network/stun/stun_client.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/relay/relay_service.cpp
 core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building CXX object core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building CXX object core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o -MF CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o.d -o CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/relay/relay_service.cpp
 
 core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.i: cmake_force
@@ -940,7 +968,7 @@ core/CMakeFiles/smo_core.dir/network/relay/relay_service.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.cpp
 core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building CXX object core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o -MF CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o.d -o CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.cpp
 
 core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.i: cmake_force
@@ -954,7 +982,7 @@ core/CMakeFiles/smo_core.dir/network/ice/ice_candidate.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/network/turn/turn_client.cpp
 core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building CXX object core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building CXX object core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o -MF CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o.d -o CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/network/turn/turn_client.cpp
 
 core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.i: cmake_force
@@ -968,7 +996,7 @@ core/CMakeFiles/smo_core.dir/network/turn/turn_client.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/join_token.cpp
 core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building CXX object core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building CXX object core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.o -MF CMakeFiles/smo_core.dir/enroll/join_token.cpp.o.d -o CMakeFiles/smo_core.dir/enroll/join_token.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/join_token.cpp
 
 core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.i: cmake_force
@@ -982,7 +1010,7 @@ core/CMakeFiles/smo_core.dir/enroll/join_token.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/auto_enroll.cpp
 core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building CXX object core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building CXX object core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o -MF CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o.d -o CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/auto_enroll.cpp
 
 core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.i: cmake_force
@@ -996,7 +1024,7 @@ core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/authority/registry.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/authority/registry.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.cpp
 core/CMakeFiles/smo_core.dir/authority/registry.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building CXX object core/CMakeFiles/smo_core.dir/authority/registry.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object core/CMakeFiles/smo_core.dir/authority/registry.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/authority/registry.cpp.o -MF CMakeFiles/smo_core.dir/authority/registry.cpp.o.d -o CMakeFiles/smo_core.dir/authority/registry.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.cpp
 
 core/CMakeFiles/smo_core.dir/authority/registry.cpp.i: cmake_force
@@ -1010,7 +1038,7 @@ core/CMakeFiles/smo_core.dir/authority/registry.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.cpp
 core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building CXX object core/CMakeFiles/smo_core.dir/authority/authority.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building CXX object core/CMakeFiles/smo_core.dir/authority/authority.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/authority/authority.cpp.o -MF CMakeFiles/smo_core.dir/authority/authority.cpp.o.d -o CMakeFiles/smo_core.dir/authority/authority.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.cpp
 
 core/CMakeFiles/smo_core.dir/authority/authority.cpp.i: cmake_force
@@ -1024,7 +1052,7 @@ core/CMakeFiles/smo_core.dir/authority/authority.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/authority/enroll_server.cpp
 core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building CXX object core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o -MF CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o.d -o CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/authority/enroll_server.cpp
 
 core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.i: cmake_force
@@ -1038,7 +1066,7 @@ core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority_store.cpp
 core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building CXX object core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building CXX object core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.o -MF CMakeFiles/smo_core.dir/authority/authority_store.cpp.o.d -o CMakeFiles/smo_core.dir/authority/authority_store.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority_store.cpp
 
 core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.i: cmake_force
@@ -1052,7 +1080,7 @@ core/CMakeFiles/smo_core.dir/authority/authority_store.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.cpp
 core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building CXX object core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building CXX object core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o -MF CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o.d -o CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.cpp
 
 core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.i: cmake_force
@@ -1066,7 +1094,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_fsm.cpp
 core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building CXX object core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building CXX object core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o -MF CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o.d -o CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_fsm.cpp
 
 core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.i: cmake_force
@@ -1080,7 +1108,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.cpp
 core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building CXX object core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building CXX object core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/recovery/crl.cpp.o -MF CMakeFiles/smo_core.dir/recovery/crl.cpp.o.d -o CMakeFiles/smo_core.dir/recovery/crl.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.cpp
 
 core/CMakeFiles/smo_core.dir/recovery/crl.cpp.i: cmake_force
@@ -1094,7 +1122,7 @@ core/CMakeFiles/smo_core.dir/recovery/crl.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/cbor.cpp
 core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o -MF CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o.d -o CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/cbor.cpp
 
 core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.i: cmake_force
@@ -1108,7 +1136,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/cbor.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.cpp
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o -MF CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o.d -o CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.cpp
 
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.i: cmake_force
@@ -1122,7 +1150,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_snapshot.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_protocol.cpp
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o -MF CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o.d -o CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_protocol.cpp
 
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.i: cmake_force
@@ -1136,7 +1164,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_service.cpp
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o -MF CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o.d -o CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_service.cpp
 
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.i: cmake_force
@@ -1150,7 +1178,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_client.cpp
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building CXX object core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o -MF CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o.d -o CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_client.cpp
 
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.i: cmake_force
@@ -1164,7 +1192,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_client.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.cpp
 core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building CXX object core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building CXX object core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o -MF CMakeFiles/smo_core.dir/join/join_protocol.cpp.o.d -o CMakeFiles/smo_core.dir/join/join_protocol.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.cpp
 
 core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.i: cmake_force
@@ -1178,7 +1206,7 @@ core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/join/join_service.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/join/join_service.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_service.cpp
 core/CMakeFiles/smo_core.dir/join/join_service.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building CXX object core/CMakeFiles/smo_core.dir/join/join_service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building CXX object core/CMakeFiles/smo_core.dir/join/join_service.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/join/join_service.cpp.o -MF CMakeFiles/smo_core.dir/join/join_service.cpp.o.d -o CMakeFiles/smo_core.dir/join/join_service.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_service.cpp
 
 core/CMakeFiles/smo_core.dir/join/join_service.cpp.i: cmake_force
@@ -1192,7 +1220,7 @@ core/CMakeFiles/smo_core.dir/join/join_service.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/consensus/raft_log.cpp
 core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building CXX object core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building CXX object core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o -MF CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o.d -o CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/consensus/raft_log.cpp
 
 core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.i: cmake_force
@@ -1206,7 +1234,7 @@ core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.s: cmake_force
 core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o: core/CMakeFiles/smo_core.dir/flags.make
 core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o: /home/nguyenduccanh/shellmap_project/smoframework/core/cbor/context_value.cpp
 core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o: core/CMakeFiles/smo_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building CXX object core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building CXX object core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o -MF CMakeFiles/smo_core.dir/cbor/context_value.cpp.o.d -o CMakeFiles/smo_core.dir/cbor/context_value.cpp.o -c /home/nguyenduccanh/shellmap_project/smoframework/core/cbor/context_value.cpp
 
 core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.i: cmake_force
@@ -1243,6 +1271,8 @@ smo_core_OBJECTS = \
 "CMakeFiles/smo_core.dir/crypto/aead/aes256_gcm_provider.cpp.o" \
 "CMakeFiles/smo_core.dir/crypto/recovery_crypto.cpp.o" \
 "CMakeFiles/smo_core.dir/crypto/shamir.cpp.o" \
+"CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o" \
+"CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o" \
 "CMakeFiles/smo_core.dir/storage/database.cpp.o" \
 "CMakeFiles/smo_core.dir/storage/migration.cpp.o" \
 "CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o" \
@@ -1329,6 +1359,8 @@ core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/aead/xchacha20_provider.
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/aead/aes256_gcm_provider.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/recovery_crypto.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/shamir.cpp.o
+core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/signer/mldsa_provider.cpp.o
+core/libsmo_core.a: core/CMakeFiles/smo_core.dir/crypto/kem/mlkem_provider.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/storage/database.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/storage/migration.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/storage/sqlite_store.cpp.o
@@ -1389,7 +1421,7 @@ core/libsmo_core.a: core/CMakeFiles/smo_core.dir/consensus/raft_log.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/cbor/context_value.cpp.o
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/build.make
 core/libsmo_core.a: core/CMakeFiles/smo_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Linking CXX static library libsmo_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Linking CXX static library libsmo_core.a"
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && $(CMAKE_COMMAND) -P CMakeFiles/smo_core.dir/cmake_clean_target.cmake
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test/core && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smo_core.dir/link.txt --verbose=$(VERBOSE)
 

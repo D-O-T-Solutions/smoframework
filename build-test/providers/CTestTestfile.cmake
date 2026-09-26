@@ -7,3 +7,4 @@
 subdirs("blake3_provider")
 subdirs("suite1_classical")
 subdirs("suite2_modern")
+subdirs("suite3_purepqc")
