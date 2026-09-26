@@ -321,6 +321,78 @@ namespace smo {
         return s;
     }
 
+    // ── Channel management (RFC 0042) ──────────────────────────────────
+
+    Result<Channel*> Session::get_or_create_channel(uint16_t channel_id, int64_t now_ns)
+    {
+        auto it = channels_.find(channel_id);
+        if (it != channels_.end())
+        {
+            it->second.touch(now_ns);
+            return &it->second;
+        }
+
+        auto res = Channel::create(channel_id, id_, now_ns);
+        if (!res)
+            return res.error();
+
+        auto [ch_it, inserted] = channels_.emplace(channel_id, std::move(res.value()));
+        return &ch_it->second;
+    }
+
+    Channel* Session::get_channel(uint16_t channel_id)
+    {
+        auto it = channels_.find(channel_id);
+        if (it == channels_.end())
+            return nullptr;
+        return &it->second;
+    }
+
+    Result<void> Session::close_channel(uint16_t channel_id, int64_t now_ns)
+    {
+        auto it = channels_.find(channel_id);
+        if (it == channels_.end())
+        {
+            return SMO_ERR_SESSION(521, Warn, RetrySafe, None, "channel not found");
+        }
+        return it->second.on_event(ChannelEvent::Close, now_ns);
+    }
+
+    std::vector<Channel*> Session::list_channels()
+    {
+        std::vector<Channel*> result;
+        result.reserve(channels_.size());
+        for (auto& [_, ch] : channels_)
+            result.push_back(&ch);
+        return result;
+    }
+
+    bool Session::has_open_channels() const noexcept
+    {
+        for (const auto& [_, ch] : channels_)
+        {
+            if (ch.state() == ChannelState::Open || ch.state() == ChannelState::Opening)
+                return true;
+        }
+        return false;
+    }
+
+    void Session::tick_channels(int64_t now_ns)
+    {
+        for (auto it = channels_.begin(); it != channels_.end();)
+        {
+            if (it->second.is_idle(now_ns))
+            {
+                it->second.on_event(ChannelEvent::IdleTimeout, now_ns);
+                it = channels_.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
     // ===========================================================================
     // SessionManager
     // ===========================================================================
@@ -467,6 +539,57 @@ namespace smo {
             telemetry_->increment_counter("smo_sessions_expired_total", "count=" + std::to_string(expired_count));
             telemetry_->set_gauge("smo_sessions_active", static_cast<double>(sessions_.size()), "");
         }
+    }
+
+    void SessionManager::tick_channels(int64_t now)
+    {
+        size_t expired_count = 0;
+        for (auto& [key, session] : sessions_)
+        {
+            session.tick_channels(now);
+        }
+        if (telemetry_ && expired_count > 0)
+        {
+            telemetry_->increment_counter("smo_channels_expired_total", "count=" + std::to_string(expired_count));
+        }
+    }
+
+    // ── Channel management (RFC 0042) ──────────────────────────────────
+
+    Result<Channel*> SessionManager::get_or_create_channel(const SessionId& session_id, uint16_t channel_id, int64_t now_ns)
+    {
+        auto* session = lookup(session_id);
+        if (!session)
+        {
+            return SMO_ERR_SESSION(521, Warn, RetrySafe, None, "session not found");
+        }
+        return session->get_or_create_channel(channel_id, now_ns);
+    }
+
+    Channel* SessionManager::lookup_channel(const SessionId& session_id, uint16_t channel_id)
+    {
+        auto* session = lookup(session_id);
+        if (!session)
+            return nullptr;
+        return session->get_channel(channel_id);
+    }
+
+    Result<void> SessionManager::close_channel(const SessionId& session_id, uint16_t channel_id, int64_t now_ns)
+    {
+        auto* session = lookup(session_id);
+        if (!session)
+        {
+            return SMO_ERR_SESSION(521, Warn, RetrySafe, None, "session not found");
+        }
+        return session->close_channel(channel_id, now_ns);
+    }
+
+    std::vector<Channel*> SessionManager::list_channels(const SessionId& session_id)
+    {
+        auto* session = lookup(session_id);
+        if (!session)
+            return {};
+        return session->list_channels();
     }
 
     void SessionManager::collect_garbage()

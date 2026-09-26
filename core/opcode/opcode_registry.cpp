@@ -53,6 +53,15 @@ constexpr WireOpcodeEntry kWireTable[] = {
 
     // Data namespace (0x04) - Functional group: "data"
     // Note: BOOTSTRAP_*, JOIN_* are non-packet (use HTTP/other transport), ns=0, message_id=0
+
+    // Data namespace (0x04) - Functional group: "channel"
+    {Opcode::CHANNEL_OPEN,         kNamespaceData, 0x0001, "channel_open",         "channel", 0x01, false},
+    {Opcode::CHANNEL_CHUNK,        kNamespaceData, 0x0002, "channel_chunk",        "channel", 0x01, false},
+    {Opcode::CHANNEL_ACK,          kNamespaceData, 0x0003, "channel_ack",          "channel", 0x01, true},
+    {Opcode::CHANNEL_NACK,         kNamespaceData, 0x0004, "channel_nack",         "channel", 0x01, false},
+    {Opcode::CHANNEL_FIN,          kNamespaceData, 0x0005, "channel_fin",          "channel", 0x01, true},
+    {Opcode::CHANNEL_CANCEL,       kNamespaceData, 0x0006, "channel_cancel",       "channel", 0x01, false},
+    {Opcode::CHANNEL_WINDOW_UPDATE, kNamespaceData, 0x0007, "channel_window_update", "channel", 0x01, true},
 };
 
 constexpr const WireOpcodeEntry* OpcodeRegistry::wire_table() noexcept { return kWireTable; }

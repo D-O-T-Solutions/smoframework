@@ -18,6 +18,7 @@ core/federation/CMakeFiles/smo_federation.dir/cross_mesh_router.cpp.o: /home/ngu
   /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp \
+  /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
@@ -374,6 +375,7 @@ core/federation/CMakeFiles/smo_federation.dir/federation_handshake.cpp.o: /home/
   /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp \
+  /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
@@ -705,6 +707,7 @@ core/federation/CMakeFiles/smo_federation.dir/gateway.cpp.o: /home/nguyenduccanh
   /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp \
+  /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
   /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
@@ -1592,8 +1595,6 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 
 /usr/include/c++/13/locale:
 
-/usr/include/syscall.h:
-
 /usr/include/c++/13/bits/stl_construct.h:
 
 /usr/include/c++/13/bits/std_mutex.h:
@@ -1607,8 +1608,6 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 /usr/include/c++/13/cstddef:
 
 /usr/include/c++/13/bits/postypes.h:
-
-/usr/include/c++/13/bits/uses_allocator.h:
 
 /usr/include/strings.h:
 
@@ -1627,6 +1626,10 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 /usr/include/c++/13/tr1/poly_hermite.tcc:
 
 /usr/include/c++/13/bits/stl_deque.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
+/usr/include/c++/13/bits/requires_hosted.h:
 
 /usr/include/c++/13/bits/locale_facets.tcc:
 
@@ -1702,6 +1705,8 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 
 /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp:
 
+/usr/include/syscall.h:
+
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
 /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp:
@@ -1716,9 +1721,15 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 
 /usr/include/c++/13/iosfwd:
 
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+/usr/include/c++/13/bits/uses_allocator.h:
 
-/usr/include/c++/13/bits/enable_special_members.h:
+/home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
+
+/home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
@@ -1754,21 +1765,9 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 
 /usr/include/c++/13/bits/stl_queue.h:
 
-/usr/include/c++/13/bits/requires_hosted.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
-
 /usr/include/c++/13/bits/atomic_lockfree_defines.h:
 
 /usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/include/c++/13/bits/basic_string.tcc:
-
-/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
-
-/usr/include/c++/13/bits/charconv.h:
-
-/usr/include/c++/13/cstdio:
 
 /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_abi.hpp:
 
@@ -1806,15 +1805,21 @@ core/federation/CMakeFiles/smo_federation.dir/policy_federation.cpp.o: /home/ngu
 
 /usr/include/c++/13/bits/ranges_util.h:
 
-/usr/include/c++/13/array:
-
 /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+/usr/include/c++/13/array:
 
-/usr/include/asm-generic/errno.h:
+/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
 
-/home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp:
+/usr/include/c++/13/bits/charconv.h:
+
+/usr/include/c++/13/cstdio:
+
+/usr/include/c++/13/bits/basic_string.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+/usr/include/c++/13/bits/enable_special_members.h:
 
 /usr/include/c++/13/bits/ranges_uninitialized.h:
 

@@ -265,6 +265,7 @@ core/CMakeFiles/smo_core.dir/network/packet_dispatcher.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../crypto/suite.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \

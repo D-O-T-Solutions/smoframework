@@ -1886,6 +1886,30 @@ select/selector.cpp.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/select/selector.cpp.s
 .PHONY : select/selector.cpp.s
 
+session/channel.o: session/channel.cpp.o
+.PHONY : session/channel.o
+
+# target to build an object file
+session/channel.cpp.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/session/channel.cpp.o
+.PHONY : session/channel.cpp.o
+
+session/channel.i: session/channel.cpp.i
+.PHONY : session/channel.i
+
+# target to preprocess a source file
+session/channel.cpp.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/session/channel.cpp.i
+.PHONY : session/channel.cpp.i
+
+session/channel.s: session/channel.cpp.s
+.PHONY : session/channel.s
+
+# target to generate assembly for a file
+session/channel.cpp.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f core/CMakeFiles/smo_core.dir/build.make core/CMakeFiles/smo_core.dir/session/channel.cpp.s
+.PHONY : session/channel.cpp.s
+
 session/session.o: session/session.cpp.o
 .PHONY : session/session.o
 
@@ -2448,6 +2472,9 @@ help:
 	@echo "... select/selector.o"
 	@echo "... select/selector.i"
 	@echo "... select/selector.s"
+	@echo "... session/channel.o"
+	@echo "... session/channel.i"
+	@echo "... session/channel.s"
 	@echo "... session/session.o"
 	@echo "... session/session.i"
 	@echo "... session/session.s"

@@ -19,6 +19,7 @@ core/federation/CMakeFiles/smo_federation.dir/cross_mesh_router.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp
@@ -376,6 +377,7 @@ core/federation/CMakeFiles/smo_federation.dir/federation_handshake.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp
@@ -708,6 +710,7 @@ core/federation/CMakeFiles/smo_federation.dir/gateway.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/recovery/crl.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_bus.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp

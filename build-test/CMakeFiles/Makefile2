@@ -2464,7 +2464,7 @@ _deps/liboqs-build/src/CMakeFiles/oqs.dir/all: _deps/liboqs-build/src/sig/ml_dsa
 
 # Build rule for subdir invocation for target.
 _deps/liboqs-build/src/CMakeFiles/oqs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 32
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 31
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/CMakeFiles/oqs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/liboqs-build/src/CMakeFiles/oqs.dir/rule
@@ -2495,7 +2495,7 @@ _deps/liboqs-build/src/CMakeFiles/oqs-internal.dir/all: _deps/liboqs-build/src/c
 
 # Build rule for subdir invocation for target.
 _deps/liboqs-build/src/CMakeFiles/oqs-internal.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/CMakeFiles/oqs-internal.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/liboqs-build/src/CMakeFiles/oqs-internal.dir/rule
@@ -2672,12 +2672,12 @@ _deps/liboqs-build/src/common/sha3/xkcp_low/CMakeFiles/xkcp_low_keccakp_1600time
 _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/build.make _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/build.make _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=56 "Built target sha3_avx512vl_low"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target sha3_avx512vl_low"
 .PHONY : _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/liboqs-build/src/common/sha3/avx512vl_low/CMakeFiles/sha3_avx512vl_low.dir/rule
@@ -3192,12 +3192,12 @@ _deps/spdlog-build/CMakeFiles/spdlog.dir/clean:
 _deps/simdjson-build/CMakeFiles/simdjson.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/simdjson-build/CMakeFiles/simdjson.dir/build.make _deps/simdjson-build/CMakeFiles/simdjson.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/simdjson-build/CMakeFiles/simdjson.dir/build.make _deps/simdjson-build/CMakeFiles/simdjson.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target simdjson"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=56 "Built target simdjson"
 .PHONY : _deps/simdjson-build/CMakeFiles/simdjson.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/simdjson-build/CMakeFiles/simdjson.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/simdjson-build/CMakeFiles/simdjson.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/simdjson-build/CMakeFiles/simdjson.dir/rule
@@ -3374,12 +3374,12 @@ _deps/benchmark-build/test/CMakeFiles/spec_arg_verbosity_test.dir/clean:
 _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/all: _deps/benchmark-build/src/CMakeFiles/benchmark.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/build.make _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/build.make _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target benchmark_setup_teardown_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=17 "Built target benchmark_setup_teardown_test"
 .PHONY : _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/benchmark-build/test/CMakeFiles/benchmark_setup_teardown_test.dir/rule
@@ -3426,12 +3426,12 @@ _deps/benchmark-build/test/CMakeFiles/filter_test.dir/clean:
 _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/all: _deps/benchmark-build/src/CMakeFiles/benchmark.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/build.make _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/build.make _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=17 "Built target benchmark_min_time_flag_time_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target benchmark_min_time_flag_time_test"
 .PHONY : _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : _deps/benchmark-build/test/CMakeFiles/benchmark_min_time_flag_time_test.dir/rule
@@ -4184,7 +4184,7 @@ core/CMakeFiles/smo_core.dir/all: providers/blake3_provider/CMakeFiles/smo_blake
 
 # Build rule for subdir invocation for target.
 core/CMakeFiles/smo_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/CMakeFiles/smo_core.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/CMakeFiles/smo_core.dir/rule
@@ -4215,7 +4215,7 @@ core/genesis/CMakeFiles/smo_genesis.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 core/genesis/CMakeFiles/smo_genesis.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/genesis/CMakeFiles/smo_genesis.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/genesis/CMakeFiles/smo_genesis.dir/rule
@@ -4241,7 +4241,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/all: core/observability/CMakeFiles/smo_o
 
 # Build rule for subdir invocation for target.
 core/runtime/CMakeFiles/smo_runtime.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/runtime/CMakeFiles/smo_runtime.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/runtime/CMakeFiles/smo_runtime.dir/rule
@@ -4273,7 +4273,7 @@ core/acl/CMakeFiles/smo_acl.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 core/acl/CMakeFiles/smo_acl.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 49
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 48
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/acl/CMakeFiles/smo_acl.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/acl/CMakeFiles/smo_acl.dir/rule
@@ -4311,7 +4311,7 @@ core/observability/CMakeFiles/smo_observability.dir/all: contract/CMakeFiles/smo
 
 # Build rule for subdir invocation for target.
 core/observability/CMakeFiles/smo_observability.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 53
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 54
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/observability/CMakeFiles/smo_observability.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/observability/CMakeFiles/smo_observability.dir/rule
@@ -4348,7 +4348,7 @@ core/federation/CMakeFiles/smo_federation.dir/all: contract/CMakeFiles/smo_contr
 
 # Build rule for subdir invocation for target.
 core/federation/CMakeFiles/smo_federation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 51
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 52
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/federation/CMakeFiles/smo_federation.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/federation/CMakeFiles/smo_federation.dir/rule
@@ -4387,7 +4387,7 @@ core/federation/CMakeFiles/smo_test_federation_gateway.dir/all: providers/suite1
 
 # Build rule for subdir invocation for target.
 core/federation/CMakeFiles/smo_test_federation_gateway.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 52
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 53
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/federation/CMakeFiles/smo_test_federation_gateway.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/federation/CMakeFiles/smo_test_federation_gateway.dir/rule
@@ -4426,7 +4426,7 @@ core/federation/CMakeFiles/smo_test_federation_handshake.dir/all: providers/suit
 
 # Build rule for subdir invocation for target.
 core/federation/CMakeFiles/smo_test_federation_handshake.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 51
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 52
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/federation/CMakeFiles/smo_test_federation_handshake.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/federation/CMakeFiles/smo_test_federation_handshake.dir/rule
@@ -4465,7 +4465,7 @@ core/federation/CMakeFiles/smo_test_federation_policy.dir/all: providers/suite1_
 
 # Build rule for subdir invocation for target.
 core/federation/CMakeFiles/smo_test_federation_policy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 51
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 52
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 core/federation/CMakeFiles/smo_test_federation_policy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : core/federation/CMakeFiles/smo_test_federation_policy.dir/rule
@@ -4559,12 +4559,12 @@ contract/CMakeFiles/smo_contract.dir/all: protocol/CMakeFiles/smo_protocol.dir/a
 contract/CMakeFiles/smo_contract.dir/all: storage/CMakeFiles/smo_storage.dir/all
 	$(MAKE) $(MAKESILENT) -f contract/CMakeFiles/smo_contract.dir/build.make contract/CMakeFiles/smo_contract.dir/depend
 	$(MAKE) $(MAKESILENT) -f contract/CMakeFiles/smo_contract.dir/build.make contract/CMakeFiles/smo_contract.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target smo_contract"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=62 "Built target smo_contract"
 .PHONY : contract/CMakeFiles/smo_contract.dir/all
 
 # Build rule for subdir invocation for target.
 contract/CMakeFiles/smo_contract.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 47
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 48
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 contract/CMakeFiles/smo_contract.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : contract/CMakeFiles/smo_contract.dir/rule
@@ -4658,12 +4658,12 @@ compiler/CMakeFiles/smo_compiler.dir/all: _deps/simdjson-build/CMakeFiles/simdjs
 compiler/CMakeFiles/smo_compiler.dir/all: core/CMakeFiles/smo_core.dir/all
 	$(MAKE) $(MAKESILENT) -f compiler/CMakeFiles/smo_compiler.dir/build.make compiler/CMakeFiles/smo_compiler.dir/depend
 	$(MAKE) $(MAKESILENT) -f compiler/CMakeFiles/smo_compiler.dir/build.make compiler/CMakeFiles/smo_compiler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=61,62 "Built target smo_compiler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=61 "Built target smo_compiler"
 .PHONY : compiler/CMakeFiles/smo_compiler.dir/all
 
 # Build rule for subdir invocation for target.
 compiler/CMakeFiles/smo_compiler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 47
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 compiler/CMakeFiles/smo_compiler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : compiler/CMakeFiles/smo_compiler.dir/rule
@@ -4693,7 +4693,7 @@ providers/blake3_provider/CMakeFiles/smo_blake3_provider.dir/all: _deps/fmt-buil
 
 # Build rule for subdir invocation for target.
 providers/blake3_provider/CMakeFiles/smo_blake3_provider.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 34
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 33
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 providers/blake3_provider/CMakeFiles/smo_blake3_provider.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : providers/blake3_provider/CMakeFiles/smo_blake3_provider.dir/rule
@@ -4724,7 +4724,7 @@ providers/suite1_classical/CMakeFiles/smo_suite1_classical.dir/all: core/CMakeFi
 
 # Build rule for subdir invocation for target.
 providers/suite1_classical/CMakeFiles/smo_suite1_classical.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 providers/suite1_classical/CMakeFiles/smo_suite1_classical.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : providers/suite1_classical/CMakeFiles/smo_suite1_classical.dir/rule
@@ -4755,7 +4755,7 @@ providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/all: core/CMakeFiles/sm
 
 # Build rule for subdir invocation for target.
 providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : providers/suite2_modern/CMakeFiles/smo_suite2_modern.dir/rule
@@ -4786,7 +4786,7 @@ providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/all: core/CMakeFiles/
 
 # Build rule for subdir invocation for target.
 providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : providers/suite3_purepqc/CMakeFiles/smo_suite3_purepqc.dir/rule
@@ -4919,7 +4919,7 @@ cmd/smo-node/CMakeFiles/smo-node.dir/all: providers/suite3_purepqc/CMakeFiles/sm
 
 # Build rule for subdir invocation for target.
 cmd/smo-node/CMakeFiles/smo-node.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 60
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 61
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cmd/smo-node/CMakeFiles/smo-node.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : cmd/smo-node/CMakeFiles/smo-node.dir/rule
@@ -5207,7 +5207,7 @@ tests/CMakeFiles/smo_test_trust.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_trust.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_trust.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_trust.dir/rule
@@ -5239,7 +5239,7 @@ tests/CMakeFiles/smo_test_governance.dir/all: providers/suite1_classical/CMakeFi
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_governance.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_governance.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_governance.dir/rule
@@ -5270,7 +5270,7 @@ tests/CMakeFiles/smo_test_discovery.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_discovery.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_discovery.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_discovery.dir/rule
@@ -5301,7 +5301,7 @@ tests/CMakeFiles/smo_test_session.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_session.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_session.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_session.dir/rule
@@ -5332,7 +5332,7 @@ tests/CMakeFiles/smo_test_session_security.dir/all: core/CMakeFiles/smo_core.dir
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_session_security.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_session_security.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_session_security.dir/rule
@@ -5363,7 +5363,7 @@ tests/CMakeFiles/smo_test_transport.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_transport.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_transport.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_transport.dir/rule
@@ -5395,7 +5395,7 @@ tests/CMakeFiles/smo_test_secure_session.dir/all: providers/suite1_classical/CMa
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_secure_session.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_secure_session.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_secure_session.dir/rule
@@ -5431,7 +5431,7 @@ tests/CMakeFiles/smo_test_p0_s6_e2e.dir/all: providers/suite1_classical/CMakeFil
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_p0_s6_e2e.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 47
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 48
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_p0_s6_e2e.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_p0_s6_e2e.dir/rule
@@ -5496,7 +5496,7 @@ tests/CMakeFiles/smo_test_fsm.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_fsm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_fsm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_fsm.dir/rule
@@ -5527,7 +5527,7 @@ tests/CMakeFiles/smo_test_mesh_fsm.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_mesh_fsm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_mesh_fsm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_mesh_fsm.dir/rule
@@ -5558,7 +5558,7 @@ tests/CMakeFiles/smo_test_certificate.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_certificate.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_certificate.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_certificate.dir/rule
@@ -5589,7 +5589,7 @@ tests/CMakeFiles/smo_test_identity.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_identity.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_identity.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_identity.dir/rule
@@ -5654,7 +5654,7 @@ tests/CMakeFiles/smo_test_storage.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_storage.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_storage.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_storage.dir/rule
@@ -5685,7 +5685,7 @@ tests/CMakeFiles/smo_test_crypto.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_crypto.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_crypto.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_crypto.dir/rule
@@ -5717,7 +5717,7 @@ tests/CMakeFiles/smo_test_recovery_package.dir/all: core/genesis/CMakeFiles/smo_
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_recovery_package.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 47
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_recovery_package.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_recovery_package.dir/rule
@@ -5749,7 +5749,7 @@ tests/CMakeFiles/smo_test_shamir.dir/all: core/genesis/CMakeFiles/smo_genesis.di
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_shamir.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 46
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_shamir.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_shamir.dir/rule
@@ -5780,7 +5780,7 @@ tests/CMakeFiles/smo_test_error.dir/all: core/CMakeFiles/smo_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_error.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 45
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 44
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_error.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_error.dir/rule
@@ -5819,7 +5819,7 @@ tests/CMakeFiles/smo_test_event_store.dir/all: contract/CMakeFiles/smo_contract.
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_event_store.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_event_store.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_event_store.dir/rule
@@ -5858,7 +5858,7 @@ tests/CMakeFiles/smo_test_runtime_context.dir/all: contract/CMakeFiles/smo_contr
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_runtime_context.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_runtime_context.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_runtime_context.dir/rule
@@ -5897,7 +5897,7 @@ tests/CMakeFiles/smo_test_history.dir/all: contract/CMakeFiles/smo_contract.dir/
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_history.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_history.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_history.dir/rule
@@ -5936,7 +5936,7 @@ tests/CMakeFiles/smo_test_execution_engine.dir/all: contract/CMakeFiles/smo_cont
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_execution_engine.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_execution_engine.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_execution_engine.dir/rule
@@ -5975,7 +5975,7 @@ tests/CMakeFiles/smo_test_scheduler.dir/all: contract/CMakeFiles/smo_contract.di
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_scheduler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 58
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_scheduler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_scheduler.dir/rule
@@ -6010,7 +6010,7 @@ tests/CMakeFiles/smo_test_contract.dir/all: contract/CMakeFiles/smo_contract.dir
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_test_contract.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 47
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 48
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_contract.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_test_contract.dir/rule
@@ -6054,7 +6054,7 @@ tests/CMakeFiles/smo_pct.dir/all: providers/suite3_purepqc/CMakeFiles/smo_suite3
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_pct.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 60
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 61
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_pct.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_pct.dir/rule
@@ -6075,12 +6075,12 @@ tests/CMakeFiles/smo_pct.dir/clean:
 tests/CMakeFiles/smo_stub_core.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_stub_core.dir/build.make tests/CMakeFiles/smo_stub_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_stub_core.dir/build.make tests/CMakeFiles/smo_stub_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=83 "Built target smo_stub_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target smo_stub_core"
 .PHONY : tests/CMakeFiles/smo_stub_core.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_stub_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_stub_core.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_stub_core.dir/rule
@@ -6127,12 +6127,12 @@ tests/CMakeFiles/smo_stub_protocol.dir/clean:
 tests/CMakeFiles/smo_stub_compiler.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_stub_compiler.dir/build.make tests/CMakeFiles/smo_stub_compiler.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_stub_compiler.dir/build.make tests/CMakeFiles/smo_stub_compiler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num= "Built target smo_stub_compiler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles --progress-num=83 "Built target smo_stub_compiler"
 .PHONY : tests/CMakeFiles/smo_stub_compiler.dir/all
 
 # Build rule for subdir invocation for target.
 tests/CMakeFiles/smo_stub_compiler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_stub_compiler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nguyenduccanh/shellmap_project/smoframework/build-test/CMakeFiles 0
 .PHONY : tests/CMakeFiles/smo_stub_compiler.dir/rule

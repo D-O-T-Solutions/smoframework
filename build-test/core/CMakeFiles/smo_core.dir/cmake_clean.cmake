@@ -139,6 +139,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/smo_core.dir/select/query_parser.cpp.o.d"
   "CMakeFiles/smo_core.dir/select/selector.cpp.o"
   "CMakeFiles/smo_core.dir/select/selector.cpp.o.d"
+  "CMakeFiles/smo_core.dir/session/channel.cpp.o"
+  "CMakeFiles/smo_core.dir/session/channel.cpp.o.d"
   "CMakeFiles/smo_core.dir/session/session.cpp.o"
   "CMakeFiles/smo_core.dir/session/session.cpp.o.d"
   "CMakeFiles/smo_core.dir/session/session_crypto_context.cpp.o"

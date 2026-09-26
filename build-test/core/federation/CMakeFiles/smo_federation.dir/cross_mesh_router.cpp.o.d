@@ -256,6 +256,7 @@ core/federation/CMakeFiles/smo_federation.dir/cross_mesh_router.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/suite.hpp \
  /usr/include/c++/13/random /usr/include/c++/13/cmath /usr/include/math.h \

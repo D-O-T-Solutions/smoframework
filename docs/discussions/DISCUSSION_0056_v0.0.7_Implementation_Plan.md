@@ -20,7 +20,7 @@ v0.0.7 delivers the **v0.0.7 charter** ("Full ICE + TURN + Mesh Federation" — 
 |------|---|-----------|---------------|-------------|
 | **Tier 0** | **1** | **C1: Full ICE + TURN (RFC 8445/8656)** | 0055:36, 0055:69 | Replace ICE-Lite with full ICE: candidate gathering, connectivity checks, nomination, TURN relay (RFC 8656) for symmetric NAT. STUN/TURN server deployment. | ✅ DONE
 | **Tier 0** | **2** | **C2: Mesh Federation (Cross-Mesh Routing)** | 0055:37, 0055:78 | Inter-mesh communication: mesh-to-mesh routing, gateway nodes, policy federation, cross-mesh governance, trust anchor exchange. | ✅ DONE
-| **Tier 1** | **3** | **C3: Channel Model (RFC 0042)** | 0055:38, 0055:84 | Channel abstraction for multiplexing: CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL opcodes. Four-layer hierarchy (Connection→Session→Channel→Invocation). Lazy creation, flow control per channel. |
+| **Tier 1** | **3** | **C3: Channel Model (RFC 0042)** | 0055:38, 0055:84 | Channel abstraction for multiplexing: CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL opcodes. Four-layer hierarchy (Connection→Session→Channel→Invocation). Lazy creation, flow control per channel. | ✅ DONE
 | **Tier 1** | **4** | **C4: NextAction 7 Remaining Actions (RFC 0039)** | 0055:39, 0055:85 | Implement DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent. Only Execute + StoreContext done in v0.0.6. |
 | **Tier 1** | **5** | **C5: RuntimeKernel Async + PlanResolver (RFC 0044)** | 0055:40, 0055:86 | execute_async true async; PlanResolver provider; stages: dispatch/collect/audit/complete. Scheduler + WorkerPool + ActionExecutor integration. |
 | **Tier 2** | **6** | **C6: Governance FSM Complete (RFC 0016)** | 0055:41, 0055:92 | reject/conflict/detect_fork/expiry; Conflicted state engine-generated; expiry unit fix (ns vs s); quorum from active authorities. |
@@ -56,11 +56,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0055.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C3.1 Define Channel opcodes (CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL) in Opcode Registry | RFC 0020 (C11 done); RFC 0042 §4 | `[ ] OPEN` | 0055:38, 0046:805, 0042:14 |
-| C3.2 Implement Channel struct + state machine (Open→Flowing→Closing→Closed) | C3.1; SessionManager wired (G1 done) | `[ ] OPEN` | 0055:38, 0042:500, RFC 0042 §2 |
-| C3.3 Implement per-channel flow control (window, backpressure, prioritization) | C3.2 | `[ ] OPEN` | 0055:38, RFC 0042 §2.3 |
-| C3.4 Wire Channel layer into Session packet path (lazy creation) | C3.3 | `[ ] OPEN` | 0055:38, 0054:138 |
-| C3.5 Gate test: Session carries 4 concurrent channels (Control/Exec/Data/Discovery); flow control works | C3.1-C3.4 | `[ ] OPEN` | 0055:142 |
+| C3.1 Define Channel opcodes (CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL) in Opcode Registry | RFC 0020 (C11 done); RFC 0042 §4 | `[x] DONE` | 0055:38, 0046:805, 0042:14 |
+| C3.2 Implement Channel struct + state machine (Open→Flowing→Closing→Closed) | C3.1; SessionManager wired (G1 done) | `[x] DONE` | 0055:38, 0042:500, RFC 0042 §2 |
+| C3.3 Implement per-channel flow control (window, backpressure, prioritization) | C3.2 | `[x] DONE` | 0055:38, RFC 0042 §2.3 |
+| C3.4 Wire Channel layer into Session packet path (lazy creation) | C3.3 | `[x] DONE` | 0055:38, 0054:138 |
+| C3.5 Gate test: Session carries 4 concurrent channels (Control/Exec/Data/Discovery); flow control works | C3.1-C3.4 | `[x] DONE` | 0055:142 |
 
 ### C4 — NextAction 7 Remaining Actions (RFC 0039)
 

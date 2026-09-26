@@ -78,6 +78,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.cpp" "core/CMakeFiles/smo_core.dir/runtime/telemetry.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/runtime/telemetry.cpp.o.d"
   "/home/nguyenduccanh/shellmap_project/smoframework/core/select/query_parser.cpp" "core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/select/query_parser.cpp.o.d"
   "/home/nguyenduccanh/shellmap_project/smoframework/core/select/selector.cpp" "core/CMakeFiles/smo_core.dir/select/selector.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/select/selector.cpp.o.d"
+  "/home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.cpp" "core/CMakeFiles/smo_core.dir/session/channel.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/session/channel.cpp.o.d"
   "/home/nguyenduccanh/shellmap_project/smoframework/core/session/session.cpp" "core/CMakeFiles/smo_core.dir/session/session.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/session/session.cpp.o.d"
   "/home/nguyenduccanh/shellmap_project/smoframework/core/session/session_crypto_context.cpp" "core/CMakeFiles/smo_core.dir/session/session_crypto_context.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/session/session_crypto_context.cpp.o.d"
   "/home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.cpp" "core/CMakeFiles/smo_core.dir/session/session_id.cpp.o" "gcc" "core/CMakeFiles/smo_core.dir/session/session_id.cpp.o.d"

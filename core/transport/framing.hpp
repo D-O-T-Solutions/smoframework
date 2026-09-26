@@ -7,23 +7,33 @@
 
 namespace smo {
 
-    // FrameHeader: magic(4) + payload_len(4) + flags(1) = 9 bytes
+    // FrameHeader (RFC 0042): magic(4) + payload_len(4) + flags(1) + channel_id(2) = 11 bytes
+    // For backward compatibility, channel_id=0 means "no channel" (legacy single-stream mode)
     struct FrameHeader
     {
         uint32_t magic{0x534D4F01}; // "SMO\1"
         uint32_t payload_len{0};
         uint8_t flags{0};
+        uint16_t channel_id{0}; // 0 = legacy/no channel
     } __attribute__((packed));
 
-    static_assert(sizeof(FrameHeader) == 9, "FrameHeader must be 9 bytes");
+    static_assert(sizeof(FrameHeader) == 11, "FrameHeader must be 11 bytes");
 
     // Flags
     inline constexpr uint8_t kFrameFlagNone = 0x00;
     inline constexpr uint8_t kFrameFlagVersion = 0x01; // version handshake frame
     inline constexpr uint8_t kFrameFlagClose = 0x02;   // graceful close
+    inline constexpr uint8_t kFrameFlagChannel = 0x04; // frame carries channel_id
 
-    // Write a frame: header + payload. Allocates and returns the framed bytes.
-    void frame_write(BytesView payload, uint8_t flags, Bytes& out);
+    // Write a frame with optional channel_id: header + payload.
+    // If channel_id != 0, kFrameFlagChannel is set automatically.
+    void frame_write(BytesView payload, uint8_t flags, uint16_t channel_id, Bytes& out);
+
+    // Legacy overload for backward compatibility (channel_id=0, no channel flag)
+    inline void frame_write(BytesView payload, uint8_t flags, Bytes& out)
+    {
+        frame_write(payload, flags, 0, out);
+    }
 
     // Read a frame from buf. On success returns the frame size (header + payload).
     // Returns 0 if the buffer is too small to contain a complete frame.

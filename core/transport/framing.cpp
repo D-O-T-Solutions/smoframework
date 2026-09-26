@@ -5,12 +5,18 @@
 
 namespace smo {
 
-    void frame_write(BytesView payload, uint8_t flags, Bytes& out)
+    void frame_write(BytesView payload, uint8_t flags, uint16_t channel_id, Bytes& out)
     {
         FrameHeader hdr;
         hdr.magic = 0x534D4F01;
         hdr.payload_len = static_cast<uint32_t>(payload.size());
         hdr.flags = flags;
+        hdr.channel_id = channel_id;
+
+        if (channel_id != 0)
+        {
+            hdr.flags |= kFrameFlagChannel;
+        }
 
         out.resize(sizeof(hdr) + payload.size());
         std::memcpy(out.data(), &hdr, sizeof(hdr));

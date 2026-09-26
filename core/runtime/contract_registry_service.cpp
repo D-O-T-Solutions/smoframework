@@ -176,6 +176,15 @@ void ContractRegistryService::register_packet_handlers(RuntimeHandler handler)
     deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::SESSION_CLOSE), handler);
     deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::SESSION_RENEW), handler);
 
+    // Channel handlers (C3 - RFC 0042)
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_OPEN), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_CHUNK), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_ACK), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_NACK), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_FIN), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_CANCEL), handler);
+    deps_.packet_dispatcher.register_handler(static_cast<uint32_t>(Opcode::CHANNEL_WINDOW_UPDATE), handler);
+
     // Raw handler delegated to ProtocolService
     deps_.protocol_service.register_raw_handler(deps_.packet_dispatcher);
 }
@@ -202,6 +211,18 @@ ContractRegistryService::RuntimeHandler ContractRegistryService::make_runtime_ha
         if (pkt.opcode_id == static_cast<uint32_t>(Opcode::SESSION_RENEW))
         {
             return handle_session_renew(std::move(pkt), remote, t);
+        }
+
+        // Channel opcodes (C3 - RFC 0042)
+        if (pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_OPEN) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_CHUNK) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_ACK) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_NACK) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_FIN) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_CANCEL) ||
+            pkt.opcode_id == static_cast<uint32_t>(Opcode::CHANNEL_WINDOW_UPDATE))
+        {
+            return handle_channel_opcode(std::move(pkt), remote, t);
         }
 
         // 1. Session lookup (if session_id present)
@@ -591,6 +612,172 @@ Result<void> ContractRegistryService::handle_session_renew(Packet&& pkt, const E
 
     std::printf("[smo-node] SESSION_RENEW: Renewed session %s (new expiry=%lld)\n",
                 sid.to_hex().c_str(), session->expires_at());
+    return {};
+}
+
+// Channel opcode handler (C3 - RFC 0042)
+Result<void> ContractRegistryService::handle_channel_opcode(Packet&& pkt, const Endpoint& remote,
+                                                            network::hl::Transport& t)
+{
+    // 1. Look up session by session_id in packet header
+    if (pkt.session_id().size() < 16)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "CHANNEL: missing session_id");
+    }
+    SessionId sid;
+    std::memcpy(sid.bytes.data(), pkt.session_id().data(), 16);
+
+    auto* session = deps_.session_mgr.lookup(sid);
+    if (!session)
+    {
+        return SMO_ERR_SESSION(501, Error, NoRetry, Reconnect, "CHANNEL: session not found");
+    }
+
+    int64_t now = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      std::chrono::system_clock::now().time_since_epoch())
+                      .count();
+
+    // Check if session is active
+    if (!session->is_valid_at(now))
+    {
+        return SMO_ERR_SESSION(502, Error, NoRetry, Reconnect, "Session expired");
+    }
+
+    Opcode opcode = static_cast<Opcode>(pkt.opcode_id);
+
+    // Parse channel_id from payload (first 2 bytes)
+    if (pkt.payload.size() < 2)
+    {
+        return SMO_ERR_SESSION(520, Error, NoRetry, Reconnect, "CHANNEL: missing channel_id in payload");
+    }
+    uint16_t channel_id = (static_cast<uint16_t>(pkt.payload[0]) << 8) | static_cast<uint16_t>(pkt.payload[1]);
+
+    // Get or create channel
+    auto ch_res = session->get_or_create_channel(static_cast<uint16_t>((pkt.payload[0] << 8) | pkt.payload[1]), now);
+    if (!ch_res)
+    {
+        return ch_res.error();
+    }
+    Channel* ch = ch_res.value();
+
+    // Dispatch based on opcode
+    switch (static_cast<Opcode>(pkt.opcode_id))
+    {
+        case Opcode::CHANNEL_OPEN:
+        {
+            // CHANNEL_OPEN: explicit open (optional, lazy creation is default)
+            auto open_res = ch->on_event(ChannelEvent::ExplicitOpen, now);
+            if (!open_res) return open_res.error();
+            break;
+        }
+        case Opcode::CHANNEL_CHUNK:
+        {
+            // CHANNEL_CHUNK: data payload
+            if (pkt.payload.size() < 3)
+                return SMO_ERR_SESSION(520, Error, NoRetry, Reconnect, "CHANNEL_CHUNK: missing data");
+
+            // Check flow control
+            uint64_t data_len = pkt.payload.size() - 2; // 2 bytes channel_id
+            if (!ch->flow_control().can_send(data_len))
+            {
+                return SMO_ERR_SESSION(525, Error, RetryBackoff, None, "CHANNEL_CHUNK: flow control window exceeded");
+            }
+
+            // Deliver data to channel (application would read this)
+            // For now, just update flow control and activity
+            ch->flow_control().on_send(data_len);
+            ch->touch(now);
+
+            // Send ACK
+            Packet ack;
+            ack.header = pkt.header;
+            ack.opcode_id = static_cast<uint32_t>(Opcode::CHANNEL_ACK);
+            ack.session_id() = pkt.session_id();
+            ack.intent_id = pkt.intent_id;
+            ack.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                  std::chrono::system_clock::now().time_since_epoch())
+                                  .count();
+            ack.payload = {static_cast<uint8_t>((pkt.payload[0] >> 8) & 0xFF), static_cast<uint8_t>(pkt.payload[0] & 0xFF)};
+
+            auto send_ec = t.send(std::move(ack), remote);
+            if (send_ec)
+            {
+                return Error(ErrorCode(ErrorCategory::Transport, static_cast<uint16_t>(send_ec.value()), Severity::Error,
+                                       RetryClass::RetrySafe, Recovery::None),
+                             "CHANNEL_ACK send failed", __FILE__, __LINE__);
+            }
+            break;
+        }
+        case Opcode::CHANNEL_ACK:
+        {
+            // CHANNEL_ACK: update window
+            // For now, just update window with a default increment
+            // In a full implementation, the ACK would carry the window update
+            break;
+        }
+        case Opcode::CHANNEL_NACK:
+        {
+            // CHANNEL_NACK: retransmission needed
+            break;
+        }
+        case Opcode::CHANNEL_FIN:
+        {
+            auto fin_res = session->close_channel(static_cast<uint16_t>((pkt.payload[0] << 8) | pkt.payload[1]), now);
+            if (!fin_res) return fin_res.error();
+            break;
+        }
+        case Opcode::CHANNEL_CANCEL:
+        {
+            auto cancel_res = session->close_channel(static_cast<uint16_t>((pkt.payload[0] << 8) | pkt.payload[1]), now);
+            if (!cancel_res) return cancel_res.error();
+            break;
+        }
+        case Opcode::CHANNEL_WINDOW_UPDATE:
+        {
+            // Update flow control window
+            if (pkt.payload.size() >= 10) // 2 bytes channel_id + 8 bytes window increment
+            {
+                uint64_t increment = 0;
+                for (int i = 0; i < 8; ++i)
+                {
+                    increment = (increment << 8) | pkt.payload[2 + i];
+                }
+                auto ch_res = session->get_or_create_channel(static_cast<uint16_t>((pkt.payload[0] << 8) | pkt.payload[1]), now);
+                if (ch_res)
+                {
+                    ch_res.value()->flow_control().on_window_update(increment);
+                }
+            }
+            break;
+        }
+        default:
+            return SMO_ERR_PROTOCOL(604, Error, NoRetry, None, "Unknown channel opcode");
+    }
+
+    // Send response if needed
+    // (For CHANNEL_CHUNK, we already sent ACK above)
+    // For others, we might send an empty response
+    if (pkt.opcode_id != static_cast<uint32_t>(Opcode::CHANNEL_CHUNK))
+    {
+        Packet resp;
+        resp.header = pkt.header;
+        resp.opcode_id = pkt.opcode_id;
+        resp.session_id() = pkt.session_id();
+        resp.intent_id = pkt.intent_id;
+        resp.timestamp() = std::chrono::duration_cast<std::chrono::milliseconds>(
+                               std::chrono::system_clock::now().time_since_epoch())
+                               .count();
+        // Empty payload for now
+
+        auto send_ec = t.send(std::move(resp), remote);
+        if (send_ec)
+        {
+            return Error(ErrorCode(ErrorCategory::Transport, static_cast<uint16_t>(send_ec.value()), Severity::Error,
+                                   RetryClass::RetrySafe, Recovery::None),
+                         "CHANNEL response send failed", __FILE__, __LINE__);
+        }
+    }
+
     return {};
 }
 

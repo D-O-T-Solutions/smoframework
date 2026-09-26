@@ -256,6 +256,7 @@ core/federation/CMakeFiles/smo_test_federation_gateway.dir/__/__/tests/unit/core
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/discovery.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../transport/transport.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../transport/framing.hpp \

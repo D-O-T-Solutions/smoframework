@@ -11,6 +11,7 @@
 #include "../types.hpp"
 #include "session_id.hpp"
 #include "session_security.hpp"
+#include "channel.hpp"
 
 #include <array>
 #include <cstdint>
@@ -75,7 +76,7 @@ namespace smo {
     SessionState apply_transition(SessionState from, SessionEvent event) noexcept;
 
     // ---------------------------------------------------------------------------
-    // Session — FSM-driven peer session
+    // Session — FSM-driven peer session (extended with Channel support per RFC 0042)
     // ---------------------------------------------------------------------------
     class Session
     {
@@ -117,7 +118,26 @@ namespace smo {
         SessionSecurityState& security_state() noexcept { return security_state_; }
         const SessionSecurityState& security_state() const noexcept { return security_state_; }
 
-        // Serialization
+        // ── Channel management (RFC 0042) ──────────────────────────────────
+        // Lazy create or get existing channel
+        Result<Channel*> get_or_create_channel(uint16_t channel_id, int64_t now_ns);
+
+        // Look up a channel by ID
+        Channel* get_channel(uint16_t channel_id);
+
+        // Close a channel
+        Result<void> close_channel(uint16_t channel_id, int64_t now_ns);
+
+        // List all channels
+        std::vector<Channel*> list_channels();
+
+        // Check if session has any open channels
+        bool has_open_channels() const noexcept;
+
+        // Tick channels (idle timeout check)
+        void tick_channels(int64_t now_ns);
+
+        // Serialize
         Bytes serialize() const;
         static Result<Session> deserialize(BytesView data);
 
@@ -132,10 +152,13 @@ namespace smo {
         int64_t expires_at_ = 0;
         int64_t last_active_ = 0;
         SessionSecurityState security_state_{};
+
+        // Channels (RFC 0042)
+        std::unordered_map<uint16_t, Channel> channels_;
     };
 
     // ---------------------------------------------------------------------------
-    // SessionManager — manages all active sessions
+    // SessionManager — manages all active sessions (extended with Channel support per RFC 0042)
     // ---------------------------------------------------------------------------
     class SessionManager
     {
@@ -174,6 +197,9 @@ namespace smo {
         // Tick — expire sessions that have timed out
         void tick(int64_t now);
 
+        // Tick channels — idle timeout check for all channels in all sessions
+        void tick_channels(int64_t now);
+
         // Number of active sessions
         size_t active_count() const noexcept { return sessions_.size(); }
 
@@ -182,6 +208,19 @@ namespace smo {
 
         // Serialize all sessions for crash recovery
         Bytes serialize_all() const;
+
+        // ── Channel management (RFC 0042) ──────────────────────────────────
+        // Get or create a channel in a session (lazy creation)
+        Result<Channel*> get_or_create_channel(const SessionId& session_id, uint16_t channel_id, int64_t now_ns);
+
+        // Look up a channel
+        Channel* lookup_channel(const SessionId& session_id, uint16_t channel_id);
+
+        // Close a channel
+        Result<void> close_channel(const SessionId& session_id, uint16_t channel_id, int64_t now_ns);
+
+        // List all channels in a session
+        std::vector<Channel*> list_channels(const SessionId& session_id);
 
         // ── Crash recovery (RFC 0014 §6) ─────────────────────────────────
         // Persist all ESTABLISHED/ACTIVE sessions to a file. Used before

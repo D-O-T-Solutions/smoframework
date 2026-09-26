@@ -245,6 +245,7 @@ core/federation/CMakeFiles/smo_test_federation_handshake.dir/__/__/tests/unit/co
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/suite.hpp \
  /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h
