@@ -394,6 +394,8 @@ private:
     smo::runtime::Dispatcher runtime_dispatcher_;
     smo::runtime::PlanResolver plan_resolver_;
     smo::runtime::RuntimeKernel runtime_kernel_;
+    ::smo::EventStore event_store_;
+    smo::runtime::Scheduler scheduler_;
     smo::SessionManager session_mgr_;
     smo::MeshManager mesh_manager_;
     smo::authority::MeshAuthority authority_;
@@ -449,6 +451,8 @@ NodeRuntime::Impl::Impl(const NodeRuntimeConfig& cfg)
     , heartbeat_(make_hb_config(cfg.port))
     , relay_service_(smo::network::relay::RelayService::default_config())
     , runtime_kernel_(event_bus_, output_mgr_, runtime_dispatcher_, plan_resolver_)
+    , event_store_(::smo::EventStore::Config{.db_path = cfg.data_dir + "/events.db", .max_events = 1000000})
+    , scheduler_(smo::runtime::Scheduler::Config{.max_concurrent_tasks = 100, .worker_threads = 4})
     , mesh_manager_(smo::MeshManager::Config{
           .base_data_dir = cfg.mesh_dir.empty() ? "" : cfg.mesh_dir.substr(0, cfg.mesh_dir.rfind("/meshes/") + 7)})
     , sync_service_(gossip_, &crl_, smo::sync::SyncSchedule{})
@@ -560,6 +564,17 @@ Result<void> NodeRuntime::Impl::initialize()
     }
     LOG.info("starting daemon on port " + std::to_string(config_.port));
     LOG.info("node_id: " + local_id_hex_);
+
+    // Open EventStore for audit/event logging
+    auto event_store_res = event_store_.open();
+    if (!event_store_res)
+    {
+        LOG.warn("Failed to open EventStore: " + event_store_res.error().message);
+    }
+    else
+    {
+        LOG.info("EventStore opened at " + config_.data_dir + "/events.db");
+    }
 
     // Load server certificate for PQ handshake
     std::string cert_path = data_dir_ + "/node.cert.smoc";
@@ -836,7 +851,11 @@ Result<void> NodeRuntime::Impl::initialize()
             .event_bus = event_bus_,
             .membership = membership_,
             .crypto = crypto_,
-            .identity = identity_});
+            .identity = identity_,
+            .event_store = &event_store_,
+            .scheduler = &scheduler_,
+            .audit_service = nullptr,
+            .local_node_id = local_id_hex_});
 
     print_mesh_bootstrap_summary();
     connect_to_seed();

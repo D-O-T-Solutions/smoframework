@@ -69,6 +69,10 @@ if(BUILD_TESTING)
         add_executable(test_runtime test/test_runtime.cpp)
         target_link_libraries(test_runtime PRIVATE smo_runtime GTest::gtest_main GTest::gtest)
         add_test(NAME runtime_tests COMMAND test_runtime)
+
+        add_executable(test_next_actions test/test_next_actions.cpp)
+        target_link_libraries(test_next_actions PRIVATE smo_runtime GTest::gtest_main GTest::gtest)
+        add_test(NAME next_actions_tests COMMAND test_next_actions)
     endif()
 endif()
 

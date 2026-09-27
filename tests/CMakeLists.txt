@@ -308,6 +308,17 @@ smo_set_warnings(smo_test_scheduler)
 smo_set_optimisation(smo_test_scheduler)
 add_test(NAME scheduler_model COMMAND smo_test_scheduler)
 
+# ── NextAction tests (C4.8 gate test) ─────────────────────────────────
+add_executable(smo_test_next_actions
+    unit/core/runtime/test_next_actions.cpp
+)
+target_link_libraries(smo_test_next_actions PRIVATE
+    smo_runtime smo_core fmt::fmt gtest gtest_main
+)
+smo_set_warnings(smo_test_next_actions)
+smo_set_optimisation(smo_test_next_actions)
+add_test(NAME next_actions_model COMMAND smo_test_next_actions)
+
 # ── Contract tests ──────────────────────────────────────────────────
 add_executable(smo_test_contract
     unit/core/contract/test_contract.cpp

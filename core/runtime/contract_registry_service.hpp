@@ -29,6 +29,9 @@
 #include <core/fsm/node_lifecycle_fsm.hpp>
 #include <core/bootstrap/bootstrap_protocol.hpp>
 #include <core/join/join_protocol.hpp>
+#include <core/runtime/event_store.hpp>
+#include <core/runtime/scheduler.hpp>
+#include <core/runtime/services/audit_service.hpp>
 
 #include <string>
 #include <memory>
@@ -64,6 +67,10 @@ public:
         MembershipTable& membership;
         const CryptoProvider* crypto = nullptr;
         Identity& identity;
+        EventStore* event_store = nullptr;
+        Scheduler* scheduler = nullptr;
+        AuditService* audit_service = nullptr;
+        std::string local_node_id;
     };
 
     explicit ContractRegistryService(const Config& config, const Dependencies& deps);
@@ -90,6 +97,9 @@ private:
     Result<void> handle_session_open(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
     Result<void> handle_session_close(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
     Result<void> handle_session_renew(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
+
+    // Channel opcode handler (C3 - RFC 0042)
+    Result<void> handle_channel_opcode(Packet&& pkt, const Endpoint& remote, network::hl::Transport& t);
 
     Config config_;
     Dependencies deps_;

@@ -337,21 +337,28 @@ ContractRegistryService::RuntimeHandler ContractRegistryService::make_runtime_ha
             return {};
         }
 
-        for (auto& action : next_actions)
+for (auto& action : next_actions)
         {
-            ActionExecutor executor(
-                [&](Packet&& resp) -> Result<void> {
-                    auto ec = t.send(std::move(resp), remote);
-                    if (ec)
-                    {
-                        return Error(ErrorCode(ErrorCategory::Transport,
-                                             static_cast<uint16_t>(ec.value()), Severity::Error,
-                                             RetryClass::RetrySafe, Recovery::None),
-                                     "ActionExecutor send failed", __FILE__, __LINE__);
-                    }
-                    return {};
-                },
-                &deps_.event_bus);
+            ActionExecutor::Dependencies exec_deps;
+            exec_deps.send_response = [&](Packet&& resp) -> Result<void> {
+                auto ec = t.send(std::move(resp), remote);
+                if (ec)
+                {
+                    return Error(ErrorCode(ErrorCategory::Transport,
+                                         static_cast<uint16_t>(ec.value()), Severity::Error,
+                                         RetryClass::RetrySafe, Recovery::None),
+                             "ActionExecutor send failed", __FILE__, __LINE__);
+                }
+                return {};
+            };
+            exec_deps.event_bus = &deps_.event_bus;
+            exec_deps.event_store = deps_.event_store;
+            exec_deps.dispatcher = &deps_.runtime_dispatcher;
+            exec_deps.scheduler = deps_.scheduler;
+            exec_deps.audit_service = deps_.audit_service;
+            exec_deps.local_node_id = deps_.local_node_id;
+
+            ActionExecutor executor(exec_deps);
 
             auto exec_res = executor.execute(action, original_pkt);
             if (!exec_res)
