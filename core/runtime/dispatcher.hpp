@@ -18,7 +18,7 @@ namespace smo::runtime {
     {
     public:
         Dispatcher() = default;
-        ~Dispatcher() = default;
+        virtual ~Dispatcher() = default;
 
         // Set telemetry for metrics (optional)
         void set_telemetry(Telemetry* telemetry) { telemetry_ = telemetry; }
@@ -43,8 +43,8 @@ namespace smo::runtime {
         const ContractMetadata* get_metadata(const std::string& id) const;
 
         // Execute a contract directly (no policy, no audit, no retry)
-        Result<ContractResult> execute(const std::string& contract_id, const ContractInput& input,
-                                       const RuntimeContext& ctx);
+        virtual Result<ContractResult> execute(const std::string& contract_id, const ContractInput& input,
+                                               const RuntimeContext& ctx);
 
     private:
         std::unordered_map<std::string, std::unique_ptr<ContractInterface>> contracts_;

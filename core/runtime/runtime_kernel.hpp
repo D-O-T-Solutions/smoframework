@@ -8,6 +8,10 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <unordered_map>
+#include <mutex>
+#include <future>
+#include <optional>
 
 namespace smo::runtime {
 
@@ -20,6 +24,25 @@ namespace smo::runtime {
 
     // ── Runtime Request/Result ────────────────────────────────────────────
     // (Defined in runtime_types.hpp)
+
+    // ── Async Execution State ──────────────────────────────────────────────
+    struct AsyncExecution
+    {
+        enum class State : uint8_t
+        {
+            Pending = 0,
+            Running = 1,
+            Completed = 2,
+            Failed = 3,
+            Cancelled = 4
+        };
+
+        State state = State::Pending;
+        RuntimeResult result;
+        std::future<RuntimeResult> future;
+        uint64_t started_at_ns = 0;
+        uint64_t completed_at_ns = 0;
+    };
 
     // ── Runtime Kernel ────────────────────────────────────────────────────
     class RuntimeKernel
@@ -42,6 +65,9 @@ namespace smo::runtime {
         // Cancel async execution
         Result<void> cancel_async(const std::string& execution_id);
 
+        // Get async execution state (for polling)
+        Result<AsyncExecution::State> get_async_state(const std::string& execution_id);
+
     private:
         EventBus& event_bus_;
         OutputManager& output_mgr_;
@@ -58,7 +84,9 @@ namespace smo::runtime {
         Result<RuntimeResult> audit(RuntimeContext& ctx, bool success, const std::string& error = "");
         Result<RuntimeResult> complete(RuntimeContext& ctx);
 
-        uint64_t next_execution_id_ = 1;
+        // Async execution tracking
+        mutable std::mutex async_mutex_;
+        std::unordered_map<std::string, std::unique_ptr<AsyncExecution>> async_executions_;
         uint64_t generate_execution_id();
 
         // Output of the last executed plan step. Populated by execute_plan()
