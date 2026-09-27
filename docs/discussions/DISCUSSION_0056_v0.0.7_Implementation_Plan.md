@@ -22,7 +22,7 @@ v0.0.7 delivers the **v0.0.7 charter** ("Full ICE + TURN + Mesh Federation" — 
 | **Tier 0** | **2** | **C2: Mesh Federation (Cross-Mesh Routing)** | 0055:37, 0055:78 | Inter-mesh communication: mesh-to-mesh routing, gateway nodes, policy federation, cross-mesh governance, trust anchor exchange. | ✅ DONE
 | **Tier 1** | **3** | **C3: Channel Model (RFC 0042)** | 0055:38, 0055:84 | Channel abstraction for multiplexing: CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL opcodes. Four-layer hierarchy (Connection→Session→Channel→Invocation). Lazy creation, flow control per channel. | ✅ DONE
 | **Tier 1** | **4** | **C4: NextAction 7 Remaining Actions (RFC 0039)** | 0055:39, 0055:85 | Implement DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent. Only Execute + StoreContext done in v0.0.6. |
-| **Tier 1** | **5** | **C5: RuntimeKernel Async + PlanResolver (RFC 0044)** | 0055:40, 0055:86 | execute_async true async; PlanResolver provider; stages: dispatch/collect/audit/complete. Scheduler + WorkerPool + ActionExecutor integration. |
+| **Tier 1** | **5** | **C5: RuntimeKernel Async + PlanResolver (RFC 0044)** | 0055:40, 0055:86 | execute_async true async; PlanResolver provider; stages: dispatch/collect/audit/complete. Scheduler + WorkerPool + ActionExecutor integration. | ✅ DONE
 | **Tier 2** | **6** | **C6: Governance FSM Complete (RFC 0016)** | 0055:41, 0055:92 | reject/conflict/detect_fork/expiry; Conflicted state engine-generated; expiry unit fix (ns vs s); quorum from active authorities. |
 | **Tier 2** | **7** | **C7: Authority Key Handling** | 0055:42, 0055:93 | Root key never circulates; authority.sec encrypted at rest; key rotation; certificate chain management; HSM/remote signer support. |
 
@@ -79,11 +79,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0055.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C5.1 Implement `execute_async` true non-blocking path in RuntimeKernel | R3 (scheduler, execution_engine compiled); C4 (NextAction) | `[ ] OPEN` | 0055:40, 0046:807, 0044 |
-| C5.2 Implement PlanResolver provider (plan DAG resolution, dependency ordering) | C5.1; C4.3 (SpawnPlan) | `[ ] OPEN` | 0055:40, 0044 §3 |
-| C5.3 Implement PlanExecutor stages: dispatch → collect → audit → complete | C5.2; ActionExecutor (RFC 0044) | `[ ] OPEN` | 0055:40, 0044 §3 |
-| C5.4 Integrate Scheduler + WorkerPool + ActionExecutor for async execution | C5.3; R3 complete | `[ ] OPEN` | 0055:40, 0044 |
-| C5.5 Gate test: Async contract chain completes without blocking; PlanResolver resolves DAG | C5.1-C5.4 | `[ ] OPEN` | 0055:144 |
+| C5.1 Implement `execute_async` true non-blocking path in RuntimeKernel | R3 (scheduler, execution_engine compiled); C4 (NextAction) | `[x] DONE` | 0055:40, 0046:807, 0044 |
+| C5.2 Implement PlanResolver provider (plan DAG resolution, dependency ordering) | C5.1; C4.3 (SpawnPlan) | `[x] DONE` | 0055:40, 0044 §3 |
+| C5.3 Implement PlanExecutor stages: dispatch → collect → audit → complete | C5.2; ActionExecutor (RFC 0044) | `[x] DONE` | 0055:40, 0044 §3 |
+| C5.4 Integrate Scheduler + WorkerPool + ActionExecutor for async execution | C5.3; R3 complete | `[x] DONE` | 0055:40, 0044 |
+| C5.5 Gate test: Async contract chain completes without blocking; PlanResolver resolves DAG | C5.1-C5.4 | `[x] DONE` | 0055:144 |
 
 ### C6 — Governance FSM Complete (RFC 0016)
 
@@ -147,7 +147,7 @@ v0.0.6 COMPLETE (P0-S6, P0-EX, R2, R3, R4, G1, RFC Sprint)
 [ ] C2: Mesh Federation — Cross-mesh contract execution; gateway node routes; policy federation sync
 [ ] C3: Channel Model — Session carries 4 concurrent channels (Control/Exec/Data/Discovery); flow control works
 [x] C4: NextAction — DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent all functional
-[ ] C5: RuntimeKernel Async — execute_async non-blocking; PlanResolver resolves plan DAG; Scheduler+WorkerPool integrated
+[x] C5: RuntimeKernel Async — execute_async non-blocking; PlanResolver resolves plan DAG; Scheduler+WorkerPool integrated
 [ ] C6: Governance FSM — reject/conflict/detect_fork/expiry operational; Conflicted state generated; quorum from active authorities
 [ ] C7: Authority Key Handling — Root key rotation; authority.sec HSM-backed; cert chain validation on join
 [ ] All 25+ ctest PASS
