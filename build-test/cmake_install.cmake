@@ -74,6 +74,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/gtest-build/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/home/nguyenduccanh/shellmap_project/smoframework/build-test/_deps/fmt-build/cmake_install.cmake")
 endif()
 

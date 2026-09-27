@@ -12,7 +12,7 @@
 
 set(CPACK_BUILD_SOURCE_DIRS "/home/nguyenduccanh/shellmap_project/smoframework;/home/nguyenduccanh/shellmap_project/smoframework/build-test")
 set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
-set(CPACK_COMPONENTS_ALL "Unspecified;simdjson_Development")
+set(CPACK_COMPONENTS_ALL "Unspecified;gmock;gtest;simdjson_Development")
 set(CPACK_COMPONENT_UNSPECIFIED_HIDDEN "TRUE")
 set(CPACK_COMPONENT_UNSPECIFIED_REQUIRED "TRUE")
 set(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")

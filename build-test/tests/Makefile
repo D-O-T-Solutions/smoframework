@@ -117,7 +117,7 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\" \"simdjson_Development\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\" \"gmock\" \"gtest\" \"simdjson_Development\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -585,6 +585,20 @@ smo_test_scheduler/fast:
 .PHONY : smo_test_scheduler/fast
 
 # Convenience name for target.
+tests/CMakeFiles/smo_test_next_actions.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_next_actions.dir/rule
+.PHONY : tests/CMakeFiles/smo_test_next_actions.dir/rule
+
+# Convenience name for target.
+smo_test_next_actions: tests/CMakeFiles/smo_test_next_actions.dir/rule
+.PHONY : smo_test_next_actions
+
+# fast build rule for target.
+smo_test_next_actions/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_next_actions.dir/build.make tests/CMakeFiles/smo_test_next_actions.dir/build
+.PHONY : smo_test_next_actions/fast
+
+# Convenience name for target.
 tests/CMakeFiles/smo_test_contract.dir/rule:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_contract.dir/rule
 .PHONY : tests/CMakeFiles/smo_test_contract.dir/rule
@@ -1013,6 +1027,30 @@ unit/core/runtime/test_history.s: unit/core/runtime/test_history.cpp.s
 unit/core/runtime/test_history.cpp.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_history.dir/build.make tests/CMakeFiles/smo_test_history.dir/unit/core/runtime/test_history.cpp.s
 .PHONY : unit/core/runtime/test_history.cpp.s
+
+unit/core/runtime/test_next_actions.o: unit/core/runtime/test_next_actions.cpp.o
+.PHONY : unit/core/runtime/test_next_actions.o
+
+# target to build an object file
+unit/core/runtime/test_next_actions.cpp.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_next_actions.dir/build.make tests/CMakeFiles/smo_test_next_actions.dir/unit/core/runtime/test_next_actions.cpp.o
+.PHONY : unit/core/runtime/test_next_actions.cpp.o
+
+unit/core/runtime/test_next_actions.i: unit/core/runtime/test_next_actions.cpp.i
+.PHONY : unit/core/runtime/test_next_actions.i
+
+# target to preprocess a source file
+unit/core/runtime/test_next_actions.cpp.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_next_actions.dir/build.make tests/CMakeFiles/smo_test_next_actions.dir/unit/core/runtime/test_next_actions.cpp.i
+.PHONY : unit/core/runtime/test_next_actions.cpp.i
+
+unit/core/runtime/test_next_actions.s: unit/core/runtime/test_next_actions.cpp.s
+.PHONY : unit/core/runtime/test_next_actions.s
+
+# target to generate assembly for a file
+unit/core/runtime/test_next_actions.cpp.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_next_actions.dir/build.make tests/CMakeFiles/smo_test_next_actions.dir/unit/core/runtime/test_next_actions.cpp.s
+.PHONY : unit/core/runtime/test_next_actions.cpp.s
 
 unit/core/runtime/test_runtime_context.o: unit/core/runtime/test_runtime_context.cpp.o
 .PHONY : unit/core/runtime/test_runtime_context.o
@@ -1478,6 +1516,7 @@ help:
 	@echo "... smo_test_identity"
 	@echo "... smo_test_mesh_fsm"
 	@echo "... smo_test_negative"
+	@echo "... smo_test_next_actions"
 	@echo "... smo_test_p0_s6_e2e"
 	@echo "... smo_test_packet_crypto"
 	@echo "... smo_test_protocol"
@@ -1539,6 +1578,9 @@ help:
 	@echo "... unit/core/runtime/test_history.o"
 	@echo "... unit/core/runtime/test_history.i"
 	@echo "... unit/core/runtime/test_history.s"
+	@echo "... unit/core/runtime/test_next_actions.o"
+	@echo "... unit/core/runtime/test_next_actions.i"
+	@echo "... unit/core/runtime/test_next_actions.s"
 	@echo "... unit/core/runtime/test_runtime_context.o"
 	@echo "... unit/core/runtime/test_runtime_context.i"
 	@echo "... unit/core/runtime/test_runtime_context.s"

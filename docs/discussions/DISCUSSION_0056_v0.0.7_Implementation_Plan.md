@@ -23,7 +23,7 @@ v0.0.7 delivers the **v0.0.7 charter** ("Full ICE + TURN + Mesh Federation" — 
 | **Tier 1** | **3** | **C3: Channel Model (RFC 0042)** | 0055:38, 0055:84 | Channel abstraction for multiplexing: CHANNEL_OPEN, CHUNK, ACK, NACK, FIN, CANCEL opcodes. Four-layer hierarchy (Connection→Session→Channel→Invocation). Lazy creation, flow control per channel. | ✅ DONE
 | **Tier 1** | **4** | **C4: NextAction 7 Remaining Actions (RFC 0039)** | 0055:39, 0055:85 | Implement DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent. Only Execute + StoreContext done in v0.0.6. |
 | **Tier 1** | **5** | **C5: RuntimeKernel Async + PlanResolver (RFC 0044)** | 0055:40, 0055:86 | execute_async true async; PlanResolver provider; stages: dispatch/collect/audit/complete. Scheduler + WorkerPool + ActionExecutor integration. | ✅ DONE
-| **Tier 2** | **6** | **C6: Governance FSM Complete (RFC 0016)** | 0055:41, 0055:92 | reject/conflict/detect_fork/expiry; Conflicted state engine-generated; expiry unit fix (ns vs s); quorum from active authorities. |
+| **Tier 2** | **6** | **C6: Governance FSM Complete (RFC 0016)** | 0055:41, 0055:92 | reject/conflict/detect_fork/expiry; Conflicted state engine-generated; expiry unit fix (ns vs s); quorum from active authorities. | ✅ DONE
 | **Tier 2** | **7** | **C7: Authority Key Handling** | 0055:42, 0055:93 | Root key never circulates; authority.sec encrypted at rest; key rotation; certificate chain management; HSM/remote signer support. |
 
 ---
@@ -89,11 +89,11 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0055.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C6.1 Implement reject action (quorum from active authorities) | P0-S3 (quorum + vote verify done); Opcode Registry (0020 done) | `[ ] OPEN` | 0055:41, 0046:808, 0016 |
-| C6.2 Implement conflict action + Conflicted state (engine-generated) | C6.1 | `[ ] OPEN` | 0055:41, 0016 §3 |
-| C6.3 Implement detect_fork action (divergent state detection) | C6.2 | `[ ] OPEN` | 0055:41, 0016 §3 |
-| C6.4 Fix expiry unit (ns vs s) + implement expiry action | C6.1 | `[ ] OPEN` | 0055:41, 0016 §3 |
-| C6.5 Gate test: Fork detection + expiry work in 3-mesh federation | C6.1-C6.4 | `[ ] OPEN` | 0055:145 |
+| C6.1 Implement reject action (quorum from active authorities) | P0-S3 (quorum + vote verify done); Opcode Registry (0020 done) | `[x] DONE` | 0055:41, 0046:808, 0016 |
+| C6.2 Implement conflict action + Conflicted state (engine-generated) | C6.1 | `[x] DONE` | 0055:41, 0016 §3 |
+| C6.3 Implement detect_fork action (divergent state detection) | C6.2 | `[x] DONE` | 0055:41, 0016 §3 |
+| C6.4 Fix expiry unit (ns vs s) + implement expiry action | C6.1 | `[x] DONE` | 0055:41, 0016 §3 |
+| C6.5 Gate test: Fork detection + expiry work in 3-mesh federation | C6.1-C6.4 | `[x] DONE` | 0055:145 |
 
 ### C7 — Authority Key Handling
 
@@ -148,7 +148,7 @@ v0.0.6 COMPLETE (P0-S6, P0-EX, R2, R3, R4, G1, RFC Sprint)
 [ ] C3: Channel Model — Session carries 4 concurrent channels (Control/Exec/Data/Discovery); flow control works
 [x] C4: NextAction — DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent all functional
 [x] C5: RuntimeKernel Async — execute_async non-blocking; PlanResolver resolves plan DAG; Scheduler+WorkerPool integrated
-[ ] C6: Governance FSM — reject/conflict/detect_fork/expiry operational; Conflicted state generated; quorum from active authorities
+[x] C6: Governance FSM — reject/conflict/detect_fork/expiry operational; Conflicted state generated; quorum from active authorities
 [ ] C7: Authority Key Handling — Root key rotation; authority.sec HSM-backed; cert chain validation on join
 [ ] All 25+ ctest PASS
 [ ] All 30+ PCT PASS (including new ICE/Federation/Channel/NextAction tests)
