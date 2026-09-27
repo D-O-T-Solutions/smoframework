@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_genesis.a CMakeFiles/smo_genesis.dir/genesis_manifest.cpp.o CMakeFiles/smo_genesis.dir/bootstrap_slot.cpp.o CMakeFiles/smo_genesis.dir/recovery_package.cpp.o CMakeFiles/smo_genesis.dir/root_session.cpp.o CMakeFiles/smo_genesis.dir/genesis.cpp.o CMakeFiles/smo_genesis.dir/recovery_engine.cpp.o
+/usr/bin/ranlib libsmo_genesis.a

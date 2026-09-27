@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_acl.a CMakeFiles/smo_acl.dir/policy_engine.cpp.o
+/usr/bin/ranlib libsmo_acl.a

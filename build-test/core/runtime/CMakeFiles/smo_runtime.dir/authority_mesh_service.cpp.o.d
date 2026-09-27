@@ -274,6 +274,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/authority_mesh_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \

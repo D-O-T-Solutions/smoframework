@@ -312,6 +312,7 @@ core/CMakeFiles/smo_core.dir/join/join_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /usr/include/c++/13/filesystem /usr/include/c++/13/bits/fs_fwd.h \
  /usr/include/c++/13/bits/fs_path.h /usr/include/c++/13/codecvt \

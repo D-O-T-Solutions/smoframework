@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_blake3_provider.a CMakeFiles/smo_blake3_provider.dir/blake3_provider.cpp.o
+/usr/bin/ranlib libsmo_blake3_provider.a

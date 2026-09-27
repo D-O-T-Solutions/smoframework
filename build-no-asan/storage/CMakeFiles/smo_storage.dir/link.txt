@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_storage.a CMakeFiles/smo_storage.dir/session_store/session_store.cpp.o CMakeFiles/smo_storage.dir/trust_store/trust_store.cpp.o CMakeFiles/smo_storage.dir/audit_store/audit_store.cpp.o CMakeFiles/smo_storage.dir/dag_store/dag_store.cpp.o CMakeFiles/smo_storage.dir/node_store/node_store.cpp.o CMakeFiles/smo_storage.dir/policy_store/policy_store.cpp.o
+/usr/bin/ranlib libsmo_storage.a

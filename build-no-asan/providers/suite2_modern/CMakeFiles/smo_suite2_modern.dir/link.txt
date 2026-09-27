@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_suite2_modern.a CMakeFiles/smo_suite2_modern.dir/suite2_modern_provider.cpp.o
+/usr/bin/ranlib libsmo_suite2_modern.a

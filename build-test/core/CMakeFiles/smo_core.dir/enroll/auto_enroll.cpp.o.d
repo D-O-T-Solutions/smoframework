@@ -313,6 +313,7 @@ core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \

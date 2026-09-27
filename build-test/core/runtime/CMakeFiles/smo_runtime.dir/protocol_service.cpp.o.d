@@ -225,6 +225,8 @@ core/runtime/CMakeFiles/smo_runtime.dir/protocol_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/impl.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/fwd.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
+ /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
@@ -267,6 +269,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/protocol_service.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/semaphore.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../crypto/suite.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
@@ -279,7 +282,6 @@ core/runtime/CMakeFiles/smo_runtime.dir/protocol_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_id.hpp \
  /usr/include/c++/13/algorithm /usr/include/c++/13/bits/ranges_algo.h \
  /usr/include/c++/13/pstl/glue_algorithm_defs.h \
- /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/random /usr/include/c++/13/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \

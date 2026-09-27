@@ -9,11 +9,13 @@ core/CMakeFiles/smo_core.dir/authority/authority.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/recovery_crypto.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/aead/aes256_gcm_provider.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kdf/argon2id.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/third_party/sqlite3/sqlite3.h
  /usr/include/alloca.h
  /usr/include/asm-generic/errno-base.h
  /usr/include/asm-generic/errno.h
@@ -538,6 +540,7 @@ core/CMakeFiles/smo_core.dir/authority/enroll_server.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/types.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/enroll_server.hpp
@@ -1475,6 +1478,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/certificate/certificate.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
@@ -1857,6 +1861,7 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o
 core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_service.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_service.cpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/errors/error.hpp
@@ -2944,7 +2949,9 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/backward/binders.h
  /usr/include/c++/13/bit
  /usr/include/c++/13/bits/algorithmfwd.h
+ /usr/include/c++/13/bits/align.h
  /usr/include/c++/13/bits/alloc_traits.h
+ /usr/include/c++/13/bits/allocated_ptr.h
  /usr/include/c++/13/bits/allocator.h
  /usr/include/c++/13/bits/basic_ios.h
  /usr/include/c++/13/bits/basic_ios.tcc
@@ -2952,11 +2959,15 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/bits/basic_string.tcc
  /usr/include/c++/13/bits/char_traits.h
  /usr/include/c++/13/bits/charconv.h
+ /usr/include/c++/13/bits/chrono.h
+ /usr/include/c++/13/bits/chrono_io.h
  /usr/include/c++/13/bits/codecvt.h
  /usr/include/c++/13/bits/concept_check.h
  /usr/include/c++/13/bits/cpp_type_traits.h
  /usr/include/c++/13/bits/cxxabi_forced.h
  /usr/include/c++/13/bits/cxxabi_init_exception.h
+ /usr/include/c++/13/bits/enable_special_members.h
+ /usr/include/c++/13/bits/erase_if.h
  /usr/include/c++/13/bits/exception.h
  /usr/include/c++/13/bits/exception_defines.h
  /usr/include/c++/13/bits/exception_ptr.h
@@ -2981,8 +2992,10 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/bits/move.h
  /usr/include/c++/13/bits/nested_exception.h
  /usr/include/c++/13/bits/new_allocator.h
+ /usr/include/c++/13/bits/node_handle.h
  /usr/include/c++/13/bits/ostream.tcc
  /usr/include/c++/13/bits/ostream_insert.h
+ /usr/include/c++/13/bits/parse_numbers.h
  /usr/include/c++/13/bits/postypes.h
  /usr/include/c++/13/bits/predefined_ops.h
  /usr/include/c++/13/bits/ptr_traits.h
@@ -2995,6 +3008,8 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/bits/ranges_util.h
  /usr/include/c++/13/bits/refwrap.h
  /usr/include/c++/13/bits/requires_hosted.h
+ /usr/include/c++/13/bits/shared_ptr.h
+ /usr/include/c++/13/bits/shared_ptr_base.h
  /usr/include/c++/13/bits/sstream.tcc
  /usr/include/c++/13/bits/std_abs.h
  /usr/include/c++/13/bits/stl_algo.h
@@ -3006,8 +3021,11 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/bits/stl_iterator.h
  /usr/include/c++/13/bits/stl_iterator_base_funcs.h
  /usr/include/c++/13/bits/stl_iterator_base_types.h
+ /usr/include/c++/13/bits/stl_map.h
+ /usr/include/c++/13/bits/stl_multimap.h
  /usr/include/c++/13/bits/stl_pair.h
  /usr/include/c++/13/bits/stl_tempbuf.h
+ /usr/include/c++/13/bits/stl_tree.h
  /usr/include/c++/13/bits/stl_uninitialized.h
  /usr/include/c++/13/bits/stl_vector.h
  /usr/include/c++/13/bits/streambuf.tcc
@@ -3015,12 +3033,15 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/bits/string_view.tcc
  /usr/include/c++/13/bits/stringfwd.h
  /usr/include/c++/13/bits/uniform_int_dist.h
+ /usr/include/c++/13/bits/unique_ptr.h
  /usr/include/c++/13/bits/uses_allocator.h
  /usr/include/c++/13/bits/uses_allocator_args.h
  /usr/include/c++/13/bits/utility.h
  /usr/include/c++/13/bits/vector.tcc
  /usr/include/c++/13/cctype
  /usr/include/c++/13/cerrno
+ /usr/include/c++/13/charconv
+ /usr/include/c++/13/chrono
  /usr/include/c++/13/clocale
  /usr/include/c++/13/compare
  /usr/include/c++/13/concepts
@@ -3035,11 +3056,14 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/debug/assertions.h
  /usr/include/c++/13/debug/debug.h
  /usr/include/c++/13/exception
+ /usr/include/c++/13/ext/aligned_buffer.h
  /usr/include/c++/13/ext/alloc_traits.h
  /usr/include/c++/13/ext/atomicity.h
+ /usr/include/c++/13/ext/concurrence.h
  /usr/include/c++/13/ext/numeric_traits.h
  /usr/include/c++/13/ext/string_conversions.h
  /usr/include/c++/13/ext/type_traits.h
+ /usr/include/c++/13/format
  /usr/include/c++/13/initializer_list
  /usr/include/c++/13/iomanip
  /usr/include/c++/13/ios
@@ -3047,12 +3071,15 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/istream
  /usr/include/c++/13/limits
  /usr/include/c++/13/locale
+ /usr/include/c++/13/map
  /usr/include/c++/13/new
  /usr/include/c++/13/numbers
+ /usr/include/c++/13/optional
  /usr/include/c++/13/ostream
  /usr/include/c++/13/pstl/execution_defs.h
  /usr/include/c++/13/pstl/glue_algorithm_defs.h
  /usr/include/c++/13/pstl/pstl_config.h
+ /usr/include/c++/13/ratio
  /usr/include/c++/13/span
  /usr/include/c++/13/sstream
  /usr/include/c++/13/stdexcept
@@ -3063,6 +3090,7 @@ core/CMakeFiles/smo_core.dir/certificate/certificate.cpp.o
  /usr/include/c++/13/tuple
  /usr/include/c++/13/type_traits
  /usr/include/c++/13/typeinfo
+ /usr/include/c++/13/variant
  /usr/include/c++/13/vector
  /usr/include/ctype.h
  /usr/include/endian.h
@@ -9220,6 +9248,7 @@ core/CMakeFiles/smo_core.dir/discovery/seed_store.cpp.o
 core/CMakeFiles/smo_core.dir/enroll/auto_enroll.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/enroll/auto_enroll.cpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.hpp
@@ -11108,6 +11137,7 @@ core/CMakeFiles/smo_core.dir/identity/identity.cpp.o
 core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.cpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.hpp
@@ -11493,6 +11523,7 @@ core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o
 core/CMakeFiles/smo_core.dir/join/join_service.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_service.cpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.hpp
@@ -11891,6 +11922,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/types.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/fwd.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/impl.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/identity/identity.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
@@ -12009,6 +12041,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o
  /usr/include/c++/13/cstdint
  /usr/include/c++/13/cstdio
  /usr/include/c++/13/cstdlib
+ /usr/include/c++/13/cstring
  /usr/include/c++/13/ctime
  /usr/include/c++/13/cwchar
  /usr/include/c++/13/cwctype
@@ -12066,6 +12099,8 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o
  /usr/include/stdint.h
  /usr/include/stdio.h
  /usr/include/stdlib.h
+ /usr/include/string.h
+ /usr/include/strings.h
  /usr/include/syscall.h
  /usr/include/time.h
  /usr/include/unistd.h
@@ -12176,6 +12211,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_fsm.cpp.o
 core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.cpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/signer_context.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_service.hpp

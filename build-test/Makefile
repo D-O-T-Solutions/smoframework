@@ -2052,6 +2052,19 @@ smo_test_identity/fast:
 .PHONY : smo_test_identity/fast
 
 #=============================================================================
+# Target rules for targets named smo_test_authority_key_handling
+
+# Build rule for target.
+smo_test_authority_key_handling: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 smo_test_authority_key_handling
+.PHONY : smo_test_authority_key_handling
+
+# fast build rule for target.
+smo_test_authority_key_handling/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_authority_key_handling.dir/build.make tests/CMakeFiles/smo_test_authority_key_handling.dir/build
+.PHONY : smo_test_authority_key_handling/fast
+
+#=============================================================================
 # Target rules for targets named smo_test_storage_stores
 
 # Build rule for target.
@@ -2397,6 +2410,7 @@ help:
 	@echo "... smo_suite1_classical"
 	@echo "... smo_suite2_modern"
 	@echo "... smo_suite3_purepqc"
+	@echo "... smo_test_authority_key_handling"
 	@echo "... smo_test_certificate"
 	@echo "... smo_test_contract"
 	@echo "... smo_test_crypto"

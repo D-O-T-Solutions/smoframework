@@ -310,7 +310,9 @@ tests/CMakeFiles/smo_test_p0_s6_e2e.dir/unit/core/transport/test_p0_s6_e2e.cpp.o
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../recovery/crl.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_service.hpp \
  /usr/include/c++/13/filesystem /usr/include/c++/13/bits/fs_fwd.h \

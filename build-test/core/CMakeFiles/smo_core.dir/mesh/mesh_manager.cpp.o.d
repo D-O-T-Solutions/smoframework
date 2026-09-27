@@ -313,6 +313,7 @@ core/CMakeFiles/smo_core.dir/mesh/mesh_manager.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_service.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/network/sync/sync_service.hpp \

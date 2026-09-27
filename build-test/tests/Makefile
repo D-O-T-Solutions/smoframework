@@ -431,6 +431,20 @@ smo_test_identity/fast:
 .PHONY : smo_test_identity/fast
 
 # Convenience name for target.
+tests/CMakeFiles/smo_test_authority_key_handling.dir/rule:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_authority_key_handling.dir/rule
+.PHONY : tests/CMakeFiles/smo_test_authority_key_handling.dir/rule
+
+# Convenience name for target.
+smo_test_authority_key_handling: tests/CMakeFiles/smo_test_authority_key_handling.dir/rule
+.PHONY : smo_test_authority_key_handling
+
+# fast build rule for target.
+smo_test_authority_key_handling/fast:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_authority_key_handling.dir/build.make tests/CMakeFiles/smo_test_authority_key_handling.dir/build
+.PHONY : smo_test_authority_key_handling/fast
+
+# Convenience name for target.
 tests/CMakeFiles/smo_test_storage_stores.dir/rule:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/smo_test_storage_stores.dir/rule
 .PHONY : tests/CMakeFiles/smo_test_storage_stores.dir/rule
@@ -691,6 +705,30 @@ unit/compiler_test.s: unit/compiler_test.cpp.s
 unit/compiler_test.cpp.s:
 	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_stub_compiler.dir/build.make tests/CMakeFiles/smo_stub_compiler.dir/unit/compiler_test.cpp.s
 .PHONY : unit/compiler_test.cpp.s
+
+unit/core/authority/test_authority_key_handling.o: unit/core/authority/test_authority_key_handling.cpp.o
+.PHONY : unit/core/authority/test_authority_key_handling.o
+
+# target to build an object file
+unit/core/authority/test_authority_key_handling.cpp.o:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_authority_key_handling.dir/build.make tests/CMakeFiles/smo_test_authority_key_handling.dir/unit/core/authority/test_authority_key_handling.cpp.o
+.PHONY : unit/core/authority/test_authority_key_handling.cpp.o
+
+unit/core/authority/test_authority_key_handling.i: unit/core/authority/test_authority_key_handling.cpp.i
+.PHONY : unit/core/authority/test_authority_key_handling.i
+
+# target to preprocess a source file
+unit/core/authority/test_authority_key_handling.cpp.i:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_authority_key_handling.dir/build.make tests/CMakeFiles/smo_test_authority_key_handling.dir/unit/core/authority/test_authority_key_handling.cpp.i
+.PHONY : unit/core/authority/test_authority_key_handling.cpp.i
+
+unit/core/authority/test_authority_key_handling.s: unit/core/authority/test_authority_key_handling.cpp.s
+.PHONY : unit/core/authority/test_authority_key_handling.s
+
+# target to generate assembly for a file
+unit/core/authority/test_authority_key_handling.cpp.s:
+	cd /home/nguyenduccanh/shellmap_project/smoframework/build-test && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/smo_test_authority_key_handling.dir/build.make tests/CMakeFiles/smo_test_authority_key_handling.dir/unit/core/authority/test_authority_key_handling.cpp.s
+.PHONY : unit/core/authority/test_authority_key_handling.cpp.s
 
 unit/core/certificate/test_certificate.o: unit/core/certificate/test_certificate.cpp.o
 .PHONY : unit/core/certificate/test_certificate.o
@@ -1503,6 +1541,7 @@ help:
 	@echo "... smo_stub_compiler"
 	@echo "... smo_stub_core"
 	@echo "... smo_stub_protocol"
+	@echo "... smo_test_authority_key_handling"
 	@echo "... smo_test_certificate"
 	@echo "... smo_test_contract"
 	@echo "... smo_test_crypto"
@@ -1536,6 +1575,9 @@ help:
 	@echo "... unit/compiler_test.o"
 	@echo "... unit/compiler_test.i"
 	@echo "... unit/compiler_test.s"
+	@echo "... unit/core/authority/test_authority_key_handling.o"
+	@echo "... unit/core/authority/test_authority_key_handling.i"
+	@echo "... unit/core/authority/test_authority_key_handling.s"
 	@echo "... unit/core/certificate/test_certificate.o"
 	@echo "... unit/core/certificate/test_certificate.i"
 	@echo "... unit/core/certificate/test_certificate.s"

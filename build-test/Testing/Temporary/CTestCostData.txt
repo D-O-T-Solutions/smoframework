@@ -1,206 +1,111 @@
-benchmark 0 0
-spec_arg 0 0
-spec_arg_verbosity 0 0
-benchmark_setup_teardown 0 0
-min_time_flag_time 0 0
-min_time_flag_iters 0 0
-filter_simple 0 0
-filter_simple_list_only 0 0
-filter_simple_negative 0 0
-filter_simple_negative_list_only 0 0
-filter_suffix 0 0
-filter_suffix_list_only 0 0
-filter_suffix_negative 0 0
-filter_suffix_negative_list_only 0 0
-filter_regex_all 0 0
-filter_regex_all_list_only 0 0
-filter_regex_all_negative 0 0
-filter_regex_all_negative_list_only 0 0
-filter_regex_blank 0 0
-filter_regex_blank_list_only 0 0
-filter_regex_blank_negative 0 0
-filter_regex_blank_negative_list_only 0 0
-filter_regex_none 0 0
-filter_regex_none_list_only 0 0
-filter_regex_none_negative 0 0
-filter_regex_none_negative_list_only 0 0
-filter_regex_wildcard 0 0
-filter_regex_wildcard_list_only 0 0
-filter_regex_wildcard_negative 0 0
-filter_regex_wildcard_negative_list_only 0 0
-filter_regex_begin 0 0
-filter_regex_begin_list_only 0 0
-filter_regex_begin_negative 0 0
-filter_regex_begin_negative_list_only 0 0
-filter_regex_begin2 0 0
-filter_regex_begin2_list_only 0 0
-filter_regex_begin2_negative 0 0
-filter_regex_begin2_negative_list_only 0 0
-filter_regex_end 0 0
-filter_regex_end_list_only 0 0
-filter_regex_end_negative 0 0
-filter_regex_end_negative_list_only 0 0
-options_benchmarks 0 0
-basic_benchmark 0 0
-repetitions_benchmark 0 0
-diagnostics_test 0 0
-skip_with_error_test 0 0
-donotoptimize_test 0 0
-fixture_test 0 0
-register_benchmark_test 0 0
-map_test 0 0
-multiple_ranges_test 0 0
-args_product_test 0 0
-link_main_test 0 0
-reporter_output_test 0 0
-templated_fixture_test 0 0
-user_counters_test 0 0
-perf_counters_test 0 0
-internal_threading_test 0 0
-report_aggregates_only_test 0 0
-display_aggregates_only_test 0 0
-user_counters_tabular_test 0 0
-user_counters_thousands_test 0 0
-memory_manager_test 0 0
-cxx03 0 0
-complexity_benchmark 0 0
-federation_gateway_model 3 0.0281022
-federation_handshake_model 3 0.0269996
-federation_policy_model 3 0.0401007
+benchmark 4 2.48166
+spec_arg 4 0.453823
+spec_arg_verbosity 4 0.00263134
+benchmark_setup_teardown 4 0.211811
+min_time_flag_time 4 2.73596
+min_time_flag_iters 4 0.0012292
+filter_simple 4 0.0187611
+filter_simple_list_only 4 0.00165597
+filter_simple_negative 4 0.014047
+filter_simple_negative_list_only 4 0.00290839
+filter_suffix 4 0.0330155
+filter_suffix_list_only 4 0.00183648
+filter_suffix_negative 4 0.0101347
+filter_suffix_negative_list_only 4 0.0030284
+filter_regex_all 4 0.0435428
+filter_regex_all_list_only 4 0.0014087
+filter_regex_all_negative 4 0.00223497
+filter_regex_all_negative_list_only 4 0.00436402
+filter_regex_blank 4 0.0382218
+filter_regex_blank_list_only 4 0.00290277
+filter_regex_blank_negative 4 0.00398212
+filter_regex_blank_negative_list_only 4 0.00386492
+filter_regex_none 4 0.00469395
+filter_regex_none_list_only 4 0.00335191
+filter_regex_none_negative 4 0.058942
+filter_regex_none_negative_list_only 4 0.00240687
+filter_regex_wildcard 4 0.0175281
+filter_regex_wildcard_list_only 4 0.00186313
+filter_regex_wildcard_negative 4 0.0124219
+filter_regex_wildcard_negative_list_only 4 0.00207931
+filter_regex_begin 4 0.02265
+filter_regex_begin_list_only 4 0.001902
+filter_regex_begin_negative 4 0.00705959
+filter_regex_begin_negative_list_only 4 0.00182963
+filter_regex_begin2 4 0.0177364
+filter_regex_begin2_list_only 4 0.00372342
+filter_regex_begin2_negative 4 0.0669506
+filter_regex_begin2_negative_list_only 4 0.00431743
+filter_regex_end 4 0.012471
+filter_regex_end_list_only 4 0.00202766
+filter_regex_end_negative 4 0.0483963
+filter_regex_end_negative_list_only 4 0.00371123
+options_benchmarks 4 1.42406
+basic_benchmark 4 0.390519
+repetitions_benchmark 4 0.0805944
+diagnostics_test 4 0.0101269
+skip_with_error_test 4 0.0846383
+donotoptimize_test 4 0.00112843
+fixture_test 4 0.0219171
+register_benchmark_test 4 0.0562892
+map_test 4 0.0916478
+multiple_ranges_test 4 0.136375
+args_product_test 4 0.0692636
+link_main_test 4 0.0061001
+reporter_output_test 4 0.432117
+templated_fixture_test 4 0.0133963
+user_counters_test 4 0.29182
+perf_counters_test 4 0.00341009
+internal_threading_test 4 0.466055
+report_aggregates_only_test 4 0.0160298
+display_aggregates_only_test 4 0.0149835
+user_counters_tabular_test 4 0.705514
+user_counters_thousands_test 4 0.0493667
+memory_manager_test 4 0.0186054
+cxx03 4 0.0883631
+complexity_benchmark 4 0.526398
+federation_gateway_model 7 0.00576385
+federation_handshake_model 7 0.00456471
+federation_policy_model 7 0.00765637
 federation_router_model 0 0
 cross_mesh_e2e 0 0
-protocol_model 0 0
-packet_crypto_model 0 0
-replay_model 0 0
-negative_model 0 0
-trust_model 0 0
-governance_model 0 0
-discovery_model 0 0
-session_model 0 0
-session_security_model 0 0
-transport_model 0 0
-secure_session_model 0 0
+protocol_model 4 0.0253994
+packet_crypto_model 5 0.015586
+replay_model 4 0.0263126
+negative_model 4 0.0125406
+trust_model 4 0.0083419
+governance_model 4 0.0146273
+discovery_model 4 0.00964573
+session_model 4 0.00992747
+session_security_model 4 0.00728963
+transport_model 4 0.0234547
+secure_session_model 4 0.0464848
 p0_s6_e2e 0 0
-transport_highlevel 0 0
-fsm_model 0 0
-mesh_fsm_model 0 0
-certificate_model 0 0
-identity_model 0 0
-storage_stores 0 0
-storage_model 0 0
-crypto_model 0 0
-recovery_package_model 0 0
-shamir_model 0 0
-error_model 0 0
-event_store_model 0 0
-runtime_context_model 0 0
-history_model 0 0
-execution_engine_model 0 0
-scheduler_model 0 0
-contract_model 0 0
+transport_highlevel 4 0.157158
+fsm_model 4 0.0262991
+mesh_fsm_model 4 0.0205766
+certificate_model 6 0.00714022
+identity_model 6 0.00578428
+storage_stores 4 0.133872
+storage_model 4 0.169123
+crypto_model 5 0.461484
+recovery_package_model 6 0.45089
+shamir_model 4 1.9299
+error_model 4 0.00465228
+event_store_model 4 0.407816
+runtime_context_model 4 0.0227891
+history_model 4 0.432568
+execution_engine_model 4 0.00893906
+scheduler_model 4 0.116845
+contract_model 4 0.0166915
 protocol_compliance 0 0
-core 0 0
-protocol 0 0
-compiler 0 0
+core 4 0.00799516
+protocol 4 0.0132866
+compiler 4 0.0208366
+next_actions_model 0 0
+authority_key_handling_model 0 0
 ---
-benchmark
-spec_arg
-spec_arg_verbosity
-benchmark_setup_teardown
-min_time_flag_time
-min_time_flag_iters
-filter_simple
-filter_simple_list_only
-filter_simple_negative
-filter_simple_negative_list_only
-filter_suffix
-filter_suffix_list_only
-filter_suffix_negative
-filter_suffix_negative_list_only
-filter_regex_all
-filter_regex_all_list_only
-filter_regex_all_negative
-filter_regex_all_negative_list_only
-filter_regex_blank
-filter_regex_blank_list_only
-filter_regex_blank_negative
-filter_regex_blank_negative_list_only
-filter_regex_none
-filter_regex_none_list_only
-filter_regex_none_negative
-filter_regex_none_negative_list_only
-filter_regex_wildcard
-filter_regex_wildcard_list_only
-filter_regex_wildcard_negative
-filter_regex_wildcard_negative_list_only
-filter_regex_begin
-filter_regex_begin_list_only
-filter_regex_begin_negative
-filter_regex_begin_negative_list_only
-filter_regex_begin2
-filter_regex_begin2_list_only
-filter_regex_begin2_negative
-filter_regex_begin2_negative_list_only
-filter_regex_end
-filter_regex_end_list_only
-filter_regex_end_negative
-filter_regex_end_negative_list_only
-options_benchmarks
-basic_benchmark
-repetitions_benchmark
-diagnostics_test
-skip_with_error_test
-donotoptimize_test
-fixture_test
-register_benchmark_test
-map_test
-multiple_ranges_test
-args_product_test
-link_main_test
-reporter_output_test
-templated_fixture_test
-user_counters_test
-perf_counters_test
-internal_threading_test
-report_aggregates_only_test
-display_aggregates_only_test
-user_counters_tabular_test
-user_counters_thousands_test
-memory_manager_test
-cxx03
-complexity_benchmark
-federation_router_model
-cross_mesh_e2e
-protocol_model
-packet_crypto_model
-replay_model
-negative_model
-trust_model
-governance_model
-discovery_model
-session_model
-session_security_model
-transport_model
-secure_session_model
 p0_s6_e2e
-transport_highlevel
-fsm_model
-mesh_fsm_model
-certificate_model
-identity_model
-storage_stores
-storage_model
-crypto_model
-recovery_package_model
-shamir_model
-error_model
-event_store_model
-runtime_context_model
-history_model
-execution_engine_model
-scheduler_model
-contract_model
+authority_key_handling_model
+next_actions_model
 protocol_compliance
-core
-protocol
-compiler

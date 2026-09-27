@@ -1230,6 +1230,7 @@
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_mesh_fsm.dir
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_certificate.dir
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_identity.dir
+/home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_authority_key_handling.dir
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_storage_stores.dir
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_storage.dir
 /home/nguyenduccanh/shellmap_project/smoframework/build-test/tests/CMakeFiles/smo_test_crypto.dir

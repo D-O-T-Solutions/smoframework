@@ -253,6 +253,8 @@ core/runtime/CMakeFiles/smo_runtime.dir/contract_registry_service.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/semaphore.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_bridge.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_kernel.hpp \
+ /usr/include/c++/13/future /usr/include/c++/13/condition_variable \
+ /usr/include/c++/13/bits/atomic_futex.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../capability/capability.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../certificate/certificate.hpp \
@@ -260,6 +262,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/contract_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/packet.h \
  /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/../../core/opcode/opcode.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/middleware_pipeline.hpp \
@@ -313,6 +316,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/contract_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_abi.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/recovery_engine.hpp \
@@ -323,7 +327,6 @@ core/runtime/CMakeFiles/smo_runtime.dir/contract_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/shamir.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer/ed25519_provider.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer_context.hpp \
  /usr/include/c++/13/set /usr/include/c++/13/bits/stl_set.h \
  /usr/include/c++/13/bits/stl_multiset.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.hpp \
@@ -348,4 +351,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/contract_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_snapshot.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/cbor.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/join/join_protocol.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/scheduler.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/services/audit_service.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/action_executor.hpp

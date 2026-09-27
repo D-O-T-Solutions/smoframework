@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsmo_suite3_purepqc.a CMakeFiles/smo_suite3_purepqc.dir/suite3_purepqc_provider.cpp.o
+/usr/bin/ranlib libsmo_suite3_purepqc.a

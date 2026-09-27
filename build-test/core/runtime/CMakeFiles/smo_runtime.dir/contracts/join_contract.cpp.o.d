@@ -310,12 +310,18 @@ core/runtime/CMakeFiles/smo_runtime.dir/contracts/join_contract.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/bootstrap/bootstrap_protocol.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_fsm.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_state.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/action_executor.hpp
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/action_executor.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/dispatcher.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/scheduler.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/services/audit_service.hpp

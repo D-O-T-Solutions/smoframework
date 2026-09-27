@@ -554,6 +554,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/smo_test_mesh_fsm.dir/DependInfo.cmake"
   "tests/CMakeFiles/smo_test_certificate.dir/DependInfo.cmake"
   "tests/CMakeFiles/smo_test_identity.dir/DependInfo.cmake"
+  "tests/CMakeFiles/smo_test_authority_key_handling.dir/DependInfo.cmake"
   "tests/CMakeFiles/smo_test_storage_stores.dir/DependInfo.cmake"
   "tests/CMakeFiles/smo_test_storage.dir/DependInfo.cmake"
   "tests/CMakeFiles/smo_test_crypto.dir/DependInfo.cmake"

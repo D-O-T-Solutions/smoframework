@@ -312,6 +312,7 @@ core/CMakeFiles/smo_core.dir/join/join_protocol.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/secure_session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/transport/../session/session_crypto_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/network/ice/ice_candidate.hpp

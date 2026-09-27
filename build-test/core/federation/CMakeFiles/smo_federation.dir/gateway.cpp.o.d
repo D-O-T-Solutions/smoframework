@@ -298,6 +298,7 @@ core/federation/CMakeFiles/smo_federation.dir/gateway.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_definition.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_abi.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/federation/policy_federation.hpp \

@@ -244,5 +244,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/contracts/governance_contract.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
+ /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp

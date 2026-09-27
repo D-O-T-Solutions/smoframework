@@ -182,11 +182,8 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/impl.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/fwd.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
- /usr/include/c++/13/optional \
- /usr/include/c++/13/bits/enable_special_members.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
+ /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h /usr/include/c++/13/bits/unique_ptr.h \
@@ -224,6 +221,11 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: \
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
+ /usr/include/c++/13/optional \
+ /usr/include/c++/13/bits/enable_special_members.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_manager.hpp \
  /usr/include/c++/13/chrono /usr/include/c++/13/bits/chrono.h \
  /usr/include/c++/13/ratio /usr/include/c++/13/limits \
@@ -245,7 +247,6 @@ core/CMakeFiles/smo_core.dir/bootstrap/bootstrap_protocol.cpp.o: \
  /usr/include/c++/13/algorithm /usr/include/c++/13/bits/ranges_algo.h \
  /usr/include/c++/13/pstl/glue_algorithm_defs.h \
  /usr/include/c++/13/functional /usr/include/c++/13/bits/std_function.h \
- /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/random /usr/include/c++/13/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \

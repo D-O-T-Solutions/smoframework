@@ -260,6 +260,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/event_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/peer_store.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../storage/database.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/../storage/store_id.hpp \
@@ -308,6 +309,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/event_registry_service.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/suite.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/discovery/gossip.hpp \

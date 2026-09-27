@@ -320,6 +320,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/contract/contract_abi.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/acl/policy_engine.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/authority.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/governance/governance.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/storage/manifest_store.hpp \
@@ -336,6 +337,7 @@ core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../capability/capability.h \
  /usr/include/c++/13/bitset \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/protocol_service.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_fsm.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/mesh/mesh_state.hpp \
@@ -359,11 +361,16 @@ core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_kernel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contract_interface.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_context.hpp \
+ /usr/include/c++/13/future /usr/include/c++/13/condition_variable \
+ /usr/include/c++/13/bits/atomic_futex.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/dispatcher.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/middleware_pipeline.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/policy_middleware.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/trust/trust.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/action_executor.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/event_store.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/scheduler.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/services/audit_service.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/echo_contract.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/bootstrap_contract.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/join_contract.hpp \
@@ -377,7 +384,6 @@ core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/shamir.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer/ed25519_provider.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/root_session.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/genesis/../crypto/signer_context.hpp \
  /usr/include/c++/13/set /usr/include/c++/13/bits/stl_set.h \
  /usr/include/c++/13/bits/stl_multiset.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contracts/recovery_contract.hpp \
@@ -429,7 +435,6 @@ core/runtime/CMakeFiles/smo_runtime.dir/node_runtime.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/observability/metrics_server.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/observability/http_server.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/observability/otlp_exporter.hpp \
- /usr/include/c++/13/condition_variable \
  /home/nguyenduccanh/shellmap_project/smoframework/providers/blake3_provider/blake3_provider.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/providers/suite1_classical/suite1_classical_provider.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/providers/suite2_modern/suite2_modern_provider.hpp \

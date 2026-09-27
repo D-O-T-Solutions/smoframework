@@ -251,6 +251,7 @@ tests/CMakeFiles/smo_test_negative.dir/unit/protocol/test_negative.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../recovery/crl.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/registry.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/suite.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/providers/suite1_classical/suite1_classical_provider.hpp \

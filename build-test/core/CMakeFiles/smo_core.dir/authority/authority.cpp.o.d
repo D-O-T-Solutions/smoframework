@@ -179,11 +179,8 @@ core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/../errors/error.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
- /usr/include/c++/13/optional \
- /usr/include/c++/13/bits/enable_special_members.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/signer_context.hpp \
+ /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h /usr/include/c++/13/bits/unique_ptr.h \
@@ -221,6 +218,11 @@ core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: \
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../certificate/certificate.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../identity/identity.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/authority/registry.hpp \
+ /usr/include/c++/13/optional \
+ /usr/include/c++/13/bits/enable_special_members.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/authority/../crypto/recovery_crypto.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/kdf/argon2id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/crypto/aead/aes256_gcm_provider.hpp \
@@ -235,8 +237,8 @@ core/CMakeFiles/smo_core.dir/authority/authority.cpp.o: \
  /usr/include/c++/13/bits/parse_numbers.h \
  /usr/include/c++/13/bits/chrono_io.h /usr/include/c++/13/format \
  /usr/include/c++/13/charconv /usr/include/c++/13/variant \
- /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/fstream \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
- /usr/include/c++/13/bits/fstream.tcc
+ /usr/include/c++/13/bits/fstream.tcc \
+ /home/nguyenduccanh/shellmap_project/smoframework/third_party/sqlite3/sqlite3.h

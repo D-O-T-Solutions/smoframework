@@ -242,16 +242,18 @@ core/runtime/CMakeFiles/smo_runtime.dir/runtime_bridge.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_kernel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/contract_interface.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/runtime_context.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/dispatcher.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp \
- /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/span.hpp \
- /usr/include/c++/13/thread /usr/include/c++/13/stop_token \
- /usr/include/c++/13/bits/std_thread.h /usr/include/c++/13/semaphore \
- /usr/include/c++/13/bits/semaphore_base.h \
+ /usr/include/c++/13/future /usr/include/c++/13/condition_variable \
+ /usr/include/c++/13/stop_token /usr/include/c++/13/bits/std_thread.h \
+ /usr/include/c++/13/semaphore /usr/include/c++/13/bits/semaphore_base.h \
  /usr/include/c++/13/bits/atomic_timed_wait.h \
  /usr/include/c++/13/bits/this_thread_sleep.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/semaphore.h \
  /usr/include/x86_64-linux-gnu/bits/semaphore.h \
+ /usr/include/c++/13/bits/atomic_futex.h \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/dispatcher.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/telemetry.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/runtime/span.hpp \
+ /usr/include/c++/13/thread \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../capability/capability.h \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../certificate/certificate.hpp \
@@ -259,5 +261,6 @@ core/runtime/CMakeFiles/smo_runtime.dir/runtime_bridge.cpp.o: \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/../identity/identity.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_id.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/core/session/session_security.hpp \
+ /home/nguyenduccanh/shellmap_project/smoframework/core/session/channel.hpp \
  /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/packet.h \
  /home/nguyenduccanh/shellmap_project/smoframework/protocol/packet/../../core/opcode/opcode.h
