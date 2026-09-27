@@ -1,14 +1,24 @@
 #include "certificate.hpp"
+#include "../types.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 #include <limits>
+#include <map>
 
 namespace smo {
 
     // ---------------------------------------------------------------------------
     // Helpers: serialize primitives
     // ---------------------------------------------------------------------------
+
+    static int64_t now_ms()
+    {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::system_clock::now().time_since_epoch())
+            .count();
+    }
 
     static void append_u32(Bytes& out, uint32_t v)
     {
@@ -187,22 +197,19 @@ namespace smo {
             return SMO_ERR_CERT(203, Error, NoRetry, Reenroll, "crypto provider has no verify");
         }
 
-        // Verify each cert in the chain
+        // Verify each cert in the chain (leaf → intermediates → root)
         for (size_t i = 0; i < certs.size(); ++i)
         {
             const auto& cert = certs[i];
 
             // Check signature
             auto body = cert.serialize();
-            // Determine verifying key: for this cert, use issuer_pubkey.
-            // For the chain to be valid, issuer_pubkey must be the subject_pubkey
-            // of the next cert (or root_pubkey for the last).
             auto ok = crypto.signer.verify(body, cert.signature, cert.issuer_pubkey);
             if (!ok)
                 return ok.error();
             if (!ok.value())
             {
-                return SMO_ERR_CERT(204, Alert, NoRetry, None, "certificate signature invalid");
+                return SMO_ERR_CERT(204, Alert, NoRetry, None, "certificate signature invalid at index " + std::to_string(i));
             }
 
             // Chain linkage: this cert's issuer must match next cert's subject
@@ -212,16 +219,89 @@ namespace smo {
                 if (cert.issuer_pubkey.size() != next.subject_pubkey.size() ||
                     std::memcmp(cert.issuer_pubkey.data(), next.subject_pubkey.data(), cert.issuer_pubkey.size()) != 0)
                 {
-                    return SMO_ERR_CERT(217, Error, NoRetry, ManualIntervention, "chain linkage broken");
+                    return SMO_ERR_CERT(217, Error, NoRetry, ManualIntervention,
+                                       "chain linkage broken at index " + std::to_string(i));
                 }
             }
             else
             {
                 // Last cert in chain: issuer must be the trusted root
+                // For root self-signed: issuer_pubkey == subject_pubkey == root_pubkey
+                // For intermediate-signed root: issuer_pubkey == root_pubkey
                 if (cert.issuer_pubkey.size() != root_pubkey.size() ||
                     std::memcmp(cert.issuer_pubkey.data(), root_pubkey.data(), cert.issuer_pubkey.size()) != 0)
                 {
                     return SMO_ERR_CERT(218, Alert, NoRetry, ManualIntervention, "root key fingerprint mismatch");
+                }
+            }
+        }
+
+        return {};
+    }
+
+    // Verify chain with intermediate CA support
+    // intermediates: list of intermediate CA certificates (subject_pubkey, issuer_pubkey, etc.)
+    Result<void> CertificateChain::verify_with_intermediates(const CryptoProvider& crypto,
+                                                              BytesView root_pubkey,
+                                                              const std::vector<Certificate>& intermediates) const
+    {
+        if (certs.empty())
+        {
+            return SMO_ERR_CERT(200, Error, NoRetry, Reenroll, "empty certificate chain");
+        }
+        if (!crypto.signer.verify)
+        {
+            return SMO_ERR_CERT(203, Error, NoRetry, Reenroll, "crypto provider has no verify");
+        }
+
+        // Build a map of trusted issuers: root + intermediates
+        std::map<std::string, Bytes> trusted_issuers;
+        trusted_issuers[bytes_to_hex(root_pubkey)] = Bytes(root_pubkey.begin(), root_pubkey.end());
+
+        for (const auto& inter : intermediates)
+        {
+            // Certificate doesn't have status field; assume active if temporally valid
+            if (inter.is_valid_at(now_ms() / 1000))
+            {
+                trusted_issuers[bytes_to_hex(inter.subject_pubkey)] = Bytes(inter.subject_pubkey.begin(), inter.subject_pubkey.end());
+            }
+        }
+
+        // Verify each cert in the chain
+        for (size_t i = 0; i < certs.size(); ++i)
+        {
+            const auto& cert = certs[i];
+
+            // Check signature
+            auto body = cert.serialize();
+            auto ok = crypto.signer.verify(body, cert.signature, cert.issuer_pubkey);
+            if (!ok)
+                return ok.error();
+            if (!ok.value())
+            {
+                return SMO_ERR_CERT(204, Alert, NoRetry, None, "certificate signature invalid at index " + std::to_string(i));
+            }
+
+            // Chain linkage: this cert's issuer must match next cert's subject
+            if (i + 1 < certs.size())
+            {
+                const auto& next = certs[i + 1];
+                if (cert.issuer_pubkey.size() != next.subject_pubkey.size() ||
+                    std::memcmp(cert.issuer_pubkey.data(), next.subject_pubkey.data(), cert.issuer_pubkey.size()) != 0)
+                {
+                    return SMO_ERR_CERT(217, Error, NoRetry, ManualIntervention,
+                                       "chain linkage broken at index " + std::to_string(i));
+                }
+            }
+            else
+            {
+                // Last cert in chain: issuer must be a trusted root or intermediate
+                std::string issuer_hex = bytes_to_hex(cert.issuer_pubkey);
+                auto it = trusted_issuers.find(issuer_hex);
+                if (it == trusted_issuers.end())
+                {
+                    return SMO_ERR_CERT(218, Alert, NoRetry, ManualIntervention,
+                                       "chain terminates at untrusted issuer: " + issuer_hex);
                 }
             }
         }

@@ -115,6 +115,24 @@ namespace smo::authority {
     };
 
     // ---------------------------------------------------------------------------
+    // IntermediateCARecord — intermediate CA certificate record
+    // ---------------------------------------------------------------------------
+    struct IntermediateCARecord
+    {
+        int64_t id = 0;
+        std::string ca_id;                 // Unique identifier
+        std::string cert_fingerprint;      // Certificate fingerprint (Blake3)
+        std::string issuer_pubkey_hex;     // Issuer public key
+        std::string subject_pubkey_hex;    // Subject public key
+        std::string certificate_blob;      // Full serialized certificate (hex)
+        uint64_t epoch = 0;                // Authority epoch when created
+        int64_t created_at = 0;            // Unix timestamp
+        int64_t expires_at = 0;            // Unix timestamp
+        std::string status;                // "active", "revoked", "expired"
+        std::string revocation_reason;     // If revoked
+    };
+
+    // ---------------------------------------------------------------------------
     // EnrollResult — returned after a successful atomic enrollment
     // ---------------------------------------------------------------------------
     struct EnrollResult
@@ -191,6 +209,12 @@ namespace smo::authority {
         Result<void> revoke_certificate(const std::string& cert_fingerprint, const std::string& reason);
         Result<std::vector<CertificateRecord>> find_certificates_by_node(const std::string& node_id_hex) const;
 
+        // ── Intermediate CA management (C7.4) ──────────────────────
+        Result<void> register_intermediate_ca(const IntermediateCARecord& ca);
+        Result<std::optional<IntermediateCARecord>> get_intermediate_ca(const std::string& ca_id) const;
+        Result<std::vector<IntermediateCARecord>> list_intermediate_cas(const std::string& status = "") const;
+        Result<void> revoke_intermediate_ca(const std::string& ca_id, const std::string& reason);
+
         // ── Enrollment (pending CSR) ───────────────────────────────
         Result<void> submit_enrollment(const EnrollmentRecord& enrollment);
         Result<std::vector<EnrollmentRecord>> list_pending_enrollments() const;
@@ -203,6 +227,7 @@ namespace smo::authority {
     private:
         sqlite3* db_ = nullptr;
         Result<void> ensure_schema();
+        Result<void> ensure_intermediate_ca_schema();
     };
 
 } // namespace smo::authority

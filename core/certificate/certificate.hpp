@@ -119,6 +119,12 @@ namespace smo {
         // The last cert must be self-signed (issuer_pubkey == subject_pubkey).
         Result<void> verify(const CryptoProvider& crypto, BytesView root_pubkey) const;
 
+        // Verify chain with intermediate CA support.
+        // intermediates: list of intermediate CA certificates that are trusted.
+        Result<void> verify_with_intermediates(const CryptoProvider& crypto,
+                                                BytesView root_pubkey,
+                                                const std::vector<Certificate>& intermediates) const;
+
         // Check all certs are temporally valid at `timestamp`
         bool is_valid_at(int64_t timestamp) const noexcept;
 

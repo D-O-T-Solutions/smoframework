@@ -187,6 +187,17 @@ smo_set_warnings(smo_test_identity)
 smo_set_optimisation(smo_test_identity)
 add_test(NAME identity_model COMMAND smo_test_identity)
 
+# ── Authority Key Handling tests (C7) ─────────────────────────────────
+add_executable(smo_test_authority_key_handling
+    unit/core/authority/test_authority_key_handling.cpp
+)
+target_link_libraries(smo_test_authority_key_handling PRIVATE
+    smo_core smo_genesis smo_suite1_classical fmt::fmt
+)
+smo_set_warnings(smo_test_authority_key_handling)
+smo_set_optimisation(smo_test_authority_key_handling)
+add_test(NAME authority_key_handling_model COMMAND smo_test_authority_key_handling)
+
 # ── Storage store tests ─────────────────────────────────────────────
 add_executable(smo_test_storage_stores
     unit/storage/test_storage_stores.cpp

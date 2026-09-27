@@ -875,4 +875,157 @@ namespace smo::authority {
         return map_sqlite_error(rc, db_, "add_revocation");
     }
 
+    // ── Intermediate CA management (C7.4) ──────────────────────────────────────
+
+    static const char kIntermediateCASchema[] = R"(
+    CREATE TABLE IF NOT EXISTS intermediate_cas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ca_id TEXT UNIQUE NOT NULL,
+        cert_fingerprint TEXT UNIQUE NOT NULL,
+        issuer_pubkey_hex TEXT NOT NULL,
+        subject_pubkey_hex TEXT NOT NULL,
+        certificate_blob TEXT NOT NULL,
+        epoch INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        revocation_reason TEXT DEFAULT ''
+    );
+    CREATE INDEX IF NOT EXISTS idx_intermediate_cas_status ON intermediate_cas(status);
+    CREATE INDEX IF NOT EXISTS idx_intermediate_cas_issuer ON intermediate_cas(issuer_pubkey_hex);
+    )";
+
+    Result<void> NodeRegistry::ensure_intermediate_ca_schema()
+    {
+        char* err = nullptr;
+        if (sqlite3_exec(db_, kIntermediateCASchema, nullptr, nullptr, &err) != SQLITE_OK)
+        {
+            std::string msg = err ? err : "intermediate_ca schema creation failed";
+            sqlite3_free(err);
+            return SMO_ERR_STORAGE(900, Critical, NoRetry, RebootNode, msg);
+        }
+        return {};
+    }
+
+    Result<void> NodeRegistry::register_intermediate_ca(const IntermediateCARecord& ca)
+    {
+        // Ensure schema exists
+        auto schema_res = ensure_intermediate_ca_schema();
+        if (!schema_res)
+            return schema_res.error();
+
+        const char* sql = "INSERT INTO intermediate_cas "
+                          "(ca_id, cert_fingerprint, issuer_pubkey_hex, subject_pubkey_hex, "
+                          " certificate_blob, epoch, created_at, expires_at, status, revocation_reason) "
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        {
+            return map_sqlite_error(SQLITE_ERROR, db_, "prepare register_intermediate_ca");
+        }
+        sqlite3_bind_text(stmt, 1, ca.ca_id.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, ca.cert_fingerprint.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 3, ca.issuer_pubkey_hex.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, ca.subject_pubkey_hex.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 5, ca.certificate_blob.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_int64(stmt, 6, static_cast<int64_t>(ca.epoch));
+        sqlite3_bind_int64(stmt, 7, ca.created_at);
+        sqlite3_bind_int64(stmt, 8, ca.expires_at);
+        sqlite3_bind_text(stmt, 9, ca.status.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 10, ca.revocation_reason.c_str(), -1, SQLITE_STATIC);
+        int rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+        return map_sqlite_error(rc, db_, "register_intermediate_ca");
+    }
+
+    Result<std::optional<IntermediateCARecord>> NodeRegistry::get_intermediate_ca(const std::string& ca_id) const
+    {
+        const char* sql = "SELECT id, ca_id, cert_fingerprint, issuer_pubkey_hex, subject_pubkey_hex, "
+                          "certificate_blob, epoch, created_at, expires_at, status, revocation_reason "
+                          "FROM intermediate_cas WHERE ca_id = ?";
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        {
+            return map_sqlite_error<std::optional<IntermediateCARecord>>(SQLITE_ERROR, db_, "prepare get_intermediate_ca");
+        }
+        sqlite3_bind_text(stmt, 1, ca_id.c_str(), -1, SQLITE_STATIC);
+        std::optional<IntermediateCARecord> result;
+        if (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            IntermediateCARecord rec;
+            rec.id = sqlite3_column_int64(stmt, 0);
+            rec.ca_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+            rec.cert_fingerprint = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+            rec.issuer_pubkey_hex = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+            rec.subject_pubkey_hex = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+            rec.certificate_blob = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+            rec.epoch = static_cast<uint64_t>(sqlite3_column_int64(stmt, 6));
+            rec.created_at = sqlite3_column_int64(stmt, 7);
+            rec.expires_at = sqlite3_column_int64(stmt, 8);
+            rec.status = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+            rec.revocation_reason = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 10));
+            result = std::move(rec);
+        }
+        sqlite3_finalize(stmt);
+        return result;
+    }
+
+    Result<std::vector<IntermediateCARecord>> NodeRegistry::list_intermediate_cas(const std::string& status) const
+    {
+        std::vector<IntermediateCARecord> cas;
+        std::string sql = "SELECT id, ca_id, cert_fingerprint, issuer_pubkey_hex, subject_pubkey_hex, "
+                          "certificate_blob, epoch, created_at, expires_at, status, revocation_reason "
+                          "FROM intermediate_cas";
+        if (!status.empty())
+        {
+            sql += " WHERE status = ?";
+        }
+        sql += " ORDER BY created_at DESC";
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db_, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+        {
+            return map_sqlite_error<std::vector<IntermediateCARecord>>(SQLITE_ERROR, db_, "prepare list_intermediate_cas");
+        }
+        if (!status.empty())
+        {
+            sqlite3_bind_text(stmt, 1, status.c_str(), -1, SQLITE_STATIC);
+        }
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            IntermediateCARecord rec;
+            rec.id = sqlite3_column_int64(stmt, 0);
+            rec.ca_id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+            rec.cert_fingerprint = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+            rec.issuer_pubkey_hex = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+            rec.subject_pubkey_hex = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+            rec.certificate_blob = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+            rec.epoch = static_cast<uint64_t>(sqlite3_column_int64(stmt, 6));
+            rec.created_at = sqlite3_column_int64(stmt, 7);
+            rec.expires_at = sqlite3_column_int64(stmt, 8);
+            rec.status = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+            rec.revocation_reason = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 10));
+            cas.push_back(std::move(rec));
+        }
+        sqlite3_finalize(stmt);
+        return cas;
+    }
+
+    Result<void> NodeRegistry::revoke_intermediate_ca(const std::string& ca_id, const std::string& reason)
+    {
+        auto now =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
+                .count();
+        const char* sql = "UPDATE intermediate_cas SET status = 'revoked', revocation_reason = ? WHERE ca_id = ?";
+        sqlite3_stmt* stmt = nullptr;
+        if (sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        {
+            return map_sqlite_error(SQLITE_ERROR, db_, "prepare revoke_intermediate_ca");
+        }
+        sqlite3_bind_text(stmt, 1, reason.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, ca_id.c_str(), -1, SQLITE_STATIC);
+        int rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+        return map_sqlite_error(rc, db_, "revoke_intermediate_ca");
+    }
+
 } // namespace smo::authority
