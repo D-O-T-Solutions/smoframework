@@ -66,14 +66,14 @@ Each item: tasks, dependencies, `[ ] OPEN`, source file:line from 0055.
 
 | Task | Depends | Status | Source |
 |------|---------|--------|--------|
-| C4.1 Implement DispatchContract action (forward to target node/contract) | Serialization Pipeline (C13 done); ActionExecutor scaffold | `[ ] OPEN` | 0055:39, 0046:806, 0039:500 |
-| C4.2 Implement ScheduleRetry action (exponential backoff, max attempts) | C4.1 | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.3 Implement SpawnPlan action (DAG plan creation + execution) | C4.1; PlanResolver (C5) | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.4 Implement Notify action (event emission to subscribers) | C4.1 | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.5 Implement Compensate action (saga rollback handler) | C4.1 | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.6 Implement Abort action (forced termination + cleanup) | C4.1 | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.7 Implement EmitEvent action (audit/event store integration) | C4.1 | `[ ] OPEN` | 0055:39, 0039:500 |
-| C4.8 Gate test: All 9 action types (Execute, StoreContext + 7 new) execute in E2E test | C4.1-C4.7 | `[ ] OPEN` | 0055:143 |
+| C4.1 Implement DispatchContract action (forward to target node/contract) | Serialization Pipeline (C13 done); ActionExecutor scaffold | `[x] DONE` | 0055:39, 0046:806, 0039:500 |
+| C4.2 Implement ScheduleRetry action (exponential backoff, max attempts) | C4.1 | `[x] DONE` | 0055:39, 0039:500 |
+| C4.3 Implement SpawnPlan action (DAG plan creation + execution) | C4.1; PlanResolver (C5) | `[x] DONE` | 0055:39, 0039:500 |
+| C4.4 Implement Notify action (event emission to subscribers) | C4.1 | `[x] DONE` | 0055:39, 0039:500 |
+| C4.5 Implement Compensate action (saga rollback handler) | C4.1 | `[x] DONE` | 0055:39, 0039:500 |
+| C4.6 Implement Abort action (forced termination + cleanup) | C4.1 | `[x] DONE` | 0055:39, 0039:500 |
+| C4.7 Implement EmitEvent action (audit/event store integration) | C4.1 | `[x] DONE` | 0055:39, 0039:500 |
+| C4.8 Gate test: All 9 action types (Execute, StoreContext + 7 new) execute in E2E test | C4.1-C4.7 | `[x] DONE` | 0055:143 |
 
 ### C5 — RuntimeKernel Async + PlanResolver (RFC 0044)
 
@@ -146,7 +146,7 @@ v0.0.6 COMPLETE (P0-S6, P0-EX, R2, R3, R4, G1, RFC Sprint)
 [ ] C1: Full ICE — 3-node symmetric NAT mesh establishes via TURN relay; STUN/TURN server deployed
 [ ] C2: Mesh Federation — Cross-mesh contract execution; gateway node routes; policy federation sync
 [ ] C3: Channel Model — Session carries 4 concurrent channels (Control/Exec/Data/Discovery); flow control works
-[ ] C4: NextAction — DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent all functional
+[x] C4: NextAction — DispatchContract, ScheduleRetry, SpawnPlan, Notify, Compensate, Abort, EmitEvent all functional
 [ ] C5: RuntimeKernel Async — execute_async non-blocking; PlanResolver resolves plan DAG; Scheduler+WorkerPool integrated
 [ ] C6: Governance FSM — reject/conflict/detect_fork/expiry operational; Conflicted state generated; quorum from active authorities
 [ ] C7: Authority Key Handling — Root key rotation; authority.sec HSM-backed; cert chain validation on join
